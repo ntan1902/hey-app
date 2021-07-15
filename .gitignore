@@ -23,4 +23,4 @@
 log/
 target/
 
-hey-frontend/package-lock\.json
+# hey-frontend/package-lock\.json
