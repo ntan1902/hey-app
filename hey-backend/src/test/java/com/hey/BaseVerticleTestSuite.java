@@ -29,6 +29,7 @@ public class BaseVerticleTestSuite {
     private static final String PROP_FILE_NAME = "system.properties";
     public static final String RESOURCE_PATH = "src/main/resources/";
 
+
     private static HeyVerticle heyVerticle;
 
     private static APIService apiService;

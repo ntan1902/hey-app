@@ -304,7 +304,7 @@ public abstract class BaseService {
             User user = new User();
             user.setUserId(GenerationUtils.generateId());
             String userName = name.toString().trim().toLowerCase().replace(" ", "_");
-            user.setUserName("user" + String.valueOf(i));
+            user.setUserName("user" + userName);
             user.setPassword("123");
             user.setFullName(name.toString());
 
