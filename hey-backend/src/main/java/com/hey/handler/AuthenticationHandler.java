@@ -1,45 +1,31 @@
 package com.hey.handler;
 
-import com.hey.manager.JwtManager;
-import com.hey.model.User;
-import com.hey.model.UserAuth;
-import com.hey.repository.DataRepository;
-import com.hey.service.WebService;
-import com.hey.util.ErrorCode;
-import com.hey.util.HeyHttpStatusException;
+import com.hey.service.AuthenticationService;
 import com.hey.util.HttpStatus;
 import com.hey.util.JsonUtils;
 import io.vertx.core.Future;
-import io.vertx.core.http.HttpHeaders;
-import io.vertx.core.http.HttpServerRequest;
-import io.vertx.core.http.HttpServerResponse;
-import io.vertx.core.json.Json;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.RoutingContext;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.mindrot.jbcrypt.BCrypt;
 
-import java.util.Date;
+public class AuthenticationHandler extends BaseHandler{
 
-public class WebHandler extends BaseHandler{
+    private static final Logger LOGGER = LogManager.getLogger(AuthenticationHandler.class);
 
-    private static final Logger LOGGER = LogManager.getLogger(WebHandler.class);
+    private AuthenticationService authenticationService;
 
-    private WebService webService;
-
-    public void setWebService(WebService webService) {
-        this.webService = webService;
+    public void setWebService(AuthenticationService authenticationService) {
+        this.authenticationService = authenticationService;
     }
 
-    public WebService getWebService() {
-        return webService;
+    public AuthenticationService getWebService() {
+        return authenticationService;
     }
 
     public void signIn(RoutingContext routingContext) {
         String requestJson = routingContext.getBodyAsString();
-        Future<JsonObject> signInFuture = webService.signIn(requestJson);
+        Future<JsonObject> signInFuture = authenticationService.signIn(requestJson);
 
         signInFuture.compose(jsonObject -> {
 
@@ -55,12 +41,12 @@ public class WebHandler extends BaseHandler{
     }
 
     public void signOut(RoutingContext routingContext) {
-        webService.signOut(routingContext);
+        authenticationService.signOut(routingContext);
     }
 
     public void initTestData(RoutingContext routingContext) {
 
-        Future<JsonObject> futureInitTestData = webService.initTestData();
+        Future<JsonObject> futureInitTestData = authenticationService.initTestData();
 
         futureInitTestData.compose(jsonObject -> {
 

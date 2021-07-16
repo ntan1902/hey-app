@@ -5,7 +5,7 @@ import com.hey.model.UserAuth;
 import com.hey.model.UserFull;
 import com.hey.repository.DataRepository;
 import com.hey.service.APIService;
-import com.hey.service.WebService;
+import com.hey.service.AuthenticationService;
 import com.hey.verticle.HeyVerticle;
 import io.vertx.core.CompositeFuture;
 import io.vertx.core.Future;
@@ -34,7 +34,7 @@ public class BaseVerticleTestSuite {
 
     private static APIService apiService;
 
-    private static WebService webService;
+    private static AuthenticationService authenticationService;
 
     private static String userIdToTest;
 
@@ -70,8 +70,8 @@ public class BaseVerticleTestSuite {
         return apiService;
     }
 
-    public static WebService getWebService() {
-        return webService;
+    public static AuthenticationService getWebService() {
+        return authenticationService;
     }
 
     public static DataRepository getDataRepository() {
@@ -161,7 +161,7 @@ public class BaseVerticleTestSuite {
                 heyVerticle,
                 ar -> {
                     apiService = heyVerticle.getApiServer().getProtectedApiHandler().getApiService();
-                    webService = heyVerticle.getApiServer().getWebHandler().getWebService();
+                    authenticationService = heyVerticle.getApiServer().getWebHandler().getWebService();
                     dataRepository = heyVerticle.getApiServer().getProtectedApiHandler().getDataRepository();
                     client = vertx.createHttpClient();
                     Future<UserAuth> getUserAuthFuture = getApiService().getDataRepository().getUserAuth("vcthanh24");

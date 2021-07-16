@@ -131,7 +131,7 @@ public class RedisCacheClient implements DataRepository {
     public Future<UserAuth> getUserAuth(String userName) {
 
         Future<UserAuth> future = Future.future();
-
+        
         client.hgetall(generateUserAuthKey(userName), res -> {
             if (res.succeeded()) {
 

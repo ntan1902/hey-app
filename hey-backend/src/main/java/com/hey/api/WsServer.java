@@ -29,7 +29,7 @@ import org.apache.logging.log4j.Logger;
 import java.io.IOException;
 import java.util.List;
 
-public class WebsocketServer {
+public class WsServer {
 
     private WsHandler wsHandler;
 
@@ -37,14 +37,14 @@ public class WebsocketServer {
 
     private JwtManager jwtManager;
 
-    private static final Logger LOGGER = LogManager.getLogger(WebsocketServer.class);
+    private static final Logger LOGGER = LogManager.getLogger(WsServer.class);
 
-    private WebsocketServer() {
+    private WsServer() {
     }
 
-    public static WebsocketServer newInstance() {
-        WebsocketServer websocketServer = new WebsocketServer();
-        return websocketServer;
+    public static WsServer newInstance() {
+        WsServer wsServer = new WsServer();
+        return wsServer;
     }
 
     public Future<Void> createWsServer(Vertx vertx) {
