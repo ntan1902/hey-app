@@ -2,7 +2,6 @@ package com.hey.api;
 
 import com.hey.handler.ProtectedApiHandler;
 import com.hey.handler.PublicApiHandler;
-import com.hey.handler.AuthenticationHandler;
 import com.hey.util.PropertiesUtils;
 import io.vertx.core.Future;
 import io.vertx.core.Vertx;
@@ -22,7 +21,6 @@ public final class ApiServer {
     private HttpServer httpServer;
     private ProtectedApiHandler protectedApiHandler;
     private PublicApiHandler publicApiHandler;
-    private AuthenticationHandler authenticationHandler;
 
     private static final Logger LOGGER = LogManager.getLogger(ApiServer.class);
 
@@ -71,10 +69,8 @@ public final class ApiServer {
                 (allowedHeaders).allowedMethods(allowedMethods).allowCredentials(true))
                 .handler(BodyHandler.create());
 
-        router.get("/inittestdata").handler(authenticationHandler::initTestData);
+        router.get("/inittestdata").handler(publicApiHandler::initTestData);
 
-        router.post("/signin").handler(authenticationHandler::signIn);
-        router.post("/signout").handler(authenticationHandler::signOut);
 
         router.route("/api/protected/*").handler(protectedApiHandler::handle);
 
@@ -112,9 +108,6 @@ public final class ApiServer {
         this.publicApiHandler = publicApiHandler;
     }
 
-    public void setWebHandler(AuthenticationHandler authenticationHandler) {
-        this.authenticationHandler = authenticationHandler;
-    }
 
     public ProtectedApiHandler getProtectedApiHandler() {
         return protectedApiHandler;
@@ -124,7 +117,4 @@ public final class ApiServer {
         return publicApiHandler;
     }
 
-    public AuthenticationHandler getWebHandler() {
-        return authenticationHandler;
-    }
 }

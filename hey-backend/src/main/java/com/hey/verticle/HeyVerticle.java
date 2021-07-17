@@ -6,13 +6,11 @@ import com.hey.authentication.AuthService;
 import com.hey.cache.client.RedisCacheClient;
 import com.hey.handler.ProtectedApiHandler;
 import com.hey.handler.PublicApiHandler;
-import com.hey.handler.AuthenticationHandler;
 import com.hey.handler.WsHandler;
 import com.hey.manager.JwtManager;
 import com.hey.manager.UserWsChannelManager;
 import com.hey.repository.DataRepository;
 import com.hey.service.APIService;
-import com.hey.service.AuthenticationService;
 import com.hey.util.PropertiesUtils;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Future;
@@ -64,10 +62,6 @@ public class HeyVerticle extends AbstractVerticle {
         apiService.setDataRepository(repository);
         apiService.setUserWsChannelManager(userWsChannelManager);
 
-        // Authentication Service
-        AuthenticationService authenticationService = new AuthenticationService();
-        authenticationService.setDataRepository(repository);
-        authenticationService.setJwtManager(jwtManager);
 
         // Protected API Handler
         ProtectedApiHandler protectedApiHandler = new ProtectedApiHandler();
@@ -80,10 +74,6 @@ public class HeyVerticle extends AbstractVerticle {
         publicApiHandler.setDataRepository(repository);
         publicApiHandler.setApiService(apiService);
 
-        // Authentication Handler
-        AuthenticationHandler authenticationHandler = new AuthenticationHandler();
-        authenticationHandler.setDataRepository(repository);
-        authenticationHandler.setWebService(authenticationService);
 
         // Web Socket Handler
         WsHandler wsHandler = new WsHandler();
@@ -95,7 +85,6 @@ public class HeyVerticle extends AbstractVerticle {
         this.apiServer = ApiServer.newInstance();
         apiServer.setProtectedApiHandler(protectedApiHandler);
         apiServer.setPublicApiHandler(publicApiHandler);
-        apiServer.setWebHandler(authenticationHandler);
 
         // Web Socket Server
         this.wsServer = WsServer.newInstance();
