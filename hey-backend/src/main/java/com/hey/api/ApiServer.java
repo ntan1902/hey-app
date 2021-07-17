@@ -74,6 +74,7 @@ public final class ApiServer {
         router.get("/inittestdata").handler(webHandler::initTestData);
 
         router.post("/signin").handler(webHandler::signIn);
+
         router.post("/signout").handler(webHandler::signOut);
 
         router.route("/api/protected/*").handler(protectedApiHandler::handle);

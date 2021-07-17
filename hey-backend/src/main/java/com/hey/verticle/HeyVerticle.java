@@ -2,6 +2,7 @@ package com.hey.verticle;
 
 import com.hey.api.ApiServer;
 import com.hey.api.WebsocketServer;
+import com.hey.authentication.AuthService;
 import com.hey.cache.client.RedisCacheClient;
 import com.hey.handler.ProtectedApiHandler;
 import com.hey.handler.PublicApiHandler;
@@ -15,6 +16,7 @@ import com.hey.service.WebService;
 import com.hey.util.PropertiesUtils;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Future;
+import io.vertx.ext.web.client.WebClient;
 import io.vertx.redis.RedisClient;
 import io.vertx.redis.RedisOptions;
 import org.apache.logging.log4j.LogManager;
@@ -41,8 +43,12 @@ public class HeyVerticle extends AbstractVerticle {
         this.apiServer = ApiServer.newInstance();
         this.websocketServer = WebsocketServer.newInstance();
 
+        WebClient webClient = WebClient.create(vertx);
+
         // Create a JWT Auth Provider
         LOGGER.info("Initial JWT for verticle {}", Thread.currentThread().getName());
+        AuthService.createInstance(webClient);
+
         JwtManager jwtManager = new JwtManager(vertx);
 
         //Inject dependency
