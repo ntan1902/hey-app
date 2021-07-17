@@ -1,18 +1,18 @@
 package com.hey.verticle;
 
 import com.hey.api.ApiServer;
-import com.hey.api.WebsocketServer;
+import com.hey.api.WsServer;
 import com.hey.authentication.AuthService;
 import com.hey.cache.client.RedisCacheClient;
 import com.hey.handler.ProtectedApiHandler;
 import com.hey.handler.PublicApiHandler;
-import com.hey.handler.WebHandler;
+import com.hey.handler.AuthenticationHandler;
 import com.hey.handler.WsHandler;
 import com.hey.manager.JwtManager;
 import com.hey.manager.UserWsChannelManager;
 import com.hey.repository.DataRepository;
 import com.hey.service.APIService;
-import com.hey.service.WebService;
+import com.hey.service.AuthenticationService;
 import com.hey.util.PropertiesUtils;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Future;
@@ -26,27 +26,24 @@ public class HeyVerticle extends AbstractVerticle {
 
     private static final Logger LOGGER = LogManager.getLogger(HeyVerticle.class);
     private ApiServer apiServer;
-    private WebsocketServer websocketServer;
+    private WsServer wsServer;
 
     public ApiServer getApiServer() {
         return apiServer;
     }
 
-    public WebsocketServer getWebsocketServer() {
-        return websocketServer;
+    public WsServer getWebsocketServer() {
+        return wsServer;
     }
 
     @Override
     public void start(Future<Void> future) {
         LOGGER.info("{} verticle {} start", deploymentID(), Thread.currentThread().getName());
 
-        this.apiServer = ApiServer.newInstance();
-        this.websocketServer = WebsocketServer.newInstance();
-
-        WebClient webClient = WebClient.create(vertx);
-
         // Create a JWT Auth Provider
         LOGGER.info("Initial JWT for verticle {}", Thread.currentThread().getName());
+
+        WebClient webClient = WebClient.create(vertx);
         AuthService.createInstance(webClient);
 
         JwtManager jwtManager = new JwtManager(vertx);
@@ -57,50 +54,60 @@ public class HeyVerticle extends AbstractVerticle {
                 new RedisOptions().setHost(PropertiesUtils.getInstance().getValue("redis.host")));
         DataRepository repository = new RedisCacheClient(client);
 
+        // User Channel Manager
         UserWsChannelManager userWsChannelManager = new UserWsChannelManager();
         userWsChannelManager.setEventBus(vertx.eventBus());
         userWsChannelManager.setSharedData(vertx.sharedData());
 
+        // API Service
         APIService apiService = new APIService();
         apiService.setDataRepository(repository);
         apiService.setUserWsChannelManager(userWsChannelManager);
 
-        WebService webService = new WebService();
-        webService.setDataRepository(repository);
-        webService.setJwtManager(jwtManager);
+        // Authentication Service
+        AuthenticationService authenticationService = new AuthenticationService();
+        authenticationService.setDataRepository(repository);
+        authenticationService.setJwtManager(jwtManager);
 
+        // Protected API Handler
         ProtectedApiHandler protectedApiHandler = new ProtectedApiHandler();
         protectedApiHandler.setDataRepository(repository);
         protectedApiHandler.setJwtManager(jwtManager);
         protectedApiHandler.setApiService(apiService);
 
+        // Public API Handler
         PublicApiHandler publicApiHandler = new PublicApiHandler();
         publicApiHandler.setDataRepository(repository);
         publicApiHandler.setApiService(apiService);
 
-        WebHandler webHandler = new WebHandler();
-        webHandler.setDataRepository(repository);
-        webHandler.setWebService(webService);
+        // Authentication Handler
+        AuthenticationHandler authenticationHandler = new AuthenticationHandler();
+        authenticationHandler.setDataRepository(repository);
+        authenticationHandler.setWebService(authenticationService);
 
+        // Web Socket Handler
         WsHandler wsHandler = new WsHandler();
         wsHandler.setDataRepository(repository);
         wsHandler.setApiService(apiService);
-
-        apiServer.setProtectedApiHandler(protectedApiHandler);
-        apiServer.setPublicApiHandler(publicApiHandler);
-        apiServer.setWebHandler(webHandler);
-
         wsHandler.setUserWsChannelManager(userWsChannelManager);
 
-        websocketServer.setWsHandler(wsHandler);
-        websocketServer.setUserWsChannelManager(userWsChannelManager);
-        websocketServer.setJwtManager(jwtManager);
+        // API Server
+        this.apiServer = ApiServer.newInstance();
+        apiServer.setProtectedApiHandler(protectedApiHandler);
+        apiServer.setPublicApiHandler(publicApiHandler);
+        apiServer.setWebHandler(authenticationHandler);
+
+        // Web Socket Server
+        this.wsServer = WsServer.newInstance();
+        wsServer.setWsHandler(wsHandler);
+        wsServer.setUserWsChannelManager(userWsChannelManager);
+        wsServer.setJwtManager(jwtManager);
 
         LOGGER.info("Inject Dependency successfully for verticle {}", Thread.currentThread().getName());
 
         Future.succeededFuture()
                 .compose(v -> apiServer.createHttpServer(vertx))
-                .compose(v -> websocketServer.createWsServer(vertx))
+                .compose(v -> wsServer.createWsServer(vertx))
                 .setHandler(future);
 
     }

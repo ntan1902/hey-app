@@ -8,12 +8,12 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 @RunWith(VertxUnitRunner.class)
-public class WebServiceTestSuite extends BaseVerticleTestSuite {
+public class AuthenticationServiceTestSuite extends BaseVerticleTestSuite {
 
 
     @BeforeClass
     public static void startTestCases() {
-        System.out.println("Running " + WebServiceTestSuite.class.getName());
+        System.out.println("Running " + AuthenticationServiceTestSuite.class.getName());
     }
 
     @Test

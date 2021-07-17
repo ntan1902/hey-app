@@ -19,7 +19,7 @@ import org.mindrot.jbcrypt.BCrypt;
 
 import java.util.Date;
 
-public class WebService extends BaseService {
+public class AuthenticationService extends BaseService {
 
     public Future<JsonObject> signIn(String requestJson) {
 
