@@ -1,0 +1,90 @@
+	
+@startuml
+
+' hide the spot
+' hide circle
+
+' avoid problems with angled crows feet
+skinparam linetype ortho
+
+entity "users" as users{
+    *id: number <<FK>>
+    --
+    username: varchar
+    email: varchar
+    password: varchar
+    fullname: varchar
+    balance: number
+    pin: varchar
+}
+
+entity "system_users" {
+    *id: number <<FK>>
+    --
+    username: varchar
+    password: varchar
+    media: profile image
+    balance: number
+}
+
+entity "account_transfers" as account_transfers{
+    *id: number <<generated>>
+    type: varchar
+}
+
+entity "transfer_statements" as transfer_statements {
+    *id: number <<generated>>
+    --
+    transfer_code: varchar
+    
+    source_id: number <<FK>>
+    source_ref: varchar
+
+    target_id: number <<FK>>
+    target_ref: varchar
+    
+    amount: number
+    created_at: timestamp
+    status: number
+    transfer_fee: number
+
+    transfer_type: varchar
+}
+
+entity "lucky_moneys" as lucky_moneys {
+    *id: number  <<FK>>
+    --
+    user_id: number <<FK>>
+    system_holder_id: number
+    session_chat_id: number
+    amount: number
+    rest_money: number
+    rest_bag: number
+    bag_number: number
+    type: varchar
+    created_at: timestamp
+    expired_at: timestamp
+}
+
+entity "received_lucky_moneys" as received_luckey_moneys{
+    *id: number <<generated>>
+    --
+    lucky_money_id: number <<FK>>
+    receiver_id: number <<FK>>
+    amount: number
+    created_at: timestamp
+}
+
+users ||..|| account_transfers
+system_users ||..|| account_transfers
+
+account_transfers ||..o{ transfer_statements
+account_transfers ||..o{ transfer_statements
+users ||..o{ lucky_moneys
+users ||..o{ received_luckey_moneys
+
+
+lucky_moneys ||..o{ received_luckey_moneys
+
+
+@enduml

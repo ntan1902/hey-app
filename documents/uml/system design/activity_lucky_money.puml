@@ -1,0 +1,26 @@
+
+@startuml
+
+!pragma useVerticalIf on
+
+start
+
+    :Select Give Lucky Money From The Group Chat;
+    repeat :Enter Type;
+    :Enter Amount;
+    :Enter Number of Bag;
+    :Send Transfer Information; 
+    backward :Error;
+    repeat while (Check Information) is (invalid) not (valid)
+
+    repeat :Enter Pin;
+    backward :Error;
+    repeat while (Check Pin) is (invalid) not (valid)
+
+    repeat :Create Lucky Money;
+    backward :Error;
+    repeat while (success) is (invalid) not (valid)
+
+stop
+
+@enduml

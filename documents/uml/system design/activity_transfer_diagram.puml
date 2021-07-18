@@ -1,0 +1,26 @@
+
+@startuml
+
+!pragma useVerticalIf on
+
+start
+
+    :Select Transfer From The Menu;
+    repeat :Enter The Amount;
+    :Search Receiver;
+    :Select Receiver;
+    :Send Transfer Information; 
+    backward :Error;
+    repeat while (Check Information) is (invalid) not (valid)
+
+    repeat :Enter Pin;
+    backward :Error;
+    repeat while (Check Pin) is (invalid) not (valid)
+
+    repeat :Create Transfer;
+    backward :Error;
+    repeat while () is (invalid) not (valid)
+
+stop
+
+@enduml
