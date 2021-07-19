@@ -1,0 +1,47 @@
+
+@startuml
+
+|Client|
+start
+:Click Group Chat Screen;
+if (Page.checkLuckyMoney) then (hi)
+  |#AntiqueWhite|Server|
+  :Find in Schedule;
+  |Client|
+  :Display Lucky Money Page;
+  if (isOver24h?) then (no)
+      :Display Screen without Receive;
+      stop
+    else (yes)
+      :Display Screen can receive lucky money;
+    endif 
+  :Click to receive Lucky Money Information;
+  |#AntiqueWhite|Server|
+  if (isOver24h?) then (yes)
+    :Return Error;
+    if (HolderAvailableHolder?) then (no)
+      :Put to waiting queue;
+      :Exist Available Holder;
+    else (yes)
+      :Choose Avaible Holder;
+    endif 
+    :Create Transfer From Holder to User;
+    |Client|
+    :Render Result Page;
+  endif
+else (false)
+endif
+
+|Client|
+if (do redirect?) then (false)
+  :Main Screen;
+else
+  if (do forward?) then (yes)
+    :Forward request;
+  else (no)
+    :Render Default page;
+  endif
+endif
+
+stop
+@enduml
