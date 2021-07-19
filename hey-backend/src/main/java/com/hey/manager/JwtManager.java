@@ -1,6 +1,7 @@
 package com.hey.manager;
 
 import com.hey.Main;
+import com.hey.authentication.AuthService;
 import com.hey.util.PropertiesUtils;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
@@ -22,25 +23,28 @@ import java.util.Set;
 
 public class JwtManager {
     private SharedData sharedData;
-    private JWTAuth authProvider;
-    private JWTOptions jwtOptions;
+//    private JWTAuth authProvider;
+//    private JWTOptions jwtOptions;
+    private AuthService authService;
     private static final String JWT_ASYNC_MAP = "jwt-async-map";
     private static final String JWT_BLACKLIST_KEY = "blacklist-key";
+
 
     public JwtManager(Vertx vertx) {
 
         this.sharedData = vertx.sharedData();
 
-        authProvider = JWTAuth.create(vertx, new JWTAuthOptions()
-                .setKeyStore(new KeyStoreOptions()
-                        .setType(PropertiesUtils.getInstance().getValue("jwt.keystore.type"))
-                        .setPassword(PropertiesUtils.getInstance().getValue("jwt.keystore.password"))
-                        .setPath(Main.RESOURCE_PATH + PropertiesUtils.getInstance().getValue("jwt.keystore"))));
-
-        jwtOptions = new JWTOptions()
-                .setIssuer(PropertiesUtils.getInstance().getValue("jwt.iss"))
-                .addAudience(PropertiesUtils.getInstance().getValue("jwt.aud"))
-                .setExpiresInSeconds(PropertiesUtils.getInstance().getIntValue("jwt.expire"));
+        authService = AuthService.getInstance();
+//        authProvider = JWTAuth.create(vertx, new JWTAuthOptions()
+//                .setKeyStore(new KeyStoreOptions()
+//                        .setType(PropertiesUtils.getInstance().getValue("jwt.keystore.type"))
+//                        .setPassword(PropertiesUtils.getInstance().getValue("jwt.keystore.password"))
+//                        .setPath(Main.RESOURCE_PATH + PropertiesUtils.getInstance().getValue("jwt.keystore"))));
+//
+//        jwtOptions = new JWTOptions()
+//                .setIssuer(PropertiesUtils.getInstance().getValue("jwt.iss"))
+//                .addAudience(PropertiesUtils.getInstance().getValue("jwt.aud"))
+//                .setExpiresInSeconds(PropertiesUtils.getInstance().getIntValue("jwt.expire"));
     }
 
     public void authenticate(JsonObject authInfo, Handler<AsyncResult<User>> resultHandler) {
@@ -49,7 +53,8 @@ public class JwtManager {
             if (event.result()) {
                 resultHandler.handle(Future.failedFuture("Token has been blacklist"));
             } else {
-                authProvider.authenticate(authInfo, resultHandler);
+//                authProvider.authenticate();
+                authService.authenticate(authInfo, resultHandler);
             }
         });
 
@@ -59,11 +64,11 @@ public class JwtManager {
         putToAsynMap(token, userId, ttl);
     }
 
-    public String generateToken(String userId) {
-        JsonObject userObj = new JsonObject()
-                .put("userId", userId);
-        return authProvider.generateToken(userObj, jwtOptions);
-    }
+//    public String generateToken(String userId) {
+//        JsonObject userObj = new JsonObject()
+//                .put("userId", userId);
+//        return authProvider.generateToken(userObj, jwtOptions);
+//    }
 
     private void putToAsynMap(String token, String userId, long ttl) {
         sharedData.getAsyncMap(JWT_ASYNC_MAP, event -> {
@@ -91,11 +96,11 @@ public class JwtManager {
         this.sharedData = sharedData;
     }
 
-    public JWTAuth getAuthProvider() {
-        return authProvider;
-    }
-
-    public void setAuthProvider(JWTAuth authProvider) {
-        this.authProvider = authProvider;
-    }
+//    public JWTAuth getAuthProvider() {
+//        return authProvider;
+//    }
+//
+//    public void setAuthProvider(JWTAuth authProvider) {
+//        this.authProvider = authProvider;
+//    }
 }

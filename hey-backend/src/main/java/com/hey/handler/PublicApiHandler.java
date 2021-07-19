@@ -8,6 +8,7 @@ import com.hey.util.LogUtils;
 import io.vertx.core.Future;
 import io.vertx.core.http.HttpServerRequest;
 import io.vertx.core.http.HttpServerResponse;
+import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.RoutingContext;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -57,5 +58,22 @@ public class PublicApiHandler extends BaseHandler{
 
     public void setApiService(APIService apiService) {
         this.apiService = apiService;
+    }
+
+    public void initTestData(RoutingContext routingContext) {
+
+        Future<JsonObject> futureInitTestData = apiService.initTestData();
+
+        futureInitTestData.compose(jsonObject -> {
+
+            routingContext.response()
+                    .setStatusCode(HttpStatus.OK.code())
+                    .putHeader("content-type", "application/json; charset=utf-8")
+                    .end(JsonUtils.toSuccessJSON(jsonObject));
+
+        }, Future.future().setHandler(handler -> {
+            handleException(handler.cause(), routingContext.response());
+        }));
+
     }
 }

@@ -71,6 +71,7 @@
             <version>${vertx.version}</version>
         </dependency>
 
+
         <dependency>
             <groupId>io.vertx</groupId>
             <artifactId>vertx-unit</artifactId>
@@ -170,6 +171,13 @@
             <artifactId>random-sentence-generator</artifactId>
             <version>0.0.7</version>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/io.vertx/vertx-web-client -->
+        <dependency>
+            <groupId>io.vertx</groupId>
+            <artifactId>vertx-web-client</artifactId>
+            <version>${vertx.version}</version>
+        </dependency>
+
 
     </dependencies>
 
