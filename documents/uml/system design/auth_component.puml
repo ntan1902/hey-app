@@ -1,0 +1,86 @@
+@startuml
+skinparam linetype ortho
+package "security" #yellow{
+    [username password authentication token]
+    [password encoder]
+    [authentication manager]
+    [user details service]
+}
+
+package "config" #yellow{
+    [websecurity configer adapter]
+    [password config]
+    [jwt config]
+}
+
+package "exception" #yellow{
+    [authentication entry point]
+}
+
+package "jwt" #yellow {
+    [jwt authentication filter]
+}
+
+package "util" #yellow {
+    [jwt util]
+}
+
+package "controller" #aqua {
+    [authentication controller]
+}
+
+package "entity" #aqua {
+    [user]
+}
+
+
+package "service" #aqua{
+    [user service]
+}
+
+package "repository" #aqua{
+    [user repository]
+}
+
+package "dto" #aqua {
+    [user dto]
+    [signin request]
+    [signin response]
+    [register request]
+    [register response]
+    [validate response]
+}
+
+database "mysql" #orange
+
+[jwt authentication filter] -down-> controller
+
+[jwt authentication filter]  ->  [username password authentication token]
+
+[username password authentication token] --> [user]
+
+[user details service] -> [user]
+
+[authentication manager] -up-> [password encoder]
+
+[user details service] -up-> [authentication manager]
+
+[jwt authentication filter] -> [user details service]
+
+[jwt authentication filter] --> [jwt util]
+
+[authentication controller] -> [user service]
+
+[authentication controller] -up-> [user details service]
+
+[user service] -> [user repository]
+
+[user repository] -> [mysql]
+
+[password config] -up-> [websecurity configer adapter]
+
+[jwt config] -up-> [websecurity configer adapter]
+
+controller --> dto
+
+@enduml

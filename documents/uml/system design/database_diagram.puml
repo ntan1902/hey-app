@@ -1,0 +1,111 @@
+	
+@startuml
+
+' hide the spot
+' hide circle
+
+' avoid problems with angled crows feet
+skinparam linetype ortho
+
+entity "users" as users #Aqua{
+    *id: number <<generated>>
+    --
+    wallet_id: number <<FK>>
+    username: varchar
+    email: varchar
+    password: varchar
+    fullname: varchar
+    media: profile image
+    pin: varchar
+}
+
+' LuckyMoney Service: 
+' - service_name: LuckyMoney
+' - service_key: 
+' ----> Request Auth Service -> JWToken Service 
+' LuckyMoney vS Payment 
+' LuckyMoney ----> Request Auth Service -> JWToken Service
+' LuckyMoney dùng JWToken vừa có để request danh sách  wallets của nó
+' sử dụng list wallets này ntn thì tuỳ nó 
+
+' LuckyMoney request lên payment chuyển tiền. Tới... với cái
+' wallet id nào của nó  
+
+entity "services" #Aqua{
+    *id: number <<generated>>
+    --
+    service_name: varchar
+    service_key: varchar
+    media: profile image
+}
+
+entity "service_wallets" #Aqua{
+    *wallet_id: number <<FK>>
+    --
+    service_account_id: number <<FK>>
+}
+
+
+
+entity "wallets" as wallets #Aqua{
+    *id: number <<generated>>
+    --
+    balance: number    
+    ref_from: varchar
+}
+
+entity "transfer_statements" as transfer_statements #Aqua {
+    *id: number <<generated>>
+    --
+    transfer_code: varchar
+    source_id: number <<FK>>
+    target_id: number <<FK>>
+    amount: number
+    created_at: timestamp
+    status: number
+    transfer_fee: number
+    transfer_type: varchar
+}
+
+entity "lucky_moneys" as lucky_moneys #Yellow{
+    *id: number  <<generated>>
+    --
+    user_wallet_id: number <<FK>>
+    system_wallet_id: number <<FK>>
+    session_chat_id: number
+    amount: number
+    rest_money: number
+    rest_bag: number
+    bag_number: number
+    type: varchar
+    created_at: timestamp
+    expired_at: timestamp
+}
+
+entity "received_lucky_moneys" as received_luckey_moneys #Yellow{
+    *id: number <<generated>>
+    --
+    lucky_money_id: number <<FK>>
+    wallet_receiver_id: number <<FK>>
+    amount: number
+    created_at: timestamp
+}
+
+wallets ||.up.o{ transfer_statements
+wallets ||.up.o{ transfer_statements
+
+wallets ||.up.o{ lucky_moneys
+wallets ||.up.o{ lucky_moneys
+
+wallets ||.up.o{ received_luckey_moneys
+
+users ||.left.|| wallets
+
+services ||..o{ service_wallets
+wallets ||..|| service_wallets
+
+
+lucky_moneys ||.right.o{ received_luckey_moneys
+
+
+@enduml

@@ -1,0 +1,50 @@
+@startuml
+|Client|
+start
+:Click Transfer Page;
+if (Page.onSecurityCheck) then (true)
+  :Display Transfer Page;
+  :Input number of money;
+  :Choose Receiver;
+  :Send Transfer;
+  if (Confirm?) then (no)
+    :Enter Pin;
+    |#AntiqueWhite|Server|
+    if (isValid?) then (no)
+      :Return Error;
+    else (yes)
+      :Return softToken;
+    endif 
+    |Client|
+    if (Submit with softToken) then (yes)
+      |#AntiqueWhite|Server|
+      if (Queue?) then (no)
+        :Processing Transfer;
+        :Handling Transfer;
+        :Transfer Success;
+      elseif (true) then (isValid)
+        :Put in Queue;
+      else 
+        :Return Error;
+      endif 
+      |Client|
+      :Render Result Page;
+      stop
+    else (no)
+    endif
+  endif
+else (false)
+endif
+|Client|
+if (do redirect?) then (false)
+  :Main Screen;
+else
+  if (do forward?) then (yes)
+    :Forward request;
+  else (no)
+    :Render Default page;
+  endif
+endif
+
+stop
+@enduml
