@@ -1,9 +1,7 @@
 package com.hey.authentication.service;
 
-import com.hey.authentication.dto.LoginRequest;
-import com.hey.authentication.dto.LoginResponse;
-import com.hey.authentication.dto.RegisterRequest;
-import com.hey.authentication.dto.UserDTO;
+import com.hey.authentication.dto.*;
+import com.hey.authentication.dto.vertx.RegisterRequestToChat;
 import com.hey.authentication.entity.User;
 import com.hey.authentication.exception.UserIdNotFoundException;
 import com.hey.authentication.jwt.JwtUtil;
@@ -11,6 +9,7 @@ import com.hey.authentication.mapper.UserMapper;
 import com.hey.authentication.repository.UserRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -20,6 +19,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.function.client.WebClient;
 
 @Service
 @Log4j2
@@ -30,6 +30,9 @@ public class UserServiceImpl implements UserDetailsService, UserService {
     private final JwtUtil jwtUtil;
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
+    private final WebClient.Builder webClientBuilder;
+
+    private static final String CHAT_SERVICE = "http://localhost:8080";
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -60,6 +63,7 @@ public class UserServiceImpl implements UserDetailsService, UserService {
                         loginRequest.getPassword()
                 )
         );
+        log.info("Authentication: {}", authentication);
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
         User user =  (User) authentication.getPrincipal();
@@ -81,7 +85,16 @@ public class UserServiceImpl implements UserDetailsService, UserService {
                 passwordEncoder.encode(registerRequest.getPassword())
         );
 
-        userRepository.save(user);
+        RegisterRequestToChat registerRequestToChat = userMapper.registerRequest2Chat(userRepository.save(user));
+        webClientBuilder.build()
+                .post()
+                .uri(CHAT_SERVICE + "/api/public/user")
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(registerRequestToChat)
+                .retrieve()
+                .bodyToMono(RegisterRequestToChat.class)
+                .block();
+
         return this.userMapper.user2UserDTO(user);
     }
 }
