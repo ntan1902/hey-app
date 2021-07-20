@@ -27,6 +27,7 @@ public class ProtectedApiHandler extends BaseHandler{
     private APIService apiService;
 
     public JwtManager jwtManager;
+    private String message;
 
     public void setApiService(APIService apiService) {
         this.apiService = apiService;
@@ -104,10 +105,10 @@ public class ProtectedApiHandler extends BaseHandler{
         } catch (HttpStatusException e) {
             JsonObject obj = new JsonObject();
             obj.put("code", ErrorCode.AUTHORIZED_FAILED.code());
-            obj.put("message", e.getPayload());
+            obj.put(message, e.getPayload());
             response.setStatusCode(e.getStatusCode())
                     .putHeader("content-type", "application/json; charset=utf-8")
-                    .end(JsonUtils.toErrorJSON(obj));
+                    .end(JsonUtils.encodePrettily(obj));
         }
     }
 

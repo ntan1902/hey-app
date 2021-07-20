@@ -13,6 +13,7 @@ import io.vertx.core.Future;
 import io.vertx.core.http.HttpHeaders;
 import io.vertx.core.http.HttpServerRequest;
 import io.vertx.core.http.HttpServerResponse;
+import io.vertx.core.json.Json;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.RoutingContext;
 import io.vertx.ext.web.handler.impl.HttpStatusException;
@@ -43,7 +44,7 @@ public abstract class BaseHandler {
             obj.put("message", e.getPayload());
             response.setStatusCode(e.getStatusCode())
                     .putHeader("content-type", "application/json; charset=utf-8")
-                    .end(JsonUtils.toErrorJSON(obj));
+                    .end(JsonUtils.encodePrettily(obj));
             return;
         }
 
