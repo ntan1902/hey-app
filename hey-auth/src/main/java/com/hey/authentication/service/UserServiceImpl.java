@@ -1,13 +1,13 @@
 package com.hey.authentication.service;
 
-import com.hey.authentication.dto.api.LoginRequest;
-import com.hey.authentication.dto.api.LoginResponse;
-import com.hey.authentication.dto.api.RegisterRequest;
-import com.hey.authentication.dto.api.UserDTO;
+import com.hey.authentication.dto.user.LoginRequest;
+import com.hey.authentication.dto.user.LoginResponse;
+import com.hey.authentication.dto.user.RegisterRequest;
+import com.hey.authentication.dto.user.UserDTO;
 import com.hey.authentication.dto.vertx.RegisterRequestToChat;
 import com.hey.authentication.entity.User;
 import com.hey.authentication.exception.user.UserIdNotFoundException;
-import com.hey.authentication.jwt.JwtUtil;
+import com.hey.authentication.jwt.JwtUserUtil;
 import com.hey.authentication.mapper.UserMapper;
 import com.hey.authentication.repository.UserRepository;
 import lombok.AllArgsConstructor;
@@ -24,13 +24,13 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
-@Service
 @Log4j2
 @AllArgsConstructor
+@Service
 public class UserServiceImpl implements UserDetailsService, UserService {
     private final UserRepository userRepository;
     private final AuthenticationManager authenticationManager;
-    private final JwtUtil jwtUtil;
+    private final JwtUserUtil jwtUserUtil;
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
     private final WebClient.Builder webClientBuilder;
@@ -71,7 +71,7 @@ public class UserServiceImpl implements UserDetailsService, UserService {
 
         User user =  (User) authentication.getPrincipal();
 
-        String jwt = jwtUtil.generateToken(user);
+        String jwt = jwtUserUtil.generateToken(user);
 
         return new LoginResponse(jwt, "Bearer");
     }

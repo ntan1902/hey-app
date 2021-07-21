@@ -12,7 +12,7 @@ import java.util.*;
 
 @Component
 @Log4j2
-public class JwtUtil {
+public class JwtUserUtil {
     @Value("${JWT_USER_SECRET}")
     private String JWT_SECRET;
 

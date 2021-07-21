@@ -15,7 +15,6 @@ entity "users" as users #Aqua{
     email: varchar
     password: varchar
     fullname: varchar
-    media: profile image
     pin: varchar
 }
 
@@ -31,25 +30,18 @@ entity "users" as users #Aqua{
 ' LuckyMoney request lên payment chuyển tiền. Tới... với cái
 ' wallet id nào của nó  
 
-entity "services" #Aqua{
+entity "systems" #Aqua{
     *id: number <<generated>>
     --
-    service_name: varchar
-    service_key: varchar
-    media: profile image
+    system_name: varchar
+    system_key: varchar
 }
-
-entity "service_wallets" #Aqua{
-    *wallet_id: number <<FK>>
-    --
-    service_account_id: number <<FK>>
-}
-
 
 
 entity "wallets" as wallets #Aqua{
     *id: number <<generated>>
     --
+    owner_id: number <<FK>>
     balance: number    
     ref_from: varchar
 }
@@ -101,8 +93,7 @@ wallets ||.up.o{ received_luckey_moneys
 
 users ||.left.|| wallets
 
-services ||..o{ service_wallets
-wallets ||..|| service_wallets
+systems ||..o{ wallets
 
 
 lucky_moneys ||.right.o{ received_luckey_moneys

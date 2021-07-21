@@ -8,7 +8,12 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class JwtConfig {
     @Bean
-    public JwtAuthenticationFilter jwtAuthenticationFilter() {
+    public JwtAuthenticationFilter jwtUserAuthenticationFiler() {
         return new JwtAuthenticationFilter();
     }
+//
+//    @Bean
+//    public JwtSystemAuthenticationFilter jwtSystemAuthenticationFilter() {
+//        return new JwtSystemAuthenticationFilter();
+//    }
 }

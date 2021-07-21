@@ -1,4 +1,4 @@
-package com.hey.authentication.dto.api;
+package com.hey.authentication.dto.user;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,8 +11,6 @@ import lombok.NoArgsConstructor;
 @Builder
 public class UserDTO {
     private long id;
-
-    private long walletId;
 
     private String username;
 
