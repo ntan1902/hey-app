@@ -1,6 +1,6 @@
 package com.hey.authentication.config;
 
-import com.hey.authentication.exception.AuthEntryPointJwt;
+import com.hey.authentication.exception.jwt.AuthEntryPointJwt;
 import com.hey.authentication.jwt.JwtAuthenticationFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -54,10 +54,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .cors().and()
                 .exceptionHandling().authenticationEntryPoint(authEntryPointJwt).and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
+                .antMatcher("/api/v1/users/**").addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .authorizeRequests()
-                    .anyRequest().permitAll();
+                    .antMatchers("/api/v1/users/login").permitAll()
+                    .antMatchers("/api/v1/users/register").permitAll()
+                    .anyRequest().authenticated();
 
-        http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+//        http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
     }
 
     @Override

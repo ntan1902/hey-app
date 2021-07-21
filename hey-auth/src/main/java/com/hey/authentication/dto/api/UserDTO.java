@@ -1,4 +1,4 @@
-package com.hey.authentication.dto;
+package com.hey.authentication.dto.api;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -19,6 +19,4 @@ public class UserDTO {
     private String email;
 
     private String fullName;
-
-    private String media;
 }
