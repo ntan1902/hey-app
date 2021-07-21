@@ -7,7 +7,6 @@ create table users
     password  varchar(255),
     email     varchar(50),
     full_name varchar(50),
-    media     varchar(255),
     pin       varchar(6),
     primary key (id),
     unique index uq_username (username ASC),
