@@ -17,12 +17,12 @@ entity "users" as users #Aqua{
     pin: varchar
 }
 
-' LuckyMoney Service: 
-' - service_name: LuckyMoney
-' - service_key: 
-' ----> Request Auth Service -> JWToken Service 
+' LuckyMoney system: 
+' - system_name: LuckyMoney
+' - system_key: 
+' ----> Request Auth system -> JWToken system 
 ' LuckyMoney vS Payment 
-' LuckyMoney ----> Request Auth Service -> JWToken Service
+' LuckyMoney ----> Request Auth system -> JWToken system
 ' LuckyMoney dùng JWToken vừa có để request danh sách  wallets của nó
 ' sử dụng list wallets này ntn thì tuỳ nó 
 
@@ -42,7 +42,9 @@ entity "wallets" as wallets #Aqua{
     --
     owner_id: number <<FK>>
     balance: number    
+    owner_id: number
     ref_from: varchar
+    
 }
 
 entity "transfer_statements" as transfer_statements #Aqua {
