@@ -23,7 +23,7 @@ create table transfer_statements
     source_id bigint,
     target_id bigint,
     amount int,
-    created_at timestamp,
+    created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     status int,
     transfer_fee int,
     transfer_type varchar(100),
@@ -34,7 +34,7 @@ create table wallets
 (
     id bigint auto_increment,
     balance int,
-    owner int,
+    owner_id int,
     ref_from varchar(20),
     primary key (id)
 );

@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.sql.Date;
+import java.time.LocalDateTime;
 
 @Entity
 @Data
@@ -16,24 +17,24 @@ import java.sql.Date;
 public class TransferStatement {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long id;
+    private Long id;
 
     @Column(name = "source_id")
-    Long sourceId;
+    private Long sourceId;
 
     @Column(name = "target_id")
-    Long targetId;
+    private Long targetId;
 
-    Long amount;
+    private Long amount;
 
     @Column(name = "created_at")
-    Date createdAt;
+    private LocalDateTime createdAt;
 
-    Integer status;
+    private Integer status;
 
     @Column(name = "transfer_fee")
-    Long transferFee;
+    private Long transferFee;
 
     @Column(name = "transfer_type")
-    Long transferType;
+    private Long transferType;
 }

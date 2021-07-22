@@ -1,4 +1,4 @@
-package com.hey.payment.authenticate;
+package com.hey.payment.authentication;
 
 import com.hey.payment.dto.auth_service.AuthorizeUserRequest;
 import com.hey.payment.dto.auth_service.AuthorizeUserResponse;
@@ -6,6 +6,7 @@ import com.hey.payment.entity.User;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
@@ -23,9 +24,14 @@ import java.util.ArrayList;
 @Log4j2
 @Component
 public class AuthServiceFilter extends OncePerRequestFilter {
+    private final HttpStatus[] ERR_CODE = {HttpStatus.UNAUTHORIZED,HttpStatus.BAD_REQUEST};
+
+    private final RestTemplate restTemplate;
 
     @Autowired
-    private RestTemplate restTemplate;
+    public AuthServiceFilter(RestTemplate restTemplate) {
+        this.restTemplate = restTemplate;
+    }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
@@ -34,8 +40,8 @@ public class AuthServiceFilter extends OncePerRequestFilter {
             if (StringUtils.hasText(token)) {
                 HttpEntity<AuthorizeUserRequest> requestEntity = new HttpEntity<>(new AuthorizeUserRequest(token));
                 AuthorizeUserResponse authorizeUserResponse = restTemplate.postForObject("/authorizeUser",requestEntity, AuthorizeUserResponse.class);
-                long userId = authorizeUserResponse.getPayload().getUserId();
-                UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(new User(userId),null,new ArrayList<>());
+                User user = new User(authorizeUserResponse.getPayload().getUserId());
+                UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(user, null, new ArrayList<>());
                 SecurityContextHolder.getContext().setAuthentication(authenticationToken);
             }
         } catch (Exception e) {
@@ -47,7 +53,7 @@ public class AuthServiceFilter extends OncePerRequestFilter {
     private String getTokenFromRequest(HttpServletRequest request) {
         String bearerToken = request.getHeader("Authorization");
         if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
-            return bearerToken;
+            return bearerToken.substring(7);
         }
         return null;
     }
