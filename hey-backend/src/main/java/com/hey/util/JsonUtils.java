@@ -28,6 +28,10 @@ public final class JsonUtils {
         return Json.encodePrettily(object);
     }
 
+    public static String encodePrettily(JsonObject error){
+        return Json.encodePrettily(error);
+    }
+
     public static String toErrorJSON(Object message) {
         JsonObject objectResult = new JsonObject(Json.encodePrettily(message));
         JsonObject object = new JsonObject();

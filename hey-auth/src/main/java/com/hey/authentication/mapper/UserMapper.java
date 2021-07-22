@@ -1,8 +1,8 @@
 package com.hey.authentication.mapper;
 
-import com.hey.authentication.dto.RegisterRequest;
+import com.hey.authentication.dto.api.RegisterRequest;
 import com.hey.authentication.dto.vertx.RegisterRequestToChat;
-import com.hey.authentication.dto.UserDTO;
+import com.hey.authentication.dto.api.UserDTO;
 import com.hey.authentication.entity.User;
 import org.mapstruct.InjectionStrategy;
 import org.mapstruct.Mapper;

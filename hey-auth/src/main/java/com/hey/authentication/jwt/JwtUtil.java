@@ -13,10 +13,10 @@ import java.util.*;
 @Component
 @Log4j2
 public class JwtUtil {
-    @Value("${spring.app.jwtSecret}")
+    @Value("${JWT_USER_SECRET}")
     private String JWT_SECRET;
 
-    @Value("${spring.app.jwtExpirationMs}")
+    @Value("${JWT_EXPIRATION_MS}")
     private Long JWT_EXPIRATION;
 
 

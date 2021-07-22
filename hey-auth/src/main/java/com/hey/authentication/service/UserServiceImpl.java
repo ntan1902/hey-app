@@ -1,9 +1,12 @@
 package com.hey.authentication.service;
 
-import com.hey.authentication.dto.*;
+import com.hey.authentication.dto.api.LoginRequest;
+import com.hey.authentication.dto.api.LoginResponse;
+import com.hey.authentication.dto.api.RegisterRequest;
+import com.hey.authentication.dto.api.UserDTO;
 import com.hey.authentication.dto.vertx.RegisterRequestToChat;
 import com.hey.authentication.entity.User;
-import com.hey.authentication.exception.UserIdNotFoundException;
+import com.hey.authentication.exception.user.UserIdNotFoundException;
 import com.hey.authentication.jwt.JwtUtil;
 import com.hey.authentication.mapper.UserMapper;
 import com.hey.authentication.repository.UserRepository;
@@ -69,15 +72,12 @@ public class UserServiceImpl implements UserDetailsService, UserService {
         User user =  (User) authentication.getPrincipal();
 
         String jwt = jwtUtil.generateToken(user);
-//        RefreshToken refreshToken = refreshTokenService.insert(user.getId());
 
-        UserDTO userDTO = this.userMapper.user2UserDTO(user);
-
-        return new LoginResponse(userDTO, jwt, "Bearer");
+        return new LoginResponse(jwt, "Bearer");
     }
 
     @Override
-    public UserDTO register(RegisterRequest registerRequest) {
+    public void register(RegisterRequest registerRequest) {
         log.info("Inside register of UserServiceImpl: {}", registerRequest);
 
         User user = userMapper.registerRequest2User(registerRequest);
@@ -85,7 +85,19 @@ public class UserServiceImpl implements UserDetailsService, UserService {
                 passwordEncoder.encode(registerRequest.getPassword())
         );
 
-        RegisterRequestToChat registerRequestToChat = userMapper.registerRequest2Chat(userRepository.save(user));
+        userRepository.save(user);
+//        registerToVertx(userRepository.save(user));
+    }
+
+    @Override
+    public UserDTO findById() {
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return userMapper.user2UserDTO(user);
+    }
+
+    private void registerToVertx(User user) {
+        log.info("Call register api to vertx: {}", user);
+        RegisterRequestToChat registerRequestToChat = userMapper.registerRequest2Chat(user);
         webClientBuilder.build()
                 .post()
                 .uri(CHAT_SERVICE + "/api/public/user")
@@ -94,7 +106,5 @@ public class UserServiceImpl implements UserDetailsService, UserService {
                 .retrieve()
                 .bodyToMono(RegisterRequestToChat.class)
                 .block();
-
-        return this.userMapper.user2UserDTO(user);
     }
 }
