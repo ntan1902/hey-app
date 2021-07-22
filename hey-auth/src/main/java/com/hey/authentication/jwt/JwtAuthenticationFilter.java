@@ -37,7 +37,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
-        log.info("Inside doFilterInternal of JwtUserFilter: {}", request.getServletPath());
+        log.info("Inside doFilterInternal of JwtAuthenticationFilter: {}", request.getServletPath());
 
         if(request.getServletPath().contains("/api/v1/systems")) {
             try {

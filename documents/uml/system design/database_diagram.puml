@@ -10,7 +10,6 @@ skinparam linetype ortho
 entity "users" as users #Aqua{
     *id: number <<generated>>
     --
-    wallet_id: number <<FK>>
     username: varchar
     email: varchar
     password: varchar

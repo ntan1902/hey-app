@@ -14,4 +14,6 @@ public interface SystemService {
     AuthorizeResponse authorizeUser(AuthorizeRequest authorizeRequest);
 
     SystemAuthorizeResponse authorizeSystem(SystemAuthorizeRequest authorizeRequest);
+
+    void authorizeSoftToken(SoftTokenRequest softTokenRequest);
 }

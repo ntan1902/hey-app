@@ -4,6 +4,7 @@ package com.hey.authentication.exception.handler;
 import com.hey.authentication.exception.jwt.InvalidJwtTokenException;
 import com.hey.authentication.exception.system.SystemIdNotFoundException;
 import com.hey.authentication.exception.system.SystemKeyInvalidException;
+import com.hey.authentication.exception.user.PinNotMatchedException;
 import com.hey.authentication.exception.user.UserIdNotFoundException;
 import com.hey.authentication.dto.api.ApiResponse;
 import lombok.extern.log4j.Log4j2;
@@ -71,6 +72,13 @@ public class ApiExceptionHandler {
     public ResponseEntity<Object> handleApiResponseException(InvalidJwtTokenException exception) {
         log.error(exception.getMessage());
         HttpStatus code = HttpStatus.UNAUTHORIZED;
+        return getResponse(code, exception.getMessage());
+    }
+
+    @ExceptionHandler(value = {PinNotMatchedException.class})
+    public ResponseEntity<Object> handleApiResponseException(PinNotMatchedException exception) {
+        log.error(exception.getMessage());
+        HttpStatus code = HttpStatus.BAD_REQUEST;
         return getResponse(code, exception.getMessage());
     }
 }
