@@ -49,12 +49,13 @@ public class JwtManager {
 
     public void authenticate(JsonObject authInfo, Handler<AsyncResult<User>> resultHandler) {
         String jwt = authInfo.getString("jwt");
+        JsonObject jsonObject = new JsonObject().put("jwtUser",jwt);
         checkForExistingAsynMap(jwt).setHandler(event -> {
             if (event.result()) {
                 resultHandler.handle(Future.failedFuture("Token has been blacklist"));
             } else {
 //                authProvider.authenticate();
-                authService.authenticate(authInfo, resultHandler);
+                authService.authenticate(jsonObject, resultHandler);
             }
         });
 

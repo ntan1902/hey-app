@@ -12,16 +12,17 @@ import javax.persistence.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@Table(name = "wallets")
 public class Wallet {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long id;
+    private Long id;
 
-    Long balance;
+    private Long balance;
 
-    Long owner;
+    private Long ownerId;
 
     @Column(name = "ref_from")
-    String refFrom;
+    private String refFrom;
 
 }

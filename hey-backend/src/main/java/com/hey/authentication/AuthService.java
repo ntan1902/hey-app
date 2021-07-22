@@ -12,9 +12,11 @@ import io.vertx.ext.web.client.WebClient;
 public class AuthService {
     private WebClient webClient;
     private static AuthService instance;
+    private String jwtSystem;
 
-    public static void createInstance(WebClient webClient) {
+    public static void createInstance(WebClient webClient, String jwtSystem) {
         instance = new AuthService();
+        instance.jwtSystem = jwtSystem;
         instance.webClient = webClient;
     }
 
@@ -26,13 +28,13 @@ public class AuthService {
         webClient.post(
                 PropertiesUtils.getInstance().getIntValue("auth.port"),
                 PropertiesUtils.getInstance().getValue("auth.host"),
-                "/auth"
-        ).sendJsonObject(authInfo, httpResponseAsyncResult -> {
+                PropertiesUtils.getInstance().getValue("auth.baseurl") + "/authorizeUser"
+        ).putHeader("Authorization",jwtSystem).sendJsonObject(authInfo, httpResponseAsyncResult -> {
             if (httpResponseAsyncResult.succeeded()) {
                 JsonObject result = httpResponseAsyncResult.result().bodyAsJsonObject();
-                if (result.getBoolean("isExpired")) {
-                    resultHandler.handle(Future.failedFuture("Expired JWT token."));
-                }
+//                if (result.getBoolean("isExpired")) {
+//                    resultHandler.handle(Future.failedFuture("Expired JWT token."));
+//                }
                 if (result.containsKey("user")) {
                     resultHandler.handle(Future.succeededFuture(new JWTUser(result.getJsonObject("user"), "permissions")));
                 }

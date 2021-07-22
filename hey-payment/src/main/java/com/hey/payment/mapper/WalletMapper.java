@@ -7,5 +7,5 @@ import org.mapstruct.Mapper;
 
 @Mapper(componentModel = "spring",injectionStrategy = InjectionStrategy.FIELD)
 public interface WalletMapper {
-    public WalletDTO wallet2WalletDTO(Wallet wallet);
+    WalletDTO wallet2WalletDTO(Wallet wallet);
 }
