@@ -29,14 +29,17 @@ public class AuthService {
                 PropertiesUtils.getInstance().getIntValue("auth.port"),
                 PropertiesUtils.getInstance().getValue("auth.host"),
                 PropertiesUtils.getInstance().getValue("auth.baseurl") + "/authorizeUser"
-        ).putHeader("Authorization",jwtSystem).sendJsonObject(authInfo, httpResponseAsyncResult -> {
+        ).putHeader("Authorization", jwtSystem).sendJsonObject(authInfo, httpResponseAsyncResult -> {
             if (httpResponseAsyncResult.succeeded()) {
                 JsonObject result = httpResponseAsyncResult.result().bodyAsJsonObject();
-//                if (result.getBoolean("isExpired")) {
-//                    resultHandler.handle(Future.failedFuture("Expired JWT token."));
-//                }
-                if (result.containsKey("user")) {
-                    resultHandler.handle(Future.succeededFuture(new JWTUser(result.getJsonObject("user"), "permissions")));
+                if (result.getInteger("code") == 401) {
+                    resultHandler.handle(Future.failedFuture("Unauthorize"));
+                }
+                JsonObject payload = result.getJsonObject("payload");
+                if (payload.containsKey("userId")) {
+                    JsonObject user = new JsonObject();
+                    user.put("userId", payload.getInteger("userId").toString());
+                    resultHandler.handle(Future.succeededFuture(new JWTUser(user, "permissions")));
                 }
             } else {
                 resultHandler.handle(Future.failedFuture("Can't auth!!!"));
