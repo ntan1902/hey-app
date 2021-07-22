@@ -1,13 +1,12 @@
 package com.hey.authentication.service;
 
-import com.hey.authentication.dto.api.LoginRequest;
-import com.hey.authentication.dto.api.LoginResponse;
-import com.hey.authentication.dto.api.RegisterRequest;
-import com.hey.authentication.dto.api.UserDTO;
+import com.hey.authentication.dto.user.*;
 import com.hey.authentication.dto.vertx.RegisterRequestToChat;
 import com.hey.authentication.entity.User;
+import com.hey.authentication.exception.user.PinNotMatchedException;
 import com.hey.authentication.exception.user.UserIdNotFoundException;
-import com.hey.authentication.jwt.JwtUtil;
+import com.hey.authentication.jwt.JwtSoftTokenUtil;
+import com.hey.authentication.jwt.JwtUserUtil;
 import com.hey.authentication.mapper.UserMapper;
 import com.hey.authentication.repository.UserRepository;
 import lombok.AllArgsConstructor;
@@ -24,13 +23,14 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
-@Service
 @Log4j2
 @AllArgsConstructor
+@Service
 public class UserServiceImpl implements UserDetailsService, UserService {
     private final UserRepository userRepository;
     private final AuthenticationManager authenticationManager;
-    private final JwtUtil jwtUtil;
+    private final JwtUserUtil jwtUserUtil;
+    private final JwtSoftTokenUtil jwtSoftTokenUtil;
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
     private final WebClient.Builder webClientBuilder;
@@ -69,9 +69,9 @@ public class UserServiceImpl implements UserDetailsService, UserService {
         log.info("Authentication: {}", authentication);
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        User user =  (User) authentication.getPrincipal();
+        User user = (User) authentication.getPrincipal();
 
-        String jwt = jwtUtil.generateToken(user);
+        String jwt = jwtUserUtil.generateToken(user);
 
         return new LoginResponse(jwt, "Bearer");
     }
@@ -91,12 +91,39 @@ public class UserServiceImpl implements UserDetailsService, UserService {
 
     @Override
     public UserDTO findById() {
-        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        log.info("Inside findById of UserServiceImpl");
+        User user = getCurrentUser();
         return userMapper.user2UserDTO(user);
     }
 
+    @Override
+    public void createPin(PinRequest pinRequest) {
+        log.info("Inside createPin of UserServiceImpl: {}", pinRequest);
+        String hashPin = passwordEncoder.encode(pinRequest.getPin());
+        User user = getCurrentUser();
+        user.setPin(hashPin);
+        userRepository.save(user);
+    }
+
+    private User getCurrentUser() {
+        return (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    }
+
+    @Override
+    public SoftTokenResponse createSoftToken(PinRequest pinRequest) {
+        log.info("Inside createSoftToken of UserServiceImpl: {}", pinRequest);
+        User user = getCurrentUser();
+        if (passwordEncoder.matches(pinRequest.getPin(), user.getPin())) {
+            String softToken = jwtSoftTokenUtil.generateToken(user);
+            return new SoftTokenResponse(softToken);
+        } else {
+            log.error("Pin: {} not matched", pinRequest.getPin());
+            throw new PinNotMatchedException("Pin: " + pinRequest.getPin() + " not matched");
+        }
+    }
+
     private void registerToVertx(User user) {
-        log.info("Call register api to vertx: {}", user);
+        log.info("Inside registerToVertx of UserServiceImpl: {}", user);
         RegisterRequestToChat registerRequestToChat = userMapper.registerRequest2Chat(user);
         webClientBuilder.build()
                 .post()

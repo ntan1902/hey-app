@@ -1,4 +1,4 @@
-package com.hey.authentication.dto.api;
+package com.hey.authentication.dto.user;
 
 
 import lombok.AllArgsConstructor;

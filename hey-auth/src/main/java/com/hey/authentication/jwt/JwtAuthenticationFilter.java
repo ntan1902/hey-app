@@ -1,7 +1,9 @@
 package com.hey.authentication.jwt;
 
 
+import com.hey.authentication.entity.System;
 import com.hey.authentication.entity.User;
+import com.hey.authentication.service.SystemService;
 import com.hey.authentication.service.UserService;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,36 +22,64 @@ import java.io.IOException;
 @Log4j2
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Autowired
-    private JwtUtil jwtUtil;
+    private JwtUserUtil jwtUserUtil;
+
+    @Autowired
+    private JwtSystemUtil jwtSystemUtil;
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private SystemService systemService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
-        try {
-            String jwt = getJwtFromRequest(request);
+        log.info("Inside doFilterInternal of JwtAuthenticationFilter: {}", request.getServletPath());
 
-            if (StringUtils.hasText(jwt) && jwtUtil.validateToken(jwt)) {
-                Long userId = jwtUtil.getUserIdFromJwt(jwt);
+        if(request.getServletPath().contains("/api/v1/systems")) {
+            try {
+                String jwt = getJwtFromRequest(request);
 
-                User user = userService.loadUserById(userId);
-                if (user != null) {
-                    UsernamePasswordAuthenticationToken
-                            authentication = new UsernamePasswordAuthenticationToken(user,
-                            null,
-                            user.getAuthorities());
-                    authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                if (StringUtils.hasText(jwt) && jwtSystemUtil.validateToken(jwt)) {
+                    Long systemId = jwtSystemUtil.getSystemIdFromJwt(jwt);
 
-                    SecurityContextHolder.getContext().setAuthentication(authentication);
+                    System system = systemService.loadSystemById(systemId);
+                    if (system != null) {
+                        UsernamePasswordAuthenticationToken
+                                authentication = new UsernamePasswordAuthenticationToken(system, null, null);
+                        authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+
+                        SecurityContextHolder.getContext().setAuthentication(authentication);
+                    }
                 }
+            } catch (Exception e) {
+                log.error("Failed on set system authentication", e);
             }
-        } catch (Exception e) {
-            log.error("Failed on set user authentication", e);
-        }
+        } else if (request.getServletPath().contains("/api/v1/users")){
+            try {
+                String jwt = getJwtFromRequest(request);
 
+                if (StringUtils.hasText(jwt) && jwtUserUtil.validateToken(jwt)) {
+                    Long userId = jwtUserUtil.getUserIdFromJwt(jwt);
+
+                    User user = userService.loadUserById(userId);
+                    if (user != null) {
+                        UsernamePasswordAuthenticationToken
+                                authentication = new UsernamePasswordAuthenticationToken(user,
+                                null,
+                                user.getAuthorities());
+                        authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+
+                        SecurityContextHolder.getContext().setAuthentication(authentication);
+                    }
+                }
+            } catch (Exception e) {
+                log.error("Failed on set user authentication", e);
+            }
+        }
         filterChain.doFilter(request, response);
     }
 

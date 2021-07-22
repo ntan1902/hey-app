@@ -1,6 +1,7 @@
 package com.hey.authentication.controller;
 
 import com.hey.authentication.dto.api.*;
+import com.hey.authentication.dto.user.*;
 import com.hey.authentication.service.UserService;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -34,7 +35,7 @@ public class UserController {
                 .success(true)
                 .code(HttpStatus.CREATED.value())
                 .message("")
-                .payload("")
+                .payload("Register successfully")
                 .build());
     }
 
@@ -44,6 +45,28 @@ public class UserController {
         return ResponseEntity.ok(ApiResponse.builder()
                 .success(true)
                 .code(HttpStatus.OK.value())
+                .message("")
+                .payload(payload)
+                .build());
+    }
+
+    @PostMapping("/createPin")
+    public ResponseEntity<ApiResponse> createPin(@RequestBody PinRequest pinRequest) {
+        userService.createPin(pinRequest);
+        return ResponseEntity.ok(ApiResponse.builder()
+                .success(true)
+                .code(HttpStatus.CREATED.value())
+                .message("Create PIN successfully")
+                .payload("")
+                .build());
+    }
+
+    @PostMapping("/createSoftTokenByPin")
+    public ResponseEntity<ApiResponse> createSoftToken(@RequestBody PinRequest pinRequest) {
+        SoftTokenResponse payload = userService.createSoftToken(pinRequest);
+        return ResponseEntity.ok(ApiResponse.builder()
+                .success(true)
+                .code(HttpStatus.CREATED.value())
                 .message("")
                 .payload(payload)
                 .build());

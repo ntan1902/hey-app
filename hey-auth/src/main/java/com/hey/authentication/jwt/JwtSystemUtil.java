@@ -1,5 +1,6 @@
 package com.hey.authentication.jwt;
 
+import com.hey.authentication.entity.System;
 import com.hey.authentication.entity.User;
 import io.jsonwebtoken.*;
 import lombok.extern.log4j.Log4j2;
@@ -12,37 +13,24 @@ import java.util.*;
 
 @Component
 @Log4j2
-public class JwtUtil {
-    @Value("${JWT_USER_SECRET}")
+public class JwtSystemUtil {
+    @Value("${JWT_SYSTEM_SECRET}")
     private String JWT_SECRET;
 
     @Value("${JWT_EXPIRATION_MS}")
     private Long JWT_EXPIRATION;
 
 
-    public String generateToken(User user) {
-        Map<String, Object> claims = new HashMap<>();
-
-        Collection<? extends GrantedAuthority> roles = user.getAuthorities();
-
-        if (roles.contains(new SimpleGrantedAuthority("ROLE_ADMIN"))) {
-            claims.put("isAdmin", true);
-        }
-
-        if (roles.contains(new SimpleGrantedAuthority("ROLE_USER"))) {
-            claims.put("isUser", true);
-        }
-
-        return doGenerateToken(claims, user.getId().toString());
+    public String generateToken(System system) {
+        return doGenerateToken(system.getId().toString());
     }
 
-    public String doGenerateToken(Map<String, Object> claims, String subject) {
+    public String doGenerateToken(String subject) {
         try {
             return Jwts.builder()
-                    .setClaims(claims)
                     .setSubject(subject)
-                    .setIssuedAt(new Date(System.currentTimeMillis()))
-                    .setExpiration(new Date(System.currentTimeMillis() + JWT_EXPIRATION))
+                    .setIssuedAt(new Date(java.lang.System.currentTimeMillis()))
+                    .setExpiration(new Date(java.lang.System.currentTimeMillis() + JWT_EXPIRATION))
                     .signWith(SignatureAlgorithm.HS256, JWT_SECRET)
                     .compact();
         } catch (Exception e) {
@@ -51,7 +39,7 @@ public class JwtUtil {
         }
     }
 
-    public Long getUserIdFromJwt(String token) {
+    public Long getSystemIdFromJwt(String token) {
         Claims claims = Jwts.parser()
                 .setSigningKey(JWT_SECRET)
                 .parseClaimsJws(token)
@@ -76,28 +64,5 @@ public class JwtUtil {
             log.error("JWT signature does not match locally computed signature");
         }
         return false;
-    }
-
-
-    public List<SimpleGrantedAuthority> getRolesFromToken(String token) {
-        Claims claims = Jwts.parser()
-                .setSigningKey(JWT_SECRET)
-                .parseClaimsJws(token)
-                .getBody();
-
-        List<SimpleGrantedAuthority> roles = null;
-
-        Boolean isAdmin = claims.get("isAdmin", Boolean.class);
-        Boolean isUser = claims.get("isUser", Boolean.class);
-
-        if (isAdmin != null && isAdmin) {
-            roles = Collections.singletonList(new SimpleGrantedAuthority("ROLE_ADMIN"));
-        }
-
-        if (isUser != null && isUser) {
-            roles = Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER"));
-        }
-        return roles;
-
     }
 }
