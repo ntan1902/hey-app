@@ -86,7 +86,9 @@ public class UserServiceImpl implements UserDetailsService, UserService {
         );
 
         userRepository.save(user);
-//        registerToVertx(userRepository.save(user));
+
+        // Call api register to Vert.x
+        registerToVertx(userRepository.save(user));
     }
 
     @Override
