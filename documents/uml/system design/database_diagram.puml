@@ -55,6 +55,7 @@ entity "transfer_statements" as transfer_statements #Aqua {
     created_at: timestamp
     status: number
     transfer_fee: number
+    description: string
     transfer_type: varchar
 }
 
@@ -69,6 +70,7 @@ entity "lucky_moneys" as lucky_moneys #Yellow{
     rest_bag: number
     bag_number: number
     type: varchar
+    wish_message: string
     created_at: timestamp
     expired_at: timestamp
 }
