@@ -56,7 +56,6 @@ public class ProtectedApiHandler extends BaseHandler{
             JsonObject authObj = new JsonObject().put("jwt", authorization);
             jwtManager.authenticate(authObj, event -> {
                 if (event.succeeded()) {
-                    JsonObject j = event.result().principal();
                     String userId = event.result().principal().getString("userId");
                     JsonObject jsonObject = null;
                     if (rc.getBody() != null && rc.getBody().length() > 0)

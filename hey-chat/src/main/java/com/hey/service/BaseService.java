@@ -62,9 +62,15 @@ public abstract class BaseService {
         userFull.setUserName(user.getUserName());
         userFull.setFullName(user.getFullName());
 
+        UserStatus userStatus = new UserStatus();
+        userStatus.setUserId(user.getUserId());
+        userStatus.setStatus("");
+
         List<Future> insertUserAuthAndUserFullFuture = new ArrayList<>();
         insertUserAuthAndUserFullFuture.add(dataRepository.insertUserAuth(userAuth));
         insertUserAuthAndUserFullFuture.add(dataRepository.insertUserFull(userFull));
+        insertUserAuthAndUserFullFuture.add(dataRepository.insertUserStatus(userStatus));
+
 
         CompositeFuture cp = CompositeFuture.all(insertUserAuthAndUserFullFuture);
         cp.setHandler(ar -> {

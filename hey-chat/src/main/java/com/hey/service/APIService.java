@@ -516,7 +516,7 @@ public class APIService extends BaseService{
             return future;
         }
 
-        String keyPattern = "friend:list:*" + userId + "*";
+        String keyPattern = "friend:list:" + userId + ":*";
 
         Future<List<String>> getKeysByPatternFuture = dataRepository.getKeysByPattern(keyPattern);
 

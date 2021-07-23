@@ -86,13 +86,26 @@ public class UserServiceImpl implements UserDetailsService, UserService {
         );
 
         userRepository.save(user);
-//        registerToVertx(userRepository.save(user));
+
+        // Call api register to Vert.x
+        registerToVertx(userRepository.save(user));
     }
 
     @Override
     public UserDTO findById() {
         log.info("Inside findById of UserServiceImpl");
         User user = getCurrentUser();
+        return userMapper.user2UserDTO(user);
+    }
+
+    @Override
+    public UserDTO findById(Long userId) {
+        log.info("Inside findById({}) of UserServiceImpl", userId);
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> {
+                    log.error("User Id {} not found", userId);
+                    throw new UserIdNotFoundException("User Id " + userId + " not found");
+                });
         return userMapper.user2UserDTO(user);
     }
 
