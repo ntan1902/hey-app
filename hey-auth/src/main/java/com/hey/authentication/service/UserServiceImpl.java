@@ -99,6 +99,17 @@ public class UserServiceImpl implements UserDetailsService, UserService {
     }
 
     @Override
+    public UserDTO findById(Long userId) {
+        log.info("Inside findById({}) of UserServiceImpl", userId);
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> {
+                    log.error("User Id {} not found", userId);
+                    throw new UserIdNotFoundException("User Id " + userId + " not found");
+                });
+        return userMapper.user2UserDTO(user);
+    }
+
+    @Override
     public void createPin(PinRequest pinRequest) {
         log.info("Inside createPin of UserServiceImpl: {}", pinRequest);
         String hashPin = passwordEncoder.encode(pinRequest.getPin());

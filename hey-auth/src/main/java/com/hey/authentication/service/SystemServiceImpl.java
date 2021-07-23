@@ -115,4 +115,15 @@ public class SystemServiceImpl implements SystemService {
         }
     }
 
+    @Override
+    public SystemDTO findById(Long systemId) {
+        log.info("Inside findById of SystemServiceImpl: {}", systemId);
+        System system = systemRepository.findById(systemId)
+                .orElseThrow(() -> {
+                    log.error("System Id {} not found", systemId);
+                    throw new SystemIdNotFoundException("System Id " + systemId + " not found");
+                });
+        return new SystemDTO(system.getSystemName());
+    }
+
 }
