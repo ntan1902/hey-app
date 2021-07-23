@@ -68,7 +68,8 @@ public final class ApiServer {
         router.route("/*")
                 .handler(
                         CorsHandler
-                                .create("http://localhost:3000")
+//                                .create("http://localhost:3000")
+//                                .create()
                                 .allowedHeaders(allowedHeaders)
                                 .allowedMethods(allowedMethods)
                                 .allowCredentials(true)

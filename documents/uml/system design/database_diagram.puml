@@ -40,7 +40,6 @@ entity "systems" #Aqua{
 entity "wallets" as wallets #Aqua{
     *id: number <<generated>>
     --
-    owner_id: number <<FK>>
     balance: number    
     owner_id: number
     ref_from: varchar

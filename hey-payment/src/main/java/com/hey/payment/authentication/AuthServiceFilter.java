@@ -1,7 +1,10 @@
 package com.hey.payment.authentication;
 
+import com.hey.payment.dto.auth_service.AuthorizeSystemRequest;
+import com.hey.payment.dto.auth_service.AuthorizeSystemResponse;
 import com.hey.payment.dto.auth_service.AuthorizeUserRequest;
 import com.hey.payment.dto.auth_service.AuthorizeUserResponse;
+import com.hey.payment.entity.System;
 import com.hey.payment.entity.User;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +27,7 @@ import java.util.ArrayList;
 @Log4j2
 @Component
 public class AuthServiceFilter extends OncePerRequestFilter {
-    private final HttpStatus[] ERR_CODE = {HttpStatus.UNAUTHORIZED,HttpStatus.BAD_REQUEST};
+    private final HttpStatus[] ERR_CODE = {HttpStatus.UNAUTHORIZED, HttpStatus.BAD_REQUEST};
 
     private final RestTemplate restTemplate;
 
@@ -38,16 +41,34 @@ public class AuthServiceFilter extends OncePerRequestFilter {
         try {
             String token = getTokenFromRequest(request);
             if (StringUtils.hasText(token)) {
-                HttpEntity<AuthorizeUserRequest> requestEntity = new HttpEntity<>(new AuthorizeUserRequest(token));
-                AuthorizeUserResponse authorizeUserResponse = restTemplate.postForObject("/authorizeUser",requestEntity, AuthorizeUserResponse.class);
-                User user = new User(authorizeUserResponse.getPayload().getUserId());
-                UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(user, null, new ArrayList<>());
+                UsernamePasswordAuthenticationToken authenticationToken = null;
+                if (request.getServletPath().contains("/api/v1/users")) {
+                    log.info("Authorize user with token {}", token);
+                    User user = new User(authorizeUser(token));
+                    authenticationToken = new UsernamePasswordAuthenticationToken(user, null, new ArrayList<>());
+                } else if (request.getServletPath().contains("/api/v1/systems")) {
+                    log.info("Authorize system with token {}", token);
+                    System system = new System(authorizeSystem(token));
+                    authenticationToken = new UsernamePasswordAuthenticationToken(system, null, new ArrayList<>());
+                }
                 SecurityContextHolder.getContext().setAuthentication(authenticationToken);
             }
         } catch (Exception e) {
             log.error("Failed on set user authentication", e);
         }
         filterChain.doFilter(request, response);
+    }
+
+    private long authorizeSystem(String token) {
+        HttpEntity<AuthorizeSystemRequest> requestEntity = new HttpEntity<>(new AuthorizeSystemRequest(token));
+        AuthorizeSystemResponse authorizeUserResponse = restTemplate.postForObject("/authorizeSystem", requestEntity, AuthorizeSystemResponse.class);
+        return authorizeUserResponse.getPayload().getSystemId();
+    }
+
+    private long authorizeUser(String token) {
+        HttpEntity<AuthorizeUserRequest> requestEntity = new HttpEntity<>(new AuthorizeUserRequest(token));
+        AuthorizeUserResponse authorizeUserResponse = restTemplate.postForObject("/authorizeUser", requestEntity, AuthorizeUserResponse.class);
+        return authorizeUserResponse.getPayload().getUserId();
     }
 
     private String getTokenFromRequest(HttpServletRequest request) {

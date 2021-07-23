@@ -6,9 +6,10 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 @Builder
-public class CreateTransferResponse {
-
+public class TopupRequest {
+    private long amount;
+    private long bank_id;
 }
