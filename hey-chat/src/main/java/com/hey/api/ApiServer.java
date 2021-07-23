@@ -68,19 +68,13 @@ public final class ApiServer {
         router.route("/*")
                 .handler(
                         CorsHandler
-                                .create("http://localhost:3000")
+                                .create("*")
                                 .allowedHeaders(allowedHeaders)
                                 .allowedMethods(allowedMethods)
                                 .allowCredentials(true)
                 )
-                .handler(
-                        CorsHandler
-                                .create("http://localhost:7070")
-                                .allowedHeaders(allowedHeaders)
-                                .allowedMethods(allowedMethods)
-                                .allowCredentials(true)
-                )
-                .handler(BodyHandler.create());
+
+               .handler(BodyHandler.create());
 
         router.get("/inittestdata").handler(publicApiHandler::initTestData);
 

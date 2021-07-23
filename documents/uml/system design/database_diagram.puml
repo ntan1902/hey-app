@@ -13,7 +13,7 @@ entity "users" as users #Aqua{
     username: varchar
     email: varchar
     password: varchar
-    fullname: varchar
+    full_name: varchar
     pin: varchar
 }
 

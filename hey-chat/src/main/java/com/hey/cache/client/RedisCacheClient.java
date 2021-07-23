@@ -63,7 +63,7 @@ public class RedisCacheClient implements DataRepository {
 
     String generateChatListKey(String sessionId, List<String> userIds) {
 
-        return "chat:list:"  + sessionId + ":" + String.join(":", userIds);
+        return "chat:list:" + sessionId + ":" + String.join(":", userIds);
     }
 
     String generateChatMessageKey(String sessionId, String createdDate) {
@@ -87,7 +87,7 @@ public class RedisCacheClient implements DataRepository {
         client.scan("0", scanOptions, res -> {
             if (res.succeeded()) {
 
-                JsonArray jsonArray = (JsonArray)res.result().getList().get(1);
+                JsonArray jsonArray = (JsonArray) res.result().getList().get(1);
                 jsonArray.forEach(object -> {
                     if (object instanceof String) {
                         keys.add((String) object);
@@ -96,7 +96,7 @@ public class RedisCacheClient implements DataRepository {
 
                 future.complete(keys);
 
-            }else {
+            } else {
                 future.fail(res.cause());
             }
 
@@ -131,17 +131,17 @@ public class RedisCacheClient implements DataRepository {
     public Future<UserAuth> getUserAuth(String userName) {
 
         Future<UserAuth> future = Future.future();
-        
+
         client.hgetall(generateUserAuthKey(userName), res -> {
             if (res.succeeded()) {
 
-                if(res.result().getString("user_id") != null) {
+                if (res.result().getString("user_id") != null) {
                     UserAuth userAuth = new UserAuth();
                     userAuth.setUserName(userName);
                     userAuth.setUserId(res.result().getString("user_id"));
                     userAuth.setHashedPassword(res.result().getString("hashed_password"));
                     future.complete(userAuth);
-                }else{
+                } else {
                     future.complete(null);
                 }
 
@@ -180,14 +180,14 @@ public class RedisCacheClient implements DataRepository {
 
         client.hgetall(generateUserFullKey(userId), res -> {
             if (res.succeeded()) {
-                if(res.result().getString("user_name") != null){
+                if (res.result().getString("user_name") != null) {
                     UserFull userFull = new UserFull();
                     userFull.setUserId(userId);
                     userFull.setUserName(res.result().getString("user_name"));
                     userFull.setFullName(res.result().getString("full_name"));
 
                     future.complete(userFull);
-                }else{
+                } else {
                     future.complete(null);
                 }
 
@@ -207,7 +207,7 @@ public class RedisCacheClient implements DataRepository {
         client.set(generateUserStatusKey(userStatus.getUserId()), userStatus.getStatus(), res -> {
             if (res.succeeded()) {
                 future.complete(userStatus);
-            }else{
+            } else {
                 future.fail(res.cause());
             }
         });
@@ -223,16 +223,16 @@ public class RedisCacheClient implements DataRepository {
         client.get(generateUserStatusKey(userId), res -> {
 
             if (res.succeeded()) {
-                if(res.result() != null) {
-                    UserStatus userStatus= new UserStatus();
+                if (res.result() != null) {
+                    UserStatus userStatus = new UserStatus();
                     userStatus.setUserId(userId);
                     userStatus.setStatus(res.result());
 
                     future.complete(userStatus);
-                }else{
+                } else {
                     future.complete(null);
                 }
-            }else {
+            } else {
                 future.fail(res.cause());
             }
         });
@@ -255,7 +255,7 @@ public class RedisCacheClient implements DataRepository {
         client.hmset(generateFriendListKey(userIds), friendListJsonObject, res -> {
             if (res.succeeded()) {
                 future.complete(friendList);
-            }else{
+            } else {
                 future.fail(res.cause());
             }
         });
@@ -272,7 +272,7 @@ public class RedisCacheClient implements DataRepository {
             if (res.succeeded()) {
                 Set<String> fieldNames = res.result().fieldNames();
 
-                if(fieldNames.size() == 2) {
+                if (fieldNames.size() == 2) {
                     FriendList friendList = new FriendList();
 
                     for (String fieldName : fieldNames) {
@@ -286,11 +286,11 @@ public class RedisCacheClient implements DataRepository {
 
                     future.complete(friendList);
 
-                }else{
+                } else {
                     future.complete(null);
                 }
 
-            }else {
+            } else {
                 future.fail(res.cause());
             }
         });
@@ -307,7 +307,7 @@ public class RedisCacheClient implements DataRepository {
         String updatedDate = String.valueOf(chatList.getUpdatedDate() != null ? chatList.getUpdatedDate().getTime() : new Date().getTime());
         chatListJsonObject.put("updated_date", updatedDate);
         List<String> userIds = new ArrayList<>();
-        for(UserHash userHash : chatList.getUserHashes()){
+        for (UserHash userHash : chatList.getUserHashes()) {
             chatListJsonObject.put(userHash.getUserId(), userHash.getFullName());
             userIds.add(userHash.getUserId());
         }
@@ -317,7 +317,7 @@ public class RedisCacheClient implements DataRepository {
         client.hmset(generateChatListKey(chatList.getSessionId(), userIds), chatListJsonObject, res -> {
             if (res.succeeded()) {
                 future.complete(chatList);
-            }else{
+            } else {
                 future.fail(res.cause());
             }
         });
@@ -334,13 +334,13 @@ public class RedisCacheClient implements DataRepository {
             if (res.succeeded()) {
                 ChatList chatList = convertJsonObjectToChatList(res.result(), chatListKey);
 
-                if(chatList.getUserHashes().size() >= 2){
+                if (chatList.getUserHashes().size() >= 2) {
                     future.complete(chatList);
-                }else{
+                } else {
                     future.complete(null);
                 }
 
-            }else {
+            } else {
                 future.fail(res.cause());
             }
         });
@@ -378,7 +378,7 @@ public class RedisCacheClient implements DataRepository {
         client.hgetall(chatMessageKey, res -> {
             if (res.succeeded()) {
 
-                if(res.result().getString("message") != null) {
+                if (res.result().getString("message") != null) {
                     ChatMessage chatMessage = new ChatMessage();
                     Set<String> fieldNames = res.result().fieldNames();
                     for (String fieldName : fieldNames) {
@@ -402,10 +402,10 @@ public class RedisCacheClient implements DataRepository {
                     }
 
                     future.complete(chatMessage);
-                }else{
+                } else {
                     future.complete(null);
                 }
-            }else {
+            } else {
                 future.fail(res.cause());
             }
         });
@@ -414,7 +414,7 @@ public class RedisCacheClient implements DataRepository {
     }
 
     @Override
-    public Future<Long> increaseUnseenCount(String userId, String sessionId){
+    public Future<Long> increaseUnseenCount(String userId, String sessionId) {
 
         Future<Long> future = Future.future();
 
@@ -425,12 +425,12 @@ public class RedisCacheClient implements DataRepository {
                     if (increaseKey.succeeded()) {
 
                         future.complete(increaseKey.result());
-                    }else{
+                    } else {
                         future.fail(increaseKey.cause());
                     }
                 });
 
-            }else{
+            } else {
                 future.fail(checkExistsKey.cause());
             }
         });
@@ -439,20 +439,20 @@ public class RedisCacheClient implements DataRepository {
     }
 
     @Override
-    public Future<Long> getUnseenCount(String userId, String sessionId){
+    public Future<Long> getUnseenCount(String userId, String sessionId) {
 
         Future<Long> future = Future.future();
 
         client.get(generateUnSeenKey(userId, sessionId), getUnseenCountRes -> {
             if (getUnseenCountRes.succeeded()) {
 
-                if(getUnseenCountRes.result() != null){
+                if (getUnseenCountRes.result() != null) {
                     future.complete(Long.parseLong(getUnseenCountRes.result()));
-                }else{
+                } else {
                     future.complete(Long.parseLong("0"));
                 }
 
-            }else{
+            } else {
                 future.fail(getUnseenCountRes.cause());
             }
         });
@@ -468,7 +468,7 @@ public class RedisCacheClient implements DataRepository {
             if (deleteUnseenCountRes.succeeded()) {
                 future.complete(deleteUnseenCountRes.result());
 
-            }else{
+            } else {
                 future.fail(deleteUnseenCountRes.cause());
             }
         });
@@ -483,7 +483,7 @@ public class RedisCacheClient implements DataRepository {
             if (deleteFriendRes.succeeded()) {
                 future.complete(deleteFriendRes.result());
 
-            }else{
+            } else {
                 future.fail(deleteFriendRes.cause());
             }
         });
@@ -491,11 +491,11 @@ public class RedisCacheClient implements DataRepository {
         return future;
     }
 
-    private ChatList convertJsonObjectToChatList(JsonObject jsonObject, String chatListkey){
+    private ChatList convertJsonObjectToChatList(JsonObject jsonObject, String chatListkey) {
         ChatList chatList = new ChatList();
         List<UserHash> userHashes = new ArrayList<>();
         Set<String> fieldNames = jsonObject.fieldNames();
-        for(String fieldName : fieldNames){
+        for (String fieldName : fieldNames) {
 
             switch (fieldName) {
                 case "updated_date":
@@ -512,8 +512,8 @@ public class RedisCacheClient implements DataRepository {
         }
 
         chatList.setUserHashes(userHashes);
-        String[] componentKey =  chatListkey.split(":");
-        if(componentKey.length > 3){
+        String[] componentKey = chatListkey.split(":");
+        if (componentKey.length > 3) {
             chatList.setSessionId(componentKey[2]);
         }
 
