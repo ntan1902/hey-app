@@ -6,14 +6,21 @@ import org.springframework.data.jpa.repository.Lock;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.LockModeType;
+import java.util.List;
 import java.util.Optional;
 
 @Repository
 public interface WalletRepository extends JpaRepository<Wallet, Long> {
-    Optional<Wallet> findByOwnerId(Long userId);
+    Optional<Wallet> findByOwnerIdAndRefFrom(Long userId, String refFrom);
+
+    List<Wallet> findAllByOwnerIdAndRefFrom(Long systemId, String refFrom);
+
+    Optional<Wallet> findWalletByIdAndOwnerId(Long walletId, Long ownerId);
 
     @Lock(value = LockModeType.PESSIMISTIC_WRITE)
-    Optional<Wallet> getByOwnerId(Long userId);
+    Optional<Wallet> getByOwnerIdAndRefFrom(Long userId, String refFrom);
 
-    boolean existsByOwnerId(Long userId);
+    @Lock(value = LockModeType.PESSIMISTIC_WRITE)
+    Optional<Wallet> getWalletById(Long walletId);
+
 }

@@ -1,4 +1,4 @@
-package com.hey.payment.dto.user;
+package com.hey.payment.dto.auth_service;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,8 +9,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class CreateTransferRequest {
-    private long targetId;
-    private String softToken;
-    private String message;
+public class SoftTokenEncoded {
+    long userId;
+    long amount;
 }

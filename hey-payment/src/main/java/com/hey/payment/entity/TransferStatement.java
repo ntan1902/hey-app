@@ -6,7 +6,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.sql.Date;
 import java.time.LocalDateTime;
 
 @Entity
@@ -36,5 +35,5 @@ public class TransferStatement {
     private Long transferFee;
 
     @Column(name = "transfer_type")
-    private Long transferType;
+    private String transferType;
 }
