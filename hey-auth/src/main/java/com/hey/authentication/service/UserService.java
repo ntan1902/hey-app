@@ -12,6 +12,8 @@ public interface UserService {
 
     UserDTO findById();
 
+    UserDTO findById(Long userId);
+
     void createPin(PinRequest pinRequest);
 
     SoftTokenResponse createSoftToken(PinRequest pinRequest);
