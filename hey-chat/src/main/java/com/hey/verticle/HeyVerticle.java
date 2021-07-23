@@ -47,6 +47,7 @@ public class HeyVerticle extends AbstractVerticle {
         loginInfo.put("systemName", "chat");
         loginInfo.put("systemKey", "123456");
         webClient.post(
+                PropertiesUtils.getInstance().getIntValue("auth.port"),
                 PropertiesUtils.getInstance().getValue("auth.host"),
                 PropertiesUtils.getInstance().getValue("auth.baseurl") + "/login"
         ).sendJsonObject(loginInfo, httpResponseAsyncResult -> {
