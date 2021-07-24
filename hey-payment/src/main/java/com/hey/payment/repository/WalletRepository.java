@@ -26,4 +26,6 @@ public interface WalletRepository extends JpaRepository<Wallet, Long> {
 //    @Query(value = "SELECT * FROM wallets w WHERE w.id=?1 FOR UPDATE", nativeQuery = true)
     Optional<Wallet> getWalletById(Long walletId);
 
+    boolean existsByOwnerIdAndRefFrom(long userId, String refFrom);
+
 }

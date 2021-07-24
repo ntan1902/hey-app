@@ -77,4 +77,11 @@ public class UserExceptionHandler {
         HttpStatus code = HttpStatus.BAD_REQUEST;
         return getResponse(code, exception.getMessage());
     }
+
+    @ExceptionHandler(value = {HadWalletException.class})
+    public ResponseEntity<ApiResponse> handleHadWalletException(Exception exception) {
+        log.error(exception.getMessage());
+        HttpStatus code = HttpStatus.BAD_REQUEST;
+        return getResponse(code, exception.getMessage());
+    }
 }

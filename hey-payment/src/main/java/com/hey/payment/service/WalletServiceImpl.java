@@ -4,6 +4,9 @@ import com.hey.payment.constant.OwnerWalletRefFrom;
 import com.hey.payment.dto.system.WalletSystemDTO;
 import com.hey.payment.dto.user.WalletDTO;
 import com.hey.payment.entity.System;
+import com.hey.payment.entity.User;
+import com.hey.payment.entity.Wallet;
+import com.hey.payment.exception_handler.exception.HadWalletException;
 import com.hey.payment.exception_handler.exception.HaveNoWalletException;
 import com.hey.payment.mapper.WalletMapper;
 import com.hey.payment.repository.WalletRepository;
@@ -15,7 +18,7 @@ import java.util.stream.Collectors;
 
 @Service
 @Log4j2
-public class WalletServiceImpl implements WalletService{
+public class WalletServiceImpl implements WalletService {
 
     private final WalletRepository walletRepository;
 
@@ -31,8 +34,8 @@ public class WalletServiceImpl implements WalletService{
         log.info("Get wallet of user with id {}", userId);
         return walletRepository.findByOwnerIdAndRefFrom(userId, OwnerWalletRefFrom.USERS)
                 .map(walletMapper::wallet2WalletDTO)
-                .orElseThrow(() ->{
-                    log.error("User {} have no wallet",userId);
+                .orElseThrow(() -> {
+                    log.error("User {} have no wallet", userId);
                     throw new HaveNoWalletException();
                 });
     }
@@ -43,6 +46,22 @@ public class WalletServiceImpl implements WalletService{
         return walletRepository.findAllByOwnerIdAndRefFrom(system.getId(), OwnerWalletRefFrom.SYSTEMS)
                 .stream().map(walletMapper::wallet2WalletSystemDTO)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public WalletDTO createWallet(User user) {
+
+        if (walletRepository.existsByOwnerIdAndRefFrom(user.getId(), OwnerWalletRefFrom.USERS)) {
+            throw new HadWalletException();
+        }
+        Wallet wallet = Wallet.builder()
+                .ownerId(user.getId())
+                .balance(0l)
+                .refFrom(OwnerWalletRefFrom.USERS)
+                .build();
+        walletRepository.save(wallet);
+
+        return walletMapper.wallet2WalletDTO(wallet);
     }
 
 }

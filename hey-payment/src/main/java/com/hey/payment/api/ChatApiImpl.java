@@ -20,6 +20,7 @@ public class ChatApiImpl implements ChatApi{
         log.info("Inside createTransferMessage of ChatApiImpl: {}", transferMessageRequest);
         HttpEntity<TransferMessageRequest> entity = new HttpEntity<>(transferMessageRequest);
         ApiResponse<Object> apiResponse = restTemplate.postForObject("http://localhost:8080/api/v1/systems/createTransferMessage", entity, ApiResponse.class);
+        log.info("Result of send message: {}",apiResponse.isSuccess());
         return apiResponse.isSuccess();
     }
 }
