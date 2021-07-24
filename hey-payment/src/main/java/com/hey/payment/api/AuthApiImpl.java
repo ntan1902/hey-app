@@ -1,9 +1,6 @@
 package com.hey.payment.api;
 
-import com.hey.payment.dto.auth_service.SoftTokenEncoded;
-import com.hey.payment.dto.auth_service.SystemInfo;
-import com.hey.payment.dto.auth_service.UserInfo;
-import com.hey.payment.dto.auth_service.VerifySoftTokenRequest;
+import com.hey.payment.dto.auth_service.*;
 import com.hey.payment.dto.user.ApiResponse;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpEntity;
@@ -16,18 +13,18 @@ public class AuthApiImpl implements AuthApi {
     private final RestTemplate restTemplate;
 
     @Override
-    public ApiResponse<UserInfo> getUserInfo(long userId) {
-        return restTemplate.getForObject("/getUserInfo/" + userId, ApiResponse.class);
+    public GetUserInfoResponse getUserInfo(long userId) {
+        return restTemplate.getForObject("/getUserInfo/" + userId, GetUserInfoResponse.class);
     }
 
     @Override
-    public ApiResponse<SystemInfo> getSystemInfo(long systemId) {
-        return restTemplate.getForObject("/getSystemInfo/" + systemId, ApiResponse.class);
+    public GetSystemInfoResponse getSystemInfo(long systemId) {
+        return restTemplate.getForObject("/getSystemInfo/" + systemId, GetSystemInfoResponse.class);
     }
 
     @Override
-    public ApiResponse<SoftTokenEncoded> verifySoftToken(String softToken) {
+    public VerifySoftTokenResponse verifySoftToken(String softToken) {
         HttpEntity<VerifySoftTokenRequest> entity = new HttpEntity<>(new VerifySoftTokenRequest(softToken));
-        return restTemplate.postForObject("/authorizeSoftToken", entity, ApiResponse.class);
+        return restTemplate.postForObject("/authorizeSoftToken", entity, VerifySoftTokenResponse.class);
     }
 }

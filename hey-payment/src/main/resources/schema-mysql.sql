@@ -7,10 +7,10 @@ create table transfer_statements
     transfer_code varchar(100),
     source_id     bigint,
     target_id     bigint,
-    amount        int,
+    amount        bigint,
     created_at    TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     status        int,
-    transfer_fee  int,
+    transfer_fee  bigint,
     transfer_type varchar(100),
     primary key (id)
 );
@@ -18,8 +18,8 @@ create table transfer_statements
 create table wallets
 (
     id       bigint auto_increment,
-    balance  int,
-    owner_id int,
+    balance  bigint,
+    owner_id bigint,
     ref_from varchar(20),
     primary key (id)
 );
