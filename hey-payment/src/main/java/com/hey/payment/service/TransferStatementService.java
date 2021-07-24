@@ -18,7 +18,7 @@ public interface TransferStatementService {
 
     List<TransferStatementDTO> getTransferStatementOfUser(long userId);
 
-    void systemCreateTransferToUser(System system, SystemCreateTransferToUserRequest request);
+    ApiResponse systemCreateTransferToUser(System system, SystemCreateTransferToUserRequest request);
 
-    void systemCreateTransferFromUser(System system, SystemCreateTransferFromUserRequest request);
+    ApiResponse systemCreateTransferFromUser(System system, SystemCreateTransferFromUserRequest request);
 }

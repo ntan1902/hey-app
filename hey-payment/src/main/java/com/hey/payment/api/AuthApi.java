@@ -1,12 +1,11 @@
 package com.hey.payment.api;
 
-import com.hey.payment.dto.auth_service.SoftTokenEncoded;
-import com.hey.payment.dto.auth_service.SystemInfo;
-import com.hey.payment.dto.auth_service.UserInfo;
-import com.hey.payment.dto.user.ApiResponse;
+import com.hey.payment.dto.auth_service.GetSystemInfoResponse;
+import com.hey.payment.dto.auth_service.GetUserInfoResponse;
+import com.hey.payment.dto.auth_service.VerifySoftTokenResponse;
 
 public interface AuthApi {
-    ApiResponse<UserInfo> getUserInfo(long userId);
-    ApiResponse<SystemInfo> getSystemInfo(long systemId);
-    ApiResponse<SoftTokenEncoded> verifySoftToken(String softToken);
+    GetUserInfoResponse getUserInfo(long userId);
+    GetSystemInfoResponse getSystemInfo(long systemId);
+    VerifySoftTokenResponse verifySoftToken(String softToken);
 }

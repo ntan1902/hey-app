@@ -45,24 +45,14 @@ public class SystemController {
     public ResponseEntity<ApiResponse> createTransferToUser(SystemCreateTransferToUserRequest request) {
         System system = getCurrentSystem();
         log.info("System {} createTransferToUser", system.getId());
-        transferStatementService.systemCreateTransferToUser(system, request);
-        return ResponseEntity.ok(ApiResponse.builder()
-                .success(true)
-                .code(HttpStatus.OK.value())
-                .payload("")
-                .build());
+        return ResponseEntity.ok(transferStatementService.systemCreateTransferToUser(system, request));
     }
 
     @PostMapping("/createTransferFromUser")
     public ResponseEntity<ApiResponse> createTransferFromUser(SystemCreateTransferFromUserRequest request) {
         System system = getCurrentSystem();
         log.info("System {} createTransferFromUser", system.getId());
-        transferStatementService.systemCreateTransferFromUser(system, request);
-        return ResponseEntity.ok(ApiResponse.builder()
-                .success(true)
-                .code(HttpStatus.OK.value())
-                .payload("")
-                .build());
+        return ResponseEntity.ok(transferStatementService.systemCreateTransferFromUser(system, request));
     }
 
     private System getCurrentSystem() {
