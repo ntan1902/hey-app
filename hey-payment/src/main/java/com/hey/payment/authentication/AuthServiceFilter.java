@@ -52,7 +52,6 @@ public class AuthServiceFilter extends OncePerRequestFilter {
                     System system = new System(authorizeSystem(token));
                     authenticationToken = new UsernamePasswordAuthenticationToken(system, null, null);
                 }
-                authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(authenticationToken);
             }
         } catch (Exception e) {

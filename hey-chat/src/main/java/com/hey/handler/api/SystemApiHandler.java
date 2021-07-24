@@ -1,10 +1,13 @@
 package com.hey.handler.api;
 
 import com.hey.manager.JwtManager;
-import com.hey.util.ErrorCode;
+import com.hey.model.ChatListResponse;
+import com.hey.model.TransferMessageRequest;
+import com.hey.model.TransferMessageResponse;
 import com.hey.util.HttpStatus;
 import com.hey.util.JsonUtils;
 import com.hey.util.LogUtils;
+import io.vertx.core.Future;
 import io.vertx.core.http.HttpServerRequest;
 import io.vertx.core.http.HttpServerResponse;
 import io.vertx.core.json.JsonObject;
@@ -62,6 +65,18 @@ public class SystemApiHandler extends BaseHandler {
     }
 
     private void createTransferMessage(HttpServerResponse response, JsonObject requestObject) {
+        TransferMessageRequest transferMessageRequest = requestObject.mapTo(TransferMessageRequest.class);
 
+        Future<Boolean> successFuture = apiService.transferMessage(transferMessageRequest);
+
+        successFuture.compose(success -> {
+            response
+                    .setStatusCode(HttpStatus.OK.code())
+                    .putHeader("content-type", "application/json; charset=utf-8")
+                    .end(JsonUtils.toSuccessJSON(success));
+
+        }, Future.future().setHandler(handler -> {
+            handleException(handler.cause(), response);
+        }));
     }
 }
