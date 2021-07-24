@@ -21,7 +21,6 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 
-import java.io.IOException;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.BDDMockito.given;
@@ -159,15 +158,17 @@ class SystemControllerTest {
         SoftTokenRequest softTokenRequest = new SoftTokenRequest(
                 "dump"
         );
-        SystemAuthorizeResponse payload = new SystemAuthorizeResponse(
-                "payment"
+        UserIdAmountResponse payload = new UserIdAmountResponse(
+                1L,
+                50000L
         );
+        given(systemService.authorizeSoftToken(softTokenRequest)).willReturn(payload);
 
         ApiResponse expected = ApiResponse.builder()
                 .success(true)
                 .code(HttpStatus.OK.value())
                 .message("Authorize soft token successfully")
-                .payload("")
+                .payload(payload)
                 .build();
 
         // when

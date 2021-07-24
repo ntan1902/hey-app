@@ -2,9 +2,11 @@ package com.hey.authentication.service;
 
 import com.hey.authentication.dto.system.*;
 import com.hey.authentication.entity.System;
+import com.hey.authentication.entity.User;
 import com.hey.authentication.exception.jwt.InvalidJwtTokenException;
 import com.hey.authentication.exception.system.SystemIdNotFoundException;
 import com.hey.authentication.exception.system.SystemKeyInvalidException;
+import com.hey.authentication.exception.user.PinNotMatchedException;
 import com.hey.authentication.exception.user.UserIdNotFoundException;
 import com.hey.authentication.jwt.JwtSoftTokenUtil;
 import com.hey.authentication.jwt.JwtSystemUtil;
@@ -124,6 +126,7 @@ class SystemServiceImplTest {
         // then
         assertThat(actual.getAccessToken()).isEqualTo(expected);
     }
+
     @Test
     void loginWillThrow() {
         // given
@@ -269,15 +272,52 @@ class SystemServiceImplTest {
     }
 
     @Test
+    void authorizeSoftToken(){
+        // given
+        SoftTokenRequest request = new SoftTokenRequest(
+                "dump"
+        );
+        Long userId = 1L;
+        User user = User.builder()
+                .email("ntan1902@gmail.com")
+                .password("$2a$10$atTTVVOQoQMksMstiYp3/u6tQaYRG/6S5IrMJmEkw8Yw70kKI9LW2")
+                .fullName("Trinh an")
+                .username("ntan")
+                .pin("$2a$10$atTTVVOQoQMksMstiYp3/u6tQaYRG/6S5IrMJmEkw8Yw70kKI9LW2")
+                .build();
+        UserIdAmountResponse expected = new UserIdAmountResponse(
+                userId,
+                50000L
+        );
+
+        given(jwtSoftTokenUtil.validateToken(request.getSoftToken())).willReturn(true);
+        given(jwtSoftTokenUtil.getUserIdFromJwt(request.getSoftToken())).willReturn(userId);
+        given(jwtSoftTokenUtil.getPinFromJwt(request.getSoftToken())).willReturn("123456");
+        given(jwtSoftTokenUtil.getAmountFromJwt(request.getSoftToken())).willReturn(50000L);
+        given(userRepository.findById(userId)).willReturn(Optional.of(user));
+        given(passwordEncoder.matches("123456", user.getPin())).willReturn(true);
+
+        // when
+        UserIdAmountResponse actual = underTest.authorizeSoftToken(request);
+
+        // then
+        assertThat(actual).isEqualTo(expected);
+    }
+
+
+    @Test
     void authorizeSoftTokenWillThrowUserIdNotFound() {
         // given
         SoftTokenRequest request = new SoftTokenRequest(
                 "dump"
         );
         Long expected = 1L;
+
         given(jwtSoftTokenUtil.validateToken(request.getSoftToken())).willReturn(true);
         given(jwtSoftTokenUtil.getUserIdFromJwt(request.getSoftToken())).willReturn(expected);
-        given(userRepository.existsById(expected)).willReturn(false);
+        given(jwtSoftTokenUtil.getPinFromJwt(request.getSoftToken())).willReturn("123456");
+        given(jwtSoftTokenUtil.getAmountFromJwt(request.getSoftToken())).willReturn(50000L);
+        given(userRepository.findById(expected)).willReturn(Optional.empty());
 
         // when
 
@@ -306,6 +346,35 @@ class SystemServiceImplTest {
     }
 
     @Test
+    void authorizeSoftTokenWillThrowPinNotMatched(){
+        // given
+        SoftTokenRequest request = new SoftTokenRequest(
+                "dump"
+        );
+        Long expected = 1L;
+        User user = User.builder()
+                .email("ntan1902@gmail.com")
+                .password("$2a$10$atTTVVOQoQMksMstiYp3/u6tQaYRG/6S5IrMJmEkw8Yw70kKI9LW2")
+                .fullName("Trinh an")
+                .username("ntan")
+                .pin("$2a$10$atTTVVOQoQMksMstiYp3/u6tQaYRG/6S5IrMJmEkw8Yw70kKI9LW2")
+                .build();
+        given(jwtSoftTokenUtil.validateToken(request.getSoftToken())).willReturn(true);
+        given(jwtSoftTokenUtil.getUserIdFromJwt(request.getSoftToken())).willReturn(expected);
+        given(jwtSoftTokenUtil.getPinFromJwt(request.getSoftToken())).willReturn("123456");
+        given(jwtSoftTokenUtil.getAmountFromJwt(request.getSoftToken())).willReturn(50000L);
+        given(userRepository.findById(expected)).willReturn(Optional.of(user));
+        given(passwordEncoder.matches("123456", user.getPin())).willReturn(false);
+
+        // when
+
+        // then
+        assertThatThrownBy(() -> underTest.authorizeSoftToken(request))
+                .isInstanceOf(PinNotMatchedException.class)
+                .hasMessageContaining("Pin: " + "123456" + " not matched");
+    }
+
+    @Test
     void findById() {
         // given
         Long systemId = 1L;
@@ -325,6 +394,7 @@ class SystemServiceImplTest {
         // then
         assertThat(actual).isEqualTo(expected);
     }
+
     @Test
     void findByIdWillThrowSystemIdNotFound() {
         // given
