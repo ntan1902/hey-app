@@ -3,7 +3,9 @@ package com.hey.authentication.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hey.authentication.dto.api.ApiResponse;
 import com.hey.authentication.dto.system.*;
+import com.hey.authentication.dto.user.UserDTO;
 import com.hey.authentication.service.SystemService;
+import com.hey.authentication.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -16,6 +18,8 @@ import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 
 import java.io.IOException;
 
@@ -33,6 +37,8 @@ class SystemControllerTest {
 
     @Mock
     private SystemService systemService;
+    @Mock
+    private UserService userService;
 
     private JacksonTester<SystemLoginRequest> jsLoginRequest;
     private JacksonTester<AuthorizeRequest> jsAuthorizeRequest;
@@ -77,7 +83,7 @@ class SystemControllerTest {
         // then
         assertThat(actual.getStatus()).isEqualTo(HttpStatus.OK.value());
         assertThat(actual.getContentAsString()).isEqualTo(
-            jsApiResponse.write(expected).getJson()
+                jsApiResponse.write(expected).getJson()
         );
     }
 
@@ -170,6 +176,70 @@ class SystemControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
                         .content(jsSoftTokenRequest.write(softTokenRequest).getJson()))
+                .andReturn().getResponse();
+
+        // then
+        assertThat(actual.getStatus()).isEqualTo(HttpStatus.OK.value());
+        assertThat(actual.getContentAsString()).isEqualTo(
+                jsApiResponse.write(expected).getJson()
+        );
+    }
+
+    @Test
+    void getUserInfo() throws Exception {
+        // given
+        Long userId = 1L;
+
+        UserDTO payload = UserDTO.builder()
+                .id(userId)
+                .username("ntan1902")
+                .fullName("Trinh An")
+                .email("ntan1902@gmail.com")
+                .build();
+
+        given(userService.findById(userId)).willReturn(payload);
+
+        ApiResponse expected = ApiResponse.builder()
+                .success(true)
+                .code(HttpStatus.OK.value())
+                .message("")
+                .payload(payload)
+                .build();
+
+        // when
+        MockHttpServletResponse actual = mockMvc.perform(
+                get("/api/v1/systems/getUserInfo/" + userId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andReturn().getResponse();
+
+        // then
+        assertThat(actual.getStatus()).isEqualTo(HttpStatus.OK.value());
+        assertThat(actual.getContentAsString()).isEqualTo(
+            jsApiResponse.write(expected).getJson()
+        );
+    }
+    @Test
+    void getSystemInfo() throws Exception {
+        // given
+        Long systemId = 1L;
+
+        SystemDTO payload = new SystemDTO("payment");
+
+        given(systemService.findById(systemId)).willReturn(payload);
+
+        ApiResponse expected = ApiResponse.builder()
+                .success(true)
+                .code(HttpStatus.OK.value())
+                .message("")
+                .payload(payload)
+                .build();
+
+        // when
+        MockHttpServletResponse actual = mockMvc.perform(
+                get("/api/v1/systems/getSystemInfo/" + systemId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
                 .andReturn().getResponse();
 
         // then

@@ -1,7 +1,9 @@
-package com.hey.handler;
+package com.hey.handler.ws;
 
+import com.hey.handler.api.BaseHandler;
 import com.hey.manager.UserWsChannelManager;
 import com.hey.model.*;
+import com.hey.repository.DataRepository;
 import com.hey.service.APIService;
 import com.hey.util.GenerationUtils;
 import io.vertx.core.CompositeFuture;
@@ -12,13 +14,18 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
-public class WsHandler extends BaseHandler{
+public class WsHandler {
 
     private UserWsChannelManager userWsChannelManager;
     private APIService apiService;
+    private DataRepository dataRepository;
 
     public void setApiService(APIService apiService) {
         this.apiService = apiService;
+    }
+
+    public void setDataRepository(DataRepository dataRepository) {
+        this.dataRepository = dataRepository;
     }
 
     public void setUserWsChannelManager(UserWsChannelManager userWsChannelManager) {
@@ -55,27 +62,27 @@ public class WsHandler extends BaseHandler{
 
     public void handleChatMessageRequest(ChatMessageRequest request, String channelId, String userId) {
 
-        if("-1".equals(request.getSessionId())){
-            if(request.getUsernames().size() == 1){
+        if ("-1".equals(request.getSessionId())) {
+            if (request.getUsernames().size() == 1) {
                 insertChatMessageBetweenTwoOnNewChatSessionId(request, channelId, userId);
 
-            }else{
+            } else {
                 insertChatMessageGroupOnNewChatSessionId(request, channelId, userId);
             }
-        }else{
+        } else {
 
             insertChatMessageOnExistedChatSessionId(request, channelId, userId);
         }
     }
 
-    private void insertChatMessageOnNewChatSessionId(ChatMessageRequest request, String channelId, List<String> userIds){
+    private void insertChatMessageOnNewChatSessionId(ChatMessageRequest request, String channelId, List<String> userIds) {
 
         Future<List<UserFull>> getUserFullsFuture = apiService.getUserFulls(userIds);
 
         getUserFullsFuture.compose(userFulls -> {
 
             List<UserHash> userHashes = new ArrayList<>();
-            for(UserFull userFull : userFulls){
+            for (UserFull userFull : userFulls) {
                 userHashes.add(new UserHash(userFull.getUserId(), userFull.getFullName()));
             }
             String sessionId = GenerationUtils.generateId();
@@ -108,7 +115,7 @@ public class WsHandler extends BaseHandler{
                     newChatSessionResponse.setType(IWsMessage.TYPE_CHAT_NEW_SESSION_RESPONSE);
                     newChatSessionResponse.setSessionId(chatMessage.getSessionId());
                     //userWsChannelManager.selfSendMessage(newChatSessionResponse, channelId);
-                    for(UserHash userhash: chatList.getUserHashes()){
+                    for (UserHash userhash : chatList.getUserHashes()) {
                         userWsChannelManager.sendMessage(newChatSessionResponse, userhash.getUserId());
                     }
 
@@ -123,7 +130,7 @@ public class WsHandler extends BaseHandler{
 
     }
 
-    private void insertChatMessageBetweenTwoOnNewChatSessionId(ChatMessageRequest request, String channelId, String userId){
+    private void insertChatMessageBetweenTwoOnNewChatSessionId(ChatMessageRequest request, String channelId, String userId) {
 
         List<String> userIds = new ArrayList<>();
         userIds.add(userId);
@@ -133,7 +140,7 @@ public class WsHandler extends BaseHandler{
 
     }
 
-    private void insertChatMessageGroupOnNewChatSessionId(ChatMessageRequest request, String channelId, String userId){
+    private void insertChatMessageGroupOnNewChatSessionId(ChatMessageRequest request, String channelId, String userId) {
 
 
         Future<List<UserAuth>> getUserAuthsFuture = apiService.getUserAuths(request.getUsernames());
@@ -141,7 +148,7 @@ public class WsHandler extends BaseHandler{
         getUserAuthsFuture.compose(userAuths -> {
             List<String> userIds = new ArrayList<>();
             userIds.add(userId);
-            for(UserAuth userAuth : userAuths){
+            for (UserAuth userAuth : userAuths) {
                 userIds.add(userAuth.getUserId());
             }
 
@@ -153,7 +160,7 @@ public class WsHandler extends BaseHandler{
 
     }
 
-    private void insertChatMessageOnExistedChatSessionId(ChatMessageRequest request, String channelId, String userId){
+    private void insertChatMessageOnExistedChatSessionId(ChatMessageRequest request, String channelId, String userId) {
 
         Future<UserFull> getUserFullFuture = dataRepository.getUserFull(userId);
         long startTime = System.currentTimeMillis();
@@ -185,7 +192,7 @@ public class WsHandler extends BaseHandler{
                     response.setSessionId(chatMessage.getSessionId());
                     response.setUserId(chatMessage.getUserHash().getUserId());
                     //userWsChannelManager.selfSendMessage(response, channelId);
-                    for(UserHash userhash: chatList.getUserHashes()){
+                    for (UserHash userhash : chatList.getUserHashes()) {
                         userWsChannelManager.sendMessage(response, userhash.getUserId());
                     }
 
@@ -194,7 +201,7 @@ public class WsHandler extends BaseHandler{
                 }
             });
 
-        } , Future.future().setHandler(handler -> {
+        }, Future.future().setHandler(handler -> {
             throw new RuntimeException(handler.cause());
         }));
 
@@ -208,7 +215,7 @@ public class WsHandler extends BaseHandler{
 
         getChatMessagesFuture.compose(chatMessages -> {
 
-            for(ChatMessage chatMessage : chatMessages){
+            for (ChatMessage chatMessage : chatMessages) {
                 ChatItem chatItem = new ChatItem();
                 chatItem.setUserId(chatMessage.getUserHash().getUserId());
                 chatItem.setName(chatMessage.getUserHash().getFullName());
@@ -221,7 +228,7 @@ public class WsHandler extends BaseHandler{
             future.complete(chatItems);
 
 
-        } , Future.future().setHandler(handler -> {
+        }, Future.future().setHandler(handler -> {
             future.fail(handler.cause());
         }));
 

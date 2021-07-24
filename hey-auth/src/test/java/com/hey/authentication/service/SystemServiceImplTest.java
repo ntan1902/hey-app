@@ -192,7 +192,6 @@ class SystemServiceImplTest {
         AuthorizeRequest request = new AuthorizeRequest(
                 "dump"
         );
-        Long expected = 1L;
         given(jwtUserUtil.validateToken(request.getJwtUser())).willReturn(false);
 
         // when
@@ -236,11 +235,7 @@ class SystemServiceImplTest {
                 "dump"
         );
         Long systemId = 1L;
-        System expected = System.builder()
-                .id(1L)
-                .systemName("payment")
-                .systemKey("$2a$10$atTTVVOQoQMksMstiYp3/u6tQaYRG/6S5IrMJmEkw8Yw70kKI9LW2")
-                .build();
+
         given(jwtSystemUtil.validateToken(request.getJwtSystem())).willReturn(true);
         given(jwtSystemUtil.getSystemIdFromJwt(request.getJwtSystem())).willReturn(systemId);
         given(systemRepository.findById(systemId)).willReturn(Optional.empty());
@@ -299,7 +294,6 @@ class SystemServiceImplTest {
         SoftTokenRequest request = new SoftTokenRequest(
                 "dump"
         );
-        Long expected = 1L;
         given(jwtSoftTokenUtil.validateToken(request.getSoftToken())).willReturn(false);
 
         // when
@@ -309,5 +303,40 @@ class SystemServiceImplTest {
                 .isInstanceOf(InvalidJwtTokenException.class)
                 .hasMessageContaining("Invalid JWT token");
 
+    }
+
+    @Test
+    void findById() {
+        // given
+        Long systemId = 1L;
+        System system = System.builder()
+                .systemName("payment")
+                .systemKey("dump")
+                .build();
+
+        given(systemRepository.findById(systemId)).willReturn(Optional.of(system));
+        SystemDTO expected = new SystemDTO(
+                system.getSystemName()
+        );
+
+        // when
+        SystemDTO actual = underTest.findById(systemId);
+
+        // then
+        assertThat(actual).isEqualTo(expected);
+    }
+    @Test
+    void findByIdWillThrowSystemIdNotFound() {
+        // given
+        Long systemId = 1L;
+
+        given(systemRepository.findById(systemId)).willReturn(Optional.empty());
+
+        // when
+
+        // then
+        assertThatThrownBy(() -> underTest.findById(systemId))
+                .isInstanceOf(SystemIdNotFoundException.class)
+                .hasMessageContaining("System Id " + systemId + " not found");
     }
 }

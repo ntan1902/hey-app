@@ -1,7 +1,8 @@
 package com.hey.api;
 
-import com.hey.handler.ProtectedApiHandler;
-import com.hey.handler.PublicApiHandler;
+import com.hey.handler.api.ProtectedApiHandler;
+import com.hey.handler.api.PublicApiHandler;
+import com.hey.handler.api.SystemApiHandler;
 import com.hey.util.PropertiesUtils;
 import io.vertx.core.Future;
 import io.vertx.core.Vertx;
@@ -21,6 +22,7 @@ public final class ApiServer {
     private HttpServer httpServer;
     private ProtectedApiHandler protectedApiHandler;
     private PublicApiHandler publicApiHandler;
+    private SystemApiHandler systemApiHandler;
 
     private static final Logger LOGGER = LogManager.getLogger(ApiServer.class);
 
@@ -68,7 +70,7 @@ public final class ApiServer {
         router.route("/*")
                 .handler(
                         CorsHandler
-                                .create("*")
+                                .create("http://localhost:*")
                                 .allowedHeaders(allowedHeaders)
                                 .allowedMethods(allowedMethods)
                                 .allowCredentials(true)
@@ -78,10 +80,12 @@ public final class ApiServer {
 
         router.get("/inittestdata").handler(publicApiHandler::initTestData);
 
-
         router.route("/api/protected/*").handler(protectedApiHandler::handle);
 
         router.post("/api/public/*").handler(publicApiHandler::handle);
+
+        // For API call from other systems
+        router.route("/api/v1/systems/*").handler(systemApiHandler::handle);
 
 
         Future future = Future.future();
@@ -120,8 +124,8 @@ public final class ApiServer {
         return protectedApiHandler;
     }
 
-    public PublicApiHandler getPublicApiHandler() {
-        return publicApiHandler;
+    public void setSystemApiHandler(SystemApiHandler systemApiHandler) {
+        this.systemApiHandler = systemApiHandler;
     }
 
 }
