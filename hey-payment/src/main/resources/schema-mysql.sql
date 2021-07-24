@@ -1,20 +1,3 @@
-create table if not exists transfer_statements
-(
-    id int
-);
-create table if not exists wallets
-(
-    id int
-);
-
-
-alter table transfer_statements
-drop
-foreign key if exists fk_source_of_transfer;
-alter table transfer_statements
-drop
-foreign key if exists fk_target_of_transfer;
-
 drop table if exists transfer_statements;
 drop table if exists wallets;
 

@@ -10,6 +10,7 @@ import org.mapstruct.Mapping;
 @Mapper(componentModel = "spring",injectionStrategy = InjectionStrategy.FIELD)
 public interface WalletMapper {
     WalletDTO wallet2WalletDTO(Wallet wallet);
+
     @Mapping(source = "id",target = "walletId")
     WalletSystemDTO wallet2WalletSystemDTO(Wallet wallet);
 }

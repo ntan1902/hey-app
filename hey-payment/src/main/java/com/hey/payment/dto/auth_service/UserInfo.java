@@ -13,5 +13,5 @@ public class UserInfo implements OwnerInfo{
     private long id;
     private String username;
     private String email;
-    private String fullname;
+    private String fullName;
 }

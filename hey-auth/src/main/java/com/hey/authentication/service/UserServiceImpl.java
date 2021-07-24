@@ -110,9 +110,9 @@ public class UserServiceImpl implements UserDetailsService, UserService {
     }
 
     @Override
-    public void createPin(PinRequest pinRequest) {
-        log.info("Inside createPin of UserServiceImpl: {}", pinRequest);
-        String hashPin = passwordEncoder.encode(pinRequest.getPin());
+    public void createPin(PinAmountRequest pinAmountRequest) {
+        log.info("Inside createPin of UserServiceImpl: {}", pinAmountRequest);
+        String hashPin = passwordEncoder.encode(pinAmountRequest.getPin());
         User user = getCurrentUser();
         user.setPin(hashPin);
         userRepository.save(user);
@@ -123,15 +123,15 @@ public class UserServiceImpl implements UserDetailsService, UserService {
     }
 
     @Override
-    public SoftTokenResponse createSoftToken(PinRequest pinRequest) {
-        log.info("Inside createSoftToken of UserServiceImpl: {}", pinRequest);
+    public SoftTokenResponse createSoftToken(PinAmountRequest pinAmountRequest) {
+        log.info("Inside createSoftToken of UserServiceImpl: {}", pinAmountRequest);
         User user = getCurrentUser();
-        if (passwordEncoder.matches(pinRequest.getPin(), user.getPin())) {
-            String softToken = jwtSoftTokenUtil.generateToken(user);
+        if (passwordEncoder.matches(pinAmountRequest.getPin(), user.getPin())) {
+            String softToken = jwtSoftTokenUtil.generateToken(user, pinAmountRequest.getPin(), pinAmountRequest.getAmount());
             return new SoftTokenResponse(softToken);
         } else {
-            log.error("Pin: {} not matched", pinRequest.getPin());
-            throw new PinNotMatchedException("Pin: " + pinRequest.getPin() + " not matched");
+            log.error("Pin: {} not matched", pinAmountRequest.getPin());
+            throw new PinNotMatchedException("Pin: " + pinAmountRequest.getPin() + " not matched");
         }
     }
 
@@ -140,7 +140,7 @@ public class UserServiceImpl implements UserDetailsService, UserService {
         RegisterRequestToChat registerRequestToChat = userMapper.registerRequest2Chat(user);
         webClientBuilder.build()
                 .post()
-                .uri(CHAT_SERVICE + "/api/public/user")
+                .uri(CHAT_SERVICE + "/api/public/register")
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(registerRequestToChat)
                 .retrieve()

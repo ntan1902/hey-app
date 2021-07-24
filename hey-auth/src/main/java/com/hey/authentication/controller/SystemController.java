@@ -56,12 +56,12 @@ public class SystemController {
 
     @PostMapping("/authorizeSoftToken")
     public ResponseEntity<ApiResponse> authorizeSoftToken(@RequestBody SoftTokenRequest softTokenRequest) {
-        systemService.authorizeSoftToken(softTokenRequest);
+        UserIdAmountResponse payload = systemService.authorizeSoftToken(softTokenRequest);
         return ResponseEntity.ok(ApiResponse.builder()
                 .success(true)
                 .code(HttpStatus.OK.value())
                 .message("Authorize soft token successfully")
-                .payload("")
+                .payload(payload)
                 .build());
     }
 

@@ -1,4 +1,4 @@
-package com.hey.handler;
+package com.hey.handler.api;
 
 import com.hey.manager.JwtManager;
 import com.hey.model.*;
@@ -18,28 +18,13 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class ProtectedApiHandler extends BaseHandler{
-
-    private static final Logger LOGGER = LogManager.getLogger(ProtectedApiHandler.class);
-
-    public static final String AUTHENTICATION_SCHEME = "Bearer";
-
-    private APIService apiService;
-
+public class ProtectedApiHandler extends BaseHandler {
     public JwtManager jwtManager;
-    private String message;
-
-    public void setApiService(APIService apiService) {
-        this.apiService = apiService;
-    }
 
     public void setJwtManager(JwtManager jwtManager) {
         this.jwtManager = jwtManager;
     }
 
-    public APIService getApiService() {
-        return apiService;
-    }
 
     public void handle(RoutingContext rc) {
         HttpServerRequest request = rc.request();
@@ -47,54 +32,53 @@ public class ProtectedApiHandler extends BaseHandler{
         String requestPath = request.path();
         String path = StringUtils.substringAfter(requestPath, "/api/protected");
         try {
-            String authorization = request.headers().get(HttpHeaders.AUTHORIZATION);
-            if (StringUtils.isBlank(authorization)) {
-                throw new HttpStatusException(HttpStatus.UNAUTHORIZED.code(), HttpStatus.UNAUTHORIZED.message());
-            }
-            authorization = authorization.replace(AUTHENTICATION_SCHEME, "").trim();
+            String jwt = jwtManager.getTokenFromRequest(request);
 
-            JsonObject authObj = new JsonObject().put("jwt", authorization);
+            JsonObject authObj = new JsonObject().put("jwtUser", jwt);
             jwtManager.authenticate(authObj, event -> {
                 if (event.succeeded()) {
                     String userId = event.result().principal().getString("userId");
-                    JsonObject jsonObject = null;
-                    if (rc.getBody() != null && rc.getBody().length() > 0)
-                        jsonObject = rc.getBodyAsJson();
+
+                    JsonObject requestObject = null;
+                    if (rc.getBody() != null && rc.getBody().length() > 0) {
+                        requestObject = rc.getBodyAsJson();
+                    }
+
                     switch (path) {
                         case "/ping":
-                            ping(request, response);
+                            ping(response);
                             break;
                         case "/chatlist":
                             LogUtils.log("User  " + userId + " request chat list");
-                            getChatList(request, response, jsonObject, userId);
+                            getChatList(response, requestObject, userId);
                             break;
                         case "/addressbook":
                             LogUtils.log("User  " + userId + " request address book");
-                            getAddressBook(request, response, jsonObject, userId);
+                            getAddressBook(response, requestObject, userId);
                             break;
                         case "/usernameexisted":
-                            LogUtils.log("User  " + userId + " check username " + jsonObject);
-                            checkUsernameExisted(request, response, jsonObject, userId);
+                            LogUtils.log("User  " + userId + " check username " + requestObject);
+                            checkUsernameExisted(response, requestObject, userId);
                             break;
                         case "/sessionidbyuserid":
-                            LogUtils.log("User  " + userId + " get session id " + jsonObject);
-                            getSessionIdByUserId(request, response, jsonObject, userId);
+                            LogUtils.log("User  " + userId + " get session id " + requestObject);
+                            getSessionIdByUserId(response, requestObject, userId);
                             break;
                         case "/waitingchatheader":
-                            LogUtils.log("User  " + userId + " get temporarily chat header " + jsonObject);
-                            waitingChatHeader(request, response, jsonObject, userId);
+                            LogUtils.log("User  " + userId + " get temporarily chat header " + requestObject);
+                            waitingChatHeader(response, requestObject, userId);
                             break;
                         case "/addfriend":
-                            LogUtils.log("User  " + userId + " add new friend " + jsonObject);
-                            addFriend(request, response, jsonObject, userId);
+                            LogUtils.log("User  " + userId + " add new friend " + requestObject);
+                            addFriend(response, requestObject, userId);
                             break;
                         case "/status":
-                            LogUtils.log("User  " + userId + " change status " + jsonObject);
-                            changeStatus(request, response, jsonObject, userId);
+                            LogUtils.log("User  " + userId + " change status " + requestObject);
+                            changeStatus(response, requestObject, userId);
                             break;
                         case "/user":
-                            LogUtils.log("User  " + userId + " get profile " + jsonObject);
-                            getUserProfile(request, response, jsonObject, userId);
+                            LogUtils.log("User  " + userId + " get profile " + requestObject);
+                            getUserProfile(response, requestObject, userId);
                             break;
 
                     }
@@ -103,16 +87,16 @@ public class ProtectedApiHandler extends BaseHandler{
                 }
             });
         } catch (HttpStatusException e) {
-            JsonObject obj = new JsonObject();
-            obj.put("code", ErrorCode.AUTHORIZED_FAILED.code());
-            obj.put(message, e.getPayload());
-            response.setStatusCode(e.getStatusCode())
-                    .putHeader("content-type", "application/json; charset=utf-8")
-                    .end(JsonUtils.encodePrettily(obj));
+           handleUnauthorizedException(e, response);
         }
     }
-
-    public void getChatList(HttpServerRequest request, HttpServerResponse response, JsonObject requestObject, String userId) {
+    public void ping(HttpServerResponse response) {
+        response
+                .setStatusCode(HttpStatus.OK.code())
+                .putHeader("content-type", "application/json; charset=utf-8")
+                .end(JsonUtils.toSuccessJSON("Pong"));
+    }
+    public void getChatList(HttpServerResponse response, JsonObject requestObject, String userId) {
 
         Future<ChatListResponse> getChatListFuture = apiService.getChatList(userId);
 
@@ -130,7 +114,7 @@ public class ProtectedApiHandler extends BaseHandler{
     }
 
 
-    public void getAddressBook(HttpServerRequest request, HttpServerResponse response, JsonObject requestObject, String userId) {
+    public void getAddressBook(HttpServerResponse response, JsonObject requestObject, String userId) {
 
         Future<AddressBookResponse> getAddressBookFuture = apiService.getAddressBook(userId);
 
@@ -146,7 +130,7 @@ public class ProtectedApiHandler extends BaseHandler{
         }));
     }
 
-    public void checkUsernameExisted(HttpServerRequest request, HttpServerResponse response, JsonObject requestObject, String userId) {
+    public void checkUsernameExisted(HttpServerResponse response, JsonObject requestObject, String userId) {
         UsernameExistedRequest usernameExistedRequest = requestObject.mapTo(UsernameExistedRequest.class);
 
         Future<UsernameExistedResponse> checkUsernameExistedFuture = apiService.checkUsernameExisted(usernameExistedRequest, userId);
@@ -163,7 +147,7 @@ public class ProtectedApiHandler extends BaseHandler{
         }));
     }
 
-    public void getSessionIdByUserId(HttpServerRequest request, HttpServerResponse response, JsonObject requestObject, String userId) {
+    public void getSessionIdByUserId(HttpServerResponse response, JsonObject requestObject, String userId) {
         GetSessionIdRequest getSessionIdRequest = requestObject.mapTo(GetSessionIdRequest.class);
 
         Future<GetSessionIdResponse> getSessionIdByUserIdFuture = apiService.getSessionIdByUserId(getSessionIdRequest, userId);
@@ -180,7 +164,7 @@ public class ProtectedApiHandler extends BaseHandler{
         }));
     }
 
-    public void waitingChatHeader(HttpServerRequest request, HttpServerResponse response, JsonObject requestObject, String userId) {
+    public void waitingChatHeader(HttpServerResponse response, JsonObject requestObject, String userId) {
         WaitingChatHeaderRequest waitingChatHeaderRequest = requestObject.mapTo(WaitingChatHeaderRequest.class);
 
         Future<WaitingChatHeaderResponse> waitingChatHeaderFuture = apiService.waitingChatHeader(waitingChatHeaderRequest, userId);
@@ -198,7 +182,7 @@ public class ProtectedApiHandler extends BaseHandler{
 
     }
 
-    public void addFriend(HttpServerRequest request, HttpServerResponse response, JsonObject requestObject, String userId) {
+    public void addFriend(HttpServerResponse response, JsonObject requestObject, String userId) {
         AddFriendRequest addFriendRequest = requestObject.mapTo(AddFriendRequest.class);
 
         Future<AddFriendResponse> addFriendFuture = apiService.addFriend(addFriendRequest, userId);
@@ -216,7 +200,7 @@ public class ProtectedApiHandler extends BaseHandler{
 
     }
 
-    public void changeStatus(HttpServerRequest request, HttpServerResponse response, JsonObject requestObject, String userId) {
+    public void changeStatus(HttpServerResponse response, JsonObject requestObject, String userId) {
         ChangeStatusRequest changeStatusRequest = requestObject.mapTo(ChangeStatusRequest.class);
 
         Future<JsonObject> insertUserStatusFuture = apiService.changeStatus(changeStatusRequest, userId);
@@ -234,7 +218,7 @@ public class ProtectedApiHandler extends BaseHandler{
 
     }
 
-    public void getUserProfile(HttpServerRequest request, HttpServerResponse response, JsonObject requestObject, String userId) {
+    public void getUserProfile(HttpServerResponse response, JsonObject requestObject, String userId) {
         Future<UserProfileResponse> getUserProfileFuture = apiService.getUserProfile(userId);
 
         getUserProfileFuture.compose(userProfileResponse -> {

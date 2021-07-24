@@ -15,7 +15,7 @@ public interface SystemService {
 
     SystemAuthorizeResponse authorizeSystem(SystemAuthorizeRequest authorizeRequest);
 
-    void authorizeSoftToken(SoftTokenRequest softTokenRequest);
+    UserIdAmountResponse authorizeSoftToken(SoftTokenRequest softTokenRequest);
 
     SystemDTO findById(Long systemId);
 }

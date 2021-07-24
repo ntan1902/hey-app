@@ -154,7 +154,7 @@ public class BaseVerticleTestSuite {
                 heyVerticle,
                 ar -> {
                     apiService = heyVerticle.getApiServer().getProtectedApiHandler().getApiService();
-                    dataRepository = heyVerticle.getApiServer().getProtectedApiHandler().getDataRepository();
+//                    dataRepository = heyVerticle.getApiServer().getProtectedApiHandler().getDataRepository();
                     client = vertx.createHttpClient();
                     Future<UserAuth> getUserAuthFuture = getApiService().getDataRepository().getUserAuth("vcthanh24");
                     Future<UserAuth> getUserAuthFuture2 = getApiService().getDataRepository().getUserAuth("nthnhung");

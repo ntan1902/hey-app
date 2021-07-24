@@ -22,7 +22,7 @@ public class UserExceptionHandler {
         // 2. Return response entity
         return new ResponseEntity<>(apiResponse, code);
     }
-    @ExceptionHandler(value = {UnauthorizeException.class})
+    @ExceptionHandler(value = {UnauthorizedException.class})
     public ResponseEntity<ApiResponse> handleException(Exception exception) {
         log.error(exception.getMessage());
         HttpStatus code = HttpStatus.UNAUTHORIZED;
@@ -50,6 +50,13 @@ public class UserExceptionHandler {
     public ResponseEntity<ApiResponse> handleSoftTokenAuthorizeException(Exception exception){
         log.error(exception.getMessage());
         HttpStatus code = HttpStatus.UNAUTHORIZED;
+        return getResponse(code, exception.getMessage());
+    }
+
+    @ExceptionHandler(value = {NegativeAmountException.class})
+    public ResponseEntity<ApiResponse> handleNegativeAmountException(Exception exception){
+        log.error(exception.getMessage());
+        HttpStatus code = HttpStatus.BAD_REQUEST;
         return getResponse(code, exception.getMessage());
     }
 }

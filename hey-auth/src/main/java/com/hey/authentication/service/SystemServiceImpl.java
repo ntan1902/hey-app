@@ -2,9 +2,11 @@ package com.hey.authentication.service;
 
 import com.hey.authentication.dto.system.*;
 import com.hey.authentication.entity.System;
+import com.hey.authentication.entity.User;
 import com.hey.authentication.exception.jwt.InvalidJwtTokenException;
 import com.hey.authentication.exception.system.SystemIdNotFoundException;
 import com.hey.authentication.exception.system.SystemKeyInvalidException;
+import com.hey.authentication.exception.user.PinNotMatchedException;
 import com.hey.authentication.exception.user.UserIdNotFoundException;
 import com.hey.authentication.jwt.JwtSoftTokenUtil;
 import com.hey.authentication.jwt.JwtSystemUtil;
@@ -100,16 +102,30 @@ public class SystemServiceImpl implements SystemService {
     }
 
     @Override
-    public void authorizeSoftToken(SoftTokenRequest softTokenRequest) {
+    public UserIdAmountResponse authorizeSoftToken(SoftTokenRequest softTokenRequest) {
         log.info("Inside authorizeSoftToken of SystemServiceImpl: {}", softTokenRequest);
 
         String softToken = softTokenRequest.getSoftToken();
         if (jwtSoftTokenUtil.validateToken(softToken)) {
+            // Parse information from jwt
             Long userId = jwtSoftTokenUtil.getUserIdFromJwt(softToken);
-            if (!userRepository.existsById(userId)) {
-                log.error("User Id {} not found", userId);
-                throw new UserIdNotFoundException("User Id " + userId + " not found");
+            String pinFromJwt = jwtSoftTokenUtil.getPinFromJwt(softToken);
+            long amountFromJwt = jwtSoftTokenUtil.getAmountFromJwt(softToken);
+
+            User user = userRepository.findById(userId)
+                    .orElseThrow(() -> {
+                        log.error("User Id {} not found", userId);
+                        throw new UserIdNotFoundException("User Id " + userId + " not found");
+                    });
+
+            // Check pin
+            if (passwordEncoder.matches(pinFromJwt, user.getPin())) {
+                return new UserIdAmountResponse(userId, amountFromJwt);
+            } else {
+                log.error("Pin: {} not matched", pinFromJwt);
+                throw new PinNotMatchedException("Pin: " + pinFromJwt + " not matched");
             }
+
         } else {
             throw new InvalidJwtTokenException("Invalid JWT token");
         }

@@ -12,19 +12,19 @@ public final class JsonUtils {
     public static String toSuccessJSON(Object message) {
         JsonObject objectResult = new JsonObject(Json.encodePrettily(message));
         JsonObject object = new JsonObject();
-        object.put("data", objectResult);
+        object.put("success", true);
+        object.put("code", HttpStatus.OK);
+        object.put("message", "");
+        object.put("payload", objectResult);
         return Json.encodePrettily(object);
     }
 
     public static String toSuccessJSON(String message) {
         JsonObject object = new JsonObject();
-        object.put("data", message);
-        return Json.encodePrettily(object);
-    }
-
-    public static String toSuccessJSON(List list) {
-        JsonObject object = new JsonObject();
-        object.put("data", list);
+        object.put("success", true);
+        object.put("code", HttpStatus.OK);
+        object.put("message", message);
+        object.put("payload", "");
         return Json.encodePrettily(object);
     }
 
@@ -32,22 +32,12 @@ public final class JsonUtils {
         return Json.encodePrettily(error);
     }
 
-    public static String toErrorJSON(Object message) {
-        JsonObject objectResult = new JsonObject(Json.encodePrettily(message));
-        JsonObject object = new JsonObject();
-        object.put("error", objectResult);
-        return Json.encodePrettily(object);
-    }
-
-    public static String toErrorJSON(String message) {
-        JsonObject object = new JsonObject();
-        object.put("error", message);
-        return Json.encodePrettily(object);
-    }
-
     public static String toError500JSON() {
         JsonObject object = new JsonObject();
-        object.put("error", "Oops, The handler was unable to complete your request. We will be back soon :(");
+        object.put("success", false);
+        object.put("code", HttpStatus.INTERNAL_SERVER_ERROR);
+        object.put("message", "Oops, The handler was unable to complete your request. We will be back soon :(");
+        object.put("payload", "");
         return Json.encodePrettily(object);
     }
 }

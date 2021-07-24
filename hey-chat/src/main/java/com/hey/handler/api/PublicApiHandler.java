@@ -1,4 +1,4 @@
-package com.hey.handler;
+package com.hey.handler.api;
 
 import com.hey.model.User;
 import com.hey.service.APIService;
@@ -15,11 +15,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class PublicApiHandler extends BaseHandler{
-
-    private static final Logger LOGGER = LogManager.getLogger(PublicApiHandler.class);
-
-    private APIService apiService;
-
     public void handle(RoutingContext rc) {
         HttpServerRequest request = rc.request();
         HttpServerResponse response = rc.response();
@@ -28,9 +23,9 @@ public class PublicApiHandler extends BaseHandler{
         String json = rc.getBodyAsString();
 
         switch (path) {
-            case "/user":
+            case "/register":
                 LogUtils.log("New register request");
-                registerUser(request, response, json);
+                registerUser(response, json);
                 break;
             default:
                 response.end();
@@ -39,7 +34,7 @@ public class PublicApiHandler extends BaseHandler{
 
     }
 
-    public void registerUser(HttpServerRequest request, HttpServerResponse response, String jsonData) {
+    public void registerUser(HttpServerResponse response, String jsonData) {
 
         Future<User> registerUserFuture = apiService.registerUser(jsonData);
 
@@ -54,10 +49,6 @@ public class PublicApiHandler extends BaseHandler{
             handleException(handler.cause(), response);
         }));
 
-    }
-
-    public void setApiService(APIService apiService) {
-        this.apiService = apiService;
     }
 
     public void initTestData(RoutingContext routingContext) {

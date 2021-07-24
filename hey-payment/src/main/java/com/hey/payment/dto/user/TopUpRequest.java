@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class TopupRequest {
+public class TopUpRequest {
     private long amount;
-    private long bank_id;
+    private long bankId;
 }

@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class PinRequest {
+public class PinAmountRequest {
     private String pin;
+    private long amount;
 }
