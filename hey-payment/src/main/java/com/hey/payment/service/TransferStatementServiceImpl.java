@@ -3,13 +3,14 @@ package com.hey.payment.service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hey.payment.api.AuthApi;
 import com.hey.payment.api.ChatApi;
+import com.hey.payment.constant.MoneyConstant;
 import com.hey.payment.constant.OwnerWalletRefFrom;
 import com.hey.payment.constant.TransferStatus;
 import com.hey.payment.constant.TransferType;
+import com.hey.payment.dto.auth_service.GetSystemInfoResponse;
+import com.hey.payment.dto.auth_service.GetUserInfoResponse;
 import com.hey.payment.dto.auth_service.OwnerInfo;
-import com.hey.payment.dto.auth_service.SoftTokenEncoded;
-import com.hey.payment.dto.auth_service.SystemInfo;
-import com.hey.payment.dto.auth_service.UserInfo;
+import com.hey.payment.dto.auth_service.VerifySoftTokenResponse;
 import com.hey.payment.dto.chat_service.TransferMessageRequest;
 import com.hey.payment.dto.system.SystemCreateTransferFromUserRequest;
 import com.hey.payment.dto.system.SystemCreateTransferToUserRequest;
@@ -27,16 +28,13 @@ import com.hey.payment.repository.TransferStatementRepository;
 import com.hey.payment.repository.WalletRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.hibernate.Hibernate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 
 import java.time.LocalDateTime;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 @Log4j2
@@ -65,13 +63,13 @@ public class TransferStatementServiceImpl implements TransferStatementService {
         String softToken = createTransferRequest.getSoftToken();
 
         // Authorize Soft Token
-        ApiResponse<SoftTokenEncoded> apiResponse = authApi.verifySoftToken(softToken);
-        if (!apiResponse.isSuccess()) {
+        VerifySoftTokenResponse apiResponse = authApi.verifySoftToken(softToken);
+        if (!apiResponse.getSuccess()) {
             throw new SoftTokenAuthorizeException(apiResponse.getMessage());
         }
 
         // Check User Id
-        SoftTokenEncoded softTokenEncoded = apiResponse.getPayload();
+        VerifySoftTokenResponse.SoftTokenEncoded softTokenEncoded = apiResponse.getPayload();
         if (softTokenEncoded.getUserId() != sourceId) {
             throw new SoftTokenAuthorizeException("Unauthorized!");
         }
@@ -81,6 +79,8 @@ public class TransferStatementServiceImpl implements TransferStatementService {
         if (amount < 0){
             throw new NegativeAmountException();
         }
+
+        checkMaxAmount(amount);
 
         // Check user1, user2 whether have wallet
         Wallet sourceWallet = walletRepository.findByOwnerIdAndRefFrom(user.getId(), OwnerWalletRefFrom.USERS)
@@ -107,13 +107,13 @@ public class TransferStatementServiceImpl implements TransferStatementService {
         // Transfer money
         try {
             transferMoney(sourceWallet.getId(), targetWallet.getId(), amount);
-        } catch (BalanceNotEnoughException exception) {
+        } catch (BalanceNotEnoughException | MaxBalanceException exception) {
             transferStatement.setStatus(TransferStatus.FAIL);
             transferStatementRepository.save(transferStatement);
             return ApiResponse.builder()
                     .success(false)
                     .code(400)
-                    .message("Transfer failed")
+                    .message(exception.getMessage())
                     .payload("")
                     .build();
         }
@@ -137,8 +137,13 @@ public class TransferStatementServiceImpl implements TransferStatementService {
                 .build();
     }
 
+    private void checkMaxAmount(long amount) {
+        if (amount > MoneyConstant.MAX_AMOUNT) throw new MaxAmountException(MoneyConstant.MAX_AMOUNT);
+    }
+
     @Override
-    public void systemCreateTransferToUser(System system, SystemCreateTransferToUserRequest request) {
+    @Transactional(propagation = Propagation.REQUIRED)
+    public ApiResponse systemCreateTransferToUser(System system, SystemCreateTransferToUserRequest request) {
         log.info("System use wallet {} transfer {} to user {}", request.getWalletId(), request.getAmount(), request.getReceiverId());
 
         long amount = request.getAmount();
@@ -172,25 +177,37 @@ public class TransferStatementServiceImpl implements TransferStatementService {
 
         try {
             transferMoney(s.getId(), t.getId(), request.getAmount());
-        } catch (BalanceNotEnoughException exception) {
+        } catch (BalanceNotEnoughException | MaxBalanceException exception) {
             transferStatement.setStatus(TransferStatus.FAIL);
             transferStatementRepository.save(transferStatement);
-            throw exception;
+            return ApiResponse.builder()
+                    .success(false)
+                    .code(400)
+                    .message(exception.getMessage())
+                    .payload("")
+                    .build();
         }
 
         transferStatement.setStatus(TransferStatus.SUCCESS);
         transferStatementRepository.save(transferStatement);
+        return ApiResponse.builder()
+                .success(true)
+                .code(201)
+                .message("Transfer success")
+                .payload("")
+                .build();
     }
 
     @Override
-    public void systemCreateTransferFromUser(System system, SystemCreateTransferFromUserRequest request) {
+    @Transactional(propagation = Propagation.REQUIRED)
+    public ApiResponse systemCreateTransferFromUser(System system, SystemCreateTransferFromUserRequest request) {
         log.info("System transfer from user {} with soft token {}", request.getUserId(), request.getSoftToken());
         // Verify soft token
-        ApiResponse<SoftTokenEncoded> apiResponse = authApi.verifySoftToken(request.getSoftToken());
-        if (!apiResponse.isSuccess()) {
+        VerifySoftTokenResponse apiResponse = authApi.verifySoftToken(request.getSoftToken());
+        if (!apiResponse.getSuccess()) {
             throw new SoftTokenAuthorizeException(apiResponse.getMessage());
         }
-        SoftTokenEncoded softTokenEncoded = apiResponse.getPayload();
+        VerifySoftTokenResponse.SoftTokenEncoded softTokenEncoded = apiResponse.getPayload();
         if (softTokenEncoded.getUserId() != request.getUserId()) {
             throw new SoftTokenAuthorizeException("Unauthorized!");
         }
@@ -224,14 +241,25 @@ public class TransferStatementServiceImpl implements TransferStatementService {
 
         try {
             transferMoney(source.getId(), target.getId(), softTokenEncoded.getAmount());
-        } catch (BalanceNotEnoughException exception) {
+        } catch (BalanceNotEnoughException | MaxBalanceException exception) {
             transferStatement.setStatus(TransferStatus.FAIL);
             transferStatementRepository.save(transferStatement);
-            throw exception;
+            return ApiResponse.builder()
+                    .success(false)
+                    .code(400)
+                    .message(exception.getMessage())
+                    .payload("")
+                    .build();
         }
 
         transferStatement.setStatus(TransferStatus.SUCCESS);
         transferStatementRepository.save(transferStatement);
+        return ApiResponse.builder()
+                .success(true)
+                .code(201)
+                .message("Transfer success")
+                .payload("")
+                .build();
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
@@ -248,7 +276,7 @@ public class TransferStatementServiceImpl implements TransferStatementService {
                 });
         long sourceBalance = sourceWallet.getBalance();
         long targetBalance = targetWallet.getBalance();
-
+        checkMaxBalance(targetBalance+amount);
         if (sourceBalance > amount) {
             sourceWallet.setBalance(sourceBalance - amount);
             targetWallet.setBalance(targetBalance + amount);
@@ -259,11 +287,17 @@ public class TransferStatementServiceImpl implements TransferStatementService {
         }
     }
 
+    private void checkMaxBalance(long balance) {
+        if (balance > MoneyConstant.MAX_BALANCE) throw new MaxBalanceException();
+    }
+
     @Override
     @Transactional
     public void topUp(User user, TopUpRequest topupRequest) {
         log.info("TopUp for user {} by bank {} with {}", user.getId(), topupRequest.getBankId(), topupRequest.getAmount());
         // Check 2 wallets are exist.
+        long amount = topupRequest.getAmount();
+        checkMaxBalance(amount);
         Wallet bankWallet = walletRepository.findByOwnerIdAndRefFrom(topupRequest.getBankId(), OwnerWalletRefFrom.SYSTEMS)
                 .orElseThrow(() -> {
                     throw new BankInvalidException();
@@ -272,7 +306,8 @@ public class TransferStatementServiceImpl implements TransferStatementService {
                 .orElseThrow(() -> {
                     throw new HaveNoWalletException();
                 });
-        userWallet.setBalance(userWallet.getBalance() + topupRequest.getAmount());
+        checkMaxBalance(userWallet.getBalance() + amount);
+        userWallet.setBalance(userWallet.getBalance() + amount);
         TransferStatement transferStatement = TransferStatement.builder()
                 .sourceId(bankWallet.getId())
                 .targetId(userWallet.getId())
@@ -316,18 +351,18 @@ public class TransferStatementServiceImpl implements TransferStatementService {
     }
 
     private OwnerInfo getOwnerInfo(long ownerId, String refFrom) {
+        ObjectMapper mapper = new ObjectMapper();
         if (refFrom.equals(OwnerWalletRefFrom.USERS)) {
-            ApiResponse<UserInfo> apiResponse = authApi.getUserInfo(ownerId);
-
-            if (apiResponse.isSuccess()) {
-                return apiResponse.getPayload();
+            GetUserInfoResponse apiResponse = authApi.getUserInfo(ownerId);
+            if (apiResponse.getSuccess()) {
+                return mapper.convertValue(apiResponse.getPayload(), GetUserInfoResponse.UserInfo.class);
             } else {
                 throw new ApiErrException(apiResponse.getMessage());
             }
         } else {
-            ApiResponse<SystemInfo> apiResponse = authApi.getSystemInfo(ownerId);
-            if (apiResponse.isSuccess()) {
-                return apiResponse.getPayload();
+            GetSystemInfoResponse apiResponse = authApi.getSystemInfo(ownerId);
+            if (apiResponse.getSuccess()) {
+                return mapper.convertValue(apiResponse.getPayload(), GetSystemInfoResponse.SystemInfo.class);
             } else {
                 throw new ApiErrException(apiResponse.getMessage());
             }
