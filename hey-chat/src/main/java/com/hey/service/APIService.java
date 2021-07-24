@@ -1,29 +1,9 @@
 package com.hey.service;
 
 import com.hey.manager.UserWsChannelManager;
-import com.hey.model.AddFriendRequest;
-import com.hey.model.AddFriendResponse;
-import com.hey.model.AddressBookItem;
-import com.hey.model.AddressBookResponse;
-import com.hey.model.ChangeStatusRequest;
-import com.hey.model.ChatList;
-import com.hey.model.ChatListItem;
-import com.hey.model.ChatListResponse;
-import com.hey.model.ChatMessage;
-import com.hey.model.FriendList;
-import com.hey.model.GetSessionIdRequest;
-import com.hey.model.GetSessionIdResponse;
-import com.hey.model.User;
-import com.hey.model.UserAuth;
-import com.hey.model.UserFull;
-import com.hey.model.UserHash;
-import com.hey.model.UserProfileResponse;
-import com.hey.model.UserStatus;
-import com.hey.model.UsernameExistedRequest;
-import com.hey.model.UsernameExistedResponse;
-import com.hey.model.WaitingChatHeaderRequest;
-import com.hey.model.WaitingChatHeaderResponse;
+import com.hey.model.*;
 import com.hey.util.ErrorCode;
+import com.hey.util.GenerationUtils;
 import com.hey.util.HeyHttpStatusException;
 import com.hey.util.HttpStatus;
 import io.vertx.core.CompositeFuture;
@@ -32,14 +12,11 @@ import io.vertx.core.json.Json;
 import io.vertx.core.json.JsonObject;
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 
-public class APIService extends BaseService{
+public class APIService extends BaseService {
 
     private UserWsChannelManager userWsChannelManager;
 
@@ -72,7 +49,7 @@ public class APIService extends BaseService{
         getUserAuthFuture.compose(existedUserAuth -> {
             if (existedUserAuth != null) {
                 throw new HeyHttpStatusException(HttpStatus.BAD_REQUEST.code(), ErrorCode.REGISTER_USERNAME_UNIQUED.code(), "User Name is duplicated");
-            }else{
+            } else {
 
                 Future<User> insertUserFuture = insertUser(user);
 
@@ -81,7 +58,7 @@ public class APIService extends BaseService{
                     future.complete(userRes);
 
 
-                } , Future.future().setHandler(handler -> {
+                }, Future.future().setHandler(handler -> {
                     future.fail(handler.cause());
                 }));
             }
@@ -102,7 +79,7 @@ public class APIService extends BaseService{
         getChatListsFuture.compose(chatLists -> {
 
             List<Future> getUnSeenCountFutures = new ArrayList<>();
-            for(ChatList chatList : chatLists){
+            for (ChatList chatList : chatLists) {
                 getUnSeenCountFutures.add(dataRepository.getUnseenCount(userId, chatList.getSessionId()));
             }
 
@@ -112,20 +89,20 @@ public class APIService extends BaseService{
 
                     List<ChatListItem> chatListItems = new ArrayList<>();
 
-                    for(int index = 0; index < getUnSeenCountFutures.size(); ++index){
+                    for (int index = 0; index < getUnSeenCountFutures.size(); ++index) {
                         Long unSeenCount = cp.resultAt(index);
                         ChatList chatList = chatLists.get(index);
 
                         ChatListItem chatListItem = new ChatListItem();
 
                         List<String> listFullNameExcludedCurrentUser = getListFullNameExcludedCurrentUser(userId, chatList.getUserHashes());
-                        if(listFullNameExcludedCurrentUser.size() > 1){
+                        if (listFullNameExcludedCurrentUser.size() > 1) {
                             String groupName = listFullNameExcludedCurrentUser.stream()
                                     .map(fullName -> fullName.split(" ")[0])
                                     .collect(Collectors.joining(", "));
                             chatListItem.setName(groupName);
                             chatListItem.setGroupChat(true);
-                        }else{
+                        } else {
                             chatListItem.setName(listFullNameExcludedCurrentUser.get(0));
                         }
                         chatListItem.setSessionId(chatList.getSessionId());
@@ -146,7 +123,7 @@ public class APIService extends BaseService{
                 }
             });
 
-        } , Future.future().setHandler(handler -> {
+        }, Future.future().setHandler(handler -> {
             future.fail(handler.cause());
         }));
 
@@ -167,7 +144,7 @@ public class APIService extends BaseService{
             List<Future> getUserOnlineFutures = new ArrayList<>();
             List<Future> getUserStatusAndUserOnlineFutures = new ArrayList<>();
 
-            for(FriendList friendList : friendLists){
+            for (FriendList friendList : friendLists) {
                 getUserStatusFutures.add(dataRepository.getUserStatus(friendList.getFriendUserHashes().getUserId()));
                 getUserOnlineFutures.add(isUserOnline(friendList.getFriendUserHashes().getUserId()));
             }
@@ -178,7 +155,7 @@ public class APIService extends BaseService{
             cp.setHandler(ar -> {
                 if (ar.succeeded()) {
 
-                    for(int index = 0; index < friendLists.size(); ++index){
+                    for (int index = 0; index < friendLists.size(); ++index) {
 
                         AddressBookItem addressBookItem = new AddressBookItem();
 
@@ -204,7 +181,7 @@ public class APIService extends BaseService{
                 }
             });
 
-        } , Future.future().setHandler(handler -> {
+        }, Future.future().setHandler(handler -> {
             future.fail(handler.cause());
         }));
 
@@ -219,7 +196,7 @@ public class APIService extends BaseService{
 
         getUserAuthFuture.compose(userAuth -> {
 
-            if(userAuth != null) {
+            if (userAuth != null) {
 
                 Future<Boolean> isFriendFuture = isFriend(userId, userAuth.getUserId());
 
@@ -239,7 +216,7 @@ public class APIService extends BaseService{
                     future.fail(handler.cause());
                 }));
 
-            }else{
+            } else {
                 throw new HeyHttpStatusException(HttpStatus.BAD_REQUEST.code(), ErrorCode.START_GROUP_CHAT_USERNAME_NOT_EXISTED.code(), "User Name is not existed");
             }
 
@@ -254,8 +231,8 @@ public class APIService extends BaseService{
 
         Future<GetSessionIdResponse> future = Future.future();
 
-        String chatListKey = "chat:list:*" + userId + ":" + getSessionIdRequest.getUserId();
-        String chatListKeyReverse = "chat:list:*" + getSessionIdRequest.getUserId() + ":" + userId;
+        String chatListKey = "chat:list:*:" + userId + ":" + getSessionIdRequest.getUserId();
+        String chatListKeyReverse = "chat:list:*:" + getSessionIdRequest.getUserId() + ":" + userId;
 
         List<Future> getKeysByPatternFutures = new ArrayList<>();
 
@@ -269,13 +246,13 @@ public class APIService extends BaseService{
                 GetSessionIdResponse getSessionIdResponse = new GetSessionIdResponse();
 
                 List<String> keys = new ArrayList<>();
-                for(int index = 0; index < getKeysByPatternFutures.size(); ++index){
+                for (int index = 0; index < getKeysByPatternFutures.size(); ++index) {
                     keys.addAll(cp.resultAt(index));
                 }
 
-                if(keys.size() > 0){
+                if (keys.size() > 0) {
                     getSessionIdResponse.setSessionId(keys.get(0).split(":")[2]);
-                }else{
+                } else {
                     getSessionIdResponse.setSessionId("-1");
                 }
 
@@ -289,6 +266,7 @@ public class APIService extends BaseService{
         return future;
     }
 
+
     public Future<WaitingChatHeaderResponse> waitingChatHeader(WaitingChatHeaderRequest waitingChatHeaderRequest, String userId) {
 
         Future<WaitingChatHeaderResponse> future = Future.future();
@@ -298,7 +276,7 @@ public class APIService extends BaseService{
         getUserAuthsFuture.compose(userAuths -> {
 
             List<String> userFriendIds = new ArrayList<>();
-            for (UserAuth userAuth : userAuths){
+            for (UserAuth userAuth : userAuths) {
                 userFriendIds.add(userAuth.getUserId());
             }
 
@@ -307,7 +285,7 @@ public class APIService extends BaseService{
             getUserFullFutures.compose(userFulls -> {
 
                 List<String> firstNames = new ArrayList<>();
-                for (UserFull userFull : userFulls){
+                for (UserFull userFull : userFulls) {
                     firstNames.add(userFull.getFullName().split(" ")[0]);
                 }
 
@@ -332,21 +310,21 @@ public class APIService extends BaseService{
         Future<AddFriendResponse> future = Future.future();
 
         if (StringUtils.isBlank(addFriendRequest.getUsername())) {
-            future.fail( new HeyHttpStatusException(HttpStatus.BAD_REQUEST.code(), ErrorCode.ADD_FRIEND_USERNAME_EMPTY.code(), "User Name cannot be empty"));
+            future.fail(new HeyHttpStatusException(HttpStatus.BAD_REQUEST.code(), ErrorCode.ADD_FRIEND_USERNAME_EMPTY.code(), "User Name cannot be empty"));
         }
 
         Future<UserAuth> getUserAuthFuture = dataRepository.getUserAuth(addFriendRequest.getUsername());
 
         getUserAuthFuture.compose(userAuth -> {
 
-            if(userAuth != null) {
+            if (userAuth != null) {
 
                 Future<Boolean> isFriendFuture = isFriend(userId, userAuth.getUserId());
 
                 isFriendFuture.compose(isFriend -> {
 
                     if (isFriend) {
-                        future.fail( new HeyHttpStatusException(HttpStatus.BAD_REQUEST.code(), ErrorCode.ADD_FRIEND_USERNAME_ALREADY.code(), "User Name was added as friend"));
+                        future.fail(new HeyHttpStatusException(HttpStatus.BAD_REQUEST.code(), ErrorCode.ADD_FRIEND_USERNAME_ALREADY.code(), "User Name was added as friend"));
 
                     } else {
 
@@ -357,7 +335,7 @@ public class APIService extends BaseService{
 
                         getUserFullsFuture.compose(userFulls -> {
 
-                            UserFull currentUserFull =  userFulls.get(0);
+                            UserFull currentUserFull = userFulls.get(0);
                             UserFull friendUserFull = userFulls.get(1);
 
                             FriendList friendList = new FriendList();
@@ -406,7 +384,7 @@ public class APIService extends BaseService{
                 }, Future.future().setHandler(handler -> {
                 }));
 
-            }else{
+            } else {
                 throw new HeyHttpStatusException(HttpStatus.BAD_REQUEST.code(), ErrorCode.ADD_FRIEND_USERNAME_NOT_EXISTED.code(), "User Name is not existed");
             }
 
@@ -439,10 +417,10 @@ public class APIService extends BaseService{
         return future;
     }
 
-    private List<String> getListFullNameExcludedCurrentUser(String currentUserId, List<UserHash> userHashes){
+    private List<String> getListFullNameExcludedCurrentUser(String currentUserId, List<UserHash> userHashes) {
         List<String> listFullNameExcludedCurrentUser = new ArrayList<>();
-        for(UserHash userHash : userHashes){
-            if(!currentUserId.equals(userHash.getUserId())){
+        for (UserHash userHash : userHashes) {
+            if (!currentUserId.equals(userHash.getUserId())) {
                 listFullNameExcludedCurrentUser.add(userHash.getFullName());
             }
         }
@@ -456,7 +434,7 @@ public class APIService extends BaseService{
 
         List<Future> getUserAuthFutures = new ArrayList<>();
 
-        for(String userName : userNames){
+        for (String userName : userNames) {
             getUserAuthFutures.add(dataRepository.getUserAuth(userName));
         }
 
@@ -465,7 +443,7 @@ public class APIService extends BaseService{
             if (ar.succeeded()) {
 
                 List<UserAuth> userAuths = new ArrayList<>();
-                for(int index = 0; index < getUserAuthFutures.size(); ++index){
+                for (int index = 0; index < getUserAuthFutures.size(); ++index) {
                     userAuths.add(cp.resultAt(index));
                 }
 
@@ -484,7 +462,7 @@ public class APIService extends BaseService{
 
         List<Future> getUserFullFutures = new ArrayList<>();
 
-        for(String userId : userIds){
+        for (String userId : userIds) {
             getUserFullFutures.add(dataRepository.getUserFull(userId));
         }
 
@@ -493,7 +471,7 @@ public class APIService extends BaseService{
             if (ar.succeeded()) {
 
                 List<UserFull> userFulls = new ArrayList<>();
-                for(int index = 0; index < getUserFullFutures.size(); ++index){
+                for (int index = 0; index < getUserFullFutures.size(); ++index) {
                     userFulls.add(cp.resultAt(index));
                 }
 
@@ -524,7 +502,7 @@ public class APIService extends BaseService{
 
             List<Future> getFriendListFutures = new ArrayList<>();
 
-            for(String friendListKey: keys){
+            for (String friendListKey : keys) {
                 getFriendListFutures.add(dataRepository.getFriendList(friendListKey, userId));
             }
 
@@ -533,8 +511,8 @@ public class APIService extends BaseService{
                 if (ar.succeeded()) {
 
                     List<FriendList> friendLists = new ArrayList<>();
-                    for(int index = 0; index < getFriendListFutures.size(); ++index){
-                        if(cp.resultAt(index) != null) {
+                    for (int index = 0; index < getFriendListFutures.size(); ++index) {
+                        if (cp.resultAt(index) != null) {
                             friendLists.add(cp.resultAt(index));
                         }
                     }
@@ -568,15 +546,15 @@ public class APIService extends BaseService{
             if (ar.succeeded()) {
 
                 List<FriendList> friendLists = new ArrayList<>();
-                for(int index = 0; index < getFriendListFutures.size(); ++index){
-                    if(cp.resultAt(index) != null) {
+                for (int index = 0; index < getFriendListFutures.size(); ++index) {
+                    if (cp.resultAt(index) != null) {
                         friendLists.add(cp.resultAt(index));
                     }
                 }
 
-                if(friendLists.size() > 0){
+                if (friendLists.size() > 0) {
                     future.complete(true);
-                }else{
+                } else {
                     future.complete(false);
                 }
 
@@ -629,7 +607,7 @@ public class APIService extends BaseService{
 
             List<Future> getChatListFutures = new ArrayList<>();
 
-            for(String chatListKey: chatListKeys){
+            for (String chatListKey : chatListKeys) {
                 getChatListFutures.add(dataRepository.getChatList(chatListKey));
             }
 
@@ -638,7 +616,7 @@ public class APIService extends BaseService{
                 if (ar.succeeded()) {
 
                     List<ChatList> chatLists = new ArrayList<>();
-                    for(int index = 0; index < getChatListFutures.size(); ++index){
+                    for (int index = 0; index < getChatListFutures.size(); ++index) {
                         chatLists.add(cp.resultAt(index));
                     }
 
@@ -671,7 +649,7 @@ public class APIService extends BaseService{
             // Sort message by time
             Collections.sort(chatMessageKeys);
 
-            for(String chatMessageKey: chatMessageKeys){
+            for (String chatMessageKey : chatMessageKeys) {
                 getChatMessageFutures.add(dataRepository.getChatMessage(chatMessageKey));
             }
 
@@ -680,7 +658,7 @@ public class APIService extends BaseService{
                 if (ar.succeeded()) {
 
                     List<ChatMessage> chatMessages = new ArrayList<>();
-                    for(int index = 0; index < getChatMessageFutures.size(); ++index){
+                    for (int index = 0; index < getChatMessageFutures.size(); ++index) {
                         chatMessages.add(cp.resultAt(index));
                     }
 
@@ -729,7 +707,7 @@ public class APIService extends BaseService{
         return future;
     }
 
-    private Future<Boolean> isUserOnline(String userId){
+    private Future<Boolean> isUserOnline(String userId) {
         Future<Boolean> future = Future.future();
         userWsChannelManager.getChannels(userId).setHandler(event -> {
             if (event.succeeded()) {
@@ -743,4 +721,173 @@ public class APIService extends BaseService{
         });
         return future;
     }
+
+    // ********************************************************** //
+    public Future<Boolean> transferMessage(TransferMessageRequest transferMessageRequest) {
+        Future<Boolean> future = Future.future();
+
+        // Find session id of source id and target id
+        Future<String> getSessionId = getSessionIdOfUser1AndUser2(
+                transferMessageRequest.getSourceId().toString(),
+                transferMessageRequest.getTargetId().toString()
+        );
+
+        getSessionId.compose(sessionId -> {
+            if("-1".equals(sessionId)) {
+                insertNewChatOfUser1AndUser2(transferMessageRequest);
+            } else {
+                insertNewChatOnExistedSessionOfUser1AndUser2(transferMessageRequest, sessionId);
+            }
+        }, Future.future().setHandler(handler -> {
+            future.fail(handler.cause());
+        }));
+
+        return future;
+    }
+
+    private void insertNewChatOnExistedSessionOfUser1AndUser2(TransferMessageRequest transferMessageRequest, String sessionId) {
+
+        Future<UserFull> getUserFullFuture = dataRepository.getUserFull(transferMessageRequest.getSourceId().toString());
+        getUserFullFuture.compose(userFull -> {
+            ChatMessage chatMessage = new ChatMessage();
+            chatMessage.setUserHash(new UserHash(userFull.getUserId(), userFull.getFullName()));
+            chatMessage.setSessionId(sessionId);
+            chatMessage.setMessage(transferMessageRequest.getMessage());
+            chatMessage.setCreatedDate(new Date());
+
+            Future<ChatMessage> insertChatMessagesAndUpdateChatListAndUpdateUnseenCountFuture =
+                    insertChatMessagesAndUpdateChatListAndUpdateUnseenCount(chatMessage);
+
+            Future<ChatList> getChatListBySessionIdFuture = getChatListBySessionId(chatMessage.getSessionId());
+
+            CompositeFuture cp = CompositeFuture.all(insertChatMessagesAndUpdateChatListAndUpdateUnseenCountFuture, getChatListBySessionIdFuture);
+            cp.setHandler(ar -> {
+                if (ar.succeeded()) {
+
+                    ChatList chatList = cp.resultAt(1);
+
+                    ChatMessageResponse response = new ChatMessageResponse();
+                    response.setType(IWsMessage.TYPE_CHAT_MESSAGE_RESPONSE);
+                    response.setCreatedDate(chatMessage.getCreatedDate());
+                    response.setName(userFull.getFullName());
+                    response.setMessage(chatMessage.getMessage());
+                    response.setSessionId(chatMessage.getSessionId());
+                    response.setUserId(chatMessage.getUserHash().getUserId());
+                    for (UserHash userhash : chatList.getUserHashes()) {
+                        userWsChannelManager.sendMessage(response, userhash.getUserId());
+                    }
+
+                } else {
+                    throw new RuntimeException(ar.cause());
+                }
+            });
+
+        }, Future.future().setHandler(handler -> {
+            throw new RuntimeException(handler.cause());
+        }));
+    }
+
+    private void insertNewChatOfUser1AndUser2(TransferMessageRequest transferMessageRequest) {
+        List<String> userIds = new ArrayList<>();
+        userIds.add(transferMessageRequest.getSourceId().toString());
+        userIds.add(transferMessageRequest.getTargetId().toString());
+
+        Future<List<UserFull>> getUserFullsFuture = getUserFulls(userIds);
+        getUserFullsFuture.compose(userFulls -> {
+
+            List<UserHash> userHashes = new ArrayList<>();
+            for (UserFull userFull : userFulls) {
+                userHashes.add(new UserHash(userFull.getUserId(), userFull.getFullName()));
+            }
+            String sessionId = GenerationUtils.generateId();
+
+            ChatMessage chatMessage = new ChatMessage();
+            chatMessage.setUserHash(userHashes.get(0));
+            chatMessage.setSessionId(sessionId);
+            chatMessage.setMessage(transferMessageRequest.getMessage());
+            chatMessage.setCreatedDate(new Date());
+
+            ChatList chatList = new ChatList();
+            chatList.setSessionId(sessionId);
+            chatList.setUpdatedDate(new Date());
+            chatList.setUserHashes(userHashes);
+            chatList.setLastMessage(chatMessage.getMessage());
+            chatList.setUpdatedDate(chatMessage.getCreatedDate());
+
+            Future<ChatList> insertChatListFuture = dataRepository.insertChatList(chatList);
+
+            Future<ChatMessage> insertChatMessageFuture = dataRepository.insertChatMessage(chatMessage);
+
+            List<String> userFriendIds = userIds.subList(1, userIds.size());
+            Future<HashMap<String, Long>> increaseUnseenCountFuture = increaseUnseenCount(userFriendIds, chatList.getSessionId());
+
+            CompositeFuture cp = CompositeFuture.all(insertChatMessageFuture, insertChatListFuture, increaseUnseenCountFuture);
+            cp.setHandler(ar -> {
+                if (ar.succeeded()) {
+
+                    TransferMessageContent content = new TransferMessageContent();
+                    content.setSourceId(transferMessageRequest.getSourceId());
+                    content.setTargetId(transferMessageRequest.getTargetId());
+                    content.setAmount(transferMessageRequest.getAmount());
+                    content.setCreatedAt(transferMessageRequest.getCreatedAt());
+
+                    TransferMessageResponse transferMessageResponse = new TransferMessageResponse();
+                    transferMessageResponse.setType("transfer");
+                    transferMessageResponse.setContent(content);
+
+//                    NewChatSessionResponse newChatSessionResponse = new NewChatSessionResponse();
+//                    newChatSessionResponse.setType(IWsMessage.TYPE_CHAT_NEW_SESSION_RESPONSE);
+//                    newChatSessionResponse.setSessionId(chatMessage.getSessionId());
+                    for (UserHash userhash : chatList.getUserHashes()) {
+                        userWsChannelManager.sendMessage(transferMessageResponse, userhash.getUserId());
+                    }
+
+                } else {
+                    throw new RuntimeException(ar.cause());
+                }
+            });
+
+        }, Future.future().setHandler(handler -> {
+            throw new RuntimeException(handler.cause());
+        }));
+
+    }
+
+    public Future<String> getSessionIdOfUser1AndUser2(String userId1, String userId2) {
+        Future<String> future = Future.future();
+
+        String chatListKey = "chat:list:*:" + userId1 + ":" + userId2;
+        String chatListKeyReverse = "chat:list:*:" + userId2 + ":" + userId1;
+
+        List<Future> getKeysByPatternFutures = new ArrayList<>();
+
+        getKeysByPatternFutures.add(dataRepository.getKeysByPattern(chatListKey));
+        getKeysByPatternFutures.add(dataRepository.getKeysByPattern(chatListKeyReverse));
+
+        CompositeFuture cp = CompositeFuture.all(getKeysByPatternFutures);
+        cp.setHandler(ar -> {
+            if (ar.succeeded()) {
+
+                String sessionId = "";
+
+                List<String> keys = new ArrayList<>();
+                for (int index = 0; index < getKeysByPatternFutures.size(); ++index) {
+                    keys.addAll(cp.resultAt(index));
+                }
+
+                if (keys.size() > 0) {
+                    sessionId = keys.get(0).split(":")[2];
+                } else {
+                    sessionId = "-1";
+                }
+
+                future.complete(sessionId);
+            } else {
+                future.fail(ar.cause());
+            }
+        });
+
+        return future;
+    }
+
 }
