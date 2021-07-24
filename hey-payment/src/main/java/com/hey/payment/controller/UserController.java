@@ -66,6 +66,17 @@ public class UserController {
                 .payload(transferStatementDTOList).build());
     }
 
+    @PostMapping("/createWallet")
+    public ResponseEntity<ApiResponse<?>> createWallet(){
+        User user = getCurrentUser();
+        WalletDTO walletDTO = walletService.createWallet(user);
+        return ResponseEntity.ok(ApiResponse.builder()
+                .success(true)
+                .code(HttpStatus.OK.value())
+                .message("Create wallet successfully")
+                .payload(walletDTO).build());
+    }
+
     private User getCurrentUser(){
         return (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     }
