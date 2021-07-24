@@ -63,13 +63,13 @@ entity "transfer_statements" as transfer_statements #Aqua {
 entity "lucky_moneys" as lucky_moneys #Yellow{
     *id: number  <<generated>>
     --
-    user_wallet_id: number <<FK>>
+    user_id: number <<FK>>
     system_wallet_id: number <<FK>>
     session_chat_id: number
     amount: number
     rest_money: number
     rest_bag: number
-    bag_number: number
+    number_bag: number
     type: varchar
     wish_message: string
     created_at: timestamp

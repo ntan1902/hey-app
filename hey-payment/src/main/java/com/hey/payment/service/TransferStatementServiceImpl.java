@@ -96,7 +96,7 @@ public class TransferStatementServiceImpl implements TransferStatementService {
                 .targetId(createTransferRequest.getTargetId())
                 .amount(softTokenEncoded.getAmount())
                 .message(createTransferRequest.getMessage())
-                .createdAt(transferStatement.getCreatedAt())
+                .createdAt(transferStatement.getCreatedAt().toString())
                 .build());
     }
 
@@ -203,8 +203,8 @@ public class TransferStatementServiceImpl implements TransferStatementService {
     @Override
     @Transactional
     public void topUp(User user, TopupRequest topupRequest) {
-        log.info("Topup for user {} by bank {} with {}", user.getId(), topupRequest.getBank_id(), topupRequest.getAmount());
-        Wallet bankWallet = walletRepository.findByOwnerIdAndRefFrom(topupRequest.getBank_id(), OwnerWalletRefFrom.SYSTEMS)
+        log.info("Topup for user {} by bank {} with {}", user.getId(), topupRequest.getBankId(), topupRequest.getAmount());
+        Wallet bankWallet = walletRepository.findByOwnerIdAndRefFrom(topupRequest.getBankId(), OwnerWalletRefFrom.SYSTEMS)
                 .orElseThrow(() -> {
                     throw new BankInvalidException();
                 });
@@ -273,6 +273,6 @@ public class TransferStatementServiceImpl implements TransferStatementService {
     }
 
     private Long calculateTransferFee() {
-        return Long.valueOf(0);
+        return 0L;
     }
 }

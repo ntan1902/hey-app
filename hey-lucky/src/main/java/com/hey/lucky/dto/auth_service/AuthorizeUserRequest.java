@@ -1,4 +1,4 @@
-package com.hey.payment.dto.user;
+package com.hey.lucky.dto.auth_service;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -6,10 +6,9 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
 @Builder
-public class TopupRequest {
-    private long amount;
-    private long bankId;
+public class AuthorizeUserRequest {
+    String jwtUser;
 }

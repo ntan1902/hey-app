@@ -64,7 +64,12 @@ public class UserController {
     public ResponseEntity<ApiResponse<?>> getTransferStatement(){
         User user = getCurrentUser();
         List<TransferStatementDTO> transferStatementDTOList = transferStatementService.getTransferStatementOfUser(user.getId());
-        return null;
+        return ResponseEntity.ok(ApiResponse.builder()
+                .success(true)
+                .code(HttpStatus.OK.value())
+                .message("")
+                .payload(transferStatementDTOList)
+                .build());
     }
 
     private User getCurrentUser(){

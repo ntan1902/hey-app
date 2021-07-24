@@ -1,9 +1,9 @@
-package com.hey.payment.config;
+package com.hey.lucky.config;
 
-import com.hey.payment.config.RestTemplateConfig.RestTemplateErrHandler;
-import com.hey.payment.config.RestTemplateConfig.RestTemplateRequestInterceptor;
-import com.hey.payment.dto.auth_service.LoginRequest;
-import com.hey.payment.dto.auth_service.LoginResponse;
+import com.hey.lucky.config.RestTemplateConfig.RestTemplateErrHandler;
+import com.hey.lucky.config.RestTemplateConfig.RestTemplateRequestInterceptor;
+import com.hey.lucky.dto.auth_service.LoginRequest;
+import com.hey.lucky.dto.auth_service.LoginResponse;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpEntity;
@@ -41,7 +41,7 @@ public class ApplicationConfig {
     }
 
     public void loginToAuthService(RestTemplate restTemplate){
-        restTemplate.setUriTemplateHandler(new DefaultUriBuilderFactory("http://07c063d1e264.ap.ngrok.io/api/v1/systems"));
+        restTemplate.setUriTemplateHandler(new DefaultUriBuilderFactory("http://89268aa87b25.ap.ngrok.io/api/v1/systems"));
         HttpEntity<LoginRequest> authRequestHttpEntity = new HttpEntity<>(new LoginRequest("payment", "123456"));
         LoginResponse loginResponse = restTemplate.postForObject("/login", authRequestHttpEntity, LoginResponse.class);
         String jwtService = loginResponse.getPayload().getTokenType() + " " + loginResponse.getPayload().getAccessToken();
