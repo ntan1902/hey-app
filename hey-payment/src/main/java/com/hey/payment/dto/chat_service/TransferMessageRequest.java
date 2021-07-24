@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@AllArgsConstructor
 public class TransferMessageRequest {
     long sourceId;
     long targetId;

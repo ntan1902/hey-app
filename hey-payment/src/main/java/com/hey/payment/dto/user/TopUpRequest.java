@@ -1,4 +1,4 @@
-package com.hey.payment.dto.auth_service;
+package com.hey.payment.dto.user;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -6,10 +6,10 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 @Builder
-public class SoftTokenEncoded {
-    long userId;
-    long amount;
+public class TopUpRequest {
+    private long amount;
+    private long bankId;
 }

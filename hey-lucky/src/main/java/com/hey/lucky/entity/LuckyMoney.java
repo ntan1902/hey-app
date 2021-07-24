@@ -1,9 +1,19 @@
 package com.hey.lucky.entity;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import javax.persistence.*;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "lucky_moneys")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class LuckyMoney {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,4 +35,15 @@ public class LuckyMoney {
 
     @Column(name = "rest_bag")
     private int restBag;
+
+    String type;
+
+    @Column(name = "wish_message")
+    String wishMessage;
+
+    @Column(name = "created_at")
+    LocalDateTime createdAt;
+
+    @Column(name = "expired_at")
+    LocalDateTime expiredAt;
 }

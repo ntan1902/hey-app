@@ -1,7 +1,7 @@
 package com.hey.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.hey.handler.WsHandler;
+import com.hey.handler.ws.WsHandler;
 import com.hey.manager.JwtManager;
 import com.hey.manager.UserWsChannelManager;
 import com.hey.model.ChatContainerRequest;
@@ -57,11 +57,11 @@ public class WsServer {
                 if (!StringUtils.isBlank(query)) {
                     String jwt = query.substring(query.indexOf('=') + 1);
                     if (!StringUtils.isBlank(jwt)) {
-                        JsonObject authObj = new JsonObject().put("jwt", jwt);
+                        JsonObject authObj = new JsonObject().put("jwtUser", jwt);
                         jwtManager.authenticate(authObj, event -> {
                             if (event.succeeded()) {
                                 String userId = event.result().principal().getString("userId");
-                                LogUtils.log("User " + userId + " registering new connection with id: " + id );
+                                LogUtils.log("User " + userId + " registering new connection with id: " + id);
                                 LOGGER.info("registering new connection with id: " + id + " for user: " + userId);
                                 userWsChannelManager.registerChannel(userId, id).setHandler(ar -> handleNotificationCase(ar, userId, true));
 

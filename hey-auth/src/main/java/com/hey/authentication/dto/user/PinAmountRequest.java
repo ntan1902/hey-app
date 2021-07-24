@@ -1,15 +1,13 @@
-package com.hey.payment.dto.user;
+package com.hey.authentication.dto.user;
 
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
-@Builder
-public class TopupRequest {
+@NoArgsConstructor
+public class PinAmountRequest {
+    private String pin;
     private long amount;
-    private long bankId;
 }

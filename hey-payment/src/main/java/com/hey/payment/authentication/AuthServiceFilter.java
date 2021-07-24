@@ -42,14 +42,14 @@ public class AuthServiceFilter extends OncePerRequestFilter {
             String token = getTokenFromRequest(request);
             if (StringUtils.hasText(token)) {
                 UsernamePasswordAuthenticationToken authenticationToken = null;
-                if (request.getServletPath().contains("/api/v1/users")) {
+                if (request.getServletPath().contains("/api/v1/me")) {
                     log.info("Authorize user with token {}", token);
                     User user = new User(authorizeUser(token));
-                    authenticationToken = new UsernamePasswordAuthenticationToken(user, null, new ArrayList<>());
+                    authenticationToken = new UsernamePasswordAuthenticationToken(user, null, null);
                 } else if (request.getServletPath().contains("/api/v1/systems")) {
                     log.info("Authorize system with token {}", token);
                     System system = new System(authorizeSystem(token));
-                    authenticationToken = new UsernamePasswordAuthenticationToken(system, null, new ArrayList<>());
+                    authenticationToken = new UsernamePasswordAuthenticationToken(system, null, null);
                 }
                 SecurityContextHolder.getContext().setAuthentication(authenticationToken);
             }

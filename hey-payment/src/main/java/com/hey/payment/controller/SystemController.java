@@ -32,7 +32,7 @@ public class SystemController {
     @GetMapping("/getAllWallets")
     public ResponseEntity<ApiResponse> getAllWalletOfSystem() {
         System system = getCurrentSystem();
-        log.info("System {} getAllWalletOfSystem",system.getId());
+        log.info("System {} getAllWalletOfSystem", system.getId());
         List<WalletSystemDTO> walletSystemDTOList = walletService.getAllWalletOfSystem(system);
         return ResponseEntity.ok(ApiResponse.builder()
                 .success(true)
@@ -42,27 +42,17 @@ public class SystemController {
     }
 
     @PostMapping("/createTransferToUser")
-    public ResponseEntity<ApiResponse> createTransferToUser(SystemCreateTransferToUserRequest request){
+    public ResponseEntity<ApiResponse> createTransferToUser(SystemCreateTransferToUserRequest request) {
         System system = getCurrentSystem();
-        log.info("System {} createTransferToUser",system.getId());
-        transferStatementService.systemCreateTransferToUser(system,request);
-        return ResponseEntity.ok(ApiResponse.builder()
-                .success(true)
-                .code(HttpStatus.OK.value())
-                .payload("")
-                .build());
+        log.info("System {} createTransferToUser", system.getId());
+        return ResponseEntity.ok(transferStatementService.systemCreateTransferToUser(system, request));
     }
 
     @PostMapping("/createTransferFromUser")
-    public ResponseEntity<ApiResponse> createTransferFromUser(SystemCreateTransferFromUserRequest request){
+    public ResponseEntity<ApiResponse> createTransferFromUser(SystemCreateTransferFromUserRequest request) {
         System system = getCurrentSystem();
-        log.info("System {} createTransferFromUser",system.getId());
-        transferStatementService.systemCreateTransferFromUser(system,request);
-        return ResponseEntity.ok(ApiResponse.builder()
-                .success(true)
-                .code(HttpStatus.OK.value())
-                .payload("")
-                .build());
+        log.info("System {} createTransferFromUser", system.getId());
+        return ResponseEntity.ok(transferStatementService.systemCreateTransferFromUser(system, request));
     }
 
     private System getCurrentSystem() {

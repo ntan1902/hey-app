@@ -8,7 +8,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
 
-@Mapper(componentModel = "spring",injectionStrategy = InjectionStrategy.FIELD)
+@Mapper(componentModel = "spring", injectionStrategy = InjectionStrategy.FIELD)
 public interface TransferStatementMapper {
     TransferStatementDTO ts2TsDTO(TransferStatement transferStatement);
 

@@ -1,6 +1,6 @@
-package com.hey.payment.config.RestTemplateConfig;
+package com.hey.payment.config.rest_template;
 
-import com.hey.payment.exception_handler.exception.UnauthorizeException;
+import com.hey.payment.exception_handler.exception.UnauthorizedException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.web.client.ResponseErrorHandler;
@@ -22,7 +22,7 @@ public class RestTemplateErrHandler implements ResponseErrorHandler {
     public void handleError(ClientHttpResponse httpResponse) throws IOException {
         switch (httpResponse.getStatusCode().value()){
             case 400:{
-                throw new UnauthorizeException("Unauthorize!");
+                throw new UnauthorizedException("Unauthorized!");
             }
         }
     }

@@ -1,19 +1,24 @@
 package com.hey.manager;
 
 import com.hey.authentication.AuthService;
+import com.hey.util.HttpStatus;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
 import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
+import io.vertx.core.http.HttpHeaders;
+import io.vertx.core.http.HttpServerRequest;
 import io.vertx.core.json.JsonObject;
 import io.vertx.core.shareddata.AsyncMap;
 import io.vertx.core.shareddata.SharedData;
 import io.vertx.ext.auth.User;
+import io.vertx.ext.web.handler.impl.HttpStatusException;
+import org.apache.commons.lang3.StringUtils;
 
 public class JwtManager {
     private SharedData sharedData;
     private AuthService authService;
-    private static final String JWT_ASYNC_MAP = "jwt-async-map";
+    public static final String AUTHENTICATION_SCHEME = "Bearer";
 
 
     public JwtManager(Vertx vertx) {
@@ -25,31 +30,15 @@ public class JwtManager {
     }
 
     public void authenticate(JsonObject authInfo, Handler<AsyncResult<User>> resultHandler) {
-        String jwt = authInfo.getString("jwt");
-        JsonObject jsonObject = new JsonObject().put("jwtUser", jwt);
-        checkForExistingAsynMap(jwt).setHandler(event -> {
-            if (event.result()) {
-                resultHandler.handle(Future.failedFuture("Token has been blacklist"));
-            } else {
-                authService.authenticate(jsonObject, resultHandler);
-            }
-        });
-
+        authService.authenticate(authInfo, resultHandler);
     }
 
-    private Future<Boolean> checkForExistingAsynMap(String token) {
-        Future<Boolean> future = Future.future();
-        sharedData.getAsyncMap(JWT_ASYNC_MAP, event -> {
-            AsyncMap<Object, Object> aMap = event.result();
-            aMap.get(token, event2 -> {
-                if (event2.result() != null) {
-                    future.complete(true);
-                } else {
-                    future.complete(false);
-                }
-            });
-        });
-        return future;
+    public String getTokenFromRequest(HttpServerRequest request) {
+        String authorization = request.headers().get(HttpHeaders.AUTHORIZATION);
+        if (StringUtils.isBlank(authorization)) {
+            throw new HttpStatusException(HttpStatus.UNAUTHORIZED.code(), HttpStatus.UNAUTHORIZED.message());
+        }
+        return authorization.replace(AUTHENTICATION_SCHEME, "").trim();
     }
 
     public void setSharedData(SharedData sharedData) {

@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 @Log4j2
 public class UserExceptionHandler {
-        private ResponseEntity<ApiResponse> getResponse(HttpStatus code, String message) {
+    private ResponseEntity<ApiResponse> getResponse(HttpStatus code, String message) {
         ApiResponse apiResponse = ApiResponse.builder()
                 .success(false)
                 .code(code.value())
@@ -22,34 +22,66 @@ public class UserExceptionHandler {
         // 2. Return response entity
         return new ResponseEntity<>(apiResponse, code);
     }
-    @ExceptionHandler(value = {UnauthorizeException.class})
+
+    @ExceptionHandler(value = {UnauthorizedException.class})
     public ResponseEntity<ApiResponse> handleException(Exception exception) {
         log.error(exception.getMessage());
         HttpStatus code = HttpStatus.UNAUTHORIZED;
         return getResponse(code, "Unauthorize!");
     }
+
     @ExceptionHandler(value = {HaveNoWalletException.class})
     public ResponseEntity<ApiResponse> handleNoWalletException(Exception exception) {
         log.error(exception.getMessage());
         HttpStatus code = HttpStatus.BAD_REQUEST;
         return getResponse(code, exception.getMessage());
     }
+
     @ExceptionHandler(value = {BalanceNotEnoughException.class})
-    public ResponseEntity<ApiResponse> handleBalanceNotEnoughException(Exception exception){
+    public ResponseEntity<ApiResponse> handleBalanceNotEnoughException(Exception exception) {
         log.error(exception.getMessage());
         HttpStatus code = HttpStatus.BAD_REQUEST;
         return getResponse(code, exception.getMessage());
     }
+
     @ExceptionHandler(value = {ApiErrException.class})
-    public ResponseEntity<ApiResponse> handleApiErrException(Exception exception){
+    public ResponseEntity<ApiResponse> handleApiErrException(Exception exception) {
         log.error(exception.getMessage());
         HttpStatus code = HttpStatus.INTERNAL_SERVER_ERROR;
         return getResponse(code, exception.getMessage());
     }
+
     @ExceptionHandler(value = {SoftTokenAuthorizeException.class})
-    public ResponseEntity<ApiResponse> handleSoftTokenAuthorizeException(Exception exception){
+    public ResponseEntity<ApiResponse> handleSoftTokenAuthorizeException(Exception exception) {
         log.error(exception.getMessage());
         HttpStatus code = HttpStatus.UNAUTHORIZED;
+        return getResponse(code, exception.getMessage());
+    }
+
+    @ExceptionHandler(value = {NegativeAmountException.class})
+    public ResponseEntity<ApiResponse> handleNegativeAmountException(Exception exception) {
+        log.error(exception.getMessage());
+        HttpStatus code = HttpStatus.BAD_REQUEST;
+        return getResponse(code, exception.getMessage());
+    }
+
+    @ExceptionHandler(value = {MaxAmountException.class})
+    public ResponseEntity<ApiResponse> handleMaxAmountException(Exception exception){
+        log.error(exception.getMessage());
+        HttpStatus code = HttpStatus.BAD_REQUEST;
+        return getResponse(code, exception.getMessage());
+    }
+    @ExceptionHandler(value = {MaxBalanceException.class})
+    public ResponseEntity<ApiResponse> handleMaxBalanceException(Exception exception) {
+        log.error(exception.getMessage());
+        HttpStatus code = HttpStatus.BAD_REQUEST;
+        return getResponse(code, exception.getMessage());
+    }
+
+    @ExceptionHandler(value = {HadWalletException.class})
+    public ResponseEntity<ApiResponse> handleHadWalletException(Exception exception) {
+        log.error(exception.getMessage());
+        HttpStatus code = HttpStatus.BAD_REQUEST;
         return getResponse(code, exception.getMessage());
     }
 }
