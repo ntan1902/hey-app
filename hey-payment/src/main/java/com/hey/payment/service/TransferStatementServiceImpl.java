@@ -1,5 +1,6 @@
 package com.hey.payment.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hey.payment.api.AuthApi;
 import com.hey.payment.api.ChatApi;
 import com.hey.payment.constant.OwnerWalletRefFrom;
@@ -26,10 +27,16 @@ import com.hey.payment.repository.TransferStatementRepository;
 import com.hey.payment.repository.WalletRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.hibernate.Hibernate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+
+import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Log4j2
@@ -48,7 +55,8 @@ public class TransferStatementServiceImpl implements TransferStatementService {
     private final AuthApi authApi;
 
     @Override
-    public void createTransfer(User user, CreateTransferRequest createTransferRequest) {
+    @Transactional(propagation = Propagation.REQUIRED)
+    public ApiResponse createTransfer(User user, CreateTransferRequest createTransferRequest) {
         log.info("User {} transfer to user {} with soft token {}", user.getId(), createTransferRequest.getTargetId(), createTransferRequest.getSoftToken());
 
         long sourceId = user.getId();
@@ -92,16 +100,22 @@ public class TransferStatementServiceImpl implements TransferStatementService {
                 .amount(amount)
                 .status(TransferStatus.PROCESSING)
                 .transferFee(calculateTransferFee())
+                .createdAt(LocalDateTime.now())
                 .build();
         transferStatementRepository.save(transferStatement);
 
         // Transfer money
         try {
-            transferMoney(sourceWallet.getId(), targetWallet.getId(), softTokenEncoded.getAmount());
+            transferMoney(sourceWallet.getId(), targetWallet.getId(), amount);
         } catch (BalanceNotEnoughException exception) {
             transferStatement.setStatus(TransferStatus.FAIL);
             transferStatementRepository.save(transferStatement);
-            throw exception;
+            return ApiResponse.builder()
+                    .success(false)
+                    .code(400)
+                    .message("Transfer failed")
+                    .payload("")
+                    .build();
         }
 
         // Transfer money successfully
@@ -111,10 +125,16 @@ public class TransferStatementServiceImpl implements TransferStatementService {
         chatApi.createTransferMessage(TransferMessageRequest.builder()
                 .sourceId(sourceId)
                 .targetId(targetId)
-                .amount(softTokenEncoded.getAmount())
+                .amount(amount)
                 .message(message)
                 .createdAt(transferStatement.getCreatedAt().toString())
                 .build());
+        return ApiResponse.builder()
+                .success(true)
+                .code(201)
+                .message("Transfer success")
+                .payload("")
+                .build();
     }
 
     @Override
@@ -214,13 +234,14 @@ public class TransferStatementServiceImpl implements TransferStatementService {
         transferStatementRepository.save(transferStatement);
     }
 
-    @Transactional
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void transferMoney(long sourceWalletId, long targetWalletId, long amount) {
         // Get and lock 2 wallets
         Wallet sourceWallet = walletRepository.getWalletById(sourceWalletId)
                 .orElseThrow(() -> {
                     throw new WrongSourceException();
                 });
+
         Wallet targetWallet = walletRepository.getWalletById(targetWalletId)
                 .orElseThrow(() -> {
                     throw new WrongTargetException();
@@ -287,6 +308,7 @@ public class TransferStatementServiceImpl implements TransferStatementService {
                     .orElseThrow(() -> {
                         throw new DatabaseHasErr();
                     });
+
             OwnerInfo targetOwner = getOwnerInfo(targetWallet.getOwnerId(), targetWallet.getRefFrom());
             transferStatementDTO.setTarget(targetOwner);
             return transferStatementDTO;
@@ -296,6 +318,7 @@ public class TransferStatementServiceImpl implements TransferStatementService {
     private OwnerInfo getOwnerInfo(long ownerId, String refFrom) {
         if (refFrom.equals(OwnerWalletRefFrom.USERS)) {
             ApiResponse<UserInfo> apiResponse = authApi.getUserInfo(ownerId);
+
             if (apiResponse.isSuccess()) {
                 return apiResponse.getPayload();
             } else {

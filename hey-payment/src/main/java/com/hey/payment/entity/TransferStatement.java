@@ -13,6 +13,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@Table(name="transfer_statements")
 public class TransferStatement {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

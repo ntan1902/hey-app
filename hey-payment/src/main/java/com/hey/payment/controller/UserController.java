@@ -37,11 +37,9 @@ public class UserController {
     @PostMapping("/createTransfer")
     public ResponseEntity<ApiResponse<?>> createTransfer(@RequestBody CreateTransferRequest createTransferRequest){
         User user = getCurrentUser();
-        transferStatementService.createTransfer(user, createTransferRequest);
-        return ResponseEntity.ok(ApiResponse.builder()
-                .success(true)
-                .code(HttpStatus.OK.value())
-                .message("Transfer success").build());
+        return ResponseEntity.ok(
+                transferStatementService.createTransfer(user, createTransferRequest)
+        );
     }
 
     @PostMapping("/topup")
@@ -57,7 +55,7 @@ public class UserController {
     }
 
 
-    @PostMapping("/getTransferStatement")
+    @GetMapping("/getTransferStatement")
     public ResponseEntity<ApiResponse<?>> getTransferStatement(){
         User user = getCurrentUser();
         List<TransferStatementDTO> transferStatementDTOList = transferStatementService.getTransferStatementOfUser(user.getId());
