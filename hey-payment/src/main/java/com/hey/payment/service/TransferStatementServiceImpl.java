@@ -122,6 +122,7 @@ public class TransferStatementServiceImpl implements TransferStatementService {
         transferStatement.setStatus(TransferStatus.SUCCESS);
         transferStatementRepository.save(transferStatement);
 
+        log.info("Send api transfer message to hey-chat: ");
         chatApi.createTransferMessage(TransferMessageRequest.builder()
                 .sourceId(sourceId)
                 .targetId(targetId)
