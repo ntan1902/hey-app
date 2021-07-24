@@ -12,6 +12,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestTemplate;
@@ -42,15 +43,16 @@ public class AuthServiceFilter extends OncePerRequestFilter {
             String token = getTokenFromRequest(request);
             if (StringUtils.hasText(token)) {
                 UsernamePasswordAuthenticationToken authenticationToken = null;
-                if (request.getServletPath().contains("/api/v1/users")) {
+                if (request.getServletPath().contains("/api/v1/me")) {
                     log.info("Authorize user with token {}", token);
                     User user = new User(authorizeUser(token));
-                    authenticationToken = new UsernamePasswordAuthenticationToken(user, null, new ArrayList<>());
+                    authenticationToken = new UsernamePasswordAuthenticationToken(user, null, null);
                 } else if (request.getServletPath().contains("/api/v1/systems")) {
                     log.info("Authorize system with token {}", token);
                     System system = new System(authorizeSystem(token));
-                    authenticationToken = new UsernamePasswordAuthenticationToken(system, null, new ArrayList<>());
+                    authenticationToken = new UsernamePasswordAuthenticationToken(system, null, null);
                 }
+                authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(authenticationToken);
             }
         } catch (Exception e) {
