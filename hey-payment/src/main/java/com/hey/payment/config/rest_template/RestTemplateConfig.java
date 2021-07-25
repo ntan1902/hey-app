@@ -1,10 +1,7 @@
 package com.hey.payment.config.rest_template;
 
-import com.hey.payment.config.rest_template.RestTemplateErrHandler;
-import com.hey.payment.config.rest_template.RestTemplateRequestInterceptor;
-import com.hey.payment.dto.auth_service.LoginRequest;
-import com.hey.payment.dto.auth_service.LoginResponse;
-import lombok.AllArgsConstructor;
+import com.hey.payment.dto.auth_system.LoginRequest;
+import com.hey.payment.dto.auth_system.LoginResponse;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -23,7 +20,6 @@ import java.util.List;
 public class RestTemplateConfig {
     @Value("${AUTH_SYSTEM}")
     private String AUTH_SYSTEM;
-
 
     @Value("${SYSTEM_NAME}")
     private String SYSTEM_NAME;

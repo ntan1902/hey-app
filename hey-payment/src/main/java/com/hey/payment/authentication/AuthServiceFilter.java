@@ -1,9 +1,9 @@
 package com.hey.payment.authentication;
 
-import com.hey.payment.dto.auth_service.AuthorizeSystemRequest;
-import com.hey.payment.dto.auth_service.AuthorizeSystemResponse;
-import com.hey.payment.dto.auth_service.AuthorizeUserRequest;
-import com.hey.payment.dto.auth_service.AuthorizeUserResponse;
+import com.hey.payment.dto.auth_system.AuthorizeSystemRequest;
+import com.hey.payment.dto.auth_system.AuthorizeSystemResponse;
+import com.hey.payment.dto.auth_system.AuthorizeUserRequest;
+import com.hey.payment.dto.auth_system.AuthorizeUserResponse;
 import com.hey.payment.entity.System;
 import com.hey.payment.entity.User;
 import lombok.extern.log4j.Log4j2;
@@ -22,7 +22,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.ArrayList;
 
 @Log4j2
 @Component

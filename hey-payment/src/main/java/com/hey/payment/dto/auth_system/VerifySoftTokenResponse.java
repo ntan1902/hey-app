@@ -1,4 +1,4 @@
-package com.hey.payment.dto.auth_service;
+package com.hey.payment.dto.auth_system;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -6,18 +6,19 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
 @Builder
-public class AuthorizeUserResponse {
+public class VerifySoftTokenResponse {
     @Data
     @NoArgsConstructor
     @AllArgsConstructor
-    public class Payload {
+    public static class SoftTokenEncoded {
         long userId;
+        long amount;
     }
     Boolean success;
     int code;
     String message;
-    Payload payload;
+    SoftTokenEncoded payload;
 }

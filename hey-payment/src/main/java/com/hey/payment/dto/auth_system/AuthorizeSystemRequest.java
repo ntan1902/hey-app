@@ -1,4 +1,4 @@
-package com.hey.payment.dto.auth_service;
+package com.hey.payment.dto.auth_system;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,6 +9,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class AuthorizeUserRequest {
-    String jwtUser;
+public class AuthorizeSystemRequest {
+    String jwtSystem;
 }

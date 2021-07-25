@@ -1,4 +1,4 @@
-package com.hey.authentication.dto.system;
+package com.hey.payment.dto.system;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -10,5 +10,5 @@ import lombok.NoArgsConstructor;
 public class SystemDTO {
     private long id;
     private String systemName;
-    private long numberOfWallet;
+    private int numberOfWallet;
 }

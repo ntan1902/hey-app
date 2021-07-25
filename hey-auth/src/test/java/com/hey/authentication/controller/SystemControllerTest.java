@@ -225,7 +225,7 @@ class SystemControllerTest {
         // given
         Long systemId = 1L;
 
-        SystemDTO payload = new SystemDTO("payment", 0);
+        SystemDTO payload = new SystemDTO(1L, "payment", 0);
 
         given(systemService.findById(systemId)).willReturn(payload);
 

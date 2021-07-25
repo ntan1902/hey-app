@@ -1,4 +1,4 @@
-package com.hey.payment.dto.auth_service;
+package com.hey.payment.dto.auth_system;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

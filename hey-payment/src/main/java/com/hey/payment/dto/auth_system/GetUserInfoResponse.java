@@ -1,5 +1,4 @@
-package com.hey.payment.dto.auth_service;
-
+package com.hey.payment.dto.auth_system;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -10,15 +9,18 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class AuthorizeSystemResponse {
+public class GetUserInfoResponse {
     @Data
     @NoArgsConstructor
     @AllArgsConstructor
-    public class Payload {
-        long systemId;
+    public static class UserInfo extends OwnerInfo{
+        private long id;
+        private String username;
+        private String email;
+        private String fullName;
     }
     Boolean success;
     int code;
     String message;
-    Payload payload;
+    UserInfo payload;
 }

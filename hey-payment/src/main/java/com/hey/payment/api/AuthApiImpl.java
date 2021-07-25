@@ -1,7 +1,6 @@
 package com.hey.payment.api;
 
-import com.hey.payment.dto.auth_service.*;
-import com.hey.payment.dto.user.ApiResponse;
+import com.hey.payment.dto.auth_system.*;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpEntity;
 import org.springframework.stereotype.Component;
