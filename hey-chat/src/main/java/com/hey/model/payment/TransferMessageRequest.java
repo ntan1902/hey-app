@@ -1,12 +1,11 @@
-package com.hey.model;
+package com.hey.model.payment;
 
-public class TransferMessageContent {
+public class TransferMessageRequest {
     private Long sourceId;
     private Long targetId;
     private Long amount;
     private String message;
     private String createdAt;
-    private String sessionId;
 
     public Long getSourceId() {
         return sourceId;
