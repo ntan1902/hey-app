@@ -11,6 +11,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/v1/systems")
 @AllArgsConstructor
@@ -79,6 +81,17 @@ public class SystemController {
     @GetMapping("/getUserInfo/{userId}")
     public ResponseEntity<ApiResponse> getUserInfo(@PathVariable("userId") Long userId){
         UserDTO payload = userService.findById(userId);
+        return ResponseEntity.ok(ApiResponse.builder()
+                .success(true)
+                .code(HttpStatus.OK.value())
+                .message("")
+                .payload(payload)
+                .build());
+    }
+
+    @GetMapping("/getSystems")
+    public ResponseEntity<ApiResponse> getSystems() {
+        List<SystemDTO> payload = systemService.getSystems();
         return ResponseEntity.ok(ApiResponse.builder()
                 .success(true)
                 .code(HttpStatus.OK.value())
