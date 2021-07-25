@@ -10,48 +10,40 @@ skinparam linetype ortho
 entity "users" as users #Aqua{
     *id: number <<generated>>
     --
-    wallet_id: number <<FK>>
     username: varchar
     email: varchar
     password: varchar
-    fullname: varchar
-    media: profile image
+    full_name: varchar
     pin: varchar
 }
 
-' LuckyMoney Service: 
-' - service_name: LuckyMoney
-' - service_key: 
-' ----> Request Auth Service -> JWToken Service 
+' LuckyMoney system: 
+' - system_name: LuckyMoney
+' - system_key: 
+' ----> Request Auth system -> JWToken system 
 ' LuckyMoney vS Payment 
-' LuckyMoney ----> Request Auth Service -> JWToken Service
+' LuckyMoney ----> Request Auth system -> JWToken system
 ' LuckyMoney dùng JWToken vừa có để request danh sách  wallets của nó
 ' sử dụng list wallets này ntn thì tuỳ nó 
 
 ' LuckyMoney request lên payment chuyển tiền. Tới... với cái
 ' wallet id nào của nó  
 
-entity "services" #Aqua{
+entity "systems" #Aqua{
     *id: number <<generated>>
     --
-    service_name: varchar
-    service_key: varchar
-    media: profile image
+    system_name: varchar
+    system_key: varchar
 }
-
-entity "service_wallets" #Aqua{
-    *wallet_id: number <<FK>>
-    --
-    service_account_id: number <<FK>>
-}
-
 
 
 entity "wallets" as wallets #Aqua{
     *id: number <<generated>>
     --
     balance: number    
+    owner_id: number
     ref_from: varchar
+    
 }
 
 entity "transfer_statements" as transfer_statements #Aqua {
@@ -64,6 +56,7 @@ entity "transfer_statements" as transfer_statements #Aqua {
     created_at: timestamp
     status: number
     transfer_fee: number
+    description: string
     transfer_type: varchar
 }
 
@@ -78,6 +71,7 @@ entity "lucky_moneys" as lucky_moneys #Yellow{
     rest_bag: number
     bag_number: number
     type: varchar
+    wish_message: string
     created_at: timestamp
     expired_at: timestamp
 }
@@ -101,8 +95,7 @@ wallets ||.up.o{ received_luckey_moneys
 
 users ||.left.|| wallets
 
-services ||..o{ service_wallets
-wallets ||..|| service_wallets
+systems ||..o{ wallets
 
 
 lucky_moneys ||.right.o{ received_luckey_moneys

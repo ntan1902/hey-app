@@ -1,0 +1,2111 @@
+openapi: 3.0.0
+servers:
+  # Added by API Auto Mocking Plugin
+  - description: SwaggerHub API Auto Mocking
+    url: https://virtserver.swaggerhub.com/OISP/oisp_app/1.0.0
+  - description: SwaggerHub API Auto Mocking
+    url: http://api.oispyouthunion.vn/
+
+info:
+  version: "1.0.0"
+  title: BKOS
+  description: >-
+    This is an example of using OAuth2 Application Flow in a specification to
+    describe security to your API.
+  contact:
+    email: lygioian@gmail.com
+  license:
+    name: Apache 2.0
+    url: "http://www.apache.org/licenses/LICENSE-2.0.html"
+
+tags:
+  - name: Event
+    description: API for Event
+  - name: Report
+    description: API for Report
+  - name: User
+    description: API for User
+
+security:
+  - application:
+      - read
+      - write
+
+paths:
+  # =====================
+  /event:
+    #+++++++++++++
+    post:
+      tags:
+        - Event
+      summary: Create a new event
+      description: Create a new event
+
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/EventInformation"
+        description: Details of movie to be booked
+
+      responses:
+        "200":
+          description: Create event successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/Success200"
+                  - type: object
+                    properties:
+                      payload:
+                        type: string
+                        example: "604f5bd5900a422750fe0ab1"
+  # =====================
+  /event/{event_id}:
+    #+++++++++++++
+    patch:
+      tags:
+        - Event
+      summary: Edit an event information
+      description: Edit an event information
+
+      parameters:
+        - in: path
+          name: event_id
+          description: event ID
+          required: true
+          schema:
+            type: string
+            example: "604f5bd5900a422750fe0ab1"
+
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/EventInformation"
+        description: Details of movie to be booked
+
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  code:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                    example: "Successfully"
+                  payload:
+                    type: integer
+                    example: 1
+    #+++++++++++++
+    delete:
+      tags:
+        - Event
+      summary: Delete Event by ID
+      description: Only event which has not been verified (verifyStatus = 'PREPARING') is deleted
+      parameters:
+        - in: path
+          name: event_id
+          description: event ID
+          required: true
+          schema:
+            type: string
+            example: "604f5bd5900a422750fe0ab1"
+
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  code:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                    example: "Successfully"
+                  payload:
+                    type: string
+                    example: "604f5bd5900a422750fe0ab1"
+
+  # =====================
+  /event/open:
+    get:
+      tags:
+        - Event
+      summary: Get Open Events
+      description: Get a list of all events that register form is available
+
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  code:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                    example: "Successfully"
+                  payload:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Event"
+  # =====================
+  /event/open/{event_id}:
+    get:
+      tags:
+        - Event
+      summary: Get Open Event By ID
+      description: Get a specific event that register form is available
+
+      parameters:
+        - in: path
+          name: event_id
+          description: event ID
+          required: true
+          schema:
+            type: string
+            example: "604f5bd5900a422750fe0ab1"
+
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  code:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                    example: "Successfully"
+                  payload:
+                    $ref: "#/components/schemas/Event"
+  # =====================
+  /event/created:
+    get:
+      tags:
+        - Event
+      summary: Get Created Events
+      description: This API is for User as CREATOR Role to get all events he/she created
+
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  code:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                    example: "Successfully"
+                  payload:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Event"
+  # =====================
+  /event/created/{event_id}:
+    get:
+      tags:
+        - Event
+      summary: Get Created Event By ID
+      description: CREATOR get a created event by ID
+
+      parameters:
+        - in: path
+          name: event_id
+          description: event ID
+          required: true
+          schema:
+            type: string
+            example: "604f5bd5900a422750fe0ab1"
+
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  code:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                    example: "Successfully"
+                  payload:
+                    $ref: "#/components/schemas/Event"
+  # =====================
+  /event/waiting:
+    get:
+      tags:
+        - Event
+      summary: Get Waiting Events
+      description: This API is for User as CENSOR Role to get all events with verifyStatus = WAITING
+
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  code:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                    example: "Successfully"
+                  payload:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Event"
+  # =====================
+  /event/waiting/{event_id}:
+    get:
+      tags:
+        - Event
+      summary: Get Waiting Event By ID
+      description: CENSOR get a waiting event by ID
+
+      parameters:
+        - in: path
+          name: event_id
+          description: event ID
+          required: true
+          schema:
+            type: string
+            example: "604f5bd5900a422750fe0ab1"
+
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  code:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                    example: "Successfully"
+                  payload:
+                    $ref: "#/components/schemas/Event"
+  # =====================
+  /event/participated:
+    get:
+      tags:
+        - Event
+      summary: Get Paticipated Events
+      description: User get all events that he/she has registered to
+
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  code:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                    example: "Successfully"
+                  payload:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Event"
+  # =====================
+  /event/participated/{event_id}:
+    get:
+      tags:
+        - Event
+      summary: Get Participated Event By ID
+      description: User get a participated event by ID
+
+      parameters:
+        - in: path
+          name: event_id
+          description: event ID
+          required: true
+          schema:
+            type: string
+            example: "604f5bd5900a422750fe0ab1"
+
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  code:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                    example: "Successfully"
+                  payload:
+                    $ref: "#/components/schemas/Event"
+    # =====================
+  /event/search:
+    get:
+      tags:
+        - Event
+      summary: Search Events By Keyword
+      description: Get a list of all events that have the titles or description match the keyword in query
+
+      parameters:
+        - in: query
+          name: keyword
+          description: event ID
+          required: true
+          schema:
+            type: string
+            example: "Event"
+
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  code:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                    example: "Successfully"
+                  payload:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Event"
+
+  # =====================
+  /event/{event_id}/participant:
+    get:
+      tags:
+        - Event
+      summary: Get Event Participants
+      description: Get Participants of an event
+      parameters:
+        - in: path
+          name: event_id
+          description: event ID
+          required: true
+          schema:
+            type: string
+            example: "604f5bd5900a422750fe0ab1"
+
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  code:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                    example: "Successfully"
+                  payload:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Participant"
+
+  # =====================
+  /event/{event_id}/role:
+    #+++++++++++++
+    post:
+      tags:
+        - Event
+      summary: Add a new participant role
+      description: Add a new participant role into an event
+
+      parameters:
+        - in: path
+          name: event_id
+          description: event ID
+          required: true
+          schema:
+            type: string
+            example: "604f5bd5900a422750fe0ab1"
+
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                participantRole:
+                  type: object
+                  properties:
+                    eventPermission:
+                      type: array
+                      items:
+                        type: string
+                        enum: ["LEADER", "SCANNER", "REGISTER"]
+                    roleName:
+                      type: string
+                      example: "Singer"
+                    description:
+                      type: string
+                      example: "Main singer of the event"
+                    maxRegister:
+                      type: integer
+                      example: 2
+                    socialDay:
+                      type: integer
+                      example: 1
+                    isPublic:
+                      type: boolean
+        description: Details of new participant role
+
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  code:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                    example: "Successfully"
+                  payload:
+                    type: integer
+                    example: 1
+    #+++++++++++++
+    patch:
+      tags:
+        - Event
+      summary: Edit a participant role
+      description: Edit a participant role of an event
+
+      parameters:
+        - in: path
+          name: event_id
+          description: event ID
+          required: true
+          schema:
+            type: string
+            example: "604f5bd5900a422750fe0ab1"
+
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - roleId
+              properties:
+                updatedRole:
+                  type: object
+                  properties:
+                    roleId:
+                      type: integer
+                      example: 1
+                    eventPermission:
+                      type: array
+                      items:
+                        type: string
+                        enum: ["LEADER", "SCANNER", "REGISTER"]
+                    roleName:
+                      type: string
+                      example: "Singer"
+                    description:
+                      type: string
+                      example: "Main singer of the event"
+                    maxRegister:
+                      type: integer
+                      example: 2
+                    socialDay:
+                      type: integer
+                      example: 1
+                    isPublic:
+                      type: boolean
+        description: Details role needed to be updated, required roleId
+
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  code:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                    example: "Successfully"
+                  payload:
+                    type: integer
+                    example: 1
+  # =====================
+  /event/{event_id}/submit:
+    post:
+      tags:
+        - Event
+      summary: Submit An Event to Censor
+      description: Submit An Event to Censor for verifying and change verifyStatus to 'WAITING'
+      parameters:
+        - in: path
+          name: event_id
+          description: event ID
+          required: true
+          schema:
+            type: string
+            example: "604f5bd5900a422750fe0ab1"
+
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  code:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                    example: "Successfully"
+                  payload:
+                    type: integer
+                    example: 1
+  # =====================
+  /event/{event_id}/verify:
+    post:
+      tags:
+        - Event
+      summary: Verify Event
+      description: API used by Censor account to verify an event
+      parameters:
+        - in: path
+          name: event_id
+          description: event ID
+          required: true
+          schema:
+            type: string
+            example: "604f5bd5900a422750fe0ab1"
+
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - verifyStatus
+              properties:
+                verifyStatus:
+                  type: string
+                  enum: ["SUCCESSFUL", "FAILED"]
+                verifiedMessage:
+                  type: string
+                  example: "Good Luck"
+
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  code:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                    example: "Successfully"
+                  payload:
+                    type: integer
+                    example: 1
+  # =====================
+  /event/{event_id}/register:
+    #+++++++++++++
+    post:
+      tags:
+        - Event
+      summary: Register to an event
+      description: Register to an event
+
+      parameters:
+        - in: path
+          name: event_id
+          description: event ID
+          required: true
+          schema:
+            type: string
+            example: "604f5bd5900a422750fe0ab1"
+
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - roleId
+              properties:
+                roleId:
+                  type: integer
+                  example: 1
+
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  code:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                    example: "Successfully"
+                  payload:
+                    type: integer
+                    example: 1
+    #+++++++++++++
+    patch:
+      tags:
+        - Event
+      summary: Unregister out of an event
+      description: Unregister out of an event
+
+      parameters:
+        - in: path
+          name: event_id
+          description: event ID
+          required: true
+          schema:
+            type: string
+            example: "604f5bd5900a422750fe0ab1"
+
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  code:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                    example: "Successfully"
+                  payload:
+                    type: integer
+                    example: 1
+  # =====================
+  /event/{event_id}/register/by_creator:
+    #+++++++++++++
+    post:
+      tags:
+        - Event
+      summary: Creator add registration
+      description: Register to an event
+
+      parameters:
+        - in: path
+          name: event_id
+          description: event ID
+          required: true
+          schema:
+            type: string
+            example: "604f5bd5900a422750fe0ab1"
+
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - roleId
+                - userRegister
+              properties:
+                roleId:
+                  type: integer
+                  example: 1
+                userRegister:
+                  type: string
+                  example: "60bf71e9bfc9b2430871f613"
+
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  code:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                    example: "Successfully"
+                  payload:
+                    type: integer
+                    example: 1
+    #+++++++++++++
+    patch:
+      tags:
+        - Event
+      summary: Creator cancel a registration
+      description: Unregister out of an event
+
+      parameters:
+        - in: path
+          name: event_id
+          description: event ID
+          required: true
+          schema:
+            type: string
+            example: "604f5bd5900a422750fe0ab1"
+
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  code:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                    example: "Successfully"
+                  payload:
+                    type: integer
+                    example: 1
+  # =====================
+  /event/{event_id}/next:
+    patch:
+      tags:
+        - Event
+      summary: Change stage of event from start => end
+      description: Depending on current 'eventState', API will change to the next stage as start - firstCheck - endFirstCheck - secondCheck - endSecondCheck - finish, if 'eventState' = 'FINISH' or 'CLOSING', API raises error
+      parameters:
+        - in: path
+          name: event_id
+          description: event ID
+          required: true
+          schema:
+            type: string
+            example: "604f5bd5900a422750fe0ab1"
+
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  code:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                    example: "Successfully"
+                  payload:
+                    type: integer
+                    example: 1
+  # =====================
+  /event/{event_id}/code:
+    get:
+      tags:
+        - Event
+      summary: Get QR Code of User
+      description: Get QR Code of User
+      parameters:
+        - in: path
+          name: event_id
+          description: event ID
+          required: true
+          schema:
+            type: string
+            example: "604f5bd5900a422750fe0ab1"
+
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  code:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                    example: "Successfully"
+                  payload:
+                    type: string
+                    example: "iqewbfj9395fbs932004f5bd5900a422750fe0ab1"
+  # =====================
+  /event/{event_id}/check-attendance:
+    post:
+      tags:
+        - Event
+      summary: Check Attendance by User QR Code
+      description: Scanner send a QR Code for checking attendance
+      parameters:
+        - in: path
+          name: event_id
+          description: event ID
+          required: true
+          schema:
+            type: string
+            example: "604f5bd5900a422750fe0ab1"
+
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - code
+              properties:
+                code:
+                  type: string
+                  example: "iqewbfj9395fbs932004f5bhjkfbvew894bt75btc5nt79 9c8nmtvn5m9oc5gl983hcrf57890o32d5900a422750fe0ab1"
+
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  code:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                    example: "Successfully"
+                  payload:
+                    type: integer
+                    example: 1
+  # =====================
+  /event/{event_id}/attendance/firstCheck:
+    get:
+      tags:
+        - Event
+      summary: List of 1st check Users
+      description: Get list of all users have already checked attendance in the first check
+      parameters:
+        - in: path
+          name: event_id
+          description: event ID
+          required: true
+          schema:
+            type: string
+            example: "604f5bd5900a422750fe0ab1"
+
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  code:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                    example: "Successfully"
+                  payload:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Participant"
+  # =====================
+  /event/{event_id}/attendance/secondCheck:
+    get:
+      tags:
+        - Event
+      summary: List of 2nd check Users
+      description: Get list of all users have already checked attendance in the second check
+      parameters:
+        - in: path
+          name: event_id
+          description: event ID
+          required: true
+          schema:
+            type: string
+            example: "604f5bd5900a422750fe0ab1"
+
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  code:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                    example: "Successfully"
+                  payload:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Participant"
+  # =====================
+  /auth/login:
+    post:
+      tags:
+        - Authentication
+      description: >-
+        Login to the system
+      responses:
+        "200":
+          description: OK
+  # =====================
+  /auth/signup:
+    post:
+      tags:
+        - Authentication
+      description: >-
+        Create a new user
+      security: []
+      responses:
+        "200":
+          description: OK
+  # =====================
+  /user:
+    get:
+      tags:
+        - User
+      description: >-
+        Return a list of user with some special query
+      parameters:
+        - in: query
+          name: keyword
+          description: keyword for searching user by their name
+          required: false
+          schema:
+            type: string
+            example: An
+      security: []
+      responses:
+        "200":
+          description: OK
+  # =====================
+  /me:
+    get:
+      tags:
+        - Me
+      description: >-
+        Fetch the user information with their own token
+      security: []
+      responses:
+        "200":
+          description: OK
+
+    patch:
+      tags:
+        - Me
+      description: >-
+        Update user information
+
+      security: []
+      responses:
+        "200":
+          description: OK
+  # =====================
+  /me/password:
+    patch:
+      tags:
+        - Me
+      description: >-
+        Change current user password
+      security: []
+      responses:
+        "200":
+          description: OK
+  # =====================
+  /me/profile_picture:
+    patch:
+      tags:
+        - Me
+      description: >-
+        Change current user profile picture
+      security: []
+      responses:
+        "200":
+          description: OK
+  # =====================
+  /me/report_answer:
+    get:
+      tags:
+        - Me
+      description: >-
+        Get all answers of the current user
+      security: []
+      responses:
+        "200":
+          description: OK
+  # =====================
+  /me/event:
+    get:
+      tags:
+        - Me
+      parameters:
+        - in: query
+          name: type
+          description: type of the event need to response
+          required: false
+          schema:
+            type: string
+            example: An
+      description: >-
+        Get all events that belongs to the user
+      security: []
+      responses:
+        "200":
+          description: OK
+  # =====================
+  /report:
+    post:
+      tags:
+        - Report
+      summary: Create report
+      description: >-
+        Create a new report. A new report content name, description and a list of question
+
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ReportForm"
+        description: Content of a report
+
+      responses:
+        "200":
+          description: Create report successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/Success200"
+                  - type: object
+                    properties:
+                      payload:
+                        $ref: "#/components/schemas/ReportResponseForm"
+
+        "403":
+          description: Missing reporter permission
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error403"
+
+    get:
+      tags:
+        - Report
+      summary: Get report
+      description: >-
+        Get report in the database
+
+      responses:
+        "200":
+          description: Get all report successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/Success200"
+                  - type: object
+                    properties:
+                      payload:
+                        type: array
+                        items:
+                          $ref: "#/components/schemas/ReportResponseForm"
+  # =====================
+  /report/{report_id}:
+    get:
+      tags:
+        - Report
+      summary: Get report by report ID
+      description: >-
+        Get existed report by ID in database
+
+      parameters:
+        - in: path
+          name: report_id
+          description: report ID
+          required: true
+          schema:
+            type: string
+            example: dc190303aea87bdf6e4faa3d59de
+
+      responses:
+        "200":
+          description: Get report information successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/Success200"
+                  - type: object
+                    properties:
+                      payload:
+                        $ref: "#/components/schemas/ReportResponseForm"
+  # =====================
+  /report/{report_id}/session:
+    post:
+      tags:
+        - Report
+      summary: Create report session
+      description: >-
+        Create session for an exsited report.
+
+      parameters:
+        - in: path
+          name: report_id
+          description: report ID
+          required: true
+          schema:
+            type: string
+            example: dc190303aea87bdf6e4faa3d59de
+
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SessionForm"
+        description: Information for a session
+
+      responses:
+        "200":
+          description: Create report session successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/Success200"
+                  - type: object
+                    properties:
+                      payload:
+                        $ref: "#/components/schemas/SessionResponseForm"
+
+        "403":
+          description: Missing reporter permission
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error403"
+
+    delete:
+      tags:
+        - Report
+      summary: Delete report session
+      description: >-
+        Delete session for an exsited report.
+
+      parameters:
+        - in: path
+          name: report_id
+          description: report ID
+          required: true
+          schema:
+            type: string
+            example: dc190303aea87bdf6e4faa3d59de
+
+      responses:
+        "200":
+          description: Delete report session successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/Success200"
+                  - type: object
+                    required:
+                      - payload
+                    properties:
+                      payload:
+                        type: string
+                        example: 60bcd5ae8b78214cc0136c27
+
+        "403":
+          description: Must be the creator of the session
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error403"
+  # =====================
+  /report/session:
+    get:
+      tags:
+        - Report
+      summary: Get session in database
+      description: >-
+        Get existed session in the database
+
+      parameters:
+        - in: query
+          name: option
+          description: Get session option
+          required: true
+          schema:
+            type: string
+            enum: ["all", "active"]
+
+      responses:
+        "200":
+          description: Get report session successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/Success200"
+                  - type: object
+                    properties:
+                      payload:
+                        type: array
+                        items:
+                          $ref: "#/components/schemas/SessionResponseForm"
+  # =====================
+  /report/session/{session_id}:
+    get:
+      tags:
+        - Report
+      summary: Get session in database
+      description: >-
+        Get session in database by session ID
+
+      parameters:
+        - in: path
+          name: session_id
+          description: session ID
+          required: true
+          schema:
+            type: string
+            example: dc190303aea87bdf6e4faa3d59de
+
+      responses:
+        "200":
+          description: Get report session successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/Success200"
+                  - type: object
+                    properties:
+                      payload:
+                        $ref: "#/components/schemas/SessionResponseForm"
+  # =====================
+  /report/session/{session_id}/answer:
+    get:
+      tags:
+        - Report
+      summary: Get all session answer
+      description: >-
+        Get all answer in the session ID in the database
+
+      parameters:
+        - in: path
+          name: session_id
+          description: session ID
+          required: true
+          schema:
+            type: string
+            example: dc190303aea87bdf6e4faa3d59de
+
+      responses:
+        "200":
+          description: Answer report successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/Success200"
+                  - type: object
+                    required:
+                      - payload
+                    properties:
+                      payload:
+                        type: array
+                        items:
+                          $ref: "#/components/schemas/AnswerForm"
+
+    post:
+      tags:
+        - Report
+      summary: Answer report in session
+      description: >-
+        Answer report question for session in the database
+
+      parameters:
+        - in: path
+          name: session_id
+          description: session ID
+          required: true
+          schema:
+            type: string
+            example: dc190303aea87bdf6e4faa3d59de
+
+      responses:
+        "200":
+          description: Answer report successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/Success200"
+                  - type: object
+                    required:
+                      - payload
+                    properties:
+                      payload:
+                        type: string
+                        example: 60be0a418b78214cc0136c31
+
+        "403":
+          description: Time expired
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error403"
+
+    patch:
+      tags:
+        - Report
+      summary: Update answer report in session
+      description: >-
+        Update answer report question for session in the database
+
+      parameters:
+        - in: path
+          name: session_id
+          description: session ID
+          required: true
+          schema:
+            type: string
+            example: dc190303aea87bdf6e4faa3d59de
+
+      responses:
+        "200":
+          description: OK
+        "401":
+          description: Error
+        "404":
+          description: Error
+  # =====================
+  /report/answer/{answer_id}:
+    get:
+      tags:
+        - Report
+      summary: Get answer by ID
+      description: >-
+        Get existed answer by ID in database
+
+      parameters:
+        - in: path
+          name: answer_id
+          description: answer ID
+          required: true
+          schema:
+            type: string
+            example: dc190303aea87bdf6e4faa3d59de
+
+      responses:
+        "200":
+          description: get report successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/Success200"
+                  - type: object
+                    required:
+                      - payload
+                    properties:
+                      payload:
+                        $ref: "#/components/schemas/AnswerForm"
+
+  # =====================
+  /event/{event_id}/report:
+    #+++++++++++++
+    get:
+      tags:
+        - Event
+      summary: Get Event report by ID
+      description: Get Event report by ID, require Leader permission
+      parameters:
+        - in: path
+          name: event_id
+          description: event ID
+          required: true
+          schema:
+            type: string
+            example: "604f5bd5900a422750fe0ab1"
+
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  code:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                    example: "Successfully"
+                  payload:
+                    $ref: "#/components/schemas/Event"
+
+#====================END EVENT============
+components:
+  securitySchemes:
+    application:
+      type: oauth2
+      flows:
+        clientCredentials:
+          tokenUrl: "http://example.com/oauth/token"
+          scopes:
+            write: allows modifying resources
+            read: allows reading resources
+
+  schemas:
+    # =====================
+    EventInformation:
+      type: object
+      required:
+        - title
+        - description
+        - type
+        - isUrgent
+        - coordinate
+        - eventStart
+        - eventEnd
+        - formStart
+        - formEnd
+      properties:
+        title:
+          type: string
+          example: "Event 00"
+        description:
+          type: string
+          example: "This is a new event"
+        type:
+          type: string
+          enum: ["GENERAL", "CHAIN", "OTHER"]
+        isUrgent:
+          type: boolean
+        coordinate:
+          type: array
+          items:
+            type: string
+          example: ["longitude", "latitude"]
+        eventStart:
+          type: integer
+          example: 1617238800000
+        eventEnd:
+          type: integer
+          example: 1617253200000
+        formStart:
+          type: integer
+          example: 1614531600000
+        formEnd:
+          type: integer
+          example: 1617123600000
+    # =====================
+    ParticipantRole:
+      type: object
+      required:
+        - roleId
+        - eventPermission
+        - roleName
+        - description
+        - maxRegister
+        - socialDay
+        - isPublic
+        - registerList
+      properties:
+        roleId:
+          type: integer
+        eventPermission:
+          type: array
+          items:
+            type: string
+            enum: ["SCANNER", "LEADER", "REGISTER"]
+        roleName:
+          type: string
+          example: "Name of role"
+        description:
+          type: string
+        maxRegister:
+          type: integer
+        socialDay:
+          type: integer
+          example: 3
+        isPublic:
+          type: boolean
+        registerList:
+          type: array
+          items:
+            type: string
+            example: "604f5bd5900a422750fe0ab1"
+    # =====================
+    Participant:
+      type: object
+      required:
+        - userId
+        - roleId
+        - roleName
+        - registerAt
+        - code
+        - socialDay
+        - firstCheck
+        - secondCheck
+      properties:
+        userId:
+          type: string
+          example: "604f5bd5900a422750fe0ab1"
+        roleId:
+          type: integer
+          example: 2
+        roleName:
+          type: string
+          example: "Name of role"
+        registerAt:
+          type: integer
+        code:
+          type: string
+        socialDay:
+          type: integer
+          example: 3
+        firstCheck:
+          type: integer
+          example: 1617238800000
+        secondCheck:
+          type: integer
+          example: 1617238800000
+    # =====================
+    Event:
+      type: object
+      required:
+        - _id
+        - createdAt
+        - updatedAt
+        - userCreated
+        - information
+        - eventState
+        - firstCheck
+        - endFirstCheck
+        - numberOfFirstCheck
+        - secondCheck
+        - endSecondCheck
+        - numberOfSecondCheck
+        - participantRole
+        - participant
+        - submitAt
+        - reportLastSubmitAt
+        - reportSubmitBy
+        - verifyStatus
+        - verifiedAt
+        - verifiedBy
+        - verifiedMessage
+      properties:
+        _id:
+          type: string
+          example: "604f5bd5900a422750fe0ab1"
+        createdAt:
+          type: integer
+          example: 1617238800000
+        updatedAt:
+          type: integer
+          example: 1617238800000
+        userCreated:
+          type: string
+          example: "604f5bd5900a422750fe0ab1"
+        information:
+          $ref: "#/components/schemas/EventInformation"
+        eventState:
+          type: string
+          enum:
+            [
+              "PREPARE",
+              "START",
+              "FIRST_CHECK",
+              "END_FIRST_CHECK",
+              "SECOND_CHECK",
+              "END_SECOND_CHECK",
+              "FINISH",
+              "CLOSING",
+            ]
+        firstCheck:
+          type: integer
+          example: 1617238800000
+        endFirstCheck:
+          type: integer
+          example: 1617238800000
+        numberOfFirstCheck:
+          type: integer
+          example: 10
+        secondCheck:
+          type: integer
+          example: 1617238800000
+        endSecondCheck:
+          type: integer
+          example: 1617238800000
+        numberOfSecondCheck:
+          type: integer
+          example: 8
+        participantRole:
+          type: array
+          items:
+            $ref: "#/components/schemas/ParticipantRole"
+        participant:
+          type: array
+          items:
+            $ref: "#/components/schemas/Participant"
+        reportLastSubmitAt:
+          type: integer
+          example: 1617238800000
+        reportSubmitBy:
+          type: string
+          example: "604f5bd5900a422750fe0ab1"
+        verifyStatus:
+          type: string
+          enum: ["PREPARING", "WAITING", "FAILED", "SUCCESSFUL"]
+        verifiedAt:
+          type: integer
+          example: 1617238800000
+        verifiedBy:
+          type: string
+          example: "604f5bd5900a422750fe0ab1"
+        verifiedMessage:
+          type: string
+    # =====================
+    QuestionField:
+      type: object
+      required:
+        - content
+        - questionId
+        - questionMaxScore
+      properties:
+        content:
+          type: string
+          example: Điểm rèn luyện
+        questionMaxScore:
+          type: integer
+          example: 10
+        questionId:
+          type: integer
+          example: 0
+    # =====================
+    AnswerField:
+      type: object
+      required:
+        - questionId
+        - explanation
+        - answerScore
+      properties:
+        explanation:
+          type: string
+          example: Tham gia chào cờ mỗi tuần
+        answerScore:
+          type: integer
+          example: 10
+        questionId:
+          type: integer
+          example: 0
+    # =====================
+    ReportPartQuestion:
+      type: object
+      required:
+        - partId
+        - field
+      properties:
+        content:
+          type: string
+          example: Rèn luyện về nhận thức chính trị, đạo đức, lối sống
+          default: ""
+        partMaxScore:
+          type: integer
+          example: 35
+        partId:
+          type: integer
+          example: 0
+        field:
+          type: array
+          items:
+            $ref: "#/components/schemas/QuestionField"
+    # =====================
+    ReportPartAnswer:
+      type: object
+      required:
+        - partId
+        - partScore
+        - field
+      properties:
+        partScore:
+          type: integer
+          example: 35
+        partId:
+          type: integer
+          example: 0
+        field:
+          type: array
+          items:
+            $ref: "#/components/schemas/AnswerField"
+    # =====================
+    ReportForm:
+      type: object
+      required:
+        - name
+        - question
+      properties:
+        name:
+          type: string
+          example: Phiếu tự đánh giá điểm rèn luyện
+        description:
+          type: string
+          default: ""
+        question:
+          type: array
+          items:
+            $ref: "#/components/schemas/ReportPartQuestion"
+    # =====================
+    ReportResponseForm:
+      allOf:
+        - $ref: "#/components/schemas/ReportForm"
+        - type: object
+          required:
+            - id
+            - createdAt
+            - userCreated
+          properties:
+            id:
+              type: string
+              example: 6065558a8306462cdb27dd4c
+            createdAt:
+              type: integer
+              example: 1617253770775
+            updatedAt:
+              type: integer
+              example: 1617253770775
+            userCreated:
+              type: string
+              example: 606552688306462cdb27dd41
+    # =====================
+    SessionForm:
+      type: object
+      required:
+        - activeTime
+        - expiredTime
+        - activeCheckingTime
+        - expiredCheckingTime
+        - questionId
+      properties:
+        activeTime:
+          type: integer
+          example: 1614531600000
+        expiredTime:
+          type: integer
+          example: 1617123600000
+        activeCheckingTime:
+          type: integer
+          example: 1617123600000
+        expiredCheckingTime:
+          type: integer
+          example: 1617296400000
+        questionId:
+          type: string
+          example: 605604bdd32d3d1534e8db53
+    # =====================
+    SessionResponseForm:
+      allOf:
+        - $ref: "#/components/schemas/SessionForm"
+        - type: object
+          required:
+            - userCreated
+            - createdAt
+            - reportAnswer
+            - id
+          properties:
+            userCreated:
+              type: string
+              example: 6065496c8306462cdb27dd0c
+            createdAt:
+              type: integer
+              example: 1622985492311
+            id:
+              type: string
+              example: 60bccb148b78214cc0136c21
+            reportAnswer:
+              type: array
+              items:
+                $ref: "#/components/schemas/ReportPartAnswer"
+    # =====================
+    AnswerForm:
+      type: object
+      required:
+        - id
+        - createdAt
+        - totalScore
+        - userCreated
+        - sessionId
+        - setOfQuestion
+        - setOfAnswer
+      properties:
+        id:
+          type: string
+          example: 60655f974cbbd92dee682d99
+        createdAt:
+          type: integer
+          example: 1617256343521
+        totalScore:
+          type: integer
+          example: 10
+        grade:
+          type: string
+          default: YẾU
+          enum: [XUẤT SẮC, GIỎI, KHÁ, TRUNG BÌNH, YẾU]
+        userCreated:
+          type: string
+          example: 606549ce8306462cdb27dd15
+        sessionId:
+          type: string
+          example: 606555828306462cdb27dd4b
+        setOfQuestion:
+          $ref: "#/components/schemas/ReportResponseForm"
+        setOfAnswer:
+          type: array
+          items:
+            $ref: "#/components/schemas/ReportPartAnswer"
+    # =====================
+    Success200:
+      type: object
+      required:
+        - success
+        - code
+        - message
+        - payload
+      properties:
+        success:
+          type: boolean
+          default: true
+          example: true
+        code:
+          type: integer
+          default: 200
+          example: 200
+        message:
+          type: string
+          default: "Request successfully"
+    # =====================
+    Error403:
+      type: object
+      required:
+        - success
+        - code
+        - message
+        - payload
+      properties:
+        success:
+          type: boolean
+          default: false
+          example: false
+        code:
+          type: integer
+          default: 403
+          example: 403
+        message:
+          type: string
+          default: "Forbidden"
+        payload:
+          type: object
+          default: {}
+          example: {}
+    # =====================
+    Error400:
+      type: object
+      required:
+        - success
+        - code
+        - message
+        - payload
+      properties:
+        success:
+          type: boolean
+          default: false
+          example: false
+        code:
+          type: integer
+          default: 403
+          example: 403
+        message:
+          type: string
+          default: "Bad Request"
+        payload:
+          type: object
+          default: {}
+          example: {}
+    # =====================
+    Error401:
+      type: object
+      required:
+        - success
+        - code
+        - message
+        - payload
+      properties:
+        success:
+          type: boolean
+          default: false
+          example: false
+        code:
+          type: integer
+          default: 403
+          example: 403
+        message:
+          type: string
+          default: "Unauthorized"
+        payload:
+          type: object
+          default: {}
+          example: {}
+    # =====================
+    Error404:
+      type: object
+      required:
+        - success
+        - code
+        - message
+        - payload
+      properties:
+        success:
+          type: boolean
+          default: false
+          example: false
+        code:
+          type: integer
+          default: 403
+          example: 403
+        message:
+          type: string
+          default: "Not Found"
+        payload:
+          type: object
+          default: {}
+          example: {}

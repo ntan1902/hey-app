@@ -1,16 +1,17 @@
 package com.hey.authentication.service;
 
-import com.hey.authentication.dto.LoginRequest;
-import com.hey.authentication.dto.LoginResponse;
-import com.hey.authentication.dto.RegisterRequest;
-import com.hey.authentication.dto.UserDTO;
+import com.hey.authentication.dto.user.*;
+import com.hey.authentication.dto.vertx.RegisterRequestToChat;
 import com.hey.authentication.entity.User;
-import com.hey.authentication.exception.UserIdNotFoundException;
-import com.hey.authentication.jwt.JwtUtil;
+import com.hey.authentication.exception.user.PinNotMatchedException;
+import com.hey.authentication.exception.user.UserIdNotFoundException;
+import com.hey.authentication.jwt.JwtSoftTokenUtil;
+import com.hey.authentication.jwt.JwtUserUtil;
 import com.hey.authentication.mapper.UserMapper;
 import com.hey.authentication.repository.UserRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -20,16 +21,21 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.function.client.WebClient;
 
-@Service
 @Log4j2
 @AllArgsConstructor
+@Service
 public class UserServiceImpl implements UserDetailsService, UserService {
     private final UserRepository userRepository;
     private final AuthenticationManager authenticationManager;
-    private final JwtUtil jwtUtil;
+    private final JwtUserUtil jwtUserUtil;
+    private final JwtSoftTokenUtil jwtSoftTokenUtil;
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
+    private final WebClient.Builder webClientBuilder;
+
+    private static final String CHAT_SERVICE = "http://localhost:8080";
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -60,20 +66,18 @@ public class UserServiceImpl implements UserDetailsService, UserService {
                         loginRequest.getPassword()
                 )
         );
+        log.info("Authentication: {}", authentication);
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        User user =  (User) authentication.getPrincipal();
+        User user = (User) authentication.getPrincipal();
 
-        String jwt = jwtUtil.generateToken(user);
-//        RefreshToken refreshToken = refreshTokenService.insert(user.getId());
+        String jwt = jwtUserUtil.generateToken(user);
 
-        UserDTO userDTO = this.userMapper.user2UserDTO(user);
-
-        return new LoginResponse(userDTO, jwt, "Bearer");
+        return new LoginResponse(jwt, "Bearer");
     }
 
     @Override
-    public UserDTO register(RegisterRequest registerRequest) {
+    public void register(RegisterRequest registerRequest) {
         log.info("Inside register of UserServiceImpl: {}", registerRequest);
 
         User user = userMapper.registerRequest2User(registerRequest);
@@ -82,6 +86,65 @@ public class UserServiceImpl implements UserDetailsService, UserService {
         );
 
         userRepository.save(user);
-        return this.userMapper.user2UserDTO(user);
+
+        // Call api register to Vert.x
+        registerToVertx(userRepository.save(user));
+    }
+
+    @Override
+    public UserDTO findById() {
+        log.info("Inside findById of UserServiceImpl");
+        User user = getCurrentUser();
+        return userMapper.user2UserDTO(user);
+    }
+
+    @Override
+    public UserDTO findById(Long userId) {
+        log.info("Inside findById({}) of UserServiceImpl", userId);
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> {
+                    log.error("User Id {} not found", userId);
+                    throw new UserIdNotFoundException("User Id " + userId + " not found");
+                });
+        return userMapper.user2UserDTO(user);
+    }
+
+    @Override
+    public void createPin(PinAmountRequest pinAmountRequest) {
+        log.info("Inside createPin of UserServiceImpl: {}", pinAmountRequest);
+        String hashPin = passwordEncoder.encode(pinAmountRequest.getPin());
+        User user = getCurrentUser();
+        user.setPin(hashPin);
+        userRepository.save(user);
+    }
+
+    private User getCurrentUser() {
+        return (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    }
+
+    @Override
+    public SoftTokenResponse createSoftToken(PinAmountRequest pinAmountRequest) {
+        log.info("Inside createSoftToken of UserServiceImpl: {}", pinAmountRequest);
+        User user = getCurrentUser();
+        if (passwordEncoder.matches(pinAmountRequest.getPin(), user.getPin())) {
+            String softToken = jwtSoftTokenUtil.generateToken(user, pinAmountRequest.getPin(), pinAmountRequest.getAmount());
+            return new SoftTokenResponse(softToken);
+        } else {
+            log.error("Pin: {} not matched", pinAmountRequest.getPin());
+            throw new PinNotMatchedException("Pin: " + pinAmountRequest.getPin() + " not matched");
+        }
+    }
+
+    private void registerToVertx(User user) {
+        log.info("Inside registerToVertx of UserServiceImpl: {}", user);
+        RegisterRequestToChat registerRequestToChat = userMapper.registerRequest2Chat(user);
+        webClientBuilder.build()
+                .post()
+                .uri(CHAT_SERVICE + "/api/public/register")
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(registerRequestToChat)
+                .retrieve()
+                .bodyToMono(RegisterRequestToChat.class)
+                .block();
     }
 }

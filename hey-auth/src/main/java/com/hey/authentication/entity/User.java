@@ -26,9 +26,6 @@ public class User implements Serializable, UserDetails {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "wallet_id")
-    private Long walletId;
-
     private String username;
 
     private String email;
@@ -37,8 +34,6 @@ public class User implements Serializable, UserDetails {
 
     @Column(name = "full_name")
     private String fullName;
-
-    private String media;
 
     private String pin;
 

@@ -1,9 +1,6 @@
 package com.hey.authentication.service;
 
-import com.hey.authentication.dto.LoginRequest;
-import com.hey.authentication.dto.LoginResponse;
-import com.hey.authentication.dto.RegisterRequest;
-import com.hey.authentication.dto.UserDTO;
+import com.hey.authentication.dto.user.*;
 import com.hey.authentication.entity.User;
 
 public interface UserService {
@@ -11,5 +8,13 @@ public interface UserService {
 
     LoginResponse login(LoginRequest loginRequest);
 
-    UserDTO register(RegisterRequest registerRequest);
+    void register(RegisterRequest registerRequest);
+
+    UserDTO findById();
+
+    UserDTO findById(Long userId);
+
+    void createPin(PinAmountRequest pinAmountRequest);
+
+    SoftTokenResponse createSoftToken(PinAmountRequest pinAmountRequest);
 }
