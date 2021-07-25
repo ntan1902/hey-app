@@ -1,7 +1,6 @@
 package com.hey.payment.api;
 
-import com.hey.payment.dto.chat_service.TransferMessageRequest;
-import org.springframework.http.HttpEntity;
+import com.hey.payment.dto.chat_system.TransferMessageRequest;
 
 public interface ChatApi {
     boolean createTransferMessage(TransferMessageRequest transferMessageRequest);

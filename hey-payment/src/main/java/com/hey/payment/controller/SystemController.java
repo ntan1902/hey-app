@@ -33,7 +33,7 @@ public class SystemController {
     public ResponseEntity<ApiResponse> getAllWalletOfSystem() {
         System system = getCurrentSystem();
         log.info("System {} getAllWalletOfSystem", system.getId());
-        List<WalletSystemDTO> walletSystemDTOList = walletService.getAllWalletOfSystem(system);
+        List<WalletSystemDTO> walletSystemDTOList = walletService.getAllWalletsOfSystem(system);
         return ResponseEntity.ok(ApiResponse.builder()
                 .success(true)
                 .code(HttpStatus.OK.value())

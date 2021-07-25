@@ -1,14 +1,12 @@
-package com.hey.payment.dto.chat_service;
+package com.hey.payment.dto.chat_system;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-
 @Data
 @NoArgsConstructor
-@AllArgsConstructor
 @Builder
 @AllArgsConstructor
 public class TransferMessageRequest {
