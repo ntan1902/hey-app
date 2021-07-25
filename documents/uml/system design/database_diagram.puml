@@ -65,7 +65,7 @@ entity "lucky_moneys" as lucky_moneys #Yellow{
     --
     user_id: number <<FK>>
     system_wallet_id: number <<FK>>
-    session_chat_id: number
+    session_chat_id: varchar
     amount: number
     rest_money: number
     rest_bag: number
@@ -80,7 +80,7 @@ entity "received_lucky_moneys" as received_luckey_moneys #Yellow{
     *id: number <<generated>>
     --
     lucky_money_id: number <<FK>>
-    wallet_receiver_id: number <<FK>>
+    receiver_id: number <<FK>>
     amount: number
     created_at: timestamp
 }

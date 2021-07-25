@@ -1,7 +1,6 @@
-package com.hey.lucky.config;
+package com.hey.lucky.config.RestTemplateConfig;
 
-import com.hey.lucky.config.RestTemplateConfig.RestTemplateErrHandler;
-import com.hey.lucky.config.RestTemplateConfig.RestTemplateRequestInterceptor;
+
 import com.hey.lucky.dto.auth_service.LoginRequest;
 import com.hey.lucky.dto.auth_service.LoginResponse;
 import org.springframework.context.annotation.Bean;
@@ -18,9 +17,9 @@ import java.util.Collections;
 import java.util.List;
 
 @Configuration
-public class ApplicationConfig {
+public class RestTemplateConfig {
     @Bean
-    public RestTemplate getWebClient() {
+    public RestTemplate restTemplate() {
         RestTemplate restTemplate = new RestTemplate();
 
         configMapperWebClient(restTemplate);

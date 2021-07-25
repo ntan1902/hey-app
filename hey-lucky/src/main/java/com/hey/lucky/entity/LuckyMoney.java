@@ -25,6 +25,9 @@ public class LuckyMoney {
     @Column(name = "system_wallet_id")
     private Long systemWalletId;
 
+    @Column(name = "session_chat_id")
+    private String sessionChatId;
+
     private Long amount;
 
     @Column(name = "rest_money")

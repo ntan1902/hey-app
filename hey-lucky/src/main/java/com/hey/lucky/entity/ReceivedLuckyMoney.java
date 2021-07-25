@@ -22,8 +22,8 @@ public class ReceivedLuckyMoney {
     @Column(name = "lucky_money_id")
     Long luckyMoneyId;
 
-    @Column(name = "wallet_receiver_id")
-    Long walletReceiverId;
+    @Column(name = "receiver_id")
+    Long receiverId;
 
     Long amount;
 
