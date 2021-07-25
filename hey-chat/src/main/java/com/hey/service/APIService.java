@@ -2,6 +2,7 @@ package com.hey.service;
 
 import com.hey.manager.UserWsChannelManager;
 import com.hey.model.*;
+import com.hey.model.payment.TransferMessageRequest;
 import com.hey.util.ErrorCode;
 import com.hey.util.GenerationUtils;
 import com.hey.util.HeyHttpStatusException;
@@ -736,8 +737,9 @@ public class APIService extends BaseService {
             if("-1".equals(sessionId)) {
                 insertNewChatOfUser1AndUser2(transferMessageRequest);
             } else {
-                insertNewChatOnExistedSessionOfUser1AndUser2(transferMessageRequest, sessionId);
+                insertNewChatOnExistedSessionIdOfUser1AndUser2(transferMessageRequest, sessionId);
             }
+            future.complete(true);
         }, Future.future().setHandler(handler -> {
             future.fail(handler.cause());
         }));
@@ -745,14 +747,26 @@ public class APIService extends BaseService {
         return future;
     }
 
-    private void insertNewChatOnExistedSessionOfUser1AndUser2(TransferMessageRequest transferMessageRequest, String sessionId) {
+    private void insertNewChatOnExistedSessionIdOfUser1AndUser2(TransferMessageRequest transferMessageRequest, String sessionId) {
 
         Future<UserFull> getUserFullFuture = dataRepository.getUserFull(transferMessageRequest.getSourceId().toString());
         getUserFullFuture.compose(userFull -> {
+            JsonObject content = new JsonObject();
+            content.put("sourceId", transferMessageRequest.getSourceId());
+            content.put("targetId", transferMessageRequest.getTargetId());
+            content.put("amount", transferMessageRequest.getAmount());
+            content.put("createdAt", transferMessageRequest.getCreatedAt());
+            content.put("message", transferMessageRequest.getMessage());
+            content.put("sessionId", sessionId);
+
+            JsonObject transferMessageResponse = new JsonObject();
+            transferMessageResponse.put("type", "transfer");
+            transferMessageResponse.put("content", content);
+
             ChatMessage chatMessage = new ChatMessage();
             chatMessage.setUserHash(new UserHash(userFull.getUserId(), userFull.getFullName()));
             chatMessage.setSessionId(sessionId);
-            chatMessage.setMessage(transferMessageRequest.getMessage());
+            chatMessage.setMessage(transferMessageResponse.encode());
             chatMessage.setCreatedDate(new Date());
 
             Future<ChatMessage> insertChatMessagesAndUpdateChatListAndUpdateUnseenCountFuture =
@@ -801,10 +815,22 @@ public class APIService extends BaseService {
             }
             String sessionId = GenerationUtils.generateId();
 
+            JsonObject content = new JsonObject();
+            content.put("sourceId", transferMessageRequest.getSourceId());
+            content.put("targetId", transferMessageRequest.getTargetId());
+            content.put("amount", transferMessageRequest.getAmount());
+            content.put("createdAt", transferMessageRequest.getCreatedAt());
+            content.put("message", transferMessageRequest.getMessage());
+            content.put("sessionId", sessionId);
+
+            JsonObject transferMessageResponse = new JsonObject();
+            transferMessageResponse.put("type", "transfer");
+            transferMessageResponse.put("content", content);
+
             ChatMessage chatMessage = new ChatMessage();
             chatMessage.setUserHash(userHashes.get(0));
             chatMessage.setSessionId(sessionId);
-            chatMessage.setMessage(transferMessageRequest.getMessage());
+            chatMessage.setMessage(transferMessageResponse.encode());
             chatMessage.setCreatedDate(new Date());
 
             ChatList chatList = new ChatList();
@@ -824,22 +850,11 @@ public class APIService extends BaseService {
             CompositeFuture cp = CompositeFuture.all(insertChatMessageFuture, insertChatListFuture, increaseUnseenCountFuture);
             cp.setHandler(ar -> {
                 if (ar.succeeded()) {
-
-                    TransferMessageContent content = new TransferMessageContent();
-                    content.setSourceId(transferMessageRequest.getSourceId());
-                    content.setTargetId(transferMessageRequest.getTargetId());
-                    content.setAmount(transferMessageRequest.getAmount());
-                    content.setCreatedAt(transferMessageRequest.getCreatedAt());
-
-                    TransferMessageResponse transferMessageResponse = new TransferMessageResponse();
-                    transferMessageResponse.setType("transfer");
-                    transferMessageResponse.setContent(content);
-
-//                    NewChatSessionResponse newChatSessionResponse = new NewChatSessionResponse();
-//                    newChatSessionResponse.setType(IWsMessage.TYPE_CHAT_NEW_SESSION_RESPONSE);
-//                    newChatSessionResponse.setSessionId(chatMessage.getSessionId());
+                    NewChatSessionResponse newChatSessionResponse = new NewChatSessionResponse();
+                    newChatSessionResponse.setType(IWsMessage.TYPE_CHAT_NEW_SESSION_RESPONSE);
+                    newChatSessionResponse.setSessionId(chatMessage.getSessionId());
                     for (UserHash userhash : chatList.getUserHashes()) {
-                        userWsChannelManager.sendMessage(transferMessageResponse, userhash.getUserId());
+                        userWsChannelManager.sendMessage(newChatSessionResponse, userhash.getUserId());
                     }
 
                 } else {
