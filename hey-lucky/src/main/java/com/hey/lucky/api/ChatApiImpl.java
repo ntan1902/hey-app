@@ -1,7 +1,9 @@
 package com.hey.lucky.api;
 
 import com.hey.lucky.dto.ApiResponse;
+import com.hey.lucky.dto.chat_service.ApiResponseChat;
 import com.hey.lucky.dto.chat_service.CreateLuckyMoneyMessageRequest;
+import com.hey.lucky.dto.chat_service.CreateReceiveLuckyMoneyMessageRequest;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
@@ -26,7 +28,16 @@ public class ChatApiImpl implements ChatApi {
     public boolean createLuckyMoneyMessage(CreateLuckyMoneyMessageRequest request) {
         log.info("Inside createTransferMessage of ChatApiImpl: {}", request);
         HttpEntity<CreateLuckyMoneyMessageRequest> entity = new HttpEntity<>(request);
-        ApiResponse<Object> apiResponse = restTemplate.postForObject(CHAT_SERVICE + CHAT_API_VER + "/createSendLuckeyMoneyMessage", entity, ApiResponse.class);
+        ApiResponseChat apiResponse = restTemplate.postForObject(CHAT_SERVICE + CHAT_API_VER + "/createSendLuckeyMoneyMessage", entity, ApiResponseChat.class);
+        log.info("Result of send message: {}", apiResponse.isSuccess());
+        return apiResponse.isSuccess();
+    }
+
+    @Override
+    public boolean createReceiveLuckyMoneyMessage(CreateReceiveLuckyMoneyMessageRequest request) {
+        log.info("Inside createTransferMessage of ChatApiImpl: {}", request);
+        HttpEntity<CreateReceiveLuckyMoneyMessageRequest> entity = new HttpEntity<>(request);
+        ApiResponseChat apiResponse = restTemplate.postForObject(CHAT_SERVICE + CHAT_API_VER + "/createRecieveLuckeyMoneyMessage", entity, ApiResponseChat.class);
         log.info("Result of send message: {}", apiResponse.isSuccess());
         return apiResponse.isSuccess();
     }

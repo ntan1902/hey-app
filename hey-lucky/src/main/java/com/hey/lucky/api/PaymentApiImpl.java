@@ -1,8 +1,6 @@
 package com.hey.lucky.api;
 
-import com.hey.lucky.dto.payment_service.CreateTransferFromUserRequest;
-import com.hey.lucky.dto.payment_service.CreateTransferFromUserResponse;
-import com.hey.lucky.dto.payment_service.GetAllWalletsResponse;
+import com.hey.lucky.dto.payment_service.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.stereotype.Component;
@@ -32,5 +30,11 @@ public class PaymentApiImpl implements PaymentApi {
     public CreateTransferFromUserResponse createTransferFromUser(CreateTransferFromUserRequest request) {
         HttpEntity<CreateTransferFromUserRequest> requestHttpEntity = new HttpEntity<>(request);
         return restTemplate.postForObject(PAYMENT_SERVICE+PAYMENT_API_VER+"/createTransferFromUser", requestHttpEntity, CreateTransferFromUserResponse.class);
+    }
+
+    @Override
+    public CreateTransferToUserResponse createTransferToUser(CreateTransferToUserRequest request) {
+        HttpEntity<CreateTransferToUserRequest> requestHttpEntity = new HttpEntity<>(request);
+        return restTemplate.postForObject(PAYMENT_SERVICE+PAYMENT_API_VER+"/createTransferToUser",requestHttpEntity,CreateTransferToUserResponse.class);
     }
 }
