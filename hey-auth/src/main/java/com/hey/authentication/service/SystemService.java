@@ -4,6 +4,8 @@ package com.hey.authentication.service;
 import com.hey.authentication.dto.system.*;
 import com.hey.authentication.entity.System;
 
+import java.util.List;
+
 public interface SystemService {
     System loadSystemBySystemName(String systemName);
 
@@ -18,4 +20,6 @@ public interface SystemService {
     UserIdAmountResponse authorizeSoftToken(SoftTokenRequest softTokenRequest);
 
     SystemDTO findById(Long systemId);
+
+    List<SystemDTO> getSystems();
 }
