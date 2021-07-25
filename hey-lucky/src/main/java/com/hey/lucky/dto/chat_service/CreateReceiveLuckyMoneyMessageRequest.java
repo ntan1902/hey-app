@@ -15,5 +15,5 @@ public class CreateReceiveLuckyMoneyMessageRequest {
     private long luckyMoneyId;
     private long amount;
     private String message;
-    private String receivedAt;
+    private String createdAt;
 }

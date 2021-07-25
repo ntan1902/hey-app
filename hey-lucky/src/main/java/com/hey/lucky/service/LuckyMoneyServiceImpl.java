@@ -1,17 +1,21 @@
 package com.hey.lucky.service;
 
+import com.hey.lucky.api.AuthApi;
 import com.hey.lucky.api.ChatApi;
 import com.hey.lucky.api.PaymentApi;
 import com.hey.lucky.constant.TypeLuckyMoney;
+import com.hey.lucky.dto.auth_service.GetUserInfoResponse;
+import com.hey.lucky.dto.auth_service.UserInfo;
 import com.hey.lucky.dto.chat_service.CreateLuckyMoneyMessageRequest;
 import com.hey.lucky.dto.chat_service.CreateReceiveLuckyMoneyMessageRequest;
 import com.hey.lucky.dto.payment_service.*;
-import com.hey.lucky.dto.user.CreateLuckyMoneyRequest;
-import com.hey.lucky.dto.user.ReceiveLuckyMoneyRequest;
+import com.hey.lucky.dto.user.*;
 import com.hey.lucky.entity.LuckyMoney;
 import com.hey.lucky.entity.ReceivedLuckyMoney;
 import com.hey.lucky.entity.User;
 import com.hey.lucky.exception_handler.exception.*;
+import com.hey.lucky.mapper.LuckyMoneyMapper;
+import com.hey.lucky.mapper.UserMapper;
 import com.hey.lucky.repository.LuckyMoneyRepository;
 import com.hey.lucky.repository.ReceivedLuckyMoneyRepository;
 import lombok.AllArgsConstructor;
@@ -40,6 +44,9 @@ public class LuckyMoneyServiceImpl implements LuckyMoneyService {
     private final ReceivedLuckyMoneyRepository receivedLuckyMoneyRepository;
     private final PaymentApi paymentApi;
     private final ChatApi chatApi;
+    private final LuckyMoneyMapper luckyMoneyMapper;
+    private final UserMapper userMapper;
+    private final AuthApi authApi;
 
 
     @PostConstruct
@@ -121,6 +128,76 @@ public class LuckyMoneyServiceImpl implements LuckyMoneyService {
 //        sendMessageReceiveLuckyMoney(user.getId(),luckyMoney.getSessionChatId(),luckyMoney.getId(),amount,luckyMoney.getWishMessage(),now);
 
     }
+
+    @Override
+    public List<LuckyMoneyDTO> getAllLuckyMoney(GetAllLuckyMoneyRequest request) {
+        User user = getCurrentUser();
+        List<LuckyMoney> luckyMoneyList = luckyMoneyRepository.findAllBySessionChatId(request.getSessionId());
+
+        return luckyMoneyList2LuckyMoneyDTOList(luckyMoneyList, user);
+
+    }
+
+    @Override
+    public LuckyMoneyDetails getDetailsLuckyMoney(GetDetailsLuckyMoneyRequest request) {
+        LuckyMoney luckyMoney = luckyMoneyRepository.getLuckyMoneyById(request.getLuckyMoneyId())
+                .orElseThrow(() -> {
+                    throw new LuckyMoneyInvalidException();
+                });
+
+        LuckyMoneyDetails luckyMoneyDetails = luckyMoneyMapper.luckyMoney2LuckyMoneyDetails(luckyMoney);
+
+        UserInfo userInfo = getUserInfo(luckyMoney.getUserId());
+
+        List<UserReceiveInfo> listReceivedUsers = getListReceivedUsers(luckyMoney.getId());
+
+        luckyMoneyDetails.setUserCreated(userInfo);
+        luckyMoneyDetails.setUsersReceived(listReceivedUsers);
+
+        return luckyMoneyDetails;
+
+    }
+
+    private List<UserReceiveInfo> getListReceivedUsers(Long luckyMoneyId) {
+        List<ReceivedLuckyMoney> receivedLuckyMoneyList = receivedLuckyMoneyRepository.findAllByLuckyMoneyId(luckyMoneyId);
+        return receivedLuckyMoneyList.stream().map(receivedLuckyMoney -> {
+            UserInfo userInfo = getUserInfo(receivedLuckyMoney.getReceiverId());
+            return UserReceiveInfo.builder()
+                    .fullName(userInfo.getFullName())
+                    .amount(receivedLuckyMoney.getAmount())
+                    .receivedAt(receivedLuckyMoney.getCreatedAt().toString())
+                    .build();
+        }).collect(Collectors.toList());
+    }
+
+
+    private UserInfo getUserInfo(long userId){
+        GetUserInfoResponse apiResponse = authApi.getUserInfo(userId);
+        if (!apiResponse.getSuccess()){
+            throw new CannotGetUserInfo();
+        }
+        return apiResponse.getPayload();
+    }
+
+    private List<LuckyMoneyDTO> luckyMoneyList2LuckyMoneyDTOList(List<LuckyMoney> luckyMoneyList, User user) {
+        return luckyMoneyList.stream().map(luckyMoney -> {
+            LuckyMoneyDTO luckyMoneyDTO = luckyMoneyMapper.luckyMoney2LuckyMoneyDTO(luckyMoney);
+            ReceivedLuckyMoney receivedLuckyMoney = receivedLuckyMoneyRepository.findByLuckyMoneyIdAndReceiverId(luckyMoney.getId(),user.getId());
+            if (receivedLuckyMoney == null){
+                luckyMoneyDTO.setReceived(false);
+                luckyMoneyDTO.setReceivedMoney(0L);
+                luckyMoneyDTO.setReceivedAt("");
+            }
+            else {
+                luckyMoneyDTO.setReceived(true);
+                luckyMoneyDTO.setReceivedMoney(receivedLuckyMoney.getAmount());
+                luckyMoneyDTO.setReceivedAt(receivedLuckyMoney.getCreatedAt().toString());
+            }
+            return luckyMoneyDTO;
+        }).collect(Collectors.toList());
+    }
+
+
     private void checkOutOfBag(int restBag){
         if (restBag == 0){
             throw new OutOfBagException();
@@ -144,7 +221,7 @@ public class LuckyMoneyServiceImpl implements LuckyMoneyService {
                 .luckyMoneyId(luckeyMoneyId)
                 .amount(amount)
                 .message(wishMessage)
-                .receivedAt(now.toString()).build();
+                .createdAt(now.toString()).build();
         chatApi.createReceiveLuckyMoneyMessage(request);
     }
 

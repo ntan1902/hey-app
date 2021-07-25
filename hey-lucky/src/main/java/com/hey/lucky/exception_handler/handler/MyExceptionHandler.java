@@ -1,6 +1,7 @@
 package com.hey.lucky.exception_handler.handler;
 
 import com.hey.lucky.dto.ApiResponse;
+import com.hey.lucky.exception_handler.exception.CannotGetUserInfo;
 import com.hey.lucky.exception_handler.exception.CannotTransferMoneyException;
 import com.hey.lucky.exception_handler.exception.LuckyMoneyInvalidException;
 import com.hey.lucky.exception_handler.exception.OutOfBagException;
@@ -40,6 +41,13 @@ public class MyExceptionHandler {
 
     @ExceptionHandler(value = {OutOfBagException.class})
     public ResponseEntity<ApiResponse> handleOutOfBagException(Exception exception){
+        log.error(exception.getMessage());
+        HttpStatus code = HttpStatus.NOT_ACCEPTABLE;
+        return getResponse(code, exception.getMessage());
+    }
+
+    @ExceptionHandler(value = {CannotGetUserInfo.class})
+    public ResponseEntity<ApiResponse> handleCannotGetUserInfo(Exception exception){
         log.error(exception.getMessage());
         HttpStatus code = HttpStatus.NOT_ACCEPTABLE;
         return getResponse(code, exception.getMessage());
