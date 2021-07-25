@@ -1,11 +1,9 @@
-package com.hey.payment.config.rest_template;
+package com.hey.payment.config;
 
-import com.hey.payment.config.rest_template.RestTemplateErrHandler;
-import com.hey.payment.config.rest_template.RestTemplateRequestInterceptor;
+import com.hey.payment.config.RestTemplateConfig.RestTemplateErrHandler;
+import com.hey.payment.config.RestTemplateConfig.RestTemplateRequestInterceptor;
 import com.hey.payment.dto.auth_service.LoginRequest;
 import com.hey.payment.dto.auth_service.LoginResponse;
-import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpEntity;
@@ -20,18 +18,9 @@ import java.util.Collections;
 import java.util.List;
 
 @Configuration
-public class RestTemplateConfig {
-    @Value("${AUTH_SYSTEM}")
-    private String AUTH_SYSTEM;
-
-
-    @Value("${SYSTEM_NAME}")
-    private String SYSTEM_NAME;
-
-    @Value("${SYSTEM_KEY}")
-    private String SYSTEM_KEY;
+public class ApplicationConfig {
     @Bean
-    public RestTemplate restTemplate() {
+    public RestTemplate getWebClient() {
         RestTemplate restTemplate = new RestTemplate();
 
         configMapperWebClient(restTemplate);
@@ -44,7 +33,7 @@ public class RestTemplateConfig {
     }
 
     public void configMapperWebClient(RestTemplate restTemplate){
-        List<HttpMessageConverter<?>> messageConverters = new ArrayList<>();
+        List<HttpMessageConverter<?>> messageConverters = new ArrayList<HttpMessageConverter<?>>();
         MappingJackson2HttpMessageConverter map = new MappingJackson2HttpMessageConverter();
         messageConverters.add(map);
         messageConverters.add(new FormHttpMessageConverter());
@@ -52,8 +41,8 @@ public class RestTemplateConfig {
     }
 
     public void loginToAuthService(RestTemplate restTemplate){
-        restTemplate.setUriTemplateHandler(new DefaultUriBuilderFactory(AUTH_SYSTEM + "/api/v1/systems"));
-        HttpEntity<LoginRequest> authRequestHttpEntity = new HttpEntity<>(new LoginRequest(SYSTEM_NAME, SYSTEM_KEY));
+        restTemplate.setUriTemplateHandler(new DefaultUriBuilderFactory("http://07c063d1e264.ap.ngrok.io/api/v1/systems"));
+        HttpEntity<LoginRequest> authRequestHttpEntity = new HttpEntity<>(new LoginRequest("payment", "123456"));
         LoginResponse loginResponse = restTemplate.postForObject("/login", authRequestHttpEntity, LoginResponse.class);
         String jwtService = loginResponse.getPayload().getTokenType() + " " + loginResponse.getPayload().getAccessToken();
         restTemplate.setInterceptors(Collections.singletonList(new RestTemplateRequestInterceptor(jwtService)));

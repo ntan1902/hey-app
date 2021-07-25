@@ -1,20 +1,19 @@
-package com.hey.payment.dto.chat_service;
+package com.hey.lucky.dto.payment_service;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@AllArgsConstructor
-public class TransferMessageRequest {
-    long sourceId;
-    long targetId;
-    long amount;
+public class GetAllWalletsResponse {
+    Boolean success;
+    int code;
     String message;
-    String createdAt;
+    List<WalletSystemDTO> payload;
 }
