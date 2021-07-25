@@ -11,6 +11,7 @@ import com.hey.authentication.exception.user.UserIdNotFoundException;
 import com.hey.authentication.jwt.JwtSoftTokenUtil;
 import com.hey.authentication.jwt.JwtSystemUtil;
 import com.hey.authentication.jwt.JwtUserUtil;
+import com.hey.authentication.mapper.SystemMapper;
 import com.hey.authentication.repository.SystemRepository;
 import com.hey.authentication.repository.UserRepository;
 import lombok.AllArgsConstructor;
@@ -18,6 +19,9 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -29,6 +33,7 @@ public class SystemServiceImpl implements SystemService {
     private final JwtUserUtil jwtUserUtil;
     private final JwtSystemUtil jwtSystemUtil;
     private final JwtSoftTokenUtil jwtSoftTokenUtil;
+    private final SystemMapper systemMapper;
 
 
     @Override
@@ -139,7 +144,15 @@ public class SystemServiceImpl implements SystemService {
                     log.error("System Id {} not found", systemId);
                     throw new SystemIdNotFoundException("System Id " + systemId + " not found");
                 });
-        return new SystemDTO(system.getSystemName());
+        return systemMapper.system2systemDTO(system);
+    }
+
+    @Override
+    public List<SystemDTO> getSystems() {
+        return systemRepository.findAll()
+                .stream()
+                .map(systemMapper::system2systemDTO)
+                .collect(Collectors.toList());
     }
 
 }

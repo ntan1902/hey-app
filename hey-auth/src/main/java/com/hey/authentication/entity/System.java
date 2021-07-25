@@ -24,4 +24,7 @@ public class System {
     @Column(name = "system_key")
     private String systemKey;
 
+    @Column(name = "number_of_wallet")
+    private Integer numberOfWallet;
+
 }

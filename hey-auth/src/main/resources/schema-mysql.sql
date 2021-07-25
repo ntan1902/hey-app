@@ -19,6 +19,7 @@ create table systems
   id bigint auto_increment,
   system_name varchar(50),
   system_key varchar(255),
+  number_of_wallet int,
   primary key(id),
   unique index uq_system_name (system_name ASC)
 );

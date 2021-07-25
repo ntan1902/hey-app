@@ -9,4 +9,5 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class SystemDTO {
     private String systemName;
+    private long numberOfWallet;
 }
