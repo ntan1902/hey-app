@@ -17,4 +17,6 @@ public interface UserService {
     void createPin(PinAmountRequest pinAmountRequest);
 
     SoftTokenResponse createSoftToken(PinAmountRequest pinAmountRequest);
+
+    HasPinResponse hasPin();
 }
