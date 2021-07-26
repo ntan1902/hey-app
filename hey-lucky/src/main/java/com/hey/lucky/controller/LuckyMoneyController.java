@@ -2,6 +2,7 @@ package com.hey.lucky.controller;
 
 import com.hey.lucky.dto.ApiResponse;
 import com.hey.lucky.dto.user.CreateLuckyMoneyRequest;
+import com.hey.lucky.dto.user.ReceiveLuckyMoneyRequest;
 import com.hey.lucky.service.LuckyMoneyService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -26,5 +27,14 @@ public class LuckyMoneyController {
                 .message("Sent lucky money")
                 .build());
     }
-
+    @PostMapping("/receiveLuckyMoney")
+    public ResponseEntity<ApiResponse<?>> createLuckyMoney(@RequestBody ReceiveLuckyMoneyRequest request){
+        luckyMoneyService.receiveLuckyMoney(request);
+        return ResponseEntity.ok(ApiResponse.builder()
+                .success(true)
+                .code(HttpStatus.OK.value())
+                .message("Received lucky money")
+                .payload("")
+                .build());
+    }
 }

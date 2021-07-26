@@ -2,6 +2,8 @@ package com.hey.lucky.exception_handler.handler;
 
 import com.hey.lucky.dto.ApiResponse;
 import com.hey.lucky.exception_handler.exception.CannotTransferMoneyException;
+import com.hey.lucky.exception_handler.exception.LuckyMoneyInvalidException;
+import com.hey.lucky.exception_handler.exception.OutOfBagException;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,6 +29,19 @@ public class MyExceptionHandler {
     public ResponseEntity<ApiResponse> handleCannotTransferMoneyException(Exception exception){
         log.error(exception.getMessage());
         HttpStatus code = HttpStatus.INTERNAL_SERVER_ERROR;
+        return getResponse(code, exception.getMessage());
+    }
+    @ExceptionHandler(value = {LuckyMoneyInvalidException.class})
+    public ResponseEntity<ApiResponse> handleLuckyMoneyInvalidException(Exception exception){
+        log.error(exception.getMessage());
+        HttpStatus code = HttpStatus.BAD_REQUEST;
+        return getResponse(code, exception.getMessage());
+    }
+
+    @ExceptionHandler(value = {OutOfBagException.class})
+    public ResponseEntity<ApiResponse> handleOutOfBagException(Exception exception){
+        log.error(exception.getMessage());
+        HttpStatus code = HttpStatus.NOT_ACCEPTABLE;
         return getResponse(code, exception.getMessage());
     }
 }
