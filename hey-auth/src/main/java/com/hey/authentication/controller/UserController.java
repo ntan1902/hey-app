@@ -17,17 +17,6 @@ import org.springframework.web.bind.annotation.*;
 public class UserController {
     private final UserService userService;
 
-    @PostMapping("/login")
-    public ResponseEntity<ApiResponse> login(@RequestBody LoginRequest loginRequest) {
-        LoginResponse payload = userService.login(loginRequest);
-        return ResponseEntity.ok(ApiResponse.builder()
-                .success(true)
-                .code(HttpStatus.OK.value())
-                .message("")
-                .payload(payload)
-                .build());
-    }
-
     @PostMapping("/register")
     public ResponseEntity<ApiResponse> register(@RequestBody RegisterRequest registerRequest) {
         userService.register(registerRequest);
@@ -61,14 +50,14 @@ public class UserController {
                 .build());
     }
 
-    @PostMapping("/hasPin")
+    @GetMapping("/hasPin")
     public ResponseEntity<ApiResponse> hasPin() {
         HasPinResponse payload = userService.hasPin();
         return ResponseEntity.ok(ApiResponse.builder()
                 .success(true)
                 .code(HttpStatus.CREATED.value())
                 .message("Create PIN successfully")
-                .payload("")
+                .payload(payload)
                 .build());
     }
 

@@ -148,7 +148,7 @@ public class UserServiceImpl implements UserDetailsService, UserService {
     public HasPinResponse hasPin() {
         log.info("Inside hasPin of UserServiceImpl");
         User user = getCurrentUser();
-        return new HasPinResponse(user.getPin().isEmpty());
+        return new HasPinResponse(!user.getPin().isEmpty());
     }
 
     private void registerToVertx(User user) {

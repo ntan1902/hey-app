@@ -24,7 +24,7 @@ import java.io.IOException;
 
 
 @Log4j2
-public class JwtAuthenticationFilter extends OncePerRequestFilter {
+public class CustomAuthorizationFilter extends OncePerRequestFilter {
     @Autowired
     private JwtUserUtil jwtUserUtil;
 
@@ -46,45 +46,51 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         if(request.getServletPath().contains("/api/v1/systems")) {
             try {
                 String jwt = getJwtFromRequest(request);
-
-                if (StringUtils.hasText(jwt) && jwtSystemUtil.validateToken(jwt)) {
-                    Long systemId = jwtSystemUtil.getSystemIdFromJwt(jwt);
-
-                    System system = systemService.loadSystemById(systemId);
-                    if (system != null) {
-                        UsernamePasswordAuthenticationToken
-                                authentication = new UsernamePasswordAuthenticationToken(system, null, null);
-                        authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-
-                        SecurityContextHolder.getContext().setAuthentication(authentication);
-                    }
-                }
+                handleAuthorizationSystem(request, jwt);
             } catch (Exception e) {
-                log.error("Failed on set system authentication", e);
+                log.error("Failed on set system authorization", e);
             }
         } else if (request.getServletPath().contains("/api/v1/users")){
             try {
                 String jwt = getJwtFromRequest(request);
-
-                if (StringUtils.hasText(jwt) && jwtUserUtil.validateToken(jwt)) {
-                    Long userId = jwtUserUtil.getUserIdFromJwt(jwt);
-
-                    User user = userService.loadUserById(userId);
-                    if (user != null) {
-                        UsernamePasswordAuthenticationToken
-                                authentication = new UsernamePasswordAuthenticationToken(user,
-                                null,
-                                user.getAuthorities());
-                        authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-
-                        SecurityContextHolder.getContext().setAuthentication(authentication);
-                    }
-                }
+                handleAuthorizationUser(request, jwt);
             } catch (Exception e) {
-                log.error("Failed on set user authentication", e);
+                log.error("Failed on set user authorization", e);
             }
         }
         filterChain.doFilter(request, response);
+    }
+
+    private void handleAuthorizationUser(HttpServletRequest request, String jwt) {
+        if (StringUtils.hasText(jwt) && jwtUserUtil.validateToken(jwt)) {
+            Long userId = jwtUserUtil.getUserIdFromJwt(jwt);
+
+            User user = userService.loadUserById(userId);
+            if (user != null) {
+                UsernamePasswordAuthenticationToken
+                        authentication = new UsernamePasswordAuthenticationToken(user,
+                        null,
+                        user.getAuthorities());
+                authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+
+                SecurityContextHolder.getContext().setAuthentication(authentication);
+            }
+        }
+    }
+
+    private void handleAuthorizationSystem(HttpServletRequest request, String jwt) {
+        if (StringUtils.hasText(jwt) && jwtSystemUtil.validateToken(jwt)) {
+            Long systemId = jwtSystemUtil.getSystemIdFromJwt(jwt);
+
+            System system = systemService.loadSystemById(systemId);
+            if (system != null) {
+                UsernamePasswordAuthenticationToken
+                        authentication = new UsernamePasswordAuthenticationToken(system, null, null);
+                authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+
+                SecurityContextHolder.getContext().setAuthentication(authentication);
+            }
+        }
     }
 
     private String getJwtFromRequest(HttpServletRequest request) {

@@ -1,8 +1,9 @@
 package com.hey.authentication.config;
 
 import com.hey.authentication.exception.jwt.AuthEntryPointJwt;
-import com.hey.authentication.filter.JwtAuthenticationFilter;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.hey.authentication.filter.CustomAuthenticationFilter;
+import com.hey.authentication.filter.CustomAuthorizationFilter;
+import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -15,25 +16,32 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @EnableWebSecurity
 @Configuration
+@AllArgsConstructor
 @EnableGlobalMethodSecurity(
         prePostEnabled = true
 )
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private final AuthEntryPointJwt authEntryPointJwt;
-    private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
-    @Autowired
-    public SecurityConfig(AuthEntryPointJwt authEntryPointJwt,
-                          JwtAuthenticationFilter jwtAuthenticationFilter) {
-        this.authEntryPointJwt = authEntryPointJwt;
-        this.jwtAuthenticationFilter = jwtAuthenticationFilter;
-    }
 
     @Bean
     @Override
     public AuthenticationManager authenticationManagerBean() throws Exception {
         // Get AuthenticationManager Bean
         return super.authenticationManagerBean();
+    }
+
+    @Bean
+    public CustomAuthorizationFilter authorizationFilter() {
+        return new CustomAuthorizationFilter();
+    }
+
+    @Bean
+    public CustomAuthenticationFilter authenticationFilter() throws Exception {
+        CustomAuthenticationFilter customAuthenticationFilter = new CustomAuthenticationFilter();
+        customAuthenticationFilter.setAuthenticationManager(authenticationManagerBean());
+        customAuthenticationFilter.setFilterProcessesUrl("/api/v1/users/login");
+        return customAuthenticationFilter;
     }
 
     @Override
@@ -52,7 +60,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                     .antMatchers("/v3/api-docs/**").permitAll()
                 .anyRequest().authenticated()
                 .and()
-                    .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+                    .addFilter(authenticationFilter())
+                    .addFilterBefore(authorizationFilter(), UsernamePasswordAuthenticationFilter.class);
 
     }
 
