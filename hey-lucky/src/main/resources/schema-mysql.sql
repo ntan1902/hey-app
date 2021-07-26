@@ -1,5 +1,5 @@
+drop table if exists received_lucky_moneys;
 drop table if exists lucky_moneys;
-drop table if exists received_lucky_money;
 
 create table lucky_moneys
 (

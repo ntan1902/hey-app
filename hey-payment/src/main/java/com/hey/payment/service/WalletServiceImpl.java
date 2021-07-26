@@ -52,7 +52,7 @@ public class WalletServiceImpl implements WalletService {
                         wallets.add(
                                 Wallet.builder()
                                         .ownerId(system.getId())
-                                        .balance(1_000_000L)
+                                        .balance(0L)
                                         .refFrom(OwnerWalletRefFrom.SYSTEMS)
                                         .build()
                         );

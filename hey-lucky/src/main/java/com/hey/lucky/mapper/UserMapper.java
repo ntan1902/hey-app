@@ -5,7 +5,7 @@ import com.hey.lucky.dto.user.UserReceiveInfo;
 import org.mapstruct.InjectionStrategy;
 import org.mapstruct.Mapper;
 
-@Mapper(componentModel = "spring", injectionStrategy = InjectionStrategy.FIELD)
+@Mapper(componentModel = "spring", injectionStrategy = InjectionStrategy.CONSTRUCTOR)
 public interface UserMapper {
     UserReceiveInfo userInfo2UserReceiveInfo(UserInfo userInfo);
 }

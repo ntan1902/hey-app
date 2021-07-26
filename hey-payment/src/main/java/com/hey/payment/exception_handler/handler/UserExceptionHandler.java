@@ -33,7 +33,7 @@ public class UserExceptionHandler {
     @ExceptionHandler(value = {HaveNoWalletException.class})
     public ResponseEntity<ApiResponse> handleNoWalletException(Exception exception) {
         log.error(exception.getMessage());
-        HttpStatus code = HttpStatus.BAD_REQUEST;
+        HttpStatus code = HttpStatus.NO_CONTENT;
         return getResponse(code, exception.getMessage());
     }
 

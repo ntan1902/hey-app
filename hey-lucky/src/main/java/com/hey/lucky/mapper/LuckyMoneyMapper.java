@@ -8,7 +8,9 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
 
-@Mapper(componentModel = "spring", injectionStrategy = InjectionStrategy.FIELD)
+import java.time.LocalDateTime;
+
+@Mapper(componentModel = "spring", injectionStrategy = InjectionStrategy.CONSTRUCTOR, imports = LocalDateTime.class)
 public interface LuckyMoneyMapper {
     @Mappings({
             @Mapping(target = "luckyMoneyId", source = "id"),
