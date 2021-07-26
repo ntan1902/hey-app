@@ -15,7 +15,7 @@ public class CreateTransferFromUserResponse {
     @NoArgsConstructor
     @AllArgsConstructor
     @Builder
-    public class Payload {
+    public static class Payload {
         private long amount;
     }
     Boolean success;

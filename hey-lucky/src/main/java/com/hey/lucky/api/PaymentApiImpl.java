@@ -7,7 +7,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
 @Component
-//@AllArgsConstructor
 public class PaymentApiImpl implements PaymentApi {
     @Value("${PAYMENT_SERVICE}")
     private String PAYMENT_SERVICE;

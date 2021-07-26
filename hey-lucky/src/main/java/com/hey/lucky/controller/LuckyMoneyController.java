@@ -1,16 +1,14 @@
 package com.hey.lucky.controller;
 
 import com.hey.lucky.dto.ApiResponse;
-import com.hey.lucky.dto.user.CreateLuckyMoneyRequest;
-import com.hey.lucky.dto.user.ReceiveLuckyMoneyRequest;
+import com.hey.lucky.dto.user.*;
 import com.hey.lucky.service.LuckyMoneyService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1")
@@ -36,5 +34,23 @@ public class LuckyMoneyController {
                 .message("Received lucky money")
                 .payload("")
                 .build());
+    }
+    @GetMapping("/getAllLuckyMoney")
+    public ResponseEntity<ApiResponse<?>> getAllLuckyMoneyOfGroupChat(@RequestBody GetAllLuckyMoneyRequest request){
+        List<LuckyMoneyDTO> luckyMoneyDTOList = luckyMoneyService.getAllLuckyMoney(request);
+        return ResponseEntity.ok(ApiResponse.builder()
+                .success(true)
+                .code(HttpStatus.OK.value())
+                .message("")
+                .payload(luckyMoneyDTOList).build());
+    }
+    @GetMapping("/getDetailsLuckyMoney")
+    public ResponseEntity<ApiResponse<?>> getDetailsLuckyMoney(@RequestBody GetDetailsLuckyMoneyRequest request){
+        LuckyMoneyDetails luckyMoneyDetails = luckyMoneyService.getDetailsLuckyMoney(request);
+        return ResponseEntity.ok(ApiResponse.builder()
+                .success(true)
+                .code(HttpStatus.OK.value())
+                .message("")
+                .payload(luckyMoneyDetails).build());
     }
 }
