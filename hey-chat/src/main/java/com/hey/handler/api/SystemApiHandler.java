@@ -1,6 +1,10 @@
 package com.hey.handler.api;
 
 import com.hey.manager.JwtManager;
+import com.hey.model.lucky.LuckyMoneyMessageRequest;
+import com.hey.model.lucky.ReceiveLuckyMoneyMessageRequest;
+import com.hey.model.lucky.UserIdSessionIdRequest;
+import com.hey.model.lucky.UserIdSessionIdResponse;
 import com.hey.model.payment.TransferMessageRequest;
 import com.hey.util.HttpStatus;
 import com.hey.util.JsonUtils;
@@ -50,7 +54,18 @@ public class SystemApiHandler extends BaseHandler {
                             LogUtils.log("System  " + systemName + " request create transfer message");
                             createTransferMessage(response, requestObject);
                             break;
-
+                        case "/createLuckyMoneyMessage":
+                            LogUtils.log("System  " + systemName + " request create lucky money message");
+                            createLuckyMoneyMessage(response, requestObject);
+                            break;
+                        case "/isUserExistInSession":
+                            LogUtils.log("System  " + systemName + " request check whether user in session");
+                            checkUserIdExistInSessionId(response, requestObject);
+                            break;
+                        case "/receiveLuckyMoneyMessage":
+                            LogUtils.log("System  " + systemName + " request receive lucky money");
+                            receiveLuckyMoneyMessage(response, requestObject);
+                            break;
 
                     }
                 } else {
@@ -60,6 +75,21 @@ public class SystemApiHandler extends BaseHandler {
         } catch (HttpStatusException e) {
             handleUnauthorizedException(e, response);
         }
+    }
+
+    private void createLuckyMoneyMessage(HttpServerResponse response, JsonObject requestObject) {
+        LuckyMoneyMessageRequest luckyMoneyMessageRequest = requestObject.mapTo(LuckyMoneyMessageRequest.class);
+        Future<Boolean> successFuture = apiService.createLuckyMoneyMessage(luckyMoneyMessageRequest);
+
+        successFuture.compose(success -> {
+            response
+                    .setStatusCode(HttpStatus.OK.code())
+                    .putHeader("content-type", "application/json; charset=utf-8")
+                    .end(JsonUtils.toSuccessJSON(success.toString()));
+
+        }, Future.future().setHandler(handler -> {
+            handleException(handler.cause(), response);
+        }));
     }
 
     private void createTransferMessage(HttpServerResponse response, JsonObject requestObject) {
@@ -77,4 +107,37 @@ public class SystemApiHandler extends BaseHandler {
             handleException(handler.cause(), response);
         }));
     }
+
+    private void checkUserIdExistInSessionId(HttpServerResponse response, JsonObject requestObject) {
+        UserIdSessionIdRequest request = requestObject.mapTo(UserIdSessionIdRequest.class);
+        Future<UserIdSessionIdResponse> successFuture = apiService.checkUserExistInSession(request);
+
+        successFuture.compose(success -> {
+            response
+                    .setStatusCode(HttpStatus.OK.code())
+                    .putHeader("content-type", "application/json; charset=utf-8")
+                    .end(JsonUtils.toSuccessJSON(success));
+
+        }, Future.future().setHandler(handler -> {
+            handleException(handler.cause(), response);
+        }));
+    }
+
+
+    private void receiveLuckyMoneyMessage(HttpServerResponse response, JsonObject requestObject) {
+        ReceiveLuckyMoneyMessageRequest request = requestObject.mapTo(ReceiveLuckyMoneyMessageRequest.class);
+
+        Future<Boolean> successFuture = apiService.receiveLuckyMoneyMessage(request);
+
+        successFuture.compose(success -> {
+            response
+                    .setStatusCode(HttpStatus.OK.code())
+                    .putHeader("content-type", "application/json; charset=utf-8")
+                    .end(JsonUtils.toSuccessJSON(success));
+
+        }, Future.future().setHandler(handler -> {
+            handleException(handler.cause(), response);
+        }));
+    }
+
 }
