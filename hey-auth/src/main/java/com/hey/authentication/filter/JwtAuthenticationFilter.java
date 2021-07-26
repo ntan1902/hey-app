@@ -1,12 +1,15 @@
-package com.hey.authentication.jwt;
+package com.hey.authentication.filter;
 
 
 import com.hey.authentication.entity.System;
 import com.hey.authentication.entity.User;
+import com.hey.authentication.jwt.JwtSystemUtil;
+import com.hey.authentication.jwt.JwtUserUtil;
 import com.hey.authentication.service.SystemService;
 import com.hey.authentication.service.UserService;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
@@ -18,6 +21,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+
 
 @Log4j2
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
@@ -84,10 +88,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
 
     private String getJwtFromRequest(HttpServletRequest request) {
-        String bearerToken = request.getHeader("Authorization");
+        String bearerToken = request.getHeader(HttpHeaders.AUTHORIZATION);
 
         if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
-            return bearerToken.substring(7);
+            return bearerToken.substring("Bearer ".length());
         }
         return null;
     }

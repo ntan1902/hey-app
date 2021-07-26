@@ -61,6 +61,17 @@ public class UserController {
                 .build());
     }
 
+    @PostMapping("/hasPin")
+    public ResponseEntity<ApiResponse> hasPin() {
+        HasPinResponse payload = userService.hasPin();
+        return ResponseEntity.ok(ApiResponse.builder()
+                .success(true)
+                .code(HttpStatus.CREATED.value())
+                .message("Create PIN successfully")
+                .payload("")
+                .build());
+    }
+
     @PostMapping("/createSoftTokenByPin")
     public ResponseEntity<ApiResponse> createSoftToken(@RequestBody PinAmountRequest pinAmountRequest) {
         SoftTokenResponse payload = userService.createSoftToken(pinAmountRequest);
