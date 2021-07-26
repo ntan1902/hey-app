@@ -13,6 +13,7 @@ import com.hey.payment.dto.auth_system.OwnerInfo;
 import com.hey.payment.dto.auth_system.VerifySoftTokenResponse;
 import com.hey.payment.dto.chat_system.TransferMessageRequest;
 import com.hey.payment.dto.system.SystemCreateTransferFromUserRequest;
+import com.hey.payment.dto.system.SystemCreateTransferFromUserResponse;
 import com.hey.payment.dto.system.SystemCreateTransferToUserRequest;
 import com.hey.payment.dto.user.ApiResponse;
 import com.hey.payment.dto.user.CreateTransferRequest;
@@ -153,6 +154,8 @@ public class TransferStatementServiceImpl implements TransferStatementService {
             throw new NegativeAmountException();
         }
 
+        checkMaxAmount(amount);
+
         // Check 2 wallets are exist
         Wallet s = walletRepository.findWalletByIdAndOwnerId(request.getWalletId(), system.getId())
                 .orElseThrow(() -> {
@@ -219,6 +222,8 @@ public class TransferStatementServiceImpl implements TransferStatementService {
             throw new NegativeAmountException();
         }
 
+        checkMaxAmount(amount);
+
         // Check 2 wallets are exist and system have permission
         Wallet source = walletRepository.findByOwnerIdAndRefFrom(request.getUserId(), OwnerWalletRefFrom.USERS)
                 .orElseThrow(() -> {
@@ -259,7 +264,7 @@ public class TransferStatementServiceImpl implements TransferStatementService {
                 .success(true)
                 .code(201)
                 .message("Transfer success")
-                .payload("")
+                .payload(new SystemCreateTransferFromUserResponse(amount))
                 .build();
     }
 

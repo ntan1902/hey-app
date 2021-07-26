@@ -125,7 +125,7 @@ class SystemControllerTest {
         SystemAuthorizeRequest authorizeRequest = new SystemAuthorizeRequest(
                 "dump"
         );
-        SystemAuthorizeResponse payload = new SystemAuthorizeResponse(
+        SystemAuthorizeResponse payload = new SystemAuthorizeResponse(1l,
                 "payment"
         );
         given(systemService.authorizeSystem(authorizeRequest)).willReturn(payload);
