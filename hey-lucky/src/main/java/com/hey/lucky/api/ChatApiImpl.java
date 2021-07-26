@@ -10,6 +10,7 @@ import org.springframework.web.client.RestTemplate;
 @Component
 @Log4j2
 public class ChatApiImpl implements ChatApi {
+
     @Value("${CHAT_SERVICE}")
     private String CHAT_SERVICE;
 
