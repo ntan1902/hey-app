@@ -13,7 +13,7 @@ public final class JsonUtils {
         JsonObject objectResult = new JsonObject(Json.encodePrettily(message));
         JsonObject object = new JsonObject();
         object.put("success", true);
-        object.put("code", HttpStatus.OK);
+        object.put("code", HttpStatus.OK.code());
         object.put("message", "");
         object.put("payload", objectResult);
         return Json.encodePrettily(object);
@@ -22,7 +22,7 @@ public final class JsonUtils {
     public static String toSuccessJSON(String message) {
         JsonObject object = new JsonObject();
         object.put("success", true);
-        object.put("code", HttpStatus.OK);
+        object.put("code", HttpStatus.OK.code());
         object.put("message", message);
         object.put("payload", "");
         return Json.encodePrettily(object);

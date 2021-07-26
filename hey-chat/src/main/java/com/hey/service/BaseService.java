@@ -9,6 +9,7 @@ import com.hey.model.UserAuth;
 import com.hey.model.UserFull;
 import com.hey.model.UserHash;
 import com.hey.model.UserStatus;
+import com.hey.model.lucky.LuckyMoneyMessageRequest;
 import com.hey.repository.DataRepository;
 import com.hey.util.GenerationUtils;
 import io.vertx.core.CompositeFuture;

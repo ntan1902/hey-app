@@ -1,10 +1,10 @@
 package com.hey.model.lucky;
 
-public class ReceivedLuckyMoneyMessageRequest {
+public class ReceiveLuckyMoneyMessageRequest {
     private String sessionId;
-    private long receiverId;
-    private long luckyMoneyId;
-    private long amount;
+    private Long receiverId;
+    private Long luckyMoneyId;
+    private Long amount;
     private String message;
     private String createdAt;
 
@@ -16,27 +16,27 @@ public class ReceivedLuckyMoneyMessageRequest {
         this.sessionId = sessionId;
     }
 
-    public long getReceiverId() {
+    public Long getReceiverId() {
         return receiverId;
     }
 
-    public void setReceiverId(long receiverId) {
+    public void setReceiverId(Long receiverId) {
         this.receiverId = receiverId;
     }
 
-    public long getLuckyMoneyId() {
+    public Long getLuckyMoneyId() {
         return luckyMoneyId;
     }
 
-    public void setLuckyMoneyId(long luckyMoneyId) {
+    public void setLuckyMoneyId(Long luckyMoneyId) {
         this.luckyMoneyId = luckyMoneyId;
     }
 
-    public long getAmount() {
+    public Long getAmount() {
         return amount;
     }
 
-    public void setAmount(long amount) {
+    public void setAmount(Long amount) {
         this.amount = amount;
     }
 

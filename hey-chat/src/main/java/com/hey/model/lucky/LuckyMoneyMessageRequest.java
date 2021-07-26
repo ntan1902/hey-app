@@ -1,33 +1,33 @@
 package com.hey.model.lucky;
 
 public class LuckyMoneyMessageRequest {
-    private long userId;
-    private long sessionId;
-    private long luckyMoneyId;
+    private Long userId;
+    private String sessionId;
+    private Long luckyMoneyId;
     private String message;
     private String createdAt;
 
-    public long getUserId() {
+    public Long getUserId() {
         return userId;
     }
 
-    public void setUserId(long userId) {
+    public void setUserId(Long userId) {
         this.userId = userId;
     }
 
-    public long getSessionId() {
+    public String getSessionId() {
         return sessionId;
     }
 
-    public void setSessionId(long sessionId) {
+    public void setSessionId(String sessionId) {
         this.sessionId = sessionId;
     }
 
-    public long getLuckyMoneyId() {
+    public Long getLuckyMoneyId() {
         return luckyMoneyId;
     }
 
-    public void setLuckyMoneyId(long luckyMoneyId) {
+    public void setLuckyMoneyId(Long luckyMoneyId) {
         this.luckyMoneyId = luckyMoneyId;
     }
 
