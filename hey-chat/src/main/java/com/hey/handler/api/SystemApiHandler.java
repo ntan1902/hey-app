@@ -133,7 +133,7 @@ public class SystemApiHandler extends BaseHandler {
             response
                     .setStatusCode(HttpStatus.OK.code())
                     .putHeader("content-type", "application/json; charset=utf-8")
-                    .end(JsonUtils.toSuccessJSON(success));
+                    .end(JsonUtils.toSuccessJSON(success.toString()));
 
         }, Future.future().setHandler(handler -> {
             handleException(handler.cause(), response);

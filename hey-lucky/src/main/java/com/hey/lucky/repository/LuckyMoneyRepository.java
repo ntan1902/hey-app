@@ -13,6 +13,8 @@ import java.util.Optional;
 public interface LuckyMoneyRepository extends JpaRepository<LuckyMoney, Long> {
     @Lock(value = LockModeType.PESSIMISTIC_WRITE)
     Optional<LuckyMoney> getLuckyMoneyById(Long luckyMoneyId);
-
+    
+    Optional<LuckyMoney> findLuckyMoneyById(Long luckyMoneyId);
+    
     List<LuckyMoney> findAllBySessionChatId(String sessionChatId);
 }

@@ -9,7 +9,7 @@ public interface LuckyMoneyService {
 
     void receiveLuckyMoney(ReceiveLuckyMoneyRequest request);
 
-    List<LuckyMoneyDTO> getAllLuckyMoney(GetAllLuckyMoneyRequest request);
+    List<LuckyMoneyDTO> getAllLuckyMoney(String sessionId);
 
-    LuckyMoneyDetails getDetailsLuckyMoney(GetDetailsLuckyMoneyRequest request);
+    LuckyMoneyDetails getDetailsLuckyMoney(long luckyMoneyId);
 }

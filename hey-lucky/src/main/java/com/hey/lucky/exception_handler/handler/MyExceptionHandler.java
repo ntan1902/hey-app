@@ -36,6 +36,13 @@ public class MyExceptionHandler {
         return getResponse(code, exception.getMessage());
     }
 
+    @ExceptionHandler(value = {LuckyMoneyExpiredException.class})
+    public ResponseEntity<ApiResponse> handleLuckyMoneyExpiredException(Exception exception){
+        log.error(exception.getMessage());
+        HttpStatus code = HttpStatus.BAD_REQUEST;
+        return getResponse(code, exception.getMessage());
+    }
+
     @ExceptionHandler(value = {OutOfBagException.class})
     public ResponseEntity<ApiResponse> handleOutOfBagException(Exception exception){
         log.error(exception.getMessage());
@@ -53,6 +60,19 @@ public class MyExceptionHandler {
     public ResponseEntity<ApiResponse> handleErrCallApiException(Exception exception){
         log.error(exception.getMessage());
         HttpStatus code = HttpStatus.INTERNAL_SERVER_ERROR;
+        return getResponse(code, exception.getMessage());
+    }
+    @ExceptionHandler(value = {HadReceivedException.class})
+    public ResponseEntity<ApiResponse> handleHadReceivedException(Exception exception){
+        log.error(exception.getMessage());
+        HttpStatus code = HttpStatus.BAD_REQUEST;
+        return getResponse(code, exception.getMessage());
+    }
+
+    @ExceptionHandler(value = {UnauthorizeException.class})
+    public ResponseEntity<ApiResponse> handleUnauthorizeException(Exception exception){
+        log.error(exception.getMessage());
+        HttpStatus code = HttpStatus.UNAUTHORIZED;
         return getResponse(code, exception.getMessage());
     }
 

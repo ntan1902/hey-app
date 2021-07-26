@@ -70,6 +70,7 @@ public class LuckyMoneyServiceImpl implements LuckyMoneyService {
     }
 
     @Override
+    @Transactional(noRollbackFor = ErrCallApiException.class)
     public void createLuckyMoney(CreateLuckyMoneyRequest request) {
         int currentWallet = count.getAndUpdate(c -> c < numberWallet - 1 ? c + 1 : 0);
         User user = getCurrentUser();
@@ -104,7 +105,7 @@ public class LuckyMoneyServiceImpl implements LuckyMoneyService {
     }
 
     @Override
-    @Transactional
+    @Transactional(noRollbackFor = ErrCallApiException.class)
     public void receiveLuckyMoney(ReceiveLuckyMoneyRequest request) {
         User user = getCurrentUser();
         LocalDateTime now = LocalDateTime.now();
@@ -143,25 +144,25 @@ public class LuckyMoneyServiceImpl implements LuckyMoneyService {
     }
 
     @Override
-    public List<LuckyMoneyDTO> getAllLuckyMoney(GetAllLuckyMoneyRequest request) {
+    public List<LuckyMoneyDTO> getAllLuckyMoney(String sessionId) {
         User user = getCurrentUser();
-        log.info("User {} get all lucky money of chat group {}", user.getId(), request.getSessionId());
+        log.info("User {} get all lucky money of chat group {}", user.getId(), sessionId);
 
-        checkUserInSession(user.getId(),request.getSessionId());
+        checkUserInSession(user.getId(),sessionId);
 
-        List<LuckyMoney> luckyMoneyList = luckyMoneyRepository.findAllBySessionChatId(request.getSessionId());
+        List<LuckyMoney> luckyMoneyList = luckyMoneyRepository.findAllBySessionChatId(sessionId);
 
         return luckyMoneyList2LuckyMoneyDTOList(luckyMoneyList, user);
 
     }
 
     @Override
-    public LuckyMoneyDetails getDetailsLuckyMoney(GetDetailsLuckyMoneyRequest request) {
-        log.info("Get details of lucky money {}", request.getLuckyMoneyId());
+    public LuckyMoneyDetails getDetailsLuckyMoney(long luckyMoneyId) {
+        log.info("Get details of lucky money {}", luckyMoneyId);
         User user = getCurrentUser();
-        LuckyMoney luckyMoney = luckyMoneyRepository.getLuckyMoneyById(request.getLuckyMoneyId())
+        LuckyMoney luckyMoney = luckyMoneyRepository.findLuckyMoneyById(luckyMoneyId)
                 .orElseThrow(() -> {
-                    log.error("Lucky money {} is not exists", request.getLuckyMoneyId());
+                    log.error("Lucky money {} is not exists", luckyMoneyId);
                     throw new LuckyMoneyInvalidException();
                 });
         checkUserInSession(user.getId(),luckyMoney.getSessionChatId());
@@ -183,7 +184,7 @@ public class LuckyMoneyServiceImpl implements LuckyMoneyService {
         log.info("Check user {} is in group chat {}", userId, sessionId);
         CheckUserInSessionChatResponse response = chatApi.checkUserInSessionChat(new CheckUserInSessionChatRequest(userId,sessionId));
         if (!response.isSuccess()){
-            throw new ErrCallApiException();
+            throw new ErrCallApiException("Can not verify your authentication. Try later!");
         }
         if (!response.getPayload().isExisted()){
             throw new UnauthorizeException("You aren't in that group chat");

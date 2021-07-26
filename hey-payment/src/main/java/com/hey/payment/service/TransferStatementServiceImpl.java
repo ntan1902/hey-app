@@ -163,7 +163,7 @@ public class TransferStatementServiceImpl implements TransferStatementService {
                 });
         Wallet t = walletRepository.findByOwnerIdAndRefFrom(request.getReceiverId(), OwnerWalletRefFrom.USERS)
                 .orElseThrow(() -> {
-                    throw new WrongTargetException();
+                    throw new HaveNoWalletException();
                 });
 
 

@@ -24,7 +24,6 @@ import java.util.ArrayList;
 @Log4j2
 @Component
 public class AuthServiceFilter extends OncePerRequestFilter {
-    private final HttpStatus[] ERR_CODE = {HttpStatus.UNAUTHORIZED, HttpStatus.BAD_REQUEST};
 
     private final RestTemplate restTemplate;
 
@@ -38,7 +37,7 @@ public class AuthServiceFilter extends OncePerRequestFilter {
         try {
             String token = getTokenFromRequest(request);
             if (StringUtils.hasText(token)) {
-                UsernamePasswordAuthenticationToken authenticationToken = null;
+                UsernamePasswordAuthenticationToken authenticationToken;
                 log.info("Authorize user with token {}", token);
                 User user = new User(authorizeUser(token));
                 authenticationToken = new UsernamePasswordAuthenticationToken(user, null, new ArrayList<>());
