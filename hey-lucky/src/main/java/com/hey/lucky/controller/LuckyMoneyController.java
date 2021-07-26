@@ -4,6 +4,7 @@ import com.hey.lucky.dto.ApiResponse;
 import com.hey.lucky.dto.user.*;
 import com.hey.lucky.service.LuckyMoneyService;
 import lombok.AllArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,6 +14,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1")
 @AllArgsConstructor
+@Log4j2
 public class LuckyMoneyController {
     private final LuckyMoneyService luckyMoneyService;
 
@@ -27,6 +29,7 @@ public class LuckyMoneyController {
     }
     @PostMapping("/receiveLuckyMoney")
     public ResponseEntity<ApiResponse<?>> createLuckyMoney(@RequestBody ReceiveLuckyMoneyRequest request){
+        log.info("Receive lucky money");
         luckyMoneyService.receiveLuckyMoney(request);
         return ResponseEntity.ok(ApiResponse.builder()
                 .success(true)
@@ -36,8 +39,9 @@ public class LuckyMoneyController {
                 .build());
     }
     @GetMapping("/getAllLuckyMoney")
-    public ResponseEntity<ApiResponse<?>> getAllLuckyMoneyOfGroupChat(@RequestBody GetAllLuckyMoneyRequest request){
-        List<LuckyMoneyDTO> luckyMoneyDTOList = luckyMoneyService.getAllLuckyMoney(request);
+    public ResponseEntity<ApiResponse<?>> getAllLuckyMoneyOfGroupChat(@RequestParam String sessionId){
+        log.info("Get all lucky money");
+        List<LuckyMoneyDTO> luckyMoneyDTOList = luckyMoneyService.getAllLuckyMoney(sessionId);
         return ResponseEntity.ok(ApiResponse.builder()
                 .success(true)
                 .code(HttpStatus.OK.value())
@@ -45,8 +49,8 @@ public class LuckyMoneyController {
                 .payload(luckyMoneyDTOList).build());
     }
     @GetMapping("/getDetailsLuckyMoney")
-    public ResponseEntity<ApiResponse<?>> getDetailsLuckyMoney(@RequestBody GetDetailsLuckyMoneyRequest request){
-        LuckyMoneyDetails luckyMoneyDetails = luckyMoneyService.getDetailsLuckyMoney(request);
+    public ResponseEntity<ApiResponse<?>> getDetailsLuckyMoney(@RequestParam long luckyMoneyId){
+        LuckyMoneyDetails luckyMoneyDetails = luckyMoneyService.getDetailsLuckyMoney(luckyMoneyId);
         return ResponseEntity.ok(ApiResponse.builder()
                 .success(true)
                 .code(HttpStatus.OK.value())

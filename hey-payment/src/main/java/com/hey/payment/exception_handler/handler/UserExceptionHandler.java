@@ -33,7 +33,7 @@ public class UserExceptionHandler {
     @ExceptionHandler(value = {HaveNoWalletException.class})
     public ResponseEntity<ApiResponse> handleNoWalletException(Exception exception) {
         log.error(exception.getMessage());
-        HttpStatus code = HttpStatus.NO_CONTENT;
+        HttpStatus code = HttpStatus.NOT_FOUND;
         return getResponse(code, exception.getMessage());
     }
 
@@ -84,4 +84,41 @@ public class UserExceptionHandler {
         HttpStatus code = HttpStatus.BAD_REQUEST;
         return getResponse(code, exception.getMessage());
     }
+
+    @ExceptionHandler(value = {BankInvalidException.class})
+    public ResponseEntity<ApiResponse> handleBankInvalidException(Exception exception) {
+        log.error(exception.getMessage());
+        HttpStatus code = HttpStatus.NOT_FOUND;
+        return getResponse(code, exception.getMessage());
+    }
+
+    @ExceptionHandler(value = {DatabaseHasErr.class})
+    public ResponseEntity<ApiResponse> handleDatabaseHasErr(Exception exception) {
+        log.error(exception.getMessage());
+        HttpStatus code = HttpStatus.INTERNAL_SERVER_ERROR;
+        return getResponse(code, exception.getMessage());
+    }
+
+    @ExceptionHandler(value = {WalletNotExistException.class})
+    public ResponseEntity<ApiResponse> handleWalletNotExistException(Exception exception) {
+        log.error(exception.getMessage());
+        HttpStatus code = HttpStatus.NO_CONTENT;
+        return getResponse(code, exception.getMessage());
+    }
+
+    @ExceptionHandler(value = {WrongSourceException.class})
+    public ResponseEntity<ApiResponse> handleWrongSourceException(Exception exception) {
+        log.error(exception.getMessage());
+        HttpStatus code = HttpStatus.BAD_REQUEST;
+        return getResponse(code, exception.getMessage());
+    }
+
+    @ExceptionHandler(value = {WrongTargetException.class})
+    public ResponseEntity<ApiResponse> handleWrongTargetException(Exception exception) {
+        log.error(exception.getMessage());
+        HttpStatus code = HttpStatus.BAD_REQUEST;
+        return getResponse(code, exception.getMessage());
+    }
+
+
 }

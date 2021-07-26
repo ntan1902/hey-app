@@ -35,7 +35,7 @@ public final class JsonUtils {
     public static String toError500JSON() {
         JsonObject object = new JsonObject();
         object.put("success", false);
-        object.put("code", HttpStatus.INTERNAL_SERVER_ERROR);
+        object.put("code", HttpStatus.INTERNAL_SERVER_ERROR.code());
         object.put("message", "Oops, The handler was unable to complete your request. We will be back soon :(");
         object.put("payload", "");
         return Json.encodePrettily(object);

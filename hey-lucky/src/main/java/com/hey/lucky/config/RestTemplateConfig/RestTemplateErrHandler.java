@@ -21,7 +21,7 @@ public class RestTemplateErrHandler implements ResponseErrorHandler {
     @Override
     public void handleError(ClientHttpResponse httpResponse) throws IOException {
         switch (httpResponse.getStatusCode().value()){
-            case 400:{
+            case 401:{
                 throw new UnauthorizeException("Unauthorize!");
             }
         }

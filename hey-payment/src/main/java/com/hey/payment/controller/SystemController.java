@@ -12,10 +12,7 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -42,14 +39,14 @@ public class SystemController {
     }
 
     @PostMapping("/createTransferToUser")
-    public ResponseEntity<ApiResponse> createTransferToUser(SystemCreateTransferToUserRequest request) {
+    public ResponseEntity<ApiResponse> createTransferToUser(@RequestBody SystemCreateTransferToUserRequest request) {
         System system = getCurrentSystem();
         log.info("System {} createTransferToUser", system.getId());
         return ResponseEntity.ok(transferStatementService.systemCreateTransferToUser(system, request));
     }
 
     @PostMapping("/createTransferFromUser")
-    public ResponseEntity<ApiResponse> createTransferFromUser(SystemCreateTransferFromUserRequest request) {
+    public ResponseEntity<ApiResponse> createTransferFromUser(@RequestBody SystemCreateTransferFromUserRequest request) {
         System system = getCurrentSystem();
         log.info("System {} createTransferFromUser", system.getId());
         return ResponseEntity.ok(transferStatementService.systemCreateTransferFromUser(system, request));

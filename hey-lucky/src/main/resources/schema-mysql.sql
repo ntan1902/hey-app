@@ -4,9 +4,9 @@ drop table if exists lucky_moneys;
 create table lucky_moneys
 (
     id bigint auto_increment,
-    uesr_id bigint,
+    user_id bigint,
     system_wallet_id bigint,
-    session_chat_id bigint,
+    session_chat_id varchar(100),
     amount bigint,
     rest_money bigint,
     number_bag int,
@@ -24,7 +24,7 @@ create table received_lucky_moneys
     lucky_money_id bigint,
     receiver_id bigint,
     amount bigint,
-    createAt timestamp,
+    created_at timestamp,
     primary key (id)
 );
 
