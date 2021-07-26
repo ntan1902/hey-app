@@ -8,5 +8,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class SystemAuthorizeResponse {
+    private long systemId;
     private String systemName;
 }

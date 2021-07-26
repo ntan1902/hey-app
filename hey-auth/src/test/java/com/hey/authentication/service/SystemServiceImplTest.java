@@ -385,6 +385,7 @@ class SystemServiceImplTest {
 
         given(systemRepository.findById(systemId)).willReturn(Optional.of(system));
         SystemDTO expected = new SystemDTO(
+                1L,
                 system.getSystemName(),
                 0
         );

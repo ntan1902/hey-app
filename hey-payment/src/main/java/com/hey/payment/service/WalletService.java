@@ -11,7 +11,7 @@ import java.util.List;
 public interface WalletService {
     WalletDTO getWalletOfUser(long userId);
 
-    List<WalletSystemDTO> getAllWalletOfSystem(System system);
+    List<WalletSystemDTO> getAllWalletsOfSystem(System system);
 
     WalletDTO createWallet(User user);
 }

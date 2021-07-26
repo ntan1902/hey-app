@@ -1,6 +1,6 @@
 package com.hey.payment.dto.user;
 
-import com.hey.payment.dto.auth_service.OwnerInfo;
+import com.hey.payment.dto.auth_system.OwnerInfo;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

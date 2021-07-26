@@ -99,7 +99,7 @@ public class SystemServiceImpl implements SystemService {
                         throw new SystemIdNotFoundException("System Id " + systemId + " not found");
                     });
 
-            return new SystemAuthorizeResponse(system.getSystemName());
+            return new SystemAuthorizeResponse(systemId,system.getSystemName());
         } else {
             log.error("Invalid JWT token: {}", authorizeRequest.getJwtSystem());
             throw new InvalidJwtTokenException("Invalid JWT token");
@@ -149,6 +149,7 @@ public class SystemServiceImpl implements SystemService {
 
     @Override
     public List<SystemDTO> getSystems() {
+        log.info("Inside getSystems of SystemServiceImpl");
         return systemRepository.findAll()
                 .stream()
                 .map(systemMapper::system2systemDTO)

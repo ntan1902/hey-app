@@ -125,7 +125,7 @@ class SystemControllerTest {
         SystemAuthorizeRequest authorizeRequest = new SystemAuthorizeRequest(
                 "dump"
         );
-        SystemAuthorizeResponse payload = new SystemAuthorizeResponse(
+        SystemAuthorizeResponse payload = new SystemAuthorizeResponse(1l,
                 "payment"
         );
         given(systemService.authorizeSystem(authorizeRequest)).willReturn(payload);
@@ -225,7 +225,7 @@ class SystemControllerTest {
         // given
         Long systemId = 1L;
 
-        SystemDTO payload = new SystemDTO("payment", 0);
+        SystemDTO payload = new SystemDTO(1L, "payment", 0);
 
         given(systemService.findById(systemId)).willReturn(payload);
 
