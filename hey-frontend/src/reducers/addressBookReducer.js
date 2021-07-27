@@ -3,16 +3,18 @@ import {
   ADD_FRIEND_FAIL,
   ADD_FRIEND_POPUP_STATE,
   ADDRESSBOOK_FETCHED,
-  CHANGE_STATUS
+  CHANGE_STATUS,
+  TOP_UP,
 } from "../actions/addressBookAction";
 
 const initialState = {
-  addressBookList : [],
-  newAddressBookList : [],
+  addressBookList: [],
+  newAddressBookList: [],
   addFriendError: false,
-  addFriendErrorMessage: '',
-  addFriendPopup: false
-}
+  addFriendErrorMessage: "",
+  addFriendPopup: false,
+  topup: false,
+};
 
 export default function reduce(state = initialState, action) {
   switch (action.type) {
@@ -20,27 +22,32 @@ export default function reduce(state = initialState, action) {
       return {
         ...state,
         addressBookList: action.fetchedAddressBookList,
-        newAddressBookList: action.fetchedNewAddressBookList
-      }
+        newAddressBookList: action.fetchedNewAddressBookList,
+      };
     case ADD_FRIEND:
       return {
         ...state,
         addFriendError: false,
-        addFriendErrorMessage: '',
+        addFriendErrorMessage: "",
         newAddressBookList: action.newAddressBookList,
-        addFriendPopup: false
-      }
+        addFriendPopup: false,
+      };
     case ADD_FRIEND_FAIL:
       return {
         ...state,
         addFriendError: true,
-        addFriendErrorMessage: action.error
-      }
+        addFriendErrorMessage: action.error,
+      };
     case ADD_FRIEND_POPUP_STATE:
       return {
         ...state,
-        addFriendPopup: action.popupstate
-      }
+        addFriendPopup: action.popupstate,
+      };
+    case TOP_UP:
+      return {
+        ...state,
+        topup: action.topupstate,
+      };
     default:
       return state;
   }

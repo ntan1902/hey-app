@@ -4,6 +4,7 @@ package com.hey.authentication.exception.handler;
 import com.hey.authentication.exception.jwt.InvalidJwtTokenException;
 import com.hey.authentication.exception.system.SystemIdNotFoundException;
 import com.hey.authentication.exception.system.SystemKeyInvalidException;
+import com.hey.authentication.exception.user.EmptyPinException;
 import com.hey.authentication.exception.user.PinNotMatchedException;
 import com.hey.authentication.exception.user.UserIdNotFoundException;
 import com.hey.authentication.dto.api.ApiResponse;
@@ -85,6 +86,14 @@ public class ApiExceptionHandler {
     @ExceptionHandler(value = {PinNotMatchedException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseEntity<Object> handleApiResponseException(PinNotMatchedException exception) {
+        log.error(exception.getMessage());
+        HttpStatus code = HttpStatus.BAD_REQUEST;
+        return getResponse(code, exception.getMessage());
+    }
+
+    @ExceptionHandler(value = {EmptyPinException.class})
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseEntity<Object> handleApiResponseException(EmptyPinException exception) {
         log.error(exception.getMessage());
         HttpStatus code = HttpStatus.BAD_REQUEST;
         return getResponse(code, exception.getMessage());
