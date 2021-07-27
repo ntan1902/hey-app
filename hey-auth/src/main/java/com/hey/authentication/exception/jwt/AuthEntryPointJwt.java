@@ -27,16 +27,12 @@ public class AuthEntryPointJwt implements AuthenticationEntryPoint {
 
 
         ObjectMapper objectMapper = new ObjectMapper();
-        String resBody = objectMapper.writeValueAsString(ApiResponse.builder()
+        objectMapper.writeValue(httpServletResponse.getOutputStream(), ApiResponse.builder()
                 .success(false)
                 .code(HttpServletResponse.SC_UNAUTHORIZED)
                 .message("Unauthorized")
                 .payload("")
                 .build()
         );
-        PrintWriter printWriter = httpServletResponse.getWriter();
-        printWriter.print(resBody);
-        printWriter.flush();
-        printWriter.close();
     }
 }

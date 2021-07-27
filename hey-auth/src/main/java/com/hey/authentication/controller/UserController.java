@@ -17,17 +17,6 @@ import org.springframework.web.bind.annotation.*;
 public class UserController {
     private final UserService userService;
 
-    @PostMapping("/login")
-    public ResponseEntity<ApiResponse> login(@RequestBody LoginRequest loginRequest) {
-        LoginResponse payload = userService.login(loginRequest);
-        return ResponseEntity.ok(ApiResponse.builder()
-                .success(true)
-                .code(HttpStatus.OK.value())
-                .message("")
-                .payload(payload)
-                .build());
-    }
-
     @PostMapping("/register")
     public ResponseEntity<ApiResponse> register(@RequestBody RegisterRequest registerRequest) {
         userService.register(registerRequest);
@@ -51,8 +40,8 @@ public class UserController {
     }
 
     @PostMapping("/createPin")
-    public ResponseEntity<ApiResponse> createPin(@RequestBody PinRequest pinRequest) {
-        userService.createPin(pinRequest);
+    public ResponseEntity<ApiResponse> createPin(@RequestBody PinAmountRequest pinAmountRequest) {
+        userService.createPin(pinAmountRequest);
         return ResponseEntity.ok(ApiResponse.builder()
                 .success(true)
                 .code(HttpStatus.CREATED.value())
@@ -61,9 +50,20 @@ public class UserController {
                 .build());
     }
 
+    @GetMapping("/hasPin")
+    public ResponseEntity<ApiResponse> hasPin() {
+        HasPinResponse payload = userService.hasPin();
+        return ResponseEntity.ok(ApiResponse.builder()
+                .success(true)
+                .code(HttpStatus.CREATED.value())
+                .message("Create PIN successfully")
+                .payload(payload)
+                .build());
+    }
+
     @PostMapping("/createSoftTokenByPin")
-    public ResponseEntity<ApiResponse> createSoftToken(@RequestBody PinRequest pinRequest) {
-        SoftTokenResponse payload = userService.createSoftToken(pinRequest);
+    public ResponseEntity<ApiResponse> createSoftToken(@RequestBody PinAmountRequest pinAmountRequest) {
+        SoftTokenResponse payload = userService.createSoftToken(pinAmountRequest);
         return ResponseEntity.ok(ApiResponse.builder()
                 .success(true)
                 .code(HttpStatus.CREATED.value())

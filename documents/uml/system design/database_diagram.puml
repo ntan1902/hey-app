@@ -13,16 +13,16 @@ entity "users" as users #Aqua{
     username: varchar
     email: varchar
     password: varchar
-    fullname: varchar
+    full_name: varchar
     pin: varchar
 }
 
-' LuckyMoney Service: 
-' - service_name: LuckyMoney
-' - service_key: 
-' ----> Request Auth Service -> JWToken Service 
+' LuckyMoney system: 
+' - system_name: LuckyMoney
+' - system_key: 
+' ----> Request Auth system -> JWToken system 
 ' LuckyMoney vS Payment 
-' LuckyMoney ----> Request Auth Service -> JWToken Service
+' LuckyMoney ----> Request Auth system -> JWToken system
 ' LuckyMoney dùng JWToken vừa có để request danh sách  wallets của nó
 ' sử dụng list wallets này ntn thì tuỳ nó 
 
@@ -40,9 +40,10 @@ entity "systems" #Aqua{
 entity "wallets" as wallets #Aqua{
     *id: number <<generated>>
     --
-    owner_id: number <<FK>>
     balance: number    
+    owner_id: number
     ref_from: varchar
+    
 }
 
 entity "transfer_statements" as transfer_statements #Aqua {
@@ -62,13 +63,13 @@ entity "transfer_statements" as transfer_statements #Aqua {
 entity "lucky_moneys" as lucky_moneys #Yellow{
     *id: number  <<generated>>
     --
-    user_wallet_id: number <<FK>>
+    user_id: number <<FK>>
     system_wallet_id: number <<FK>>
-    session_chat_id: number
+    session_chat_id: varchar
     amount: number
     rest_money: number
     rest_bag: number
-    bag_number: number
+    number_bag: number
     type: varchar
     wish_message: string
     created_at: timestamp
@@ -79,7 +80,7 @@ entity "received_lucky_moneys" as received_luckey_moneys #Yellow{
     *id: number <<generated>>
     --
     lucky_money_id: number <<FK>>
-    wallet_receiver_id: number <<FK>>
+    receiver_id: number <<FK>>
     amount: number
     created_at: timestamp
 }

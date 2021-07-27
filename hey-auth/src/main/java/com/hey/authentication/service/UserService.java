@@ -12,7 +12,11 @@ public interface UserService {
 
     UserDTO findById();
 
-    void createPin(PinRequest pinRequest);
+    UserDTO findById(Long userId);
 
-    SoftTokenResponse createSoftToken(PinRequest pinRequest);
+    void createPin(PinAmountRequest pinAmountRequest);
+
+    SoftTokenResponse createSoftToken(PinAmountRequest pinAmountRequest);
+
+    HasPinResponse hasPin();
 }

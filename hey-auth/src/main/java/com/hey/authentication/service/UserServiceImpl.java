@@ -3,6 +3,7 @@ package com.hey.authentication.service;
 import com.hey.authentication.dto.user.*;
 import com.hey.authentication.dto.vertx.RegisterRequestToChat;
 import com.hey.authentication.entity.User;
+import com.hey.authentication.exception.user.EmptyPinException;
 import com.hey.authentication.exception.user.PinNotMatchedException;
 import com.hey.authentication.exception.user.UserIdNotFoundException;
 import com.hey.authentication.jwt.JwtSoftTokenUtil;
@@ -69,8 +70,10 @@ public class UserServiceImpl implements UserDetailsService, UserService {
         log.info("Authentication: {}", authentication);
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
+        // Get User after Authenticate
         User user = (User) authentication.getPrincipal();
 
+        // Set JWT
         String jwt = jwtUserUtil.generateToken(user);
 
         return new LoginResponse(jwt, "Bearer");
@@ -86,7 +89,9 @@ public class UserServiceImpl implements UserDetailsService, UserService {
         );
 
         userRepository.save(user);
-//        registerToVertx(userRepository.save(user));
+
+        // Call api register to Vert.x
+        registerToVertx(userRepository.save(user));
     }
 
     @Override
@@ -97,9 +102,20 @@ public class UserServiceImpl implements UserDetailsService, UserService {
     }
 
     @Override
-    public void createPin(PinRequest pinRequest) {
-        log.info("Inside createPin of UserServiceImpl: {}", pinRequest);
-        String hashPin = passwordEncoder.encode(pinRequest.getPin());
+    public UserDTO findById(Long userId) {
+        log.info("Inside findById({}) of UserServiceImpl", userId);
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> {
+                    log.error("User Id {} not found", userId);
+                    throw new UserIdNotFoundException("User Id " + userId + " not found");
+                });
+        return userMapper.user2UserDTO(user);
+    }
+
+    @Override
+    public void createPin(PinAmountRequest pinAmountRequest) {
+        log.info("Inside createPin of UserServiceImpl: {}", pinAmountRequest);
+        String hashPin = passwordEncoder.encode(pinAmountRequest.getPin());
         User user = getCurrentUser();
         user.setPin(hashPin);
         userRepository.save(user);
@@ -110,16 +126,29 @@ public class UserServiceImpl implements UserDetailsService, UserService {
     }
 
     @Override
-    public SoftTokenResponse createSoftToken(PinRequest pinRequest) {
-        log.info("Inside createSoftToken of UserServiceImpl: {}", pinRequest);
+    public SoftTokenResponse createSoftToken(PinAmountRequest pinAmountRequest) {
+        log.info("Inside createSoftToken of UserServiceImpl: {}", pinAmountRequest);
         User user = getCurrentUser();
-        if (passwordEncoder.matches(pinRequest.getPin(), user.getPin())) {
-            String softToken = jwtSoftTokenUtil.generateToken(user);
-            return new SoftTokenResponse(softToken);
-        } else {
-            log.error("Pin: {} not matched", pinRequest.getPin());
-            throw new PinNotMatchedException("Pin: " + pinRequest.getPin() + " not matched");
+
+        // Check if user has pin
+        if(user.getPin().isEmpty()) {
+            throw new EmptyPinException("Pin is not created yet!");
         }
+
+        if (!passwordEncoder.matches(pinAmountRequest.getPin(), user.getPin())) {
+            log.error("Pin: {} not matched", pinAmountRequest.getPin());
+            throw new PinNotMatchedException("Pin: " + pinAmountRequest.getPin() + " not matched");
+        }
+
+        String softToken = jwtSoftTokenUtil.generateToken(user, pinAmountRequest.getPin(), pinAmountRequest.getAmount());
+        return new SoftTokenResponse(softToken);
+    }
+
+    @Override
+    public HasPinResponse hasPin() {
+        log.info("Inside hasPin of UserServiceImpl");
+        User user = getCurrentUser();
+        return new HasPinResponse(!user.getPin().isEmpty());
     }
 
     private void registerToVertx(User user) {
@@ -127,7 +156,7 @@ public class UserServiceImpl implements UserDetailsService, UserService {
         RegisterRequestToChat registerRequestToChat = userMapper.registerRequest2Chat(user);
         webClientBuilder.build()
                 .post()
-                .uri(CHAT_SERVICE + "/api/public/user")
+                .uri(CHAT_SERVICE + "/api/public/register")
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(registerRequestToChat)
                 .retrieve()

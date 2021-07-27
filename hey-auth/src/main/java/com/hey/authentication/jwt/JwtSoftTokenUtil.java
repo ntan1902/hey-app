@@ -18,13 +18,18 @@ public class JwtSoftTokenUtil {
     private Long JWT_EXPIRATION;
 
 
-    public String generateToken(User user) {
-        return doGenerateToken(user.getId().toString());
+    public String generateToken(User user, String pin, long amount) {
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("pin", pin);
+        claims.put("amount", amount);
+
+        return doGenerateToken(claims, user.getId().toString());
     }
 
-    public String doGenerateToken(String subject) {
+    public String doGenerateToken(Map<String, Object> claims, String subject) {
         try {
             return Jwts.builder()
+                    .setClaims(claims)
                     .setSubject(subject)
                     .setIssuedAt(new Date(java.lang.System.currentTimeMillis()))
                     .setExpiration(new Date(java.lang.System.currentTimeMillis() + JWT_EXPIRATION))
@@ -43,6 +48,24 @@ public class JwtSoftTokenUtil {
                 .getBody();
 
         return Long.valueOf(claims.getSubject());
+    }
+
+    public Long getAmountFromJwt(String token) {
+        Claims claims = Jwts.parser()
+                .setSigningKey(JWT_SECRET)
+                .parseClaimsJws(token)
+                .getBody();
+
+        return claims.get("amount", Long.class);
+    }
+
+    public String getPinFromJwt(String token) {
+        Claims claims = Jwts.parser()
+                .setSigningKey(JWT_SECRET)
+                .parseClaimsJws(token)
+                .getBody();
+
+        return claims.get("pin").toString();
     }
 
     public boolean validateToken(String authToken) {
