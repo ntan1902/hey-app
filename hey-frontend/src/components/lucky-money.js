@@ -12,12 +12,15 @@ import {
 } from "../actions/addressBookAction";
 import { connect } from "react-redux";
 import $ from "jquery";
+import { Scrollbars } from "react-custom-scrollbars";
 
 import NumericInput from "./numberic-input";
 import Transfer from "./transfer";
 
 import { channingActions } from "../utils";
 import { bindPaymentActions } from "../actions";
+
+import { Row, Col } from "antd";
 
 class AddFriend extends React.Component {
   constructor(props) {
@@ -27,7 +30,7 @@ class AddFriend extends React.Component {
       confirmLoading: false,
       ModalText: "Content of the modal",
       isCreate: false,
-      data: [],
+      data: [{}, {}, {}, {}, {}, {}],
       topupType: 1,
       moneyEachBag: "",
       numberOfBag: "",
@@ -62,6 +65,7 @@ class AddFriend extends React.Component {
 
   handleCancel = (e) => {
     this.props.paymentActions.changeStateLuckyMoneyPopup(false);
+    this.setState({ isCreate: false });
   };
 
   renderEmptyLuckyMoney = () => {
@@ -144,7 +148,7 @@ class AddFriend extends React.Component {
               }}
             >
               <div style={{ fontSize: 20, width: 250, fontWeight: "bold" }}>
-                LuckyMoney type
+                Lucky Money type
               </div>
               <div
                 style={{
@@ -268,10 +272,11 @@ class AddFriend extends React.Component {
             style={{
               display: "flex",
               width: "100%",
-              height: 50,
+              height: "100%",
+              justifyContent: "flex-end",
+              alignItems: "flex-end",
             }}
           >
-            <div style={{ flex: 1 }}></div>
             <Transfer amount={this.state.amount}></Transfer>
           </div>
         </div>
@@ -279,8 +284,300 @@ class AddFriend extends React.Component {
     );
   };
 
+  luckyMoneyItem = () => {
+    return (
+      <Col
+        style={{
+          display: "flex",
+          width: 300,
+          height: 450,
+          padding: 20,
+        }}
+        span={4}
+      >
+        <div
+          style={{
+            width: "100%",
+            height: "100%",
+            borderWidth: 2,
+            borderStyle: "solid",
+            display: "flex",
+            flexDirection: "column",
+            // justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <div
+            style={{
+              position: "absolute",
+              top: 10,
+              left: 35,
+              backgroundColor: "white",
+            }}
+          >
+            From Ly Gioi An
+          </div>
+          <p
+            style={{
+              margin: 0,
+              padding: 0,
+              marginTop: 15,
+              fontSize: 20,
+              fontWeight: "lighter",
+            }}
+          >
+            Click "Open" to receive
+          </p>
+          <div
+            style={{
+              width: "100%",
+              height: 150,
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <div
+              style={{
+                width: 100,
+                height: 100,
+                borderRadius: 100,
+                borderWidth: 2,
+                borderStyle: "solid",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                marginTop: 15,
+              }}
+            >
+              <p
+                style={{
+                  margin: 0,
+                  padding: 0,
+                  fontSize: 20,
+                  fontWeight: "bolder",
+                }}
+              >
+                Open
+              </p>
+            </div>
+          </div>
+          <p
+            style={{
+              margin: 0,
+              padding: 0,
+              marginTop: 30,
+              fontSize: 20,
+              fontWeight: "lighter",
+            }}
+          >
+            Happy New Year
+          </p>
+          <div
+            style={{
+              flex: 1,
+              display: "flex",
+              alignItems: "flex-end",
+              paddingBottom: 20,
+            }}
+          >
+            <a
+              style={{
+                margin: 0,
+                padding: 0,
+                fontSize: 20,
+                fontWeight: "lighter",
+                textDecoration: "underline",
+
+                color: "black",
+              }}
+            >
+              Detail
+            </a>
+          </div>
+        </div>
+      </Col>
+    );
+  };
+
+  luckyMoneyReceivedItem = () => {
+    return (
+      <Col
+        style={{
+          display: "flex",
+          width: 300,
+          height: 450,
+          padding: 20,
+        }}
+        span={4}
+      >
+        <div
+          style={{
+            width: "100%",
+            height: "100%",
+            borderWidth: 2,
+            borderStyle: "solid",
+            display: "flex",
+            flexDirection: "column",
+            // justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <div
+            style={{
+              position: "absolute",
+              top: 10,
+              left: 35,
+              backgroundColor: "white",
+            }}
+          >
+            From Ly Gioi An
+          </div>
+          <p
+            style={{
+              margin: 0,
+              padding: 0,
+              marginTop: 15,
+              fontSize: 20,
+              fontWeight: "bold",
+            }}
+          >
+            You Received
+          </p>
+          <div
+            style={{
+              width: "100%",
+              height: 150,
+              paddingTop: 20,
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              flexDirection: "column",
+            }}
+          >
+            <Icon
+              style={{
+                fontSize: 50,
+                color: "black",
+                fontWeight: "lighter",
+              }}
+              type="dollar"
+            />
+            <p
+              style={{
+                margin: 0,
+                padding: 0,
+                marginTop: 20,
+                fontSize: 20,
+                fontWeight: "bolder",
+              }}
+            >
+              3.000đ
+            </p>
+          </div>
+          <p
+            style={{
+              margin: 0,
+              padding: 0,
+              marginTop: 30,
+              fontSize: 20,
+              fontWeight: "lighter",
+            }}
+          >
+            Happy New Year
+          </p>
+          <div
+            style={{
+              flex: 1,
+              display: "flex",
+              alignItems: "flex-end",
+              paddingBottom: 20,
+            }}
+          >
+            <a
+              style={{
+                margin: 0,
+                padding: 0,
+                fontSize: 20,
+                fontWeight: "lighter",
+                textDecoration: "underline",
+
+                color: "black",
+              }}
+            >
+              Detail
+            </a>
+          </div>
+        </div>
+      </Col>
+    );
+  };
+
+  renderLuckyMoneyItems = () => {
+    return this.state.data.map((e, index) => {
+      if (index == 2 || index == 3) return this.luckyMoneyReceivedItem(e);
+      return this.luckyMoneyItem(e);
+    });
+  };
+
   renderLuckyMoney = () => {
-    return <div>LuckyMoney</div>;
+    return (
+      <div
+        style={{
+          display: "flex",
+          width: "100%",
+          height: window.screen.height * 0.55,
+          // justifyContent: "center",
+          // alignItems: "center",
+          flexDirection: "column",
+          padding: 15,
+        }}
+      >
+        {" "}
+        <p
+          style={{
+            margin: 0,
+            padding: 0,
+            fontSize: 30,
+            fontWeight: "lighter",
+          }}
+        >
+          There are some lucky money from your friends
+        </p>
+        <Scrollbars autoHide autoHideTimeout={500} autoHideDuration={200}>
+          <Row
+            style={{ width: "100%", height: "100%" }}
+            // type="flex"
+            // justify="space-between"
+          >
+            {this.renderLuckyMoneyItems()}
+          </Row>
+        </Scrollbars>
+        <div
+          style={{ width: "100%", display: "flex", justifyContent: "flex-end" }}
+        >
+          <p
+            style={{
+              margin: 0,
+              padding: 0,
+              fontSize: 30,
+              fontWeight: "lighter",
+              marginRight: 10,
+            }}
+          >
+            Want to create a new one ?
+          </p>
+          <Icon
+            onClick={() => this.setState({ isCreate: true })}
+            style={{
+              fontSize: 40,
+              color: "#ggg",
+            }}
+            type="plus-circle"
+          />
+        </div>
+      </div>
+    );
   };
 
   render() {
