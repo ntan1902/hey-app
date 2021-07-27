@@ -28,6 +28,7 @@ import javax.annotation.PostConstruct;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
@@ -79,7 +80,7 @@ public class LuckyMoneyServiceImpl implements LuckyMoneyService {
         String sessionChatId = request.getSessionChatId();
         log.info("Send lucky money for user {} by wallet {}", user.getId(), walletId);
 
-        checkUserInSession(user.getId(),request.getSessionChatId());
+        checkUserInSession(user.getId(), request.getSessionChatId());
 
         long amount = transferMoneyFromUser(userId, walletId, request.getSoftToken(), request.getMessage());
 
@@ -100,7 +101,7 @@ public class LuckyMoneyServiceImpl implements LuckyMoneyService {
                 .build();
         luckyMoneyRepository.save(luckyMoney);
         log.info("Send message lucky money");
-        sendMessageLuckyMoney(userId, sessionChatId, request.getMessage(), luckyMoney.getId() ,createdAt);
+        sendMessageLuckyMoney(userId, sessionChatId, request.getMessage(), luckyMoney.getId(), createdAt);
         log.info("Send message lucky money success");
     }
 
@@ -114,7 +115,7 @@ public class LuckyMoneyServiceImpl implements LuckyMoneyService {
                     throw new LuckyMoneyInvalidException();
                 });
         log.info("User {} receive lucky money {}", user.getId(), luckyMoney.getId());
-        checkUserInSession(user.getId(),luckyMoney.getSessionChatId());
+        checkUserInSession(user.getId(), luckyMoney.getSessionChatId());
 
         checkExpiredOfLuckyMoney(luckyMoney.getExpiredAt(), now);
         checkOutOfBag(luckyMoney.getRestBag());
@@ -123,9 +124,9 @@ public class LuckyMoneyServiceImpl implements LuckyMoneyService {
 
         long restMoney = luckyMoney.getRestMoney();
         int restBag = luckyMoney.getRestBag();
-        long amount = calculateAmountLuckyMoney(restMoney, restBag, luckyMoney.getType());
+        long amount = calculateAmountLuckyMoney(restMoney, restBag, luckyMoney.getAmount(), luckyMoney.getNumberBag(), luckyMoney.getType());
 
-        transferMoneyToUser(luckyMoney.getSystemWalletId(), user.getId(), amount, luckyMoney.getWishMessage());
+        transferMoneyToUser(luckyMoney.getSystemWalletId(), user.getId(), amount, String.format("User %d receive %d from lucky money %d", user.getId(), amount, luckyMoney.getId()));
 
         luckyMoney.setRestMoney(restMoney - amount);
         luckyMoney.setRestBag(restBag - 1);
@@ -139,7 +140,7 @@ public class LuckyMoneyServiceImpl implements LuckyMoneyService {
                 .createdAt(now).build();
 
         receivedLuckyMoneyRepository.save(receivedLuckyMoney);
-        sendMessageReceiveLuckyMoney(user.getId(),luckyMoney.getSessionChatId(),luckyMoney.getId(),amount,luckyMoney.getWishMessage(),now);
+        sendMessageReceiveLuckyMoney(user.getId(), luckyMoney.getSessionChatId(), luckyMoney.getId(), amount, luckyMoney.getWishMessage(), now);
 
     }
 
@@ -148,7 +149,7 @@ public class LuckyMoneyServiceImpl implements LuckyMoneyService {
         User user = getCurrentUser();
         log.info("User {} get all lucky money of chat group {}", user.getId(), sessionId);
 
-        checkUserInSession(user.getId(),sessionId);
+        checkUserInSession(user.getId(), sessionId);
 
         List<LuckyMoney> luckyMoneyList = luckyMoneyRepository.findAllBySessionChatId(sessionId);
 
@@ -165,7 +166,7 @@ public class LuckyMoneyServiceImpl implements LuckyMoneyService {
                     log.error("Lucky money {} is not exists", luckyMoneyId);
                     throw new LuckyMoneyInvalidException();
                 });
-        checkUserInSession(user.getId(),luckyMoney.getSessionChatId());
+        checkUserInSession(user.getId(), luckyMoney.getSessionChatId());
 
         LuckyMoneyDetails luckyMoneyDetails = luckyMoneyMapper.luckyMoney2LuckyMoneyDetails(luckyMoney);
 
@@ -180,13 +181,46 @@ public class LuckyMoneyServiceImpl implements LuckyMoneyService {
 
     }
 
-    private void checkUserInSession(long userId, String sessionId){
+    @Override
+    @Transactional
+    public void refundLuckyMoney() {
+        LocalDateTime now = LocalDateTime.now();
+        List<LuckyMoney> luckyMoneyList = luckyMoneyRepository.getAllByRestMoneyGreaterThanZeroAndExpiredAtBetween(now, now.plusMinutes(6));
+        luckyMoneyList.forEach(luckyMoney -> {
+            log.info("Return lucky money {} with rest {} for user {}", luckyMoney.getId(), luckyMoney.getRestMoney(), luckyMoney.getUserId());
+            try {
+                transferMoneyToUser(luckyMoney.getSystemWalletId(), luckyMoney.getUserId(), luckyMoney.getRestMoney(), String.format("Refund %d from lucky money %d for user %d", luckyMoney.getRestMoney(), luckyMoney.getId(), luckyMoney.getUserId()));
+                luckyMoney.setRestMoney(0L);
+                luckyMoneyRepository.save(luckyMoney);
+            } catch (CannotTransferMoneyException exception) {
+                log.error("Can't transfer money");
+                luckyMoney.setExpiredAt(now.plusMinutes(10));
+                luckyMoneyRepository.save(luckyMoney);
+            }
+        });
+    }
+
+    private void transferMoneyToUser(Long systemWalletId, long receiverId, long amount, String wishMessage) {
+        log.info("Transfer {} to user {} by wallet {}", amount, receiverId, systemWalletId);
+        CreateTransferToUserRequest request = CreateTransferToUserRequest.builder()
+                .walletId(systemWalletId)
+                .receiverId(receiverId)
+                .amount(amount)
+                .message(wishMessage)
+                .build();
+        CreateTransferToUserResponse response = paymentApi.createTransferToUser(request);
+        if (!response.getSuccess()) {
+            throw new CannotTransferMoneyException(response.getMessage());
+        }
+    }
+
+    private void checkUserInSession(long userId, String sessionId) {
         log.info("Check user {} is in group chat {}", userId, sessionId);
-        CheckUserInSessionChatResponse response = chatApi.checkUserInSessionChat(new CheckUserInSessionChatRequest(userId,sessionId));
-        if (!response.isSuccess()){
+        CheckUserInSessionChatResponse response = chatApi.checkUserInSessionChat(new CheckUserInSessionChatRequest(userId, sessionId));
+        if (!response.isSuccess()) {
             throw new ErrCallApiException("Can not verify your authentication. Try later!");
         }
-        if (!response.getPayload().isExisted()){
+        if (!response.getPayload().isExisted()) {
             throw new UnauthorizeException("You aren't in that group chat");
         }
     }
@@ -265,24 +299,21 @@ public class LuckyMoneyServiceImpl implements LuckyMoneyService {
         chatApi.createReceiveLuckyMoneyMessage(request);
     }
 
-    private void transferMoneyToUser(Long systemWalletId, long receiverId, long amount, String wishMessage) {
-        log.info("Transfer {} to user {} by wallet {}", amount, receiverId, systemWalletId);
-        CreateTransferToUserRequest request = CreateTransferToUserRequest.builder()
-                .walletId(systemWalletId)
-                .receiverId(receiverId)
-                .amount(amount)
-                .message(wishMessage)
-                .build();
-        CreateTransferToUserResponse response = paymentApi.createTransferToUser(request);
-        if (!response.getSuccess()) {
-            throw new CannotTransferMoneyException(response.getMessage());
-        }
-    }
 
-    private long calculateAmountLuckyMoney(Long restMoney, int restBag, String type) {
+    private long calculateAmountLuckyMoney(Long restMoney, int restBag, long totalMoney, int totalBag, String type) {
         log.info("Calculate amount user will receive");
         switch (type) {
-            case TypeLuckyMoney.RANDOM:
+            case TypeLuckyMoney.RANDOM: {
+                if (restBag == 1) {
+                    return restMoney;
+                }
+                long minPerBag = (long) ((totalMoney * 0.9) / totalBag);
+                Random random = new Random();
+                long randomMoney = restMoney - (minPerBag * restBag);
+                long result = minPerBag + (long) ((random.nextDouble() / restBag + random.nextDouble()/totalBag + (double) (restBag)/totalBag/totalBag) * randomMoney);
+                if (result > restMoney) return restMoney;
+                return result;
+            }
             case TypeLuckyMoney.EQUALLY:
             default: {
                 return restMoney / restBag;

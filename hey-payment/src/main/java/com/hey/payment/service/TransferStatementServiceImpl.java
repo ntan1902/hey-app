@@ -77,7 +77,7 @@ public class TransferStatementServiceImpl implements TransferStatementService {
 
         long amount = softTokenEncoded.getAmount();
         // Check amount is negative
-        if (amount < 0){
+        if (amount < 0) {
             throw new NegativeAmountException();
         }
 
@@ -102,6 +102,8 @@ public class TransferStatementServiceImpl implements TransferStatementService {
                 .status(TransferStatus.PROCESSING)
                 .transferFee(calculateTransferFee())
                 .createdAt(LocalDateTime.now())
+                .message(createTransferRequest.getMessage())
+                .transferType(TransferType.TRANSFER)
                 .build();
         transferStatementRepository.save(transferStatement);
 
@@ -150,7 +152,7 @@ public class TransferStatementServiceImpl implements TransferStatementService {
 
         long amount = request.getAmount();
         // Check amount is negative
-        if (amount < 0){
+        if (amount < 0) {
             throw new NegativeAmountException();
         }
 
@@ -167,7 +169,6 @@ public class TransferStatementServiceImpl implements TransferStatementService {
                 });
 
 
-
         // Create transfer statement
         TransferStatement transferStatement = TransferStatement.builder()
                 .sourceId(s.getId())
@@ -175,6 +176,8 @@ public class TransferStatementServiceImpl implements TransferStatementService {
                 .amount(request.getAmount())
                 .status(TransferStatus.PROCESSING)
                 .transferFee(calculateTransferFee())
+                .message(request.getMessage())
+                .transferType(TransferType.TRANSFER)
                 .build();
 
         transferStatementRepository.save(transferStatement);
@@ -218,7 +221,7 @@ public class TransferStatementServiceImpl implements TransferStatementService {
 
         long amount = softTokenEncoded.getAmount();
         // Check amount is negative
-        if (amount < 0){
+        if (amount < 0) {
             throw new NegativeAmountException();
         }
 
@@ -241,6 +244,8 @@ public class TransferStatementServiceImpl implements TransferStatementService {
                 .amount(softTokenEncoded.getAmount())
                 .status(TransferStatus.PROCESSING)
                 .transferFee(calculateTransferFee())
+                .message(request.getMessage())
+                .transferType(TransferType.TRANSFER)
                 .build();
 
         transferStatementRepository.save(transferStatement);
@@ -282,8 +287,8 @@ public class TransferStatementServiceImpl implements TransferStatementService {
                 });
         long sourceBalance = sourceWallet.getBalance();
         long targetBalance = targetWallet.getBalance();
-        checkMaxBalance(targetBalance+amount);
-        if (sourceBalance > amount) {
+        checkMaxBalance(targetBalance + amount);
+        if (sourceBalance >= amount) {
             sourceWallet.setBalance(sourceBalance - amount);
             targetWallet.setBalance(targetBalance + amount);
             walletRepository.save(sourceWallet);
@@ -320,6 +325,8 @@ public class TransferStatementServiceImpl implements TransferStatementService {
                 .amount(topupRequest.getAmount())
                 .transferFee(calculateTransferFee())
                 .transferType(TransferType.TOPUP)
+                .status(TransferStatus.SUCCESS)
+                .message("")
                 .build();
         transferStatementRepository.save(transferStatement);
     }
