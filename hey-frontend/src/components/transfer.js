@@ -13,42 +13,55 @@ import {
 import { connect } from "react-redux";
 import $ from "jquery";
 
-class AddFriend extends React.Component {
+import { channingActions } from "../utils";
+import { bindPaymentActions } from "../actions";
+
+class VerifyPIN extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       visible: false,
+      handleSoftToken: false,
+      softToken: "",
     };
-    this.handleOk = this.handleOk.bind(this);
-    this.handleCancel = this.handleCancel.bind(this);
-    this.showModal = this.showModal.bind(this);
   }
 
-  showModal = () => {
-    this.props.changeStateTransferPopup(true);
+  showPinModal = () => {
+    this.props.paymentActions.onOpenPinPopup();
+  };
+
+  handlePinCancel = (e) => {
+    this.props.paymentActions.onClosePinPopup();
+  };
+
+  handleTransferCancel = (e) => {
+    this.setState({ softToken: "", handleSoftToken: false });
+    // this.props.paymentActions.onClosePinPopup();
+  };
+
+  handleTransferOK = (e) => {
+    // this.props.paymentActions.onClosePinPopup();
   };
 
   handleOk = (e) => {
     console.log(e);
     var un = $("#add-user-name").val();
     $("#add-user-name").val("");
-    this.props.addNewFriend(un);
-  };
-
-  handleCancel = (e) => {
-    this.props.changeStateTransferPopup(false);
+    this.props.paymentActions.verifyPin(un).then((res) => {
+      this.setState({ handleSoftToken: true, softToken: res.softToken });
+    });
   };
 
   render() {
     return (
       <div>
-        <div className="new-action-menu" onClick={this.showModal}>
+        <div onClick={this.showPinModal}>
           <Button
             style={{
               backgroundColor: "white",
               borderColor: "black",
               color: "black",
-              width: "25%",
+              width: 250,
               height: 50,
               margin: 0,
             }}
@@ -60,47 +73,59 @@ class AddFriend extends React.Component {
         </div>
         <Modal
           width="420px"
-          title="Add New Friend"
-          visible={this.props.addFriendPopup}
+          title="Verify your PIN"
+          visible={this.props.verifyPin}
           onOk={this.handleOk}
-          onCancel={this.handleCancel}
-          okText="Add"
+          onCancel={this.handlePinCancel}
+          okText="Ok"
           cancelText="Cancel"
         >
-          {this.props.addFriendError ? (
+          {/* {this.props.addFriendError ? (
             <Alert message={this.props.addFriendErrorMessage} type="error" />
           ) : (
             ""
-          )}
-          <p className="model-label">Please enter user name:</p>
+          )} */}
+          <p className="model-label">Please Enter PIN:</p>
           <Input
             id="add-user-name"
             className="add-user-name"
             onPressEnter={this.handleOk}
           />
         </Modal>
+        <Modal
+          width="420px"
+          title="Accept your transfer"
+          visible={
+            this.state.handleSoftToken == true && this.state.softToken != ""
+          }
+          onOk={this.handleTransferOK}
+          onCancel={this.handleTransferCancel}
+          okText="Ok"
+          cancelText="Cancel"
+        >
+          {/* {this.props.addFriendError ? (
+            <Alert message={this.props.addFriendErrorMessage} type="error" />
+          ) : (
+            ""
+          )} */}
+          <p className="model-label">Your softToken expired in 60s</p>
+          <p className="model-label" style={{ fontWeight: "bold" }}>
+            Amount {this.props.amount}
+          </p>
+          {this.props.message ? (
+            <p className="model-label">Message {this.props.message}</p>
+          ) : (
+            ""
+          )}
+        </Modal>
       </div>
     );
   }
 }
 
-function mapStateToProps(state) {
-  return {
-    addFriendError: state.addressBookReducer.addFriendError,
-    addFriendErrorMessage: state.addressBookReducer.addFriendErrorMessage,
-    addFriendPopup: state.addressBookReducer.addFriendPopup,
-  };
-}
-
-function mapDispatchToProps(dispatch) {
-  return {
-    addNewFriend(username) {
-      dispatch(addNewFriend(username));
-    },
-    changeStateAddFriendPopup(state) {
-      dispatch(changeStateAddFriendPopup(state));
-    },
-  };
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(AddFriend);
+export default connect(
+  (state) => ({
+    verifyPin: state.paymentReducer.verifyPin,
+  }),
+  (dispatch) => channingActions({}, dispatch, bindPaymentActions)
+)(VerifyPIN);

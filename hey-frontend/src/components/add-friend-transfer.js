@@ -6,14 +6,17 @@ import {
   removeUserChatGroup,
   startNewChatGroup,
 } from "../actions/chatAction";
-import { addNewFriend, changeStateTopup } from "../actions/addressBookAction";
+import {
+  addNewFriend,
+  changeStateAddFriendPopup,
+} from "../actions/addressBookAction";
 import { connect } from "react-redux";
 import $ from "jquery";
 
 import { channingActions } from "../utils";
 import { bindPaymentActions } from "../actions";
 
-class Topup extends React.Component {
+class AddFriend extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -25,23 +28,18 @@ class Topup extends React.Component {
   }
 
   showModal = () => {
-    console.log(this.props);
-    this.props.paymentActions.switchMainScreen("topup").then((res) => {
-      console.log("res");
-    });
+    this.props.paymentActions.changeStateAddFriendTransferPopup(true);
   };
 
   handleOk = (e) => {
     console.log(e);
     var un = $("#add-user-name").val();
     $("#add-user-name").val("");
-    this.props.addNewFriend(un);
+    this.props.paymentActions.changeStateAddFriendTransferPopup(false);
   };
 
   handleCancel = (e) => {
-    this.props.paymentActions.switchMainScreen("").then((res) => {
-      console.log("res");
-    });
+    this.props.paymentActions.changeStateAddFriendTransferPopup(false);
   };
 
   render() {
@@ -50,9 +48,30 @@ class Topup extends React.Component {
         <div className="new-action-menu" onClick={this.showModal}>
           <a href="#">
             <CustomAvatar type="new-avatar" />
-            <div className="new-text">Topup</div>
+            <div className="new-text">Add friend to transfer</div>
           </a>
         </div>
+        <Modal
+          width="420px"
+          title="Add New Friend"
+          visible={this.props.addFriendTransferPopup}
+          onOk={this.handleOk}
+          onCancel={this.handleCancel}
+          okText="Add"
+          cancelText="Cancel"
+        >
+          {this.props.addFriendError ? (
+            <Alert message={this.props.addFriendErrorMessage} type="error" />
+          ) : (
+            ""
+          )}
+          <p className="model-label">Please enter user name:</p>
+          <Input
+            id="add-user-name"
+            className="add-user-name"
+            onPressEnter={this.handleOk}
+          />
+        </Modal>
       </div>
     );
   }
@@ -60,9 +79,7 @@ class Topup extends React.Component {
 
 export default connect(
   (state) => ({
-    addFriendError: state.addressBookReducer.addFriendError,
-    addFriendErrorMessage: state.addressBookReducer.addFriendErrorMessage,
-    addFriendPopup: state.addressBookReducer.topup,
+    addFriendTransferPopup: state.paymentReducer.addFriendTransferPopup,
   }),
   (dispatch) => channingActions({}, dispatch, bindPaymentActions)
-)(Topup);
+)(AddFriend);

@@ -3,6 +3,7 @@ import { connect } from "react-redux";
 import { Button, Icon, Input } from "antd";
 import NumericInput from "../../components/numberic-input";
 import Transfer from "../../components/transfer";
+import AddFriendTransfer from "../../components/add-friend-transfer";
 
 class MessagePanel extends React.Component {
   constructor(props) {
@@ -10,6 +11,7 @@ class MessagePanel extends React.Component {
     this.state = {
       topupType: 1,
       amount: "",
+      message: "",
     };
   }
 
@@ -115,95 +117,50 @@ class MessagePanel extends React.Component {
               <div
                 style={{ fontSize: 20, marginRight: 100, fontWeight: "bold" }}
               >
-                Topup From
+                Transfer To
               </div>
-              <div
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  marginRight: 50,
-                }}
-              >
-                <Button
-                  style={{
-                    backgroundColor:
-                      this.state.topupType == 1 ? "blue" : "white",
-                    borderColor: "black",
-                    color: "black",
-                    borderRadius: 200,
-                    height: 50,
-                    width: 50,
-                    justifyContent: "center",
-                    alignItems: "center",
-                    padding: 0,
-                  }}
-                  onClick={() => {
-                    this.setState({ topupType: 1 });
-                  }}
-                  type="primary"
-                >
-                  <Icon
-                    style={{
-                      fontSize: 30,
-                      color: this.state.topupType == 2 ? "black" : "white",
-                    }}
-                    type="bank"
-                  />
-                </Button>
-                <div style={{ fontWeight: "bold" }}>Bank</div>
-              </div>
-              <div
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  justifyContent: "center",
-                  alignItems: "center",
-                }}
-              >
-                <Button
-                  style={{
-                    backgroundColor:
-                      this.state.topupType == 2 ? "blue" : "white",
-                    borderColor: "black",
-                    color: "black",
-                    borderRadius: 200,
-                    height: 50,
-                    width: 50,
-                    justifyContent: "center",
-                    alignItems: "center",
-                    padding: 0,
-                  }}
-                  type="primary"
-                  onClick={() => {
-                    this.setState({ topupType: 2 });
-                  }}
-                >
-                  <Icon
-                    style={{
-                      fontSize: 30,
-                      color: this.state.topupType == 1 ? "black" : "white",
-                    }}
-                    type="credit-card"
-                  />
-                </Button>
-                <div style={{ fontWeight: "bold" }}>Card</div>
-              </div>
+              <AddFriendTransfer></AddFriendTransfer>
             </div>
             <div
               style={{ display: "flex", flexDirection: "row", marginTop: 50 }}
             >
               <div
-                style={{ fontSize: 20, marginRight: 100, fontWeight: "bold" }}
+                style={{
+                  fontSize: 20,
+                  // marginRight: 100,
+                  fontWeight: "bold",
+                  width: 150,
+                }}
               >
                 Amount
               </div>
               <NumericInput
-                style={{ width: 120 }}
+                style={{ width: "50%" }}
                 value={this.state.amount}
                 onChange={(value) => {
                   this.setState({ amount: value });
+                }}
+              />
+            </div>
+            <div
+              style={{ display: "flex", flexDirection: "row", marginTop: 50 }}
+            >
+              <div
+                style={{
+                  fontSize: 20,
+                  // marginRight: 100,
+                  fontWeight: "bold",
+                  width: 150,
+                }}
+              >
+                Message
+              </div>
+              <Input
+                style={{ width: "50%" }}
+                placeholder="Message to your friend"
+                value={this.state.message}
+                onChange={(e) => {
+                  this.setState({ message: e.target.value });
                 }}
               />
             </div>
@@ -219,7 +176,7 @@ class MessagePanel extends React.Component {
             }}
           >
             <div style={{ flex: 1 }}></div>
-            <Transfer></Transfer>
+            <Transfer amount={this.state.amount}></Transfer>
           </div>
         </div>
       </div>

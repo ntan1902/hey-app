@@ -57,11 +57,12 @@ export default class NumericInput extends React.Component {
       >
         <Input
           {...this.props}
+          width={this.props.width}
           onChange={this.onChange}
           onBlur={this.onBlur}
           placeholder="Input a number"
           maxLength={12}
-          style={{ width: 150 }}
+          //   style={{ width: 150 }}
         />
       </Tooltip>
     );

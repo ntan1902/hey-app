@@ -2,7 +2,7 @@ import React from "react";
 import { Button, Icon, Input, Layout, Menu } from "antd";
 // import CustomAvatar from "../components/custom-avatar";
 import ChatList from "../../components/chat-list";
-import Payment from "../../components/payment";
+import Payment from "./payment";
 import ChatHeader from "../../components/chat-header";
 import Profile from "../../components/profile";
 import MessagePanel from "../../components/message-panel";
@@ -16,7 +16,9 @@ import { connect } from "react-redux";
 import { isAuthenticated, isEmptyString } from "../../utils/utils";
 import { Redirect } from "react-router-dom";
 import $ from "jquery";
-import Popup from "./pop-up";
+import Topup from "./topup";
+import Transfer from "./transfer";
+import TransferStatement from "./transfer-statement";
 
 const { Header, Content, Footer, Sider } = Layout;
 const { TextArea } = Input;
@@ -66,9 +68,13 @@ class Chat extends React.Component {
     console.log(this.props.layoutType);
     switch (this.props.layoutType) {
       case "topup":
-        return <Popup></Popup>;
+        return <Topup></Topup>;
+      case "transfer":
+        return <Transfer></Transfer>;
+      case "transferStatement":
+        return <TransferStatement></TransferStatement>;
       default:
-        return <div>Default</div>;
+        return <div></div>;
     }
   };
 
@@ -95,7 +101,6 @@ class Chat extends React.Component {
           <div className="chat-container" style={{ padding: 0 }}>
             <ChatHeader />
             {this.renderMainSide()}
-            {/* <MesxsagePanel /> */}
           </div>
         </Layout>
       </div>

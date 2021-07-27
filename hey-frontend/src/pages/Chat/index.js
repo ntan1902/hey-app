@@ -16,6 +16,7 @@ import { connect } from "react-redux";
 import { isAuthenticated, isEmptyString } from "../../utils/utils";
 import { Redirect } from "react-router-dom";
 import $ from "jquery";
+import LuckyMoney from "../../components/lucky-money";
 
 const { Header, Content, Footer, Sider } = Layout;
 const { TextArea } = Input;
@@ -82,6 +83,7 @@ class Chat extends React.Component {
             <ChatList />
           </Sider>
           <div className="chat-container" style={{ padding: 0 }}>
+            <LuckyMoney></LuckyMoney>
             <ChatHeader />
             <MessagePanel />
             <div className="chat-footer">
