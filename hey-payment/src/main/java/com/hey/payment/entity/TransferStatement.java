@@ -32,6 +32,8 @@ public class TransferStatement {
 
     private Integer status;
 
+    private String message;
+
     @Column(name = "transfer_fee")
     private Long transferFee;
 

@@ -12,4 +12,6 @@ public interface LuckyMoneyService {
     List<LuckyMoneyDTO> getAllLuckyMoney(String sessionId);
 
     LuckyMoneyDetails getDetailsLuckyMoney(long luckyMoneyId);
+
+    void refundLuckyMoney();
 }

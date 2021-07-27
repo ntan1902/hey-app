@@ -16,7 +16,6 @@ public class UserExceptionHandler {
                 .success(false)
                 .code(code.value())
                 .message(message)
-                .payload("")
                 .build();
 
         // 2. Return response entity
