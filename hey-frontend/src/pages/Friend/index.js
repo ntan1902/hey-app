@@ -82,7 +82,7 @@ class Chat extends React.Component {
             <AddressBook />
           </Sider>
           <div className="chat-container" style={{ padding: 0 }}>
-            <ChatHeader />
+            {/* <ChatHeader /> */}
             <MessagePanel />
             <div className="chat-footer">
               <TextArea
