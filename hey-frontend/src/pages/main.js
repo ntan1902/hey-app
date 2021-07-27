@@ -9,6 +9,7 @@ import MessagePanel from "../components/message-panel";
 import Chat from "./Chat";
 import Friend from "./Friend";
 import Payment from "./Payment";
+import ProfileScreen from "./profile";
 
 import {
   closeWebSocket,
@@ -73,6 +74,8 @@ class Main extends React.Component {
         return <Friend></Friend>;
       case "3":
         return <Payment></Payment>;
+      case "4":
+        return <ProfileScreen></ProfileScreen>;
       default:
         return <Chat></Chat>;
     }
@@ -110,6 +113,9 @@ class Main extends React.Component {
               </Menu.Item>
               <Menu.Item key="3">
                 <Icon type="pay-circle" style={{ fontSize: 30 }} />
+              </Menu.Item>
+              <Menu.Item key="4">
+                <Icon type="user" style={{ fontSize: 30 }} />
               </Menu.Item>
             </Menu>
           </Sider>

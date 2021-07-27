@@ -234,7 +234,7 @@ class AddFriend extends React.Component {
                 style={{ width: "50%" }}
                 value={this.state.moneyEachBag}
                 onChange={(value) => {
-                  this.setState({ amount: value });
+                  this.setState({ moneyEachBag: value });
                 }}
               />
             </div>
@@ -248,7 +248,7 @@ class AddFriend extends React.Component {
                 style={{ width: "50%" }}
                 value={this.state.numberOfBag}
                 onChange={(value) => {
-                  this.setState({ amount: value });
+                  this.setState({ numberOfBag: value });
                 }}
               />
             </div>
