@@ -82,9 +82,9 @@ class Main extends React.Component {
   };
 
   render() {
-    // if (isAuthenticated()) {
-    //   return <Redirect to="/login" />;
-    // }
+    if (isAuthenticated()) {
+      return <Redirect to="/login" />;
+    }
     return (
       <div style={{ height: 100 + "vh" }}>
         <Layout>
