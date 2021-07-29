@@ -510,38 +510,52 @@ public class APIService extends BaseService {
             return future;
         }
 
-        String keyPattern = "friend:list:*" + userId + "*";
+        String keyPattern = "friend:list:" + userId + ":*";
+        String keyPatternReverse = "friend:list:*:" + userId;
+        // String chatListKey = "chat:list:*:" + userId1 + ":" + userId2;
+        // String chatListKeyReverse = "chat:list:*:" + userId2 + ":" + userId1;
 
-        Future<List<String>> getKeysByPatternFuture = dataRepository.getKeysByPattern(keyPattern);
+        List<Future> getKeysByPatternFutures = new ArrayList<>();
 
-        getKeysByPatternFuture.compose(keys -> {
+        getKeysByPatternFutures.add(dataRepository.getKeysByPattern(keyPattern));
+        getKeysByPatternFutures.add(dataRepository.getKeysByPattern(keyPatternReverse));
 
-            List<Future> getFriendListFutures = new ArrayList<>();
+        CompositeFuture cp = CompositeFuture.all(getKeysByPatternFutures);
+        cp.setHandler(ar -> {
+            if (ar.succeeded()) {
+                List<String> keys = new ArrayList<>();
+                for (int index = 0; index < getKeysByPatternFutures.size(); ++index) {
+                    keys.addAll(cp.resultAt(index));
+                }
 
-            for (String friendListKey : keys) {
-                getFriendListFutures.add(dataRepository.getFriendList(friendListKey, userId));
+                List<Future> getFriendListFutures = new ArrayList<>();
+
+                for (String friendListKey : keys) {
+                    getFriendListFutures.add(dataRepository.getFriendList(friendListKey, userId));
+                }
+
+                CompositeFuture cp2 = CompositeFuture.all(getFriendListFutures);
+                cp2.setHandler(ar2 -> {
+                    if (ar2.succeeded()) {
+
+                        List<FriendList> friendLists = new ArrayList<>();
+                        for (int index = 0; index < getFriendListFutures.size(); ++index) {
+                            if (cp2.resultAt(index) != null) {
+                                friendLists.add(cp2.resultAt(index));
+                            }
+                        }
+                        future.complete(friendLists);
+
+                    } else {
+                        future.fail(ar2.cause());
+                    }
+                });
+
+            } else {
+                future.fail(ar.cause());
             }
 
-            CompositeFuture cp = CompositeFuture.all(getFriendListFutures);
-            cp.setHandler(ar -> {
-                if (ar.succeeded()) {
-
-                    List<FriendList> friendLists = new ArrayList<>();
-                    for (int index = 0; index < getFriendListFutures.size(); ++index) {
-                        if (cp.resultAt(index) != null) {
-                            friendLists.add(cp.resultAt(index));
-                        }
-                    }
-                    future.complete(friendLists);
-
-                } else {
-                    future.fail(ar.cause());
-                }
-            });
-
-        }, Future.future().setHandler(handler -> {
-            // future.fail(handler.cause());
-        }));
+        });
 
         return future;
     }
@@ -614,7 +628,10 @@ public class APIService extends BaseService {
 
         Future<List<ChatList>> future = Future.future();
 
-        String keyPattern = "chat:list:" + "*" + userId + "*";
+        // chat:list:*:user1:user3:user4:user7:user8:user10:
+        String keyPattern = "chat:list:" + "*:" + userId + ":*";
+        String keyPatternReverse="chat:list:" +"*:*:" + userId;
+        "chat:list:*" + ":"+userId+":*";
 
         Future<List<String>> getKeysByPatternFuture = dataRepository.getKeysByPattern(keyPattern);
 

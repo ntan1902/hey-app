@@ -79,11 +79,11 @@ export function receiveAddFriendResult(result) {
       store.getState().addressBookReducer.newAddressBookList
     );
     let newFriend = {
-      name: result.data.data.item.name,
-      userId: result.data.data.item.userId,
-      avatar: processUsernameForAvatar(result.data.data.item.name),
-      status: result.data.data.item.status,
-      isOnline: result.data.data.item.online,
+      name: result.data.payload.item.name,
+      userId: result.data.payload.item.userId,
+      avatar: processUsernameForAvatar(result.data.payload.item.name),
+      status: result.data.payload.item.status,
+      isOnline: result.data.payload.item.online,
     };
 
     newAddressBookList.push(newFriend);

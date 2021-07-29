@@ -2,6 +2,11 @@ import React from "react";
 import { Button, Form, Icon, Input } from "antd";
 import { connect } from "react-redux";
 import { register } from "../actions/userAction";
+import { setJwtToStorage, setUserIdToStorage } from "../utils/utils";
+import { withRouter } from "react-router-dom";
+
+import { channingActions } from "../utils";
+import { bindAuthActions } from "../actions";
 
 const FormItem = Form.Item;
 
@@ -23,7 +28,19 @@ class NormalRegisterForm extends React.Component {
           email: values.email,
         };
 
-        this.props.register(user);
+        this.props.authActions.register(user).then((res) => {
+          console.log("Register Success", res);
+          this.props.authActions
+            .authentication({
+              username: user.username,
+              password: user.password,
+            })
+            .then((res) => {
+              console.log("REs", res);
+              setJwtToStorage(res.data.token);
+              this.props.history.push("/");
+            });
+        });
       }
     });
   };
@@ -135,21 +152,9 @@ class NormalRegisterForm extends React.Component {
   }
 }
 
-function mapStateToProps(state) {
-  return {
+export default connect(
+  (state) => ({
     user: state.userReducer.user,
-  };
-}
-
-function mapDispatchToProps(dispatch) {
-  return {
-    register(user) {
-      dispatch(register(user));
-    },
-  };
-}
-
-export const RegisterForm = connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(Form.create()(NormalRegisterForm));
+  }),
+  (dispatch) => channingActions({}, dispatch, bindAuthActions)
+)(withRouter(Form.create()(NormalRegisterForm)));

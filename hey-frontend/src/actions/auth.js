@@ -53,6 +53,19 @@ export const resetToken = async (token) => {
   }
 };
 
+export const register = (account) => async (dispatch) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      console.log("Current Account: ", account);
+      await AuthAPI.register(account);
+      resolve({ success: true });
+    } catch (err) {
+      console.log(err.response);
+      reject({ data: err.response.data.message, success: false });
+    }
+  });
+};
+
 export const authentication = (account) => async (dispatch) => {
   return new Promise(async (resolve, reject) => {
     try {
@@ -172,6 +185,7 @@ export const searchUser = (keyword) => async (dispatch) => {
 };
 
 export const authActions = {
+  register,
   authentication,
   logOut,
   updateProfile,
