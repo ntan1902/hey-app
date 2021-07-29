@@ -10,6 +10,7 @@ import org.mapstruct.Mappings;
 
 @Mapper(componentModel = "spring", injectionStrategy = InjectionStrategy.FIELD)
 public interface TransferStatementMapper {
+    @Mapping(target = "description", source = "message")
     TransferStatementDTO ts2TsDTO(TransferStatement transferStatement);
 
 }

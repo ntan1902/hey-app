@@ -326,7 +326,7 @@ public class TransferStatementServiceImpl implements TransferStatementService {
                 .transferFee(calculateTransferFee())
                 .transferType(TransferType.TOPUP)
                 .status(TransferStatus.SUCCESS)
-                .message("")
+                .message("Topup from bank "+topupRequest.getBankId())
                 .build();
         transferStatementRepository.save(transferStatement);
     }
