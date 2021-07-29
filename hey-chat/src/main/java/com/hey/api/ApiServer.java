@@ -70,7 +70,7 @@ public final class ApiServer {
         router.route("/*")
                 .handler(
                         CorsHandler
-                                .create("http://localhost:*")
+                                .create(".*")
                                 .allowedHeaders(allowedHeaders)
                                 .allowedMethods(allowedMethods)
                                 .allowCredentials(true)

@@ -17,16 +17,16 @@ import { clearStorage } from "./utils/utils";
 export const store = createStore(rootReducer, applyMiddleware(thunkMiddleware));
 window.store = store;
 
-// api.post(`/api/v1/users/login`, { username: "ntan", password: "123456" }).then(
-//   (data) => {
-//     console.log("ping");
-//     console.log(data);
-//   },
-//   (data) => {
-//     console.log("not-ping");
-//     clearStorage();
-//   }
-// );
+api.post(`/api/protected/ping`).then(
+  (data) => {
+    console.log("pong");
+    console.log(data);
+  },
+  (data) => {
+    console.log("not-ping");
+    clearStorage();
+  }
+);
 
 ReactDOM.render(
   <Provider store={store}>
