@@ -628,10 +628,7 @@ public class APIService extends BaseService {
 
         Future<List<ChatList>> future = Future.future();
 
-        // chat:list:*:user1:user3:user4:user7:user8:user10:
-        String keyPattern = "chat:list:" + "*:" + userId + ":*";
-        String keyPatternReverse="chat:list:" +"*:*:" + userId;
-        "chat:list:*" + ":"+userId+":*";
+        String keyPattern = "chat:list:" + "*" + userId + "*";
 
         Future<List<String>> getKeysByPatternFuture = dataRepository.getKeysByPattern(keyPattern);
 
