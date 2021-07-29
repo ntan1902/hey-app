@@ -16,7 +16,7 @@ public interface TransferStatementService {
 
     void topUp(User user, TopUpRequest topupRequest);
 
-    List<TransferStatementDTO> getTransferStatementOfUser(long userId);
+    List<TransferStatementDTO> getTransferStatementOfUser(String userId);
 
     ApiResponse systemCreateTransferToUser(System system, SystemCreateTransferToUserRequest request);
 

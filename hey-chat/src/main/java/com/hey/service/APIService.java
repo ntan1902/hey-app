@@ -512,8 +512,6 @@ public class APIService extends BaseService {
 
         String keyPattern = "friend:list:" + userId + ":*";
         String keyPatternReverse = "friend:list:*:" + userId;
-        // String chatListKey = "chat:list:*:" + userId1 + ":" + userId2;
-        // String chatListKeyReverse = "chat:list:*:" + userId2 + ":" + userId1;
 
         List<Future> getKeysByPatternFutures = new ArrayList<>();
 

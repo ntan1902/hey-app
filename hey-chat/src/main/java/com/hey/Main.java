@@ -9,12 +9,19 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import se.emirbuc.randomsentence.RandomSentences;
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
+import org.springframework.context.annotation.Bean;
 
+import javax.annotation.PostConstruct;
 import java.io.File;
 import java.io.IOException;
 import java.util.Properties;
 
+@EnableEurekaClient
+@SpringBootApplication
 public class Main {
     private static final Logger LOGGER = LogManager.getLogger(Main.class);
     private static final String PROP_FILE_NAME = "system.properties";
@@ -23,6 +30,11 @@ public class Main {
     private static String env;
 
     public static void main(String[] args) throws IOException {
+        SpringApplication.run(Main.class);
+    }
+
+    @PostConstruct
+    public void init() {
         env = System.getenv("env");
         if (StringUtils.isBlank(env)) {
             LOGGER.error("Missing env");

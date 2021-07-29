@@ -15,7 +15,7 @@ public class GetSystemInfoResponse {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class SystemInfo extends OwnerInfo{
-        private long id;
+        private String id;
         private String username;
         private String email;
         private String fullName;

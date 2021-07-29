@@ -14,17 +14,18 @@ import com.hey.payment.mapper.WalletMapper;
 import com.hey.payment.repository.WalletRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.cloud.client.loadbalancer.LoadBalanced;
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import javax.annotation.PostConstruct;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
 @Log4j2
-@AllArgsConstructor
 public class WalletServiceImpl implements WalletService {
 
     private final WalletRepository walletRepository;
@@ -33,11 +34,19 @@ public class WalletServiceImpl implements WalletService {
 
     private final RestTemplate restTemplate;
 
-    @PostConstruct
+    public WalletServiceImpl(WalletRepository walletRepository,
+                             WalletMapper walletMapper,
+                             RestTemplate restTemplate) {
+        this.walletRepository = walletRepository;
+        this.walletMapper = walletMapper;
+        this.restTemplate = restTemplate;
+    }
+
+    @EventListener(ApplicationReadyEvent.class)
     public void getSystems() {
         log.info("Inside getSystems of WalletServiceImpl");
         GetSystemsResponse response = restTemplate.getForObject(
-                "http://localhost:7070" + "/api/v1/systems/getSystems",
+                "/getSystems",
                 GetSystemsResponse.class
         );
         log.info("{}", response);
@@ -66,7 +75,7 @@ public class WalletServiceImpl implements WalletService {
     }
 
     @Override
-    public WalletDTO getWalletOfUser(long userId) {
+    public WalletDTO getWalletOfUser(String userId) {
         log.info("Inside getWalletOfUser of WalletServiceImpl with id {}", userId);
         return walletRepository.findByOwnerIdAndRefFrom(userId, OwnerWalletRefFrom.USERS)
                 .map(walletMapper::wallet2WalletDTO)

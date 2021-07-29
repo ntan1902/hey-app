@@ -1,15 +1,13 @@
 package com.hey.manager;
 
-import com.hey.authentication.AuthService;
+import com.hey.auth.AuthService;
 import com.hey.util.HttpStatus;
 import io.vertx.core.AsyncResult;
-import io.vertx.core.Future;
 import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpHeaders;
 import io.vertx.core.http.HttpServerRequest;
 import io.vertx.core.json.JsonObject;
-import io.vertx.core.shareddata.AsyncMap;
 import io.vertx.core.shareddata.SharedData;
 import io.vertx.ext.auth.User;
 import io.vertx.ext.web.handler.impl.HttpStatusException;

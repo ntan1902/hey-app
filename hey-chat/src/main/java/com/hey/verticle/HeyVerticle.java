@@ -2,7 +2,7 @@ package com.hey.verticle;
 
 import com.hey.api.ApiServer;
 import com.hey.api.WsServer;
-import com.hey.authentication.AuthService;
+import com.hey.auth.AuthService;
 import com.hey.cache.client.RedisCacheClient;
 import com.hey.handler.api.ProtectedApiHandler;
 import com.hey.handler.api.PublicApiHandler;
