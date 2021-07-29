@@ -14,7 +14,7 @@ public class AuthorizeUserResponse {
     @NoArgsConstructor
     @AllArgsConstructor
     public class Payload {
-        long userId;
+        String userId;
     }
     Boolean success;
     int code;

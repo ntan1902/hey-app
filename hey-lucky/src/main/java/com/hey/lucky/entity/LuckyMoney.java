@@ -20,7 +20,7 @@ public class LuckyMoney {
     private Long id;
 
     @Column(name = "user_id")
-    private Long userId;
+    private String userId;
 
     @Column(name = "system_wallet_id")
     private Long systemWalletId;

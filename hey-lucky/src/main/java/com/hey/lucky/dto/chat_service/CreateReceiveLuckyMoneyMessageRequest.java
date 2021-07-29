@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @Builder
 public class CreateReceiveLuckyMoneyMessageRequest {
     private String sessionId;
-    private long receiverId;
+    private String receiverId;
     private long luckyMoneyId;
     private long amount;
     private String message;

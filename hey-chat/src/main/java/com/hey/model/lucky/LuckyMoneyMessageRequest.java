@@ -1,17 +1,17 @@
 package com.hey.model.lucky;
 
 public class LuckyMoneyMessageRequest {
-    private Long userId;
+    private String userId;
     private String sessionId;
     private Long luckyMoneyId;
     private String message;
     private String createdAt;
 
-    public Long getUserId() {
+    public String getUserId() {
         return userId;
     }
 
-    public void setUserId(Long userId) {
+    public void setUserId(String userId) {
         this.userId = userId;
     }
 

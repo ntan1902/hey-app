@@ -16,9 +16,8 @@ public class GetSystemInfoResponse {
     @AllArgsConstructor
     public static class SystemInfo extends OwnerInfo{
         private String id;
-        private String username;
-        private String email;
-        private String fullName;
+        private String systemName;
+//        private long numberOfWallet;
     }
     Boolean success;
     int code;

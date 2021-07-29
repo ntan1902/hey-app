@@ -11,7 +11,7 @@ public class AuthApiImpl implements AuthApi {
     private final RestTemplate restTemplate;
 
     @Override
-    public GetUserInfoResponse getUserInfo(long userId) {
+    public GetUserInfoResponse getUserInfo(String userId) {
         return restTemplate.getForObject("/getUserInfo/" + userId, GetUserInfoResponse.class);
     }
 }

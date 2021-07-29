@@ -8,7 +8,7 @@ import java.util.List;
 
 @Repository
 public interface ReceivedLuckyMoneyRepository extends JpaRepository<ReceivedLuckyMoney, Long> {
-    boolean existsByLuckyMoneyIdAndReceiverId(Long luckyMoneyId, Long receiverId);
-    ReceivedLuckyMoney findByLuckyMoneyIdAndReceiverId(Long luckyMoneyId, Long receiverId);
+    boolean existsByLuckyMoneyIdAndReceiverId(Long luckyMoneyId, String receiverId);
+    ReceivedLuckyMoney findByLuckyMoneyIdAndReceiverId(Long luckyMoneyId, String receiverId);
     List<ReceivedLuckyMoney> findAllByLuckyMoneyId(Long luckyMoneyId);
 }

@@ -23,7 +23,7 @@ public class ReceivedLuckyMoney {
     Long luckyMoneyId;
 
     @Column(name = "receiver_id")
-    Long receiverId;
+    String receiverId;
 
     Long amount;
 

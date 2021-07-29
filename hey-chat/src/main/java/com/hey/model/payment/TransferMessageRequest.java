@@ -1,25 +1,25 @@
 package com.hey.model.payment;
 
 public class TransferMessageRequest {
-    private Long sourceId;
-    private Long targetId;
+    private String sourceId;
+    private String targetId;
     private Long amount;
     private String message;
     private String createdAt;
 
-    public Long getSourceId() {
+    public String getSourceId() {
         return sourceId;
     }
 
-    public void setSourceId(Long sourceId) {
+    public void setSourceId(String sourceId) {
         this.sourceId = sourceId;
     }
 
-    public Long getTargetId() {
+    public String getTargetId() {
         return targetId;
     }
 
-    public void setTargetId(Long targetId) {
+    public void setTargetId(String targetId) {
         this.targetId = targetId;
     }
 

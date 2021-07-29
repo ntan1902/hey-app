@@ -50,7 +50,7 @@ public class AuthServiceFilter extends OncePerRequestFilter {
     }
 
 
-    private long authorizeUser(String token) {
+    private String authorizeUser(String token) {
         HttpEntity<AuthorizeUserRequest> requestEntity = new HttpEntity<>(new AuthorizeUserRequest(token));
         AuthorizeUserResponse authorizeUserResponse = restTemplate.postForObject("/authorizeUser", requestEntity, AuthorizeUserResponse.class);
         return authorizeUserResponse.getPayload().getUserId();

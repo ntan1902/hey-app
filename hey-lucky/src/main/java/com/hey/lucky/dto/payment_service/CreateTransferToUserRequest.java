@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @Builder
 public class CreateTransferToUserRequest {
     private long walletId;
-    private long receiverId;
+    private String receiverId;
     private long amount;
     private String message;
 }
