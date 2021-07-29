@@ -20,7 +20,7 @@ public class Wallet {
 
     private Long balance;
 
-    private Long ownerId;
+    private String ownerId;
 
     @Column(name = "ref_from")
     private String refFrom;

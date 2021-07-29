@@ -20,7 +20,7 @@ create table wallets
 (
     id       bigint auto_increment,
     balance  bigint,
-    owner_id bigint,
+    owner_id char(50),
     ref_from varchar(20),
     primary key (id)
 );

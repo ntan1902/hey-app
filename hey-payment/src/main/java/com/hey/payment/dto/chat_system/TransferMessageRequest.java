@@ -10,8 +10,8 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 public class TransferMessageRequest {
-    long sourceId;
-    long targetId;
+    String sourceId;
+    String targetId;
     long amount;
     String message;
     String createdAt;

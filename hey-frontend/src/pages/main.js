@@ -66,25 +66,10 @@ class Main extends React.Component {
     $("#messageTextArea").val("");
   }
 
-  renderMainSlide = () => {
-    switch (this.state.menuaction) {
-      case "1":
-        return <Chat />;
-      case "2":
-        return <Friend></Friend>;
-      case "3":
-        return <Payment></Payment>;
-      case "4":
-        return <ProfileScreen></ProfileScreen>;
-      default:
-        return <Chat></Chat>;
-    }
-  };
-
   render() {
-    // if (isAuthenticated()) {
-    //   return <Redirect to="/login" />;
-    // }
+    if (isAuthenticated()) {
+      return <Redirect to="/login" />;
+    }
     return (
       <div style={{ height: 100 + "vh" }}>
         <Layout>

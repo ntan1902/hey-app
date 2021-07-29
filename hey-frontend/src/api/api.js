@@ -2,7 +2,7 @@ import axios from "axios";
 import { message } from "antd";
 import { getJwtFromStorage, isEmptyString } from "../utils/utils";
 
-export const host = "http://localhost:7070";
+export const host = "http://localhost:8080";
 export const ws_host = "ws://localhost:8090/";
 const auth_type = "Bearer";
 

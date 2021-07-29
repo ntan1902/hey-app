@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 public class SystemCreateTransferFromUserRequest {
-    private long userId;
+    private String userId;
     private long walletId;
     private String softToken;
     private String message;

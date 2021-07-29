@@ -58,8 +58,8 @@ public class TransferStatementServiceImpl implements TransferStatementService {
     public ApiResponse createTransfer(User user, CreateTransferRequest createTransferRequest) {
         log.info("User {} transfer to user {} with soft token {}", user.getId(), createTransferRequest.getTargetId(), createTransferRequest.getSoftToken());
 
-        long sourceId = user.getId();
-        long targetId = createTransferRequest.getTargetId();
+        String sourceId = user.getId();
+        String targetId = createTransferRequest.getTargetId();
         String message = createTransferRequest.getMessage();
         String softToken = createTransferRequest.getSoftToken();
 
@@ -71,7 +71,7 @@ public class TransferStatementServiceImpl implements TransferStatementService {
 
         // Check User Id
         VerifySoftTokenResponse.SoftTokenEncoded softTokenEncoded = apiResponse.getPayload();
-        if (softTokenEncoded.getUserId() != sourceId) {
+        if (!softTokenEncoded.getUserId().equals(sourceId)) {
             throw new SoftTokenAuthorizeException("Unauthorized!");
         }
 
@@ -215,7 +215,7 @@ public class TransferStatementServiceImpl implements TransferStatementService {
             throw new SoftTokenAuthorizeException(apiResponse.getMessage());
         }
         VerifySoftTokenResponse.SoftTokenEncoded softTokenEncoded = apiResponse.getPayload();
-        if (softTokenEncoded.getUserId() != request.getUserId()) {
+        if (!softTokenEncoded.getUserId().equals(request.getUserId())) {
             throw new SoftTokenAuthorizeException("Unauthorized!");
         }
 
@@ -332,7 +332,7 @@ public class TransferStatementServiceImpl implements TransferStatementService {
     }
 
     @Override
-    public List<TransferStatementDTO> getTransferStatementOfUser(long userId) {
+    public List<TransferStatementDTO> getTransferStatementOfUser(String userId) {
         Wallet wallet = walletRepository.findByOwnerIdAndRefFrom(userId, OwnerWalletRefFrom.USERS)
                 .orElseThrow(() -> {
                     throw new HaveNoWalletException();
@@ -363,7 +363,7 @@ public class TransferStatementServiceImpl implements TransferStatementService {
         }).collect(Collectors.toList());
     }
 
-    private OwnerInfo getOwnerInfo(long ownerId, String refFrom) {
+    private OwnerInfo getOwnerInfo(String ownerId, String refFrom) {
         ObjectMapper mapper = new ObjectMapper();
         if (refFrom.equals(OwnerWalletRefFrom.USERS)) {
             GetUserInfoResponse apiResponse = authApi.getUserInfo(ownerId);

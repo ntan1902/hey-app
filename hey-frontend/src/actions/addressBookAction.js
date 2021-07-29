@@ -46,8 +46,8 @@ export function handleChangeAddressBook(userId) {
 }
 
 export function receivedSessionId(result, userId) {
-  if (result.data.data.sessionId != "-1") {
-    store.dispatch(loadChatContainer(result.data.data.sessionId));
+  if (result.data.payload.sessionId != "-1") {
+    store.dispatch(loadChatContainer(result.data.payload.sessionId));
   } else {
     store.dispatch(startNewChatSingle(userId));
   }
@@ -63,6 +63,7 @@ export function addNewFriend(userName) {
       return api
         .post(`/api/protected/addfriend`, createAddFriendRequest(userName))
         .then((result) => {
+          console.log(result);
           dispatch(receiveAddFriendResult(result));
         });
     };
@@ -78,11 +79,11 @@ export function receiveAddFriendResult(result) {
       store.getState().addressBookReducer.newAddressBookList
     );
     let newFriend = {
-      name: result.data.data.item.name,
-      userId: result.data.data.item.userId,
-      avatar: processUsernameForAvatar(result.data.data.item.name),
-      status: result.data.data.item.status,
-      isOnline: result.data.data.item.online,
+      name: result.data.payload.item.name,
+      userId: result.data.payload.item.userId,
+      avatar: processUsernameForAvatar(result.data.payload.item.name),
+      status: result.data.payload.item.status,
+      isOnline: result.data.payload.item.online,
     };
 
     newAddressBookList.push(newFriend);
@@ -154,7 +155,9 @@ function processUsernameForAvatar(username) {
 function getAddressBookList() {
   var promise = new Promise(function (resolve, reject) {
     api.get(`/api/protected/addressbook`).then((res) => {
-      var items = res.data.data.items;
+      var items = res.data.payload.items;
+      console.log("Friend Result", items);
+
       var results = [];
       var onlineResults = [];
       var offlineResults = [];
@@ -184,6 +187,7 @@ function getAddressBookList() {
 
         results = onlineResults.concat(offlineResults);
       }
+      console.log("Friend Result", results);
       resolve(results);
     });
   });
