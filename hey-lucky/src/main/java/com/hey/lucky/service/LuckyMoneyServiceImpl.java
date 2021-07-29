@@ -85,7 +85,7 @@ public class LuckyMoneyServiceImpl implements LuckyMoneyService {
     public void createLuckyMoney(CreateLuckyMoneyRequest request) {
         int currentWallet = count.getAndUpdate(c -> c < numberWallet - 1 ? c + 1 : 0);
         User user = getCurrentUser();
-        long userId = user.getId();
+        String userId = user.getId();
         long walletId = walletIds.get(currentWallet);
         String sessionChatId = request.getSessionChatId();
         log.info("Send lucky money for user {} by wallet {}", user.getId(), walletId);
@@ -211,7 +211,7 @@ public class LuckyMoneyServiceImpl implements LuckyMoneyService {
         });
     }
 
-    private void transferMoneyToUser(Long systemWalletId, long receiverId, long amount, String wishMessage) {
+    private void transferMoneyToUser(Long systemWalletId, String receiverId, long amount, String wishMessage) {
         log.info("Transfer {} to user {} by wallet {}", amount, receiverId, systemWalletId);
         CreateTransferToUserRequest request = CreateTransferToUserRequest.builder()
                 .walletId(systemWalletId)
@@ -225,7 +225,7 @@ public class LuckyMoneyServiceImpl implements LuckyMoneyService {
         }
     }
 
-    private void checkUserInSession(long userId, String sessionId) {
+    private void checkUserInSession(String userId, String sessionId) {
         log.info("Check user {} is in group chat {}", userId, sessionId);
         CheckUserInSessionChatResponse response = chatApi.checkUserInSessionChat(new CheckUserInSessionChatRequest(userId, sessionId));
         if (!response.isSuccess()) {
@@ -249,7 +249,7 @@ public class LuckyMoneyServiceImpl implements LuckyMoneyService {
     }
 
 
-    private UserInfo getUserInfo(long userId) {
+    private UserInfo getUserInfo(String userId) {
         log.info("Get user info from auth service");
         GetUserInfoResponse apiResponse = authApi.getUserInfo(userId);
         if (!apiResponse.getSuccess()) {
@@ -290,7 +290,7 @@ public class LuckyMoneyServiceImpl implements LuckyMoneyService {
         log.info("Check expired of lucky money successfully");
     }
 
-    private void checkUserHadReceived(long luckyMoneyId, Long receiverId) {
+    private void checkUserHadReceived(long luckyMoneyId, String receiverId) {
         log.info("Check user had received ?");
         if (receivedLuckyMoneyRepository.existsByLuckyMoneyIdAndReceiverId(luckyMoneyId, receiverId)) {
             throw new HadReceivedException();
@@ -298,7 +298,7 @@ public class LuckyMoneyServiceImpl implements LuckyMoneyService {
         log.info("Not yet");
     }
 
-    private void sendMessageReceiveLuckyMoney(long receiverId, String sessionChatId, long luckeyMoneyId, long amount, String wishMessage, LocalDateTime now) {
+    private void sendMessageReceiveLuckyMoney(String receiverId, String sessionChatId, long luckeyMoneyId, long amount, String wishMessage, LocalDateTime now) {
         log.info("Send message receive lucky money");
         CreateReceiveLuckyMoneyMessageRequest request = CreateReceiveLuckyMoneyMessageRequest.builder()
                 .receiverId(receiverId)
@@ -332,7 +332,7 @@ public class LuckyMoneyServiceImpl implements LuckyMoneyService {
         }
     }
 
-    public void sendMessageLuckyMoney(long userId, String sessionChatId, String message, long luckyMoneyId, LocalDateTime createdAt) {
+    public void sendMessageLuckyMoney(String userId, String sessionChatId, String message, long luckyMoneyId, LocalDateTime createdAt) {
         log.info("Send message lucky money");
         CreateLuckyMoneyMessageRequest request = CreateLuckyMoneyMessageRequest.builder()
                 .userId(userId)
@@ -344,7 +344,7 @@ public class LuckyMoneyServiceImpl implements LuckyMoneyService {
         chatApi.createLuckyMoneyMessage(request);
     }
 
-    private long transferMoneyFromUser(Long userId, Long walletId, String softToken, String message) {
+    private long transferMoneyFromUser(String userId, Long walletId, String softToken, String message) {
         log.info("Transfer from user {} to wallet {} by softToken {}", userId, walletId, softToken);
         CreateTransferFromUserRequest request = CreateTransferFromUserRequest.builder()
                 .userId(userId)

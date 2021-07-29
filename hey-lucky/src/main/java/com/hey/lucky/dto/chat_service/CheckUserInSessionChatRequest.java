@@ -6,6 +6,6 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class CheckUserInSessionChatRequest {
-    private long userId;
+    private String userId;
     private String sessionId;
 }

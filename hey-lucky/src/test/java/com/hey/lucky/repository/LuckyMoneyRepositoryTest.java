@@ -25,7 +25,7 @@ class LuckyMoneyRepositoryTest {
     void getLuckyMoneyById(){
         // given
         LuckyMoney expect = LuckyMoney.builder()
-                .userId(1l)
+                .userId("abc")
                 .systemWalletId(1l)
                 .sessionChatId("123abc")
                 .amount(50000l)
@@ -49,7 +49,7 @@ class LuckyMoneyRepositoryTest {
     void findLuckyMoneyById() {
         // given
         LuckyMoney expect = LuckyMoney.builder()
-                .userId(1l)
+                .userId("abc")
                 .systemWalletId(1l)
                 .sessionChatId("123abc")
                 .amount(50000l)
@@ -73,7 +73,7 @@ class LuckyMoneyRepositoryTest {
     void findAllBySessionChatId() {
         // given
         LuckyMoney lm = LuckyMoney.builder()
-                .userId(1l)
+                .userId("abc")
                 .systemWalletId(1l)
                 .sessionChatId("123abc")
                 .amount(50000l)
@@ -87,7 +87,7 @@ class LuckyMoneyRepositoryTest {
                 .build();
         luckyMoneyRepository.save(lm);
         LuckyMoney lm1 = LuckyMoney.builder()
-                .userId(1l)
+                .userId("abc")
                 .systemWalletId(1l)
                 .sessionChatId("123abc")
                 .amount(50000l)
@@ -101,7 +101,7 @@ class LuckyMoneyRepositoryTest {
                 .build();
         luckyMoneyRepository.save(lm1);
         LuckyMoney lm2 = LuckyMoney.builder()
-                .userId(1l)
+                .userId("abc")
                 .systemWalletId(1l)
                 .sessionChatId("123abc")
                 .amount(50000l)
@@ -115,7 +115,7 @@ class LuckyMoneyRepositoryTest {
                 .build();
         luckyMoneyRepository.save(lm2);
         LuckyMoney lm3 = LuckyMoney.builder()
-                .userId(1l)
+                .userId("abc")
                 .systemWalletId(1l)
                 .sessionChatId("1234abc")
                 .amount(50000l)
@@ -147,7 +147,7 @@ class LuckyMoneyRepositoryTest {
     void getAllByRestMoneyGreaterThanZeroAndExpiredAtBetween() {
         // given
         LuckyMoney lm = LuckyMoney.builder()
-                .userId(1l)
+                .userId("abc")
                 .systemWalletId(1l)
                 .sessionChatId("123abc")
                 .amount(50000l)
@@ -161,7 +161,7 @@ class LuckyMoneyRepositoryTest {
                 .build();
         luckyMoneyRepository.save(lm);
         LuckyMoney lm1 = LuckyMoney.builder()
-                .userId(1l)
+                .userId("abc")
                 .systemWalletId(1l)
                 .sessionChatId("123abc")
                 .amount(50000l)
@@ -175,7 +175,7 @@ class LuckyMoneyRepositoryTest {
                 .build();
         luckyMoneyRepository.save(lm1);
         LuckyMoney lm2 = LuckyMoney.builder()
-                .userId(1l)
+                .userId("abc")
                 .systemWalletId(1l)
                 .sessionChatId("123abc")
                 .amount(50000l)
@@ -189,7 +189,7 @@ class LuckyMoneyRepositoryTest {
                 .build();
         luckyMoneyRepository.save(lm2);
         LuckyMoney lm3 = LuckyMoney.builder()
-                .userId(1l)
+                .userId("abc")
                 .systemWalletId(1l)
                 .sessionChatId("1234abc")
                 .amount(50000l)
