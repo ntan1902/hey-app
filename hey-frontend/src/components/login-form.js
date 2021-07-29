@@ -1,8 +1,12 @@
 import React from "react";
 import { Button, Form, Icon, Input } from "antd";
 import { withRouter } from "react-router-dom";
-import { api } from "../api/api";
+import { AuthAPI } from "../api";
 import { setJwtToStorage, setUserIdToStorage } from "../utils/utils";
+
+import { connect } from "react-redux";
+import { channingActions } from "../utils";
+import { bindAuthActions } from "../actions";
 
 const FormItem = Form.Item;
 
@@ -24,11 +28,15 @@ class NormalLoginForm extends React.Component {
     e.preventDefault();
     this.props.form.validateFields((error, values) => {
       if (!error) {
-        api.post(`/api/v1/users/login`, values).then((res) => {
-          setJwtToStorage(res.data.payload.accessToken);
-          // setUserIdToStorage(res.data.data.userId);
+        console.log("value", values);
+        this.props.authActions.authentication(values).then((res) => {
+          console.log("REs", res);
+          setJwtToStorage(res.data.token);
           this.props.history.push("/");
         });
+        // api.post(`/api/v1/users/login`, values).then((res) => {
+        //   // setUserIdToStorage(res.data.data.userId);
+        // });
       }
     });
   };
@@ -78,4 +86,9 @@ class NormalLoginForm extends React.Component {
   }
 }
 
-export const LoginForm = withRouter(Form.create()(NormalLoginForm));
+export default connect(
+  (state) => ({
+    verifyPin: state.paymentReducer.verifyPin,
+  }),
+  (dispatch) => channingActions({}, dispatch, bindAuthActions)
+)(withRouter(Form.create()(NormalLoginForm)));

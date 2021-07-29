@@ -42,13 +42,13 @@ export function registerSucceeded(user) {
 
 export function receivedUserProfile(result) {
   var status = "You are online";
-  if (result.data.data.status != "") {
-    status = result.data.data.status;
+  if (result.data.payload.status != "") {
+    status = result.data.payload.status;
   }
   return {
     type: USER_PROFILE,
-    userName: result.data.data.userName,
-    userFullName: result.data.data.userFullName,
+    userName: result.data.payload.userName,
+    userFullName: result.data.payload.userFullName,
     userStatus: status,
   };
 }

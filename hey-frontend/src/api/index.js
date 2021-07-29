@@ -1,3 +1,4 @@
 import { PaymentAPI } from "./payment";
+import { AuthAPI } from "./auth";
 
-export { PaymentAPI };
+export { PaymentAPI, AuthAPI };
