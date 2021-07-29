@@ -13,16 +13,18 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.filter.CorsFilter;
+import org.springframework.http.HttpHeaders;
 
 @EnableWebSecurity
 @Configuration
 @AllArgsConstructor
-@EnableGlobalMethodSecurity(
-        prePostEnabled = true
-)
+@EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private final AuthEntryPointJwt authEntryPointJwt;
-
 
     @Bean
     @Override
@@ -44,24 +46,29 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         return customAuthenticationFilter;
     }
 
+    @Bean
+    public CorsFilter corsFilter() {
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        CorsConfiguration config = new CorsConfiguration();
+        // config.setAllowCredentials(true);
+        // config.addAllowedOrigin("*"); // TODO: lock down before deploying
+        config.addAllowedOriginPattern("*");
+        config.addAllowedHeader("*");
+        config.addExposedHeader(HttpHeaders.AUTHORIZATION);
+        config.addAllowedMethod("*");
+        source.registerCorsConfiguration("/**", config);
+        return new CorsFilter(source);
+    }
+
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http
-                .csrf().disable()
-                .cors().and()
-                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
-                .exceptionHandling().authenticationEntryPoint(authEntryPointJwt).and()
-                .authorizeRequests()
-                    .antMatchers("/api/v1/users/login").permitAll()
-                    .antMatchers("/api/v1/users/register").permitAll()
-                    .antMatchers("/api/v1/systems/login").permitAll()
-                    .antMatchers("/swagger-ui.html").permitAll()
-                    .antMatchers("/swagger-ui/**").permitAll()
-                    .antMatchers("/v3/api-docs/**").permitAll()
-                .anyRequest().authenticated()
-                .and()
-                    .addFilter(authenticationFilter())
-                    .addFilterBefore(authorizationFilter(), UsernamePasswordAuthenticationFilter.class);
+        http.csrf().disable().cors().and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .and().exceptionHandling().authenticationEntryPoint(authEntryPointJwt).and().authorizeRequests()
+                .antMatchers("/api/v1/users/login").permitAll().antMatchers("/api/v1/users/register").permitAll()
+                .antMatchers("/api/v1/systems/login").permitAll().antMatchers("/swagger-ui.html").permitAll()
+                .antMatchers("/swagger-ui/**").permitAll().antMatchers("/v3/api-docs/**").permitAll().anyRequest()
+                .authenticated().and().addFilter(authenticationFilter())
+                .addFilterBefore(authorizationFilter(), UsernamePasswordAuthenticationFilter.class);
 
     }
 
