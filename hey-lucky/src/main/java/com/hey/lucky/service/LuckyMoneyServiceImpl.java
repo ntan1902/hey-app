@@ -20,13 +20,13 @@ import com.hey.lucky.mapper.LuckyMoneyMapper;
 import com.hey.lucky.repository.LuckyMoneyRepository;
 import com.hey.lucky.repository.ReceivedLuckyMoneyRepository;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.context.event.EventListener;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.annotation.PostConstruct;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -35,9 +35,9 @@ import java.util.stream.Collectors;
 @Service
 @Log4j2
 public class LuckyMoneyServiceImpl implements LuckyMoneyService {
-    private static AtomicInteger count = new AtomicInteger(0);
-    private static List<Long> walletIds = new ArrayList<>();
-    private static int numberWallet;
+    private final AtomicInteger count = new AtomicInteger(0);
+    private List<Long> walletIds;
+    private int numberWallet;
 
     private final LuckyMoneyRepository luckyMoneyRepository;
     private final ReceivedLuckyMoneyRepository receivedLuckyMoneyRepository;
@@ -46,7 +46,12 @@ public class LuckyMoneyServiceImpl implements LuckyMoneyService {
     private final LuckyMoneyMapper luckyMoneyMapper;
     private final AuthApi authApi;
 
-    public LuckyMoneyServiceImpl(LuckyMoneyRepository luckyMoneyRepository, ReceivedLuckyMoneyRepository receivedLuckyMoneyRepository, PaymentApi paymentApi, ChatApi chatApi, LuckyMoneyMapper luckyMoneyMapper, AuthApi authApi) {
+    public LuckyMoneyServiceImpl(LuckyMoneyRepository luckyMoneyRepository,
+                                 ReceivedLuckyMoneyRepository receivedLuckyMoneyRepository,
+                                 PaymentApi paymentApi,
+                                 ChatApi chatApi,
+                                 LuckyMoneyMapper luckyMoneyMapper,
+                                 AuthApi authApi) {
         this.luckyMoneyRepository = luckyMoneyRepository;
         this.receivedLuckyMoneyRepository = receivedLuckyMoneyRepository;
         this.paymentApi = paymentApi;
@@ -56,13 +61,18 @@ public class LuckyMoneyServiceImpl implements LuckyMoneyService {
     }
 
 
-    @PostConstruct
-    private void getAllWallets() {
+    @EventListener(ApplicationReadyEvent.class)
+    public void getAllWallets() {
         GetAllWalletsResponse getAllWalletsResponse = paymentApi.getAllWallets();
         if (getAllWalletsResponse.getSuccess()) {
             log.info("Get all wallet");
-            walletIds = getAllWalletsResponse.getPayload().stream().map(walletSystemDTO -> walletSystemDTO.getWalletId()).collect(Collectors.toList());
+
+            walletIds = getAllWalletsResponse.getPayload()
+                    .stream()
+                    .map(WalletSystemDTO::getWalletId)
+                    .collect(Collectors.toList());
             numberWallet = walletIds.size();
+
             log.info("Number of wallets: {}", numberWallet);
         } else {
             log.error("Can't get wallets, message: {}", getAllWalletsResponse.getMessage());
@@ -100,6 +110,7 @@ public class LuckyMoneyServiceImpl implements LuckyMoneyService {
                 .expiredAt(createdAt.plusDays(1))
                 .build();
         luckyMoneyRepository.save(luckyMoney);
+
         log.info("Send message lucky money");
         sendMessageLuckyMoney(userId, sessionChatId, request.getMessage(), luckyMoney.getId(), createdAt);
         log.info("Send message lucky money success");

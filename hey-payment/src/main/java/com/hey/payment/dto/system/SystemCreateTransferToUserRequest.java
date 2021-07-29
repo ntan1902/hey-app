@@ -5,7 +5,7 @@ import lombok.Data;
 @Data
 public class SystemCreateTransferToUserRequest {
     private long walletId;
-    private long receiverId;
+    private String receiverId;
     private long amount;
     private String message;
 }

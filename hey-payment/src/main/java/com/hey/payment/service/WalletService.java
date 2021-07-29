@@ -9,9 +9,11 @@ import com.hey.payment.entity.User;
 import java.util.List;
 
 public interface WalletService {
-    WalletDTO getWalletOfUser(long userId);
+    WalletDTO getWalletOfUser(String userId);
 
     List<WalletSystemDTO> getAllWalletsOfSystem(System system);
 
     WalletDTO createWallet(User user);
+
+    void getSystems();
 }

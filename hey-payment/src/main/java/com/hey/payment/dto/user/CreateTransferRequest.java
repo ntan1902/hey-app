@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 public class CreateTransferRequest {
-    private long targetId;
+    private String targetId;
     private String softToken;
     private String message;
 }

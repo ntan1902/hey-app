@@ -11,5 +11,5 @@ import lombok.NoArgsConstructor;
 @Builder
 public class TopUpRequest {
     private long amount;
-    private long bankId;
+    private String bankId;
 }
