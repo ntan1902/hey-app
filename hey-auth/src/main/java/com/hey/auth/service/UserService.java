@@ -12,7 +12,7 @@ public interface UserService {
 
     UserDTO findById(String userId);
 
-    void createPin(PinAmountRequest pinAmountRequest);
+    void createPin(PinRequest pinRequest);
 
     SoftTokenResponse createSoftToken(PinAmountRequest pinAmountRequest);
 

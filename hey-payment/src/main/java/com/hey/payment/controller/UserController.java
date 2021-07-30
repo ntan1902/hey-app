@@ -15,7 +15,7 @@ import java.util.List;
 
 @RestController
 @Log4j2
-@RequestMapping("/api/v1/me")
+@RequestMapping("/payment/api/v1/me")
 @AllArgsConstructor
 public class UserController {
 

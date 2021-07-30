@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1")
+@RequestMapping("/lucky/api/v1")
 @AllArgsConstructor
 @Log4j2
 public class LuckyMoneyController {

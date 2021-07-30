@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class RegisterRequestToChat {
-    private long userId;
+    private String userId;
     private String userName;
     private String password;
     private String fullName;

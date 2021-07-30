@@ -19,7 +19,7 @@ public class PublicApiHandler extends BaseHandler{
         HttpServerRequest request = rc.request();
         HttpServerResponse response = rc.response();
         String requestPath = request.path();
-        String path = StringUtils.substringAfter(requestPath, "/api/public");
+        String path = StringUtils.substringAfter(requestPath, "/chat/api/public");
         String json = rc.getBodyAsString();
 
         switch (path) {

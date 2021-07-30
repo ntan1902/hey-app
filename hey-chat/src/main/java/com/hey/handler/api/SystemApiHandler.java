@@ -35,7 +35,7 @@ public class SystemApiHandler extends BaseHandler {
         HttpServerRequest request = rc.request();
         HttpServerResponse response = rc.response();
         String requestPath = request.path();
-        String path = StringUtils.substringAfter(requestPath, "/api/v1/systems");
+        String path = StringUtils.substringAfter(requestPath, "/chat/api/v1/systems");
         try {
             String jwt = jwtManager.getTokenFromRequest(request);
 
