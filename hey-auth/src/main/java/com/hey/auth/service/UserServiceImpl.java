@@ -6,6 +6,7 @@ import com.hey.auth.entity.User;
 import com.hey.auth.exception.user.EmptyPinException;
 import com.hey.auth.exception.user.PinNotMatchedException;
 import com.hey.auth.exception.user.UserIdNotFoundException;
+import com.hey.auth.exception.user.UsernameEmailExistedException;
 import com.hey.auth.jwt.JwtSoftTokenUtil;
 import com.hey.auth.jwt.JwtUserUtil;
 import com.hey.auth.mapper.UserMapper;
@@ -23,6 +24,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.UUID;
@@ -32,8 +34,6 @@ import java.util.UUID;
 @Service
 public class UserServiceImpl implements UserDetailsService, UserService {
     private final UserRepository userRepository;
-    private final AuthenticationManager authenticationManager;
-    private final JwtUserUtil jwtUserUtil;
     private final JwtSoftTokenUtil jwtSoftTokenUtil;
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
@@ -62,9 +62,19 @@ public class UserServiceImpl implements UserDetailsService, UserService {
     }
 
     @Override
+    @Transactional
     public void register(RegisterRequest registerRequest) {
         log.info("Inside register of UserServiceImpl: {}", registerRequest);
 
+        // Check if username or email is existed
+        if (userRepository.existsByUsernameOrEmail(
+                registerRequest.getUsername(),
+                registerRequest.getEmail()
+        )) {
+            throw new UsernameEmailExistedException("username or email already existed");
+        }
+
+        // Save new user
         User user = userMapper.registerRequest2User(registerRequest);
 
         user.setId(UUID.randomUUID().toString());
@@ -75,7 +85,7 @@ public class UserServiceImpl implements UserDetailsService, UserService {
         userRepository.save(user);
 
         // Call api register to Vert.x
-//        registerToVertx(userRepository.save(user));
+        registerToVertx(userRepository.save(user));
     }
 
     @Override
@@ -97,9 +107,9 @@ public class UserServiceImpl implements UserDetailsService, UserService {
     }
 
     @Override
-    public void createPin(PinAmountRequest pinAmountRequest) {
-        log.info("Inside createPin of UserServiceImpl: {}", pinAmountRequest);
-        String hashPin = passwordEncoder.encode(pinAmountRequest.getPin());
+    public void createPin(PinRequest pinRequest) {
+        log.info("Inside createPin of UserServiceImpl: {}", pinRequest);
+        String hashPin = passwordEncoder.encode(pinRequest.getPin());
         User user = getCurrentUser();
         user.setPin(hashPin);
         userRepository.save(user);
@@ -115,7 +125,7 @@ public class UserServiceImpl implements UserDetailsService, UserService {
         User user = getCurrentUser();
 
         // Check if user has pin
-        if(user.getPin().isEmpty()) {
+        if (user.getPin().isEmpty()) {
             throw new EmptyPinException("Pin is not created yet!");
         }
 

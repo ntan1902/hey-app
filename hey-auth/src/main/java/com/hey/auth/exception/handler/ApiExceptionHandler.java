@@ -8,12 +8,15 @@ import com.hey.auth.exception.user.EmptyPinException;
 import com.hey.auth.exception.user.PinNotMatchedException;
 import com.hey.auth.exception.user.UserIdNotFoundException;
 import com.hey.auth.dto.api.ApiResponse;
+import com.hey.auth.exception.user.UsernameEmailExistedException;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+
 
 @RestControllerAdvice
 @Log4j2
@@ -95,5 +98,28 @@ public class ApiExceptionHandler {
         log.error(exception.getMessage());
         HttpStatus code = HttpStatus.BAD_REQUEST;
         return getResponse(code, exception.getMessage());
+    }
+
+    @ExceptionHandler(value = {UsernameEmailExistedException.class})
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseEntity<Object> handleApiResponseException(UsernameEmailExistedException exception) {
+        log.error(exception.getMessage());
+        HttpStatus code = HttpStatus.BAD_REQUEST;
+        return getResponse(code, exception.getMessage());
+    }
+
+    @ExceptionHandler(value = {BindException.class})
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseEntity<Object> handleApiResponseException(BindException exception) {
+        log.error("Request is not valid");
+        HttpStatus code = HttpStatus.BAD_REQUEST;
+
+        String errMessage = "";
+        if (exception.getBindingResult().hasErrors()) {
+            errMessage =exception.getBindingResult().getAllErrors().get(0).getDefaultMessage();
+        }
+        log.error(errMessage);
+
+        return getResponse(code, errMessage);
     }
 }

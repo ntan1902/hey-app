@@ -10,7 +10,6 @@ import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
 import org.springframework.context.annotation.Bean;
 
 import java.util.Arrays;
-import java.util.UUID;
 
 @SpringBootApplication
 @EnableEurekaClient

@@ -30,7 +30,7 @@ public class ProtectedApiHandler extends BaseHandler {
         HttpServerRequest request = rc.request();
         HttpServerResponse response = rc.response();
         String requestPath = request.path();
-        String path = StringUtils.substringAfter(requestPath, "/api/protected");
+        String path = StringUtils.substringAfter(requestPath, "/chat/api/protected");
         try {
             String jwt = jwtManager.getTokenFromRequest(request);
 

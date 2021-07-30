@@ -11,10 +11,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/systems")
+@RequestMapping("/auth/api/v1/systems")
 @AllArgsConstructor
 @Log4j2
 @CrossOrigin({"http://localhost:9090", "http://localhost:8080", "http://localhost:6060"})
@@ -23,7 +24,7 @@ public class SystemController {
     private final UserService userService;
 
     @PostMapping("/login")
-    public ResponseEntity<ApiResponse> login( @RequestBody SystemLoginRequest loginRequest) {
+    public ResponseEntity<ApiResponse> login(@RequestBody @Valid SystemLoginRequest loginRequest) {
 
         SystemLoginResponse payload = systemService.login(loginRequest);
         return ResponseEntity.ok(ApiResponse.builder()
@@ -35,7 +36,7 @@ public class SystemController {
     }
 
     @PostMapping("/authorizeUser")
-    public ResponseEntity<ApiResponse> authorizeUser(@RequestBody AuthorizeRequest authorizeRequest) {
+    public ResponseEntity<ApiResponse> authorizeUser(@RequestBody @Valid AuthorizeRequest authorizeRequest) {
         AuthorizeResponse payload = systemService.authorizeUser(authorizeRequest);
         return ResponseEntity.ok(ApiResponse.builder()
                 .success(true)
@@ -46,7 +47,7 @@ public class SystemController {
     }
 
     @PostMapping("/authorizeSystem")
-    public ResponseEntity<ApiResponse> authorizeSystem(@RequestBody SystemAuthorizeRequest authorizeRequest) {
+    public ResponseEntity<ApiResponse> authorizeSystem(@RequestBody @Valid SystemAuthorizeRequest authorizeRequest) {
         SystemAuthorizeResponse payload = systemService.authorizeSystem(authorizeRequest);
         return ResponseEntity.ok(ApiResponse.builder()
                 .success(true)
@@ -57,7 +58,7 @@ public class SystemController {
     }
 
     @PostMapping("/authorizeSoftToken")
-    public ResponseEntity<ApiResponse> authorizeSoftToken(@RequestBody SoftTokenRequest softTokenRequest) {
+    public ResponseEntity<ApiResponse> authorizeSoftToken(@RequestBody @Valid SoftTokenRequest softTokenRequest) {
         UserIdAmountResponse payload = systemService.authorizeSoftToken(softTokenRequest);
         return ResponseEntity.ok(ApiResponse.builder()
                 .success(true)

@@ -14,7 +14,6 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 import org.springframework.http.HttpHeaders;
@@ -42,8 +41,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     public CustomAuthenticationFilter authenticationFilter() throws Exception {
         CustomAuthenticationFilter customAuthenticationFilter = new CustomAuthenticationFilter();
         customAuthenticationFilter.setAuthenticationManager(authenticationManagerBean());
-        customAuthenticationFilter.setFilterProcessesUrl("/api/v1/users/login");
-
+        customAuthenticationFilter.setFilterProcessesUrl("/auth/api/v1/users/login");
 
         return customAuthenticationFilter;
     }
@@ -52,7 +50,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     public CorsFilter corsFilter() {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         CorsConfiguration config = new CorsConfiguration();
-        // config.setAllowCredentials(true);
         // config.addAllowedOrigin("*"); // TODO: lock down before deploying
         config.addAllowedOriginPattern("*");
         config.addAllowedHeader("*");
@@ -66,10 +63,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http.csrf().disable().cors().and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and().exceptionHandling().authenticationEntryPoint(authEntryPointJwt).and().authorizeRequests()
-                .antMatchers("/api/v1/users/login").permitAll().antMatchers("/api/v1/users/register").permitAll()
-                .antMatchers("/api/v1/systems/login").permitAll().antMatchers("/swagger-ui.html").permitAll()
-                .antMatchers("/swagger-ui/**").permitAll().antMatchers("/v3/api-docs/**").permitAll().anyRequest()
-                .authenticated().and().addFilter(authenticationFilter())
+                    .antMatchers("/auth/api/v1/users/login").permitAll()
+                    .antMatchers("/auth/api/v1/users/register").permitAll()
+                    .antMatchers("/auth/api/v1/systems/login").permitAll()
+                    .antMatchers("/swagger-ui.html").permitAll()
+                    .antMatchers("/swagger-ui/**").permitAll()
+                    .antMatchers("/v3/api-docs/**").permitAll()
+                .anyRequest().authenticated().and()
+                .addFilter(authenticationFilter())
                 .addFilterBefore(authorizationFilter(), UsernamePasswordAuthenticationFilter.class);
 
     }

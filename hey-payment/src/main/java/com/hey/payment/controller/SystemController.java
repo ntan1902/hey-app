@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/systems")
+@RequestMapping("/payment/api/v1/systems")
 @AllArgsConstructor
 @Log4j2
 public class SystemController {

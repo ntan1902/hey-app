@@ -80,12 +80,12 @@ public final class ApiServer {
 
         router.get("/inittestdata").handler(publicApiHandler::initTestData);
 
-        router.route("/api/protected/*").handler(protectedApiHandler::handle);
+        router.route("/chat/api/protected/*").handler(protectedApiHandler::handle);
 
-        router.post("/api/public/*").handler(publicApiHandler::handle);
+        router.post("/chat/api/public/*").handler(publicApiHandler::handle);
 
         // For API call from other systems
-        router.route("/api/v1/systems/*").handler(systemApiHandler::handle);
+        router.route("/chat/api/v1/systems/*").handler(systemApiHandler::handle);
 
 
         Future future = Future.future();

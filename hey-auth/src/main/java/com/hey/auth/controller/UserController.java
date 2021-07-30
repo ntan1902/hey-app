@@ -9,8 +9,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+
 @RestController
-@RequestMapping("/api/v1/users")
+@RequestMapping("/auth/api/v1/users")
 @AllArgsConstructor
 @Log4j2
 @CrossOrigin("http://localhost:3000")
@@ -18,7 +20,7 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping("/register")
-    public ResponseEntity<ApiResponse> register(@RequestBody RegisterRequest registerRequest) {
+    public ResponseEntity<ApiResponse> register(@RequestBody @Valid RegisterRequest registerRequest) {
         userService.register(registerRequest);
         return ResponseEntity.ok(ApiResponse.builder()
                 .success(true)
@@ -40,8 +42,8 @@ public class UserController {
     }
 
     @PostMapping("/createPin")
-    public ResponseEntity<ApiResponse> createPin(@RequestBody PinAmountRequest pinAmountRequest) {
-        userService.createPin(pinAmountRequest);
+    public ResponseEntity<ApiResponse> createPin(@RequestBody @Valid PinRequest pinRequest) {
+        userService.createPin(pinRequest);
         return ResponseEntity.ok(ApiResponse.builder()
                 .success(true)
                 .code(HttpStatus.CREATED.value())
@@ -62,7 +64,7 @@ public class UserController {
     }
 
     @PostMapping("/createSoftTokenByPin")
-    public ResponseEntity<ApiResponse> createSoftToken(@RequestBody PinAmountRequest pinAmountRequest) {
+    public ResponseEntity<ApiResponse> createSoftToken(@RequestBody @Valid PinAmountRequest pinAmountRequest) {
         SoftTokenResponse payload = userService.createSoftToken(pinAmountRequest);
         return ResponseEntity.ok(ApiResponse.builder()
                 .success(true)
