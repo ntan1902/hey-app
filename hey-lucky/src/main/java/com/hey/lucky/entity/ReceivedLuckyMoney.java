@@ -9,11 +9,17 @@ import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "received_lucky_moneys")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@Table(
+        name = "received_lucky_moneys",
+        indexes = {
+                @Index(name = "i_receiver_id", columnList = "receiver_id"),
+                @Index(name = "i_lucky_money_id", columnList = "lucky_money_id"),
+        }
+)
 public class ReceivedLuckyMoney {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
