@@ -12,7 +12,12 @@ import javax.persistence.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Table(name = "wallets")
+@Table(
+        name = "wallets",
+        indexes = {
+                @Index(name = "i_owner_id", columnList = "owner_id"),
+        }
+)
 public class Wallet {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -20,6 +25,7 @@ public class Wallet {
 
     private Long balance;
 
+    @Column(name = "owner_id")
     private String ownerId;
 
     @Column(name = "ref_from")

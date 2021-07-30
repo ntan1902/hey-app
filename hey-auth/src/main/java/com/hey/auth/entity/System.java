@@ -9,10 +9,15 @@ import javax.persistence.*;
 
 @Data
 @Entity
-@Table(name = "systems")
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@Table(
+        name = "systems",
+        indexes = {
+                @Index(name = "uq_system_name", unique = true, columnList = "system_name")
+        }
+)
 public class System {
     @Id
     private String id;

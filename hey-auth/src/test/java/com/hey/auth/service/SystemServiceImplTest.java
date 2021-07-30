@@ -25,8 +25,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Optional;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.*;
 import static org.mockito.BDDMockito.given;
 
 
@@ -77,6 +76,7 @@ class SystemServiceImplTest {
         assertThatThrownBy(() -> underTest.loadSystemBySystemName("dump"))
                 .isInstanceOf(UsernameNotFoundException.class)
                 .hasMessageContaining("System " + "dump" + " not found");
+
     }
 
     @Test
