@@ -12,4 +12,4 @@ COPY ./src ./src
 RUN mvn package -DskipTests
 
 # set the startup command to run your binary
-CMD ["java", "-jar", "./target/hey-gateway-0.0.1-SNAPSHOT.jar"]
+CMD ["java", "-jar", "./target/hey-registry-0.0.1-SNAPSHOT.jar"]

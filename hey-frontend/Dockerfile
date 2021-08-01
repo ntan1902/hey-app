@@ -1,7 +1,7 @@
 # base image
 FROM node:alpine
 # set working directory
-WORKDIR /app
+# WORKDIR /app
 
 # add `/usr/src/app/node_modules/.bin` to $PATH
 ENV PATH /app/node_modules/.bin:$PATH

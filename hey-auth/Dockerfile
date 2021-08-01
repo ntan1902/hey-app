@@ -3,10 +3,11 @@ FROM maven:3.8.1-jdk-11-slim
 COPY ./pom.xml ./pom.xml
 
 # build all dependencies for offline use
-RUN mvn dependency:go-offline -B
+#RUN mvn dependency:go-offline -B
 
 # copy your other files
 COPY ./src ./src
+COPY ./settings.xml ./settings.xml
 
 # build for release
 RUN mvn package -DskipTests

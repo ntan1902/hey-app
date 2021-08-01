@@ -2,11 +2,12 @@ package com.hey.auth.service;
 
 import com.hey.auth.dto.user.*;
 import com.hey.auth.entity.User;
+import com.hey.auth.exception.user.UsernameEmailExistedException;
 
 public interface UserService {
     User loadUserById(String userId);
 
-    void register(RegisterRequest registerRequest);
+    void register(RegisterRequest registerRequest) throws UsernameEmailExistedException;
 
     UserDTO findById();
 

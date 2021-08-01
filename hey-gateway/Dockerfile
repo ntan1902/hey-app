@@ -1,15 +1,21 @@
-FROM maven:3.8.1-jdk-11-slim
-# copy the project files
-COPY ./pom.xml ./pom.xml
+#FROM maven:3.8.1-jdk-11-slim
+## copy the project files
+#COPY ./pom.xml ./pom.xml
+#
+## build all dependencies for offline use
+##RUN mvn dependency:go-offline -B
+#
+## copy your other files
+#COPY ./src ./src
+#
+## build for release
+#RUN mvn package -DskipTests
+#
+## set the startup command to run your binary
+#CMD ["java", "-jar", "./target/hey-gateway-0.0.1-SNAPSHOT.jar"]
 
-# build all dependencies for offline use
-#RUN mvn dependency:go-offline -B
+FROM openjdk:11-buster
 
-# copy your other files
-COPY ./src ./src
+ADD ./target/hey-gateway-0.0.1-SNAPSHOT.jar ./target/hey-gateway-0.0.1-SNAPSHOT.jar
 
-# build for release
-RUN mvn package -DskipTests
-
-# set the startup command to run your binary
 CMD ["java", "-jar", "./target/hey-gateway-0.0.1-SNAPSHOT.jar"]

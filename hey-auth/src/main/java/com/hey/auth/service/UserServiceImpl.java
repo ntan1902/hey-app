@@ -63,7 +63,7 @@ public class UserServiceImpl implements UserDetailsService, UserService {
 
     @Override
     @Transactional
-    public void register(RegisterRequest registerRequest) {
+    public void register(RegisterRequest registerRequest) throws UsernameEmailExistedException{
         log.info("Inside register of UserServiceImpl: {}", registerRequest);
 
         // Check if username or email is existed
