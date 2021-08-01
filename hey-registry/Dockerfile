@@ -17,7 +17,6 @@
 
 FROM openjdk:11-jdk-slim-buster
 
-
 ADD ./target/hey-registry-0.0.1-SNAPSHOT.jar ./target/hey-registry-0.0.1-SNAPSHOT.jar
 
 CMD ["java", "-jar", "./target/hey-registry-0.0.1-SNAPSHOT.jar"]

@@ -80,7 +80,7 @@ class SystemServiceImplTest {
     }
 
     @Test
-    void loadSystemById() {
+    void loadSystemById() throws SystemIdNotFoundException {
         // given
         System expected = System.builder()
                 .id("uuid")
@@ -108,7 +108,7 @@ class SystemServiceImplTest {
     }
 
     @Test
-    void login() {
+    void login() throws SystemKeyInvalidException {
         // given
         SystemLoginRequest loginRequest = new SystemLoginRequest(
                 "payment",
@@ -154,7 +154,7 @@ class SystemServiceImplTest {
     }
 
     @Test
-    void authorizeUser() {
+    void authorizeUser() throws InvalidJwtTokenException, UserIdNotFoundException {
         // given
         AuthorizeRequest request = new AuthorizeRequest(
                 "dump"
@@ -210,7 +210,7 @@ class SystemServiceImplTest {
     }
 
     @Test
-    void authorizeSystem() {
+    void authorizeSystem() throws InvalidJwtTokenException, SystemIdNotFoundException {
         // given
         SystemAuthorizeRequest request = new SystemAuthorizeRequest(
                 "dump"
@@ -275,7 +275,7 @@ class SystemServiceImplTest {
     }
 
     @Test
-    void authorizeSoftToken(){
+    void authorizeSoftToken() throws PinNotMatchedException, InvalidJwtTokenException, UserIdNotFoundException {
         // given
         SoftTokenRequest request = new SoftTokenRequest(
                 "dump"
@@ -378,7 +378,7 @@ class SystemServiceImplTest {
     }
 
     @Test
-    void findById() {
+    void findById() throws SystemIdNotFoundException {
         // given
         String systemId = "uuid";
         System system = System.builder()
