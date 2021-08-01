@@ -52,18 +52,18 @@ public class UserServiceImpl implements UserDetailsService, UserService {
     }
 
     @Override
-    public User loadUserById(String userId) {
+    public User loadUserById(String userId) throws UserIdNotFoundException {
         log.info("Inside loadUserById: {}", userId);
         return userRepository.findById(userId)
                 .orElseThrow(() -> {
                     log.error("User Id {} not found", userId);
-                    throw new UserIdNotFoundException("User " + userId + " not found");
+                    return new UserIdNotFoundException("User " + userId + " not found");
                 });
     }
 
     @Override
     @Transactional
-    public void register(RegisterRequest registerRequest) {
+    public void register(RegisterRequest registerRequest) throws UsernameEmailExistedException {
         log.info("Inside register of UserServiceImpl: {}", registerRequest);
 
         // Check if username or email is existed
@@ -96,12 +96,12 @@ public class UserServiceImpl implements UserDetailsService, UserService {
     }
 
     @Override
-    public UserDTO findById(String userId) {
+    public UserDTO findById(String userId) throws UserIdNotFoundException {
         log.info("Inside findById({}) of UserServiceImpl", userId);
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> {
                     log.error("User Id {} not found", userId);
-                    throw new UserIdNotFoundException("User Id " + userId + " not found");
+                    return new UserIdNotFoundException("User Id " + userId + " not found");
                 });
         return userMapper.user2UserDTO(user);
     }
@@ -120,12 +120,13 @@ public class UserServiceImpl implements UserDetailsService, UserService {
     }
 
     @Override
-    public SoftTokenResponse createSoftToken(PinAmountRequest pinAmountRequest) {
+    public SoftTokenResponse createSoftToken(PinAmountRequest pinAmountRequest) throws EmptyPinException, PinNotMatchedException {
         log.info("Inside createSoftToken of UserServiceImpl: {}", pinAmountRequest);
         User user = getCurrentUser();
 
         // Check if user has pin
         if (user.getPin().isEmpty()) {
+            log.error("Pin is not created yet!");
             throw new EmptyPinException("Pin is not created yet!");
         }
 

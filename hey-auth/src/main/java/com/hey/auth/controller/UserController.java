@@ -2,6 +2,9 @@ package com.hey.auth.controller;
 
 import com.hey.auth.dto.api.*;
 import com.hey.auth.dto.user.*;
+import com.hey.auth.exception.user.EmptyPinException;
+import com.hey.auth.exception.user.PinNotMatchedException;
+import com.hey.auth.exception.user.UsernameEmailExistedException;
 import com.hey.auth.service.UserService;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -20,7 +23,7 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping("/register")
-    public ResponseEntity<ApiResponse> register(@RequestBody @Valid RegisterRequest registerRequest) {
+    public ResponseEntity<ApiResponse> register(@RequestBody @Valid RegisterRequest registerRequest) throws UsernameEmailExistedException {
         userService.register(registerRequest);
         return ResponseEntity.ok(ApiResponse.builder()
                 .success(true)
@@ -64,7 +67,7 @@ public class UserController {
     }
 
     @PostMapping("/createSoftTokenByPin")
-    public ResponseEntity<ApiResponse> createSoftToken(@RequestBody @Valid PinAmountRequest pinAmountRequest) {
+    public ResponseEntity<ApiResponse> createSoftToken(@RequestBody @Valid PinAmountRequest pinAmountRequest) throws PinNotMatchedException, EmptyPinException {
         SoftTokenResponse payload = userService.createSoftToken(pinAmountRequest);
         return ResponseEntity.ok(ApiResponse.builder()
                 .success(true)

@@ -1,7 +1,7 @@
 package com.hey.auth;
 
-import com.hey.auth.entity.User;
-import com.hey.auth.repository.UserRepository;
+import com.hey.auth.entity.System;
+import com.hey.auth.repository.SystemRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -21,27 +21,34 @@ public class HeyAuthApplication {
     }
 
     @Bean
-    public CommandLineRunner run(UserRepository userRepository) throws Exception {
+    public CommandLineRunner run(SystemRepository systemRepository) throws Exception {
         return args -> {
-            userRepository.saveAll(Arrays.asList(
-                    User.builder()
-                            .id("e8984aa8-b1a5-4c65-8c5e-036851ec772c")
-                            .email("ntan1902@gmail.com")
-                            .password("$2a$10$atTTVVOQoQMksMstiYp3/u6tQaYRG/6S5IrMJmEkw8Yw70kKI9LW2")
-                            .fullName("Nguyen Trinh An")
-                            .username("ntan")
-                            .pin("$2a$10$atTTVVOQoQMksMstiYp3/u6tQaYRG/6S5IrMJmEkw8Yw70kKI9LW2")
+            systemRepository.saveAll(Arrays.asList(
+                    System.builder()
+                            .id("e8984aa8-b1a5-4c65-8c5e-036851ec780c")
+                            .systemName("payment")
+                            .systemKey("$2a$10$atTTVVOQoQMksMstiYp3/u6tQaYRG/6S5IrMJmEkw8Yw70kKI9LW2")
+                            .numberOfWallet(0)
                             .build(),
-                    User.builder()
-                            .id("e8984aa8-b1a5-4c65-8c5e-036851ec773c")
-                            .email("trong@gmail.com")
-                            .password("$2a$10$atTTVVOQoQMksMstiYp3/u6tQaYRG/6S5IrMJmEkw8Yw70kKI9LW2")
-                            .fullName("Vo Ngoc Trong")
-                            .username("trong")
-                            .pin("$2a$10$atTTVVOQoQMksMstiYp3/u6tQaYRG/6S5IrMJmEkw8Yw70kKI9LW2")
+                    System.builder()
+                            .id("e8984aa8-b1a5-4c65-8c5e-036851ec781c")
+                            .systemName("chat")
+                            .systemKey("$2a$10$atTTVVOQoQMksMstiYp3/u6tQaYRG/6S5IrMJmEkw8Yw70kKI9LW2")
+                            .numberOfWallet(0)
+                            .build(),
+                    System.builder()
+                            .id("e8984aa8-b1a5-4c65-8c5e-036851ec782c")
+                            .systemName("lucky_money")
+                            .systemKey("$2a$10$atTTVVOQoQMksMstiYp3/u6tQaYRG/6S5IrMJmEkw8Yw70kKI9LW2")
+                            .numberOfWallet(10)
+                            .build(),
+                    System.builder()
+                            .id("e8984aa8-b1a5-4c65-8c5e-036851ec783c")
+                            .systemName("bank")
+                            .systemKey("$2a$10$atTTVVOQoQMksMstiYp3/u6tQaYRG/6S5IrMJmEkw8Yw70kKI9LW2")
+                            .numberOfWallet(1)
                             .build()
-                    )
-            );
+            ));
         };
     }
 
