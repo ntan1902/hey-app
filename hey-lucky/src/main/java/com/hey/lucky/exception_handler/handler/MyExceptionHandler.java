@@ -29,7 +29,7 @@ public class MyExceptionHandler {
         HttpStatus code = HttpStatus.INTERNAL_SERVER_ERROR;
         return getResponse(code, exception.getMessage());
     }
-    @ExceptionHandler(value = {LuckyMoneyInvalidException.class})
+    @ExceptionHandler(value = {InvalidLuckyMoneyException.class})
     public ResponseEntity<ApiResponse> handleLuckyMoneyInvalidException(Exception exception){
         log.error(exception.getMessage());
         HttpStatus code = HttpStatus.BAD_REQUEST;

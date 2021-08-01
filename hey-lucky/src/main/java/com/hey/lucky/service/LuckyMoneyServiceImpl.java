@@ -12,6 +12,7 @@ import com.hey.lucky.repository.ReceivedLuckyMoneyRepository;
 import com.hey.lucky.shared_data.WalletsInfo;
 import com.hey.lucky.util.LuckyMoneyServiceUtil;
 import com.hey.lucky.util.LuckyMoneyServiceUtilImpl;
+import lombok.NoArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,12 +22,14 @@ import java.util.List;
 
 @Service
 @Log4j2
+@NoArgsConstructor
 public class LuckyMoneyServiceImpl implements LuckyMoneyService {
-    private final LuckyMoneyRepository luckyMoneyRepository;
-    private final ReceivedLuckyMoneyRepository receivedLuckyMoneyRepository;
-    private final LuckyMoneyMapper luckyMoneyMapper;
-    private final LuckyMoneyServiceUtil luckyMoneyServiceUtil;
-    private final WalletsInfo walletsInfo;
+    private LuckyMoneyRepository luckyMoneyRepository;
+    private ReceivedLuckyMoneyRepository receivedLuckyMoneyRepository;
+    private LuckyMoneyMapper luckyMoneyMapper;
+    private LuckyMoneyServiceUtil luckyMoneyServiceUtil;
+    private WalletsInfo walletsInfo;
+
 
     public LuckyMoneyServiceImpl(LuckyMoneyRepository luckyMoneyRepository,
                                  ReceivedLuckyMoneyRepository receivedLuckyMoneyRepository,
@@ -76,15 +79,13 @@ public class LuckyMoneyServiceImpl implements LuckyMoneyService {
 
     @Override
     @Transactional(noRollbackFor = ErrCallApiException.class)
-    public void receiveLuckyMoney(ReceiveLuckyMoneyRequest request) {
+    public void receiveLuckyMoney(ReceiveLuckyMoneyRequest request) throws InvalidLuckyMoneyException {
         User user = luckyMoneyServiceUtil.getCurrentUser();
         LocalDateTime now = LocalDateTime.now();
         LuckyMoney luckyMoney = luckyMoneyRepository.getLuckyMoneyById(request.getLuckyMoneyId())
-                .orElseThrow(() -> {
-                    throw new LuckyMoneyInvalidException();
-                });
+                .orElseThrow(InvalidLuckyMoneyException::new);
         log.info("User {} receive lucky money {}", user.getId(), luckyMoney.getId());
-       
+
         luckyMoneyServiceUtil.checkUserInSession(user.getId(), luckyMoney.getSessionChatId());
         luckyMoneyServiceUtil.checkExpiredOfLuckyMoney(luckyMoney.getExpiredAt(), now);
         luckyMoneyServiceUtil.checkOutOfBag(luckyMoney.getRestBag());
@@ -94,7 +95,7 @@ public class LuckyMoneyServiceImpl implements LuckyMoneyService {
         long restMoney = luckyMoney.getRestMoney();
         int restBag = luckyMoney.getRestBag();
         long amount = luckyMoneyServiceUtil.calculateAmountLuckyMoney(restMoney, restBag, luckyMoney.getAmount(), luckyMoney.getNumberBag(), luckyMoney.getType());
-        String message = String.format("User %d receive %d from lucky money %d", user.getId(), amount, luckyMoney.getId());
+        String message = String.format("User %s receive %d from lucky money %d", user.getId(), amount, luckyMoney.getId());
         luckyMoneyServiceUtil.transferMoneyToUser(luckyMoney.getSystemWalletId(), user.getId(), amount, message);
 
         luckyMoney.setRestMoney(restMoney - amount);
@@ -127,13 +128,13 @@ public class LuckyMoneyServiceImpl implements LuckyMoneyService {
     }
 
     @Override
-    public LuckyMoneyDetails getDetailsLuckyMoney(long luckyMoneyId) {
+    public LuckyMoneyDetails getDetailsLuckyMoney(long luckyMoneyId) throws InvalidLuckyMoneyException {
         log.info("Get details of lucky money {}", luckyMoneyId);
         User user = luckyMoneyServiceUtil.getCurrentUser();
         LuckyMoney luckyMoney = luckyMoneyRepository.findLuckyMoneyById(luckyMoneyId)
                 .orElseThrow(() -> {
                     log.error("Lucky money {} is not exists", luckyMoneyId);
-                    throw new LuckyMoneyInvalidException();
+                    return new InvalidLuckyMoneyException();
                 });
         luckyMoneyServiceUtil.checkUserInSession(user.getId(), luckyMoney.getSessionChatId());
 
@@ -158,7 +159,7 @@ public class LuckyMoneyServiceImpl implements LuckyMoneyService {
         luckyMoneyList.forEach(luckyMoney -> {
             log.info("Return lucky money {} with rest {} for user {}", luckyMoney.getId(), luckyMoney.getRestMoney(), luckyMoney.getUserId());
             try {
-                luckyMoneyServiceUtil.transferMoneyToUser(luckyMoney.getSystemWalletId(), luckyMoney.getUserId(), luckyMoney.getRestMoney(), String.format("Refund %d from lucky money %d for user %d", luckyMoney.getRestMoney(), luckyMoney.getId(), luckyMoney.getUserId()));
+                luckyMoneyServiceUtil.transferMoneyToUser(luckyMoney.getSystemWalletId(), luckyMoney.getUserId(), luckyMoney.getRestMoney(), String.format("Refund %d from lucky money %d for user %s", luckyMoney.getRestMoney(), luckyMoney.getId(), luckyMoney.getUserId()));
                 luckyMoney.setRestMoney(0L);
                 luckyMoneyRepository.save(luckyMoney);
             } catch (CannotTransferMoneyException exception) {
