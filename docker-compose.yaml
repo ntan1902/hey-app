@@ -42,6 +42,7 @@ services:
   hey-registry:
     container_name: hey-registry
     image: hey-registry
+    hostname: hey-registry
     build:
       context: ./hey-registry
       dockerfile: Dockerfile
@@ -55,6 +56,7 @@ services:
   hey-auth:
     image: hey-auth
     container_name: hey-auth
+    hostname: hey-auth
     environment:
       SPRING_DATASOURCE_URL: jdbc:mysql://hey-mysql:3306/hey_app?allowPublicKeyRetrieval=true&autoReconnect=true&useSSL=false
       SPRING_DATASOURCE_USERNAME: root
@@ -69,7 +71,6 @@ services:
     
     ports:
       - "7070:7070"
-    restart: always
     volumes:
       - "/hey-auth-log:/log"
       - "~/.m2:/root/.m2"
@@ -93,12 +94,13 @@ services:
     ports:
       - "8080:8080"
       - "8090:8090"
-    restart: on-failure
+    restart: always
     # command: 
-      # ["./wait-for-it.sh", "hey-auth:7070", "--", "echo", "hey-auth is up"]
+    #   ["./wait-for-it.sh", "hey-auth:7070", "--", "echo", "hey-auth is up"]
     environment:
-      - env=production
-      - vertx.disableDnsResolver=true
+      WAIT_HOSTS: hey-auth:7070
+      ENV: production
+      VERTX_DISABLEDNSRESOLVER=: 'true'
 
   # hey-payment:
   #   image: hey-payment
@@ -146,6 +148,7 @@ services:
   hey-gateway:
     image: hey-gateway
     container_name: hey-gateway
+    hostname: hey-gateway
     build:
       context: ./hey-gateway
       dockerfile: Dockerfile

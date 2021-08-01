@@ -14,7 +14,7 @@
 ## set the startup command to run your binary
 #CMD ["java", "-jar", "./target/hey-gateway-0.0.1-SNAPSHOT.jar"]
 
-FROM openjdk:11-buster
+FROM openjdk:11-jdk-slim-buster
 
 ADD ./target/hey-gateway-0.0.1-SNAPSHOT.jar ./target/hey-gateway-0.0.1-SNAPSHOT.jar
 
