@@ -42,20 +42,22 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
         log.info("Inside doFilterInternal of JwtAuthenticationFilter: {}", request.getServletPath());
-
-        if(request.getServletPath().contains("/api/v1/systems")) {
-            try {
-                String jwt = getJwtFromRequest(request);
-                handleAuthorizationSystem(request, jwt);
-            } catch (Exception e) {
-                log.error("Failed on set system authorization", e);
-            }
-        } else if (request.getServletPath().contains("/api/v1/users")){
-            try {
-                String jwt = getJwtFromRequest(request);
-                handleAuthorizationUser(request, jwt);
-            } catch (Exception e) {
-                log.error("Failed on set user authorization", e);
+        String path = request.getServletPath();
+        if (!path.contains("/api/v1/systems/login") && !path.contains("/api/v1/users/login")) {
+            if (path.contains("/api/v1/systems")) {
+                try {
+                    String jwt = getJwtFromRequest(request);
+                    handleAuthorizationSystem(request, jwt);
+                } catch (Exception e) {
+                    log.error("Failed on set system authorization", e);
+                }
+            } else if (path.contains("/api/v1/users")) {
+                try {
+                    String jwt = getJwtFromRequest(request);
+                    handleAuthorizationUser(request, jwt);
+                } catch (Exception e) {
+                    log.error("Failed on set user authorization", e);
+                }
             }
         }
         filterChain.doFilter(request, response);
