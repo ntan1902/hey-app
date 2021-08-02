@@ -23,9 +23,12 @@ public interface WalletRepository extends JpaRepository<Wallet, Long> {
     Optional<Wallet> getByOwnerIdAndRefFrom(String userId, String refFrom);
 
     @Lock(value = LockModeType.PESSIMISTIC_WRITE)
-//    @Query(value = "SELECT * FROM wallets w WHERE w.id=?1 FOR UPDATE", nativeQuery = true)
+    // @Query(value = "SELECT * FROM wallets w WHERE w.id=?1 FOR UPDATE",
+    // nativeQuery = true)
     Optional<Wallet> getWalletById(Long walletId);
 
     boolean existsByOwnerIdAndRefFrom(String userId, String refFrom);
+
+    long countAllByOwnerIdAndRefFrom(String ownerId, String refFrom);
 
 }

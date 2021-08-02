@@ -20,6 +20,7 @@ import Topup from "./topup";
 import Transfer from "./transfer";
 import TransferStatement from "./transfer-statement";
 import Success from "./success";
+import TransferSuccess from "./success_transfer";
 
 const { Header, Content, Footer, Sider } = Layout;
 const { TextArea } = Input;
@@ -76,6 +77,8 @@ class Chat extends React.Component {
         return <TransferStatement></TransferStatement>;
       case "TopupSuccess":
         return <Success></Success>;
+      case "TransferSuccess":
+        return <TransferSuccess></TransferSuccess>;
       default:
         return <div></div>;
     }

@@ -5,6 +5,9 @@ import NumericInput from "../../components/numberic-input";
 import Transfer from "../../components/transfer";
 import AddFriendTransfer from "../../components/add-friend-transfer";
 
+import { channingActions } from "../../utils";
+import { bindPaymentActions } from "../../actions";
+
 class MessagePanel extends React.Component {
   constructor(props) {
     super(props);
@@ -183,7 +186,11 @@ class MessagePanel extends React.Component {
             }}
           >
             <div style={{ flex: 1 }}></div>
-            <Transfer amount={this.state.amount}></Transfer>
+            <Transfer
+              amount={this.state.amount}
+              targetId={this.state.selectedUserId}
+              message={this.state.message}
+            ></Transfer>
           </div>
         </div>
       </div>
@@ -191,14 +198,9 @@ class MessagePanel extends React.Component {
   }
 }
 
-function mapStateToProps(state) {
-  return {
+export default connect(
+  (state) => ({
     messageItems: state.chatReducer.messageItems,
-  };
-}
-
-function mapDispatchToProps(dispatch) {
-  return {};
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(MessagePanel);
+  }),
+  (dispatch) => channingActions({}, dispatch, bindPaymentActions)
+)(MessagePanel);

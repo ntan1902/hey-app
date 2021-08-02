@@ -48,7 +48,9 @@ class ChatItem extends React.Component {
           alignItems: "center",
         }}
       >
-        {data.content.message}
+        {data.type == "transfer"
+          ? "Transfer: " + data.content.amount + "$"
+          : data.content.message}
       </div>
     );
   };

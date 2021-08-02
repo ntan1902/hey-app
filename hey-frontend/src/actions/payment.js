@@ -103,6 +103,19 @@ const topup = (amount) => async (dispatch) => {
   });
 };
 
+const transfer = (data) => async (dispatch) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const res = await PaymentAPI.transfer(data);
+      await dispatch(getBalance());
+      await dispatch(switchMainScreen("TransferSuccess"));
+      resolve({ success: true });
+    } catch (err) {
+      reject({ error: err, success: false });
+    }
+  });
+};
+
 export const paymentActions = {
   /* Get Event */
   switchMainScreen,
@@ -113,6 +126,7 @@ export const paymentActions = {
   changeStateLuckyMoneyPopup,
   getBalance,
   topup,
+  transfer,
 };
 
 export function bindPaymentActions(currentActions, dispatch) {

@@ -34,9 +34,7 @@ public class WalletServiceImpl implements WalletService {
 
     private final RestTemplate restTemplate;
 
-    public WalletServiceImpl(WalletRepository walletRepository,
-                             WalletMapper walletMapper,
-                             RestTemplate restTemplate) {
+    public WalletServiceImpl(WalletRepository walletRepository, WalletMapper walletMapper, RestTemplate restTemplate) {
         this.walletRepository = walletRepository;
         this.walletMapper = walletMapper;
         this.restTemplate = restTemplate;
@@ -45,10 +43,7 @@ public class WalletServiceImpl implements WalletService {
     @EventListener(ApplicationReadyEvent.class)
     public void getSystems() {
         log.info("Inside getSystems of WalletServiceImpl");
-        GetSystemsResponse response = restTemplate.getForObject(
-                "/getSystems",
-                GetSystemsResponse.class
-        );
+        GetSystemsResponse response = restTemplate.getForObject("/getSystems", GetSystemsResponse.class);
         log.info("{}", response);
 
         if (response != null) {
@@ -57,14 +52,11 @@ public class WalletServiceImpl implements WalletService {
             List<Wallet> wallets = new LinkedList<>();
             systems.forEach(system -> {
                 if (system.getNumberOfWallet() != 0) {
-                    for (int i = 0; i < system.getNumberOfWallet(); ++i) {
-                        wallets.add(
-                                Wallet.builder()
-                                        .ownerId(system.getId())
-                                        .balance(0L)
-                                        .refFrom(OwnerWalletRefFrom.SYSTEMS)
-                                        .build()
-                        );
+                    long numberWalletNow = walletRepository.countAllByOwnerIdAndRefFrom(system.getId(),
+                            OwnerWalletRefFrom.SYSTEMS);
+                    for (int i = 0; i < system.getNumberOfWallet() - numberWalletNow; ++i) {
+                        wallets.add(Wallet.builder().ownerId(system.getId()).balance(0L)
+                                .refFrom(OwnerWalletRefFrom.SYSTEMS).build());
                     }
                 }
             });
@@ -78,8 +70,7 @@ public class WalletServiceImpl implements WalletService {
     public WalletDTO getWalletOfUser(String userId) {
         log.info("Inside getWalletOfUser of WalletServiceImpl with id {}", userId);
         return walletRepository.findByOwnerIdAndRefFrom(userId, OwnerWalletRefFrom.USERS)
-                .map(walletMapper::wallet2WalletDTO)
-                .orElseThrow(() -> {
+                .map(walletMapper::wallet2WalletDTO).orElseThrow(() -> {
                     log.error("User {} have no wallet", userId);
                     throw new HaveNoWalletException();
                 });
@@ -88,9 +79,8 @@ public class WalletServiceImpl implements WalletService {
     @Override
     public List<WalletSystemDTO> getAllWalletsOfSystem(System system) {
         log.info("Inside getAllWalletOfSystem of WalletServiceImpl: {}", system.getId());
-        return walletRepository.findAllByOwnerIdAndRefFrom(system.getId(), OwnerWalletRefFrom.SYSTEMS)
-                .stream().map(walletMapper::wallet2WalletSystemDTO)
-                .collect(Collectors.toList());
+        return walletRepository.findAllByOwnerIdAndRefFrom(system.getId(), OwnerWalletRefFrom.SYSTEMS).stream()
+                .map(walletMapper::wallet2WalletSystemDTO).collect(Collectors.toList());
     }
 
     @Override
@@ -99,11 +89,7 @@ public class WalletServiceImpl implements WalletService {
         if (walletRepository.existsByOwnerIdAndRefFrom(user.getId(), OwnerWalletRefFrom.USERS)) {
             throw new HadWalletException();
         }
-        Wallet wallet = Wallet.builder()
-                .ownerId(user.getId())
-                .balance(0L)
-                .refFrom(OwnerWalletRefFrom.USERS)
-                .build();
+        Wallet wallet = Wallet.builder().ownerId(user.getId()).balance(0L).refFrom(OwnerWalletRefFrom.USERS).build();
         walletRepository.save(wallet);
 
         return walletMapper.wallet2WalletDTO(wallet);

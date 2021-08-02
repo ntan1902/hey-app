@@ -42,7 +42,17 @@ class VerifyPIN extends React.Component {
     this.props.paymentActions.onClosePinPopup();
   };
 
-  handleTransferOK = (e) => {};
+  handleTransferOK = (e) => {
+    this.props.paymentActions
+      .transfer({
+        targetId: this.props.targetId,
+        softToken: this.state.softToken,
+        message: this.props.message,
+      })
+      .then((res) => {
+        this.setState({ handleSoftToken: false, softToken: "" });
+      });
+  };
 
   handleOk = (e) => {
     console.log(e);
@@ -147,7 +157,7 @@ class VerifyPIN extends React.Component {
           visible={
             this.state.handleSoftToken == true && this.state.softToken != ""
           }
-          onOk={this.props.handleTransferOK}
+          onOk={this.handleTransferOK}
           onCancel={this.handleTransferCancel}
           okText="Ok"
           cancelText="Cancel"
