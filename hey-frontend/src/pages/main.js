@@ -44,7 +44,7 @@ class Main extends React.Component {
 
   componentDidMount() {
     this.props.initialWebSocket();
-    console.log("Tesstt");
+
     this.props
       .actions()
       .authActions.getProfile()

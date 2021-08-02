@@ -19,6 +19,7 @@ import $ from "jquery";
 import Topup from "./topup";
 import Transfer from "./transfer";
 import TransferStatement from "./transfer-statement";
+import Success from "./success";
 
 const { Header, Content, Footer, Sider } = Layout;
 const { TextArea } = Input;
@@ -73,6 +74,8 @@ class Chat extends React.Component {
         return <Transfer></Transfer>;
       case "transferStatement":
         return <TransferStatement></TransferStatement>;
+      case "TopupSuccess":
+        return <Success></Success>;
       default:
         return <div></div>;
     }

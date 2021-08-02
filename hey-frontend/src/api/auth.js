@@ -7,4 +7,6 @@ export const AuthAPI = {
   login: (data) => axios.post(`${API_AUTH}/api/v1/users/login`, data),
   register: (data) => axios.post(`${API_AUTH}/api/v1/users/register`, data),
   getProfile: () => axios.get(`${API_AUTH}/api/v1/users/getInfo`),
+  verifyPin: (data) =>
+    axios.post(`${API_AUTH}/api/v1/users/createSoftTokenByPin`, data),
 };

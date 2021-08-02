@@ -12,6 +12,7 @@ class MessagePanel extends React.Component {
       topupType: 1,
       amount: "",
       message: "",
+      selectedUserId: "",
     };
   }
 
@@ -119,7 +120,13 @@ class MessagePanel extends React.Component {
               >
                 Transfer To
               </div>
-              <AddFriendTransfer></AddFriendTransfer>
+              <AddFriendTransfer
+                onChange={(value) => {
+                  console.log(`selected ${value}`);
+
+                  this.setState({ selectedUserId: value });
+                }}
+              ></AddFriendTransfer>
             </div>
             <div
               style={{ display: "flex", flexDirection: "row", marginTop: 50 }}

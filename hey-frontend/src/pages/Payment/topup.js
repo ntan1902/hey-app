@@ -6,6 +6,7 @@ import Transfer from "../../components/transfer";
 
 import { channingActions } from "../../utils";
 import { bindPaymentActions } from "../../actions";
+import { Result } from "antd";
 
 class MessagePanel extends React.Component {
   constructor(props) {

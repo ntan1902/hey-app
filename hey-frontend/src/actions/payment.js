@@ -1,6 +1,6 @@
 import * as actionTypes from "./actionTypes";
 import { bindActionCreators } from "redux";
-import { PaymentAPI } from "../api";
+import { PaymentAPI, AuthAPI } from "../api";
 
 /* Get */
 
@@ -61,12 +61,14 @@ const switchMainScreen = (screenName) => async (dispatch) => {
   });
 };
 
-const verifyPin = (pin) => async (dispatch) => {
+const verifyPin = (pin, amount) => async (dispatch) => {
   return new Promise(async (resolve, reject) => {
     try {
       console.log(pin);
+      const res = await AuthAPI.verifyPin({ pin: pin, amount: amount });
+
       await dispatch(onClosePinPopup());
-      resolve({ softToken: "abc", success: true });
+      resolve({ softToken: res.data.payload.softToken, success: true });
     } catch (err) {
       reject({ error: err, success: false });
     }
@@ -93,6 +95,7 @@ const topup = (amount) => async (dispatch) => {
         bankId: "e8984aa8-b1a5-4c65-8c5e-036851ec783c",
       });
       await dispatch(getBalance());
+      await dispatch(switchMainScreen("TopupSuccess"));
       resolve({ success: true });
     } catch (err) {
       reject({ error: err, success: false });
