@@ -1,4 +1,4 @@
-import { store } from "../index";
+import { store } from "../store";
 import { api, ws_host } from "../api/api";
 import Sockette from "sockette";
 import {
@@ -291,7 +291,7 @@ export function removeUserChatGroup(userName) {
 }
 
 export function receiveNewUserChatGroup(result) {
-  if (!result.data.data.existed) {
+  if (!result.data.payload.existed) {
     let error = "Username is not existed :(";
     return { type: ADD_NEW_START_CHAT_GROUP_FAIL, error: error };
   } else {

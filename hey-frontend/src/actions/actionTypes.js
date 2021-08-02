@@ -18,6 +18,7 @@ export const ON_CLOSE_PIN = "payment.CLOSE_PIN";
 export const ON_OPEN_ACCEPT_TRANSFER = "payment.ON_OPEN_ACCEPT_TRANSFER";
 export const ON_CLOSE_ACCEPT_TRANSFER = "payment.ON_CLOSE_ACCEPT_TRANSFER";
 export const ADD_FRIEND_TRANSFER_POPUP = "payment.ADD_FRIEND_TRANSFER_POPUP";
+export const ON_UPDATE_BALANCE = "payment.ON_UPDATE_BALANCE";
 
 // Lucky Money
 export const LUCKY_MONEY_POPUP = "payment.LUCKY_MONEY_POPUP";

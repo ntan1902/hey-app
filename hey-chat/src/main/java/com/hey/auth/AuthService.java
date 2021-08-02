@@ -29,12 +29,11 @@ public class AuthService {
         String host = PropertiesUtils.getInstance().getValue("auth.host");
 
         String baseURL = PropertiesUtils.getInstance().getValue("auth.baseurl");
-        String url = authInfo.containsKey("jwtUser") ? baseURL + "/authorizeUser" :
-                authInfo.containsKey("jwtSystem") ? baseURL + "/authorizeSystem" : "";
+        String url = authInfo.containsKey("jwtUser") ? baseURL + "/authorizeUser"
+                : authInfo.containsKey("jwtSystem") ? baseURL + "/authorizeSystem" : "";
 
-        webClient.post(port, host, url)
-                .putHeader("Authorization", jwt)
-                .sendJsonObject(authInfo, httpResponseAsyncResult -> {
+        webClient.post(port, host, url).putHeader("Authorization", jwt).sendJsonObject(authInfo,
+                httpResponseAsyncResult -> {
                     if (httpResponseAsyncResult.succeeded()) {
                         JsonObject result = httpResponseAsyncResult.result().bodyAsJsonObject();
                         if (result.getInteger("code") == 401) {

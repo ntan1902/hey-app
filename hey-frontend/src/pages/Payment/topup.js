@@ -4,6 +4,9 @@ import { Button, Icon, Input } from "antd";
 import NumericInput from "../../components/numberic-input";
 import Transfer from "../../components/transfer";
 
+import { channingActions } from "../../utils";
+import { bindPaymentActions } from "../../actions";
+
 class MessagePanel extends React.Component {
   constructor(props) {
     super(props);
@@ -219,7 +222,29 @@ class MessagePanel extends React.Component {
             }}
           >
             <div style={{ flex: 1 }}></div>
-            <Transfer amount={this.state.amount}></Transfer>
+            <Button
+              style={{
+                borderColor: "black",
+                color: "black",
+                height: 50,
+                width: 100,
+                justifyContent: "center",
+                alignItems: "center",
+
+                padding: 0,
+              }}
+              type="primary"
+              onClick={() => {
+                this.props.paymentActions
+                  .topup(this.state.amount)
+                  .then((res) => {
+                    console.log("Topup Success");
+                  });
+              }}
+            >
+              Confirm
+            </Button>
+            {/* <Transfer amount={this.state.amount}></Transfer> */}
           </div>
         </div>
       </div>
@@ -227,14 +252,9 @@ class MessagePanel extends React.Component {
   }
 }
 
-function mapStateToProps(state) {
-  return {
+export default connect(
+  (state) => ({
     messageItems: state.chatReducer.messageItems,
-  };
-}
-
-function mapDispatchToProps(dispatch) {
-  return {};
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(MessagePanel);
+  }),
+  (dispatch) => channingActions({}, dispatch, bindPaymentActions)
+)(MessagePanel);

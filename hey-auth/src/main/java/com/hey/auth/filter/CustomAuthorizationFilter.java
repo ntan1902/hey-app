@@ -1,6 +1,5 @@
 package com.hey.auth.filter;
 
-
 import com.hey.auth.entity.System;
 import com.hey.auth.entity.User;
 import com.hey.auth.exception.system.SystemIdNotFoundException;
@@ -24,7 +23,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-
 @Log4j2
 public class CustomAuthorizationFilter extends OncePerRequestFilter {
     @Autowired
@@ -40,9 +38,8 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
     private SystemService systemService;
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request,
-                                    HttpServletResponse response,
-                                    FilterChain filterChain) throws ServletException, IOException {
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+            throws ServletException, IOException {
         log.info("Inside doFilterInternal of JwtAuthenticationFilter: {}", request.getServletPath());
         String path = request.getServletPath();
         if (!path.contains("/api/v1/systems/login") && !path.contains("/api/v1/users/login")) {
@@ -71,9 +68,7 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
 
             User user = userService.loadUserById(userId);
             if (user != null) {
-                UsernamePasswordAuthenticationToken
-                        authentication = new UsernamePasswordAuthenticationToken(user,
-                        null,
+                UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(user, null,
                         user.getAuthorities());
                 authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
@@ -88,8 +83,8 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
 
             System system = systemService.loadSystemById(systemId);
             if (system != null) {
-                UsernamePasswordAuthenticationToken
-                        authentication = new UsernamePasswordAuthenticationToken(system, null, null);
+                UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(system,
+                        null, null);
                 authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
                 SecurityContextHolder.getContext().setAuthentication(authentication);

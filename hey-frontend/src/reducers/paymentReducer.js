@@ -7,6 +7,7 @@ const initialState = {
   addFriendTransferPopup: false,
   luckyMoneyPopup: false,
   isCreate: false,
+  balance: "0",
 };
 
 export default (state = initialState, action = {}) => {
@@ -47,9 +48,14 @@ export default (state = initialState, action = {}) => {
         luckyMoneyPopup: action.luckyMoneyPopup,
         isCreate: action.isCreate,
       };
+    case actionTypes.ON_UPDATE_BALANCE:
+      return {
+        ...state,
+        balance: action.balance,
+      };
     case actionTypes.HIDE_LOADING:
-      return { ...initialState };
+      return { ...state };
     default:
-      return { ...initialState };
+      return { ...state };
   }
 };
