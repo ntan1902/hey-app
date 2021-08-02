@@ -60,8 +60,8 @@ public class UserController {
         HasPinResponse payload = userService.hasPin();
         return ResponseEntity.ok(ApiResponse.builder()
                 .success(true)
-                .code(HttpStatus.CREATED.value())
-                .message("Create PIN successfully")
+                .code(HttpStatus.OK.value())
+                .message("")
                 .payload(payload)
                 .build());
     }

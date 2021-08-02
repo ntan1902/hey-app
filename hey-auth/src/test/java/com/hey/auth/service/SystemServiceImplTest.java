@@ -16,17 +16,19 @@ import com.hey.auth.repository.SystemRepository;
 import com.hey.auth.repository.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.verify;
 
 
 @ExtendWith(MockitoExtension.class)
@@ -415,5 +417,38 @@ class SystemServiceImplTest {
         assertThatThrownBy(() -> underTest.findById(systemId))
                 .isInstanceOf(SystemIdNotFoundException.class)
                 .hasMessageContaining("System Id " + systemId + " not found");
+    }
+
+    @Test
+    void getSystems() {
+
+        // when
+        underTest.getSystems();
+
+        // then
+        verify(systemRepository).findAll();
+    }
+
+    @Test
+    void getSystemsWillReturnListDTO() {
+        // given
+        System system = System.builder()
+                .systemName("payment")
+                .systemKey("dump")
+                .numberOfWallet(0)
+                .build();
+
+        SystemDTO expected = new SystemDTO(
+                "uuid",
+                system.getSystemName(),
+                0
+        );
+        given(systemRepository.findAll()).willReturn(Collections.singletonList(system));
+
+        // when
+        List<SystemDTO> actual = underTest.getSystems();
+
+        // then
+        assertThat(actual).isEqualTo(Collections.singletonList(expected));
     }
 }
