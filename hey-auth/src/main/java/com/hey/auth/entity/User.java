@@ -18,7 +18,13 @@ import java.util.Collections;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@Table(name = "users")
+@Table(
+        name = "users",
+        indexes = {
+                @Index(name = "uq_username", unique = true, columnList = "username"),
+                @Index(name = "uq_email", unique = true, columnList = "email")
+        }
+)
 public class User implements Serializable, UserDetails {
     private static final long serialVersionUID = 1L;
 

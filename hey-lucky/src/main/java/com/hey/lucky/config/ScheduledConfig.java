@@ -18,7 +18,6 @@ import java.util.List;
 @AllArgsConstructor
 @Log4j2
 public class ScheduledConfig {
-
     private final LuckyMoneyService luckyMoneyService;
 
     @Scheduled(fixedRate = 300_000)

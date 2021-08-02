@@ -1,20 +1,28 @@
-# base image
-FROM maven:3.8.1-openjdk-11-slim
+## base image
+#FROM maven:3.8.1-jdk-11-slim
+#
+## copy the project files
+#COPY ./pom.xml ./pom.xml
+#
+## copy your other files
+#COPY ./src ./src
+#
+#RUN mvn package -DskipTests
+#
+## set the startup command to run your binary
+#CMD ["java", "-jar", "./target/hey-chat-0.0.1-SNAPSHOT.jar"]
 
+FROM openjdk:11-jdk-slim-buster
 
-# preserve Java 8  from the maven install.
-#RUN mv /etc/alternatives/java /etc/alternatives/java8
-#RUN apt-get update -y && apt-get install maven -y
+COPY ./src ./src
+#COPY ./wait-for-it.sh ./wait-for-it.sh
+#RUN chmod +x ./wait-for-it.sh
 
-# Restore Java 8
-#RUN mv -f /etc/alternatives/java8 /etc/alternatives/java
-#RUN ls -l /usr/bin/java && java -version
+ADD ./target/hey-chat-0.0.1-SNAPSHOT.jar ./target/hey-chat-0.0.1-SNAPSHOT.jar
 
-# set working directory
-RUN mkdir /app
-WORKDIR /app
-COPY . /app
-RUN mvn package -DskipTests
+## Add the wait script to the image
+ADD https://github.com/ufoscout/docker-compose-wait/releases/download/2.9.0/wait /wait
+RUN chmod +x /wait
 
-# start app
-CMD ["java","-jar","target/hey-backend.jar"]
+## Add your application to the docker image
+CMD /wait && java -jar ./target/hey-chat-0.0.1-SNAPSHOT.jar
