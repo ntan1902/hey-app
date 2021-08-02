@@ -3,6 +3,8 @@ package com.hey.auth.filter;
 
 import com.hey.auth.entity.System;
 import com.hey.auth.entity.User;
+import com.hey.auth.exception.system.SystemIdNotFoundException;
+import com.hey.auth.exception.user.UserIdNotFoundException;
 import com.hey.auth.jwt.JwtSystemUtil;
 import com.hey.auth.jwt.JwtUserUtil;
 import com.hey.auth.service.SystemService;
@@ -63,7 +65,7 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
         filterChain.doFilter(request, response);
     }
 
-    private void handleAuthorizationUser(HttpServletRequest request, String jwt) {
+    private void handleAuthorizationUser(HttpServletRequest request, String jwt) throws UserIdNotFoundException {
         if (StringUtils.hasText(jwt) && jwtUserUtil.validateToken(jwt)) {
             String userId = jwtUserUtil.getUserIdFromJwt(jwt);
 
@@ -80,7 +82,7 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
         }
     }
 
-    private void handleAuthorizationSystem(HttpServletRequest request, String jwt) {
+    private void handleAuthorizationSystem(HttpServletRequest request, String jwt) throws SystemIdNotFoundException {
         if (StringUtils.hasText(jwt) && jwtSystemUtil.validateToken(jwt)) {
             String systemId = jwtSystemUtil.getSystemIdFromJwt(jwt);
 

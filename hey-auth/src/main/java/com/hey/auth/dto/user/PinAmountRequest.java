@@ -14,7 +14,6 @@ public class PinAmountRequest {
     @NotEmpty(message = "pin must not be empty")
     private String pin;
 
-    @NotEmpty(message = "amount must not be empty")
-    @Min(1000)
+    @Min(1000L)
     private long amount;
 }
