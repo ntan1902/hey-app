@@ -1,4 +1,4 @@
-import { store } from "../index";
+import { store } from "../store";
 import { loadChatContainer, startNewChatSingle } from "./chatAction";
 import { api } from "../api/api";
 import { isEmptyString } from "../utils/utils";

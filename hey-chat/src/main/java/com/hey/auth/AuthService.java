@@ -29,12 +29,11 @@ public class AuthService {
         String host = PropertiesUtils.getInstance().getValue("auth.host");
 
         String baseURL = PropertiesUtils.getInstance().getValue("auth.baseurl");
-        String url = authInfo.containsKey("jwtUser") ? baseURL + "/authorizeUser" :
-                authInfo.containsKey("jwtSystem") ? baseURL + "/authorizeSystem" : "";
+        String url = authInfo.containsKey("jwtUser") ? baseURL + "/authorizeUser"
+                : authInfo.containsKey("jwtSystem") ? baseURL + "/authorizeSystem" : "";
 
-        webClient.post(port, host, url)
-                .putHeader("Authorization", jwt)
-                .sendJsonObject(authInfo, httpResponseAsyncResult -> {
+        webClient.post(port, host, url).putHeader("Authorization", jwt).sendJsonObject(authInfo,
+                httpResponseAsyncResult -> {
                     if (httpResponseAsyncResult.succeeded()) {
                         JsonObject result = httpResponseAsyncResult.result().bodyAsJsonObject();
                         if (result.getInteger("code") == 401) {
@@ -44,7 +43,7 @@ public class AuthService {
 
                         if (payload.containsKey("userId")) {
                             JsonObject user = new JsonObject();
-                            user.put("userId", payload.getInteger("userId").toString());
+                            user.put("userId", payload.getString("userId").toString());
                             resultHandler.handle(Future.succeededFuture(new JWTUser(user, "permissions")));
                         } else if (payload.containsKey("systemName")) {
                             JsonObject system = new JsonObject();
