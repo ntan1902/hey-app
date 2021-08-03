@@ -43,7 +43,7 @@ public class LuckyMoneyServiceImpl implements LuckyMoneyService {
 
     @Override
     @Transactional(noRollbackFor = ErrCallApiException.class)
-    public void createLuckyMoney(CreateLuckyMoneyRequest request) {
+    public void createLuckyMoney(CreateLuckyMoneyRequest request) throws UnauthorizeException, ErrCallApiException, CannotTransferMoneyException {
         long walletId = walletsInfo.getCurrentWallet();
         User user = luckyMoneyServiceUtil.getCurrentUser();
         String userId = user.getId();
@@ -51,8 +51,11 @@ public class LuckyMoneyServiceImpl implements LuckyMoneyService {
 
         log.info("Send lucky money for user {} by wallet {}", user.getId(), walletId);
 
-        luckyMoneyServiceUtil.checkUserInSession(user.getId(), request.getSessionChatId());
-
+        boolean isUserInSessionChat = luckyMoneyServiceUtil.checkUserInSession(user.getId(), request.getSessionChatId());
+        if (!isUserInSessionChat) {
+            log.info("User {} isn't in group chat {}", user.getId(), request.getSessionChatId());
+            throw new UnauthorizeException("You aren't in that group chat");
+        }
         long amount = luckyMoneyServiceUtil.transferMoneyFromUser(userId, walletId, request.getSoftToken(), request.getMessage());
 
         log.info("Amount: {}", amount);
@@ -79,18 +82,35 @@ public class LuckyMoneyServiceImpl implements LuckyMoneyService {
 
     @Override
     @Transactional(noRollbackFor = ErrCallApiException.class)
-    public void receiveLuckyMoney(ReceiveLuckyMoneyRequest request) throws InvalidLuckyMoneyException {
+    public void receiveLuckyMoney(ReceiveLuckyMoneyRequest request) throws InvalidLuckyMoneyException, UnauthorizeException, ErrCallApiException, LuckyMoneyExpiredException, CannotTransferMoneyException, OutOfBagException, HadReceivedException {
         User user = luckyMoneyServiceUtil.getCurrentUser();
         LocalDateTime now = LocalDateTime.now();
         LuckyMoney luckyMoney = luckyMoneyRepository.getLuckyMoneyById(request.getLuckyMoneyId())
                 .orElseThrow(InvalidLuckyMoneyException::new);
         log.info("User {} receive lucky money {}", user.getId(), luckyMoney.getId());
 
-        luckyMoneyServiceUtil.checkUserInSession(user.getId(), luckyMoney.getSessionChatId());
-        luckyMoneyServiceUtil.checkExpiredOfLuckyMoney(luckyMoney.getExpiredAt(), now);
-        luckyMoneyServiceUtil.checkOutOfBag(luckyMoney.getRestBag());
-        luckyMoneyServiceUtil.checkUserHadReceived(luckyMoney.getId(), user.getId());
+        boolean isUserInSessionChat = luckyMoneyServiceUtil.checkUserInSession(user.getId(), luckyMoney.getSessionChatId());
+        if (!isUserInSessionChat) {
+            log.info("User {} isn't in group chat {}", user.getId(), luckyMoney.getSessionChatId());
+            throw new UnauthorizeException("You aren't in that group chat");
+        }
+        boolean isExpired = luckyMoneyServiceUtil.checkExpiredOfLuckyMoney(luckyMoney.getExpiredAt(), now);
+        if (isExpired){
+            log.info("Lucky money {} is expired", luckyMoney.getId());
+            throw new LuckyMoneyExpiredException();
+        }
 
+        boolean isHadReceived = luckyMoneyServiceUtil.checkUserHadReceived(luckyMoney.getId(), user.getId());
+        if (isHadReceived){
+            log.info("User {} has received lucky money {}",user.getId(), luckyMoney.getId());
+            throw new HadReceivedException();
+        }
+
+        boolean isOutOfBag = luckyMoneyServiceUtil.checkOutOfBag(luckyMoney.getRestBag());
+        if (isOutOfBag) {
+            log.info("Lucky money {} is out of bag", luckyMoney.getId());
+            throw new OutOfBagException();
+        }
 
         long restMoney = luckyMoney.getRestMoney();
         int restBag = luckyMoney.getRestBag();
@@ -115,11 +135,15 @@ public class LuckyMoneyServiceImpl implements LuckyMoneyService {
     }
 
     @Override
-    public List<LuckyMoneyDTO> getAllLuckyMoney(String sessionId) {
+    public List<LuckyMoneyDTO> getAllLuckyMoney(String sessionId) throws UnauthorizeException, ErrCallApiException {
         User user = luckyMoneyServiceUtil.getCurrentUser();
         log.info("User {} get all lucky money of chat group {}", user.getId(), sessionId);
 
-        luckyMoneyServiceUtil.checkUserInSession(user.getId(), sessionId);
+        boolean isUserInSessionChat = luckyMoneyServiceUtil.checkUserInSession(user.getId(), sessionId);
+        if (!isUserInSessionChat) {
+            log.info("User {} isn't in group chat {}", user.getId(), sessionId);
+            throw new UnauthorizeException("You aren't in that group chat");
+        }
 
         List<LuckyMoney> luckyMoneyList = luckyMoneyRepository.findAllBySessionChatId(sessionId);
 
@@ -128,7 +152,7 @@ public class LuckyMoneyServiceImpl implements LuckyMoneyService {
     }
 
     @Override
-    public LuckyMoneyDetails getDetailsLuckyMoney(long luckyMoneyId) throws InvalidLuckyMoneyException {
+    public LuckyMoneyDetails getDetailsLuckyMoney(long luckyMoneyId) throws InvalidLuckyMoneyException, CannotGetUserInfo, UnauthorizeException, ErrCallApiException {
         log.info("Get details of lucky money {}", luckyMoneyId);
         User user = luckyMoneyServiceUtil.getCurrentUser();
         LuckyMoney luckyMoney = luckyMoneyRepository.findLuckyMoneyById(luckyMoneyId)
@@ -136,8 +160,11 @@ public class LuckyMoneyServiceImpl implements LuckyMoneyService {
                     log.error("Lucky money {} is not exists", luckyMoneyId);
                     return new InvalidLuckyMoneyException();
                 });
-        luckyMoneyServiceUtil.checkUserInSession(user.getId(), luckyMoney.getSessionChatId());
-
+        boolean isUserInSessionChat = luckyMoneyServiceUtil.checkUserInSession(user.getId(), luckyMoney.getSessionChatId());
+        if (!isUserInSessionChat) {
+            log.info("User {} isn't in group chat {}", user.getId(), luckyMoney.getSessionChatId());
+            throw new UnauthorizeException("You aren't in that group chat");
+        }
         LuckyMoneyDetails luckyMoneyDetails = luckyMoneyMapper.luckyMoney2LuckyMoneyDetails(luckyMoney);
 
         UserInfo userInfo = luckyMoneyServiceUtil.getUserInfo(luckyMoney.getUserId());

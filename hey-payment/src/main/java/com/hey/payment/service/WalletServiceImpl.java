@@ -57,7 +57,8 @@ public class WalletServiceImpl implements WalletService {
             List<Wallet> wallets = new LinkedList<>();
             systems.forEach(system -> {
                 if (system.getNumberOfWallet() != 0) {
-                    for (int i = 0; i < system.getNumberOfWallet(); ++i) {
+                    long numberWalletNow = walletRepository.countAllByOwnerIdAndRefFrom(system.getId(),OwnerWalletRefFrom.SYSTEMS);
+                    for (int i = 0; i < system.getNumberOfWallet()-numberWalletNow; ++i) {
                         wallets.add(
                                 Wallet.builder()
                                         .ownerId(system.getId())

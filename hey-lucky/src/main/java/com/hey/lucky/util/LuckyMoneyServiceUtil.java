@@ -6,6 +6,10 @@ import com.hey.lucky.dto.user.LuckyMoneyDTO;
 import com.hey.lucky.dto.user.UserReceiveInfo;
 import com.hey.lucky.entity.LuckyMoney;
 import com.hey.lucky.entity.User;
+import com.hey.lucky.exception_handler.exception.CannotGetUserInfo;
+import com.hey.lucky.exception_handler.exception.CannotTransferMoneyException;
+import com.hey.lucky.exception_handler.exception.ErrCallApiException;
+import com.hey.lucky.exception_handler.exception.UnauthorizeException;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -13,21 +17,21 @@ import java.util.List;
 public interface LuckyMoneyServiceUtil {
     GetAllWalletsResponse getAllWallets();
 
-    void transferMoneyToUser(Long systemWalletId, String receiverId, long amount, String wishMessage);
+    void transferMoneyToUser(Long systemWalletId, String receiverId, long amount, String wishMessage) throws CannotTransferMoneyException;
 
-    void checkUserInSession(String userId, String sessionId);
+    boolean checkUserInSession(String userId, String sessionId) throws ErrCallApiException, UnauthorizeException;
 
-    List<UserReceiveInfo> getListReceivedUsers(Long luckyMoneyId);
+    List<UserReceiveInfo> getListReceivedUsers(Long luckyMoneyId) throws CannotGetUserInfo;
 
-    UserInfo getUserInfo(String userId);
+    UserInfo getUserInfo(String userId) throws CannotGetUserInfo;
 
     List<LuckyMoneyDTO> luckyMoneyList2LuckyMoneyDTOList(List<LuckyMoney> luckyMoneyList, User user);
 
-    void checkOutOfBag(int restBag);
+    boolean checkOutOfBag(int restBag);
 
-    void checkExpiredOfLuckyMoney(LocalDateTime expiredAt, LocalDateTime now);
+    boolean checkExpiredOfLuckyMoney(LocalDateTime expiredAt, LocalDateTime now);
 
-    void checkUserHadReceived(long luckyMoneyId, String receiverId);
+    boolean checkUserHadReceived(long luckyMoneyId, String receiverId);
 
     void sendMessageReceiveLuckyMoney(String receiverId, String sessionChatId, long luckeyMoneyId, long amount, String wishMessage, LocalDateTime now);
 
@@ -35,7 +39,7 @@ public interface LuckyMoneyServiceUtil {
 
     void sendMessageLuckyMoney(String userId, String sessionChatId, String message, long luckyMoneyId, LocalDateTime createdAt);
 
-    long transferMoneyFromUser(String userId, Long walletId, String softToken, String message);
+    long transferMoneyFromUser(String userId, Long walletId, String softToken, String message) throws CannotTransferMoneyException;
 
     User getCurrentUser();
 }

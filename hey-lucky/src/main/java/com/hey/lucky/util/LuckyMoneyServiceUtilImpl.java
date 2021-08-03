@@ -24,6 +24,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
@@ -53,7 +54,7 @@ public class LuckyMoneyServiceUtilImpl implements LuckyMoneyServiceUtil {
     }
 
     @Override
-    public void transferMoneyToUser(Long systemWalletId, String receiverId, long amount, String wishMessage) {
+    public void transferMoneyToUser(Long systemWalletId, String receiverId, long amount, String wishMessage) throws CannotTransferMoneyException {
         log.info("Transfer {} to user {} by wallet {}", amount, receiverId, systemWalletId);
         CreateTransferToUserRequest request = CreateTransferToUserRequest.builder()
                 .walletId(systemWalletId)
@@ -68,33 +69,33 @@ public class LuckyMoneyServiceUtilImpl implements LuckyMoneyServiceUtil {
     }
 
     @Override
-    public void checkUserInSession(String userId, String sessionId) {
+    public boolean checkUserInSession(String userId, String sessionId) throws ErrCallApiException {
         log.info("Check user {} is in group chat {}", userId, sessionId);
         CheckUserInSessionChatResponse response = chatApi.checkUserInSessionChat(new CheckUserInSessionChatRequest(userId, sessionId));
         if (!response.isSuccess()) {
             throw new ErrCallApiException("Can not verify your authentication. Try later!");
         }
-        if (!response.getPayload().isExisted()) {
-            throw new UnauthorizeException("You aren't in that group chat");
-        }
+        return response.getPayload().isExisted();
     }
 
     @Override
-    public List<UserReceiveInfo> getListReceivedUsers(Long luckyMoneyId) {
+    public List<UserReceiveInfo> getListReceivedUsers(Long luckyMoneyId) throws CannotGetUserInfo {
         List<ReceivedLuckyMoney> receivedLuckyMoneyList = receivedLuckyMoneyRepository.findAllByLuckyMoneyId(luckyMoneyId);
-        return receivedLuckyMoneyList.stream().map(receivedLuckyMoney -> {
+        List<UserReceiveInfo> userReceiveInfoList = new ArrayList<>();
+        for (ReceivedLuckyMoney receivedLuckyMoney : receivedLuckyMoneyList) {
             UserInfo userInfo = getUserInfo(receivedLuckyMoney.getReceiverId());
-            return UserReceiveInfo.builder()
+            userReceiveInfoList.add(UserReceiveInfo.builder()
                     .fullName(userInfo.getFullName())
                     .amount(receivedLuckyMoney.getAmount())
                     .receivedAt(receivedLuckyMoney.getCreatedAt().toString())
-                    .build();
-        }).collect(Collectors.toList());
+                    .build());
+        }
+        return userReceiveInfoList;
     }
 
 
     @Override
-    public UserInfo getUserInfo(String userId) {
+    public UserInfo getUserInfo(String userId) throws CannotGetUserInfo {
         log.info("Get user info from auth service");
         GetUserInfoResponse apiResponse = authApi.getUserInfo(userId);
         if (!apiResponse.getSuccess()) {
@@ -123,28 +124,20 @@ public class LuckyMoneyServiceUtilImpl implements LuckyMoneyServiceUtil {
 
 
     @Override
-    public void checkOutOfBag(int restBag) {
-        if (restBag == 0) {
-            throw new OutOfBagException();
-        }
+    public boolean checkOutOfBag(int restBag) {
+        return restBag == 0;
     }
 
     @Override
-    public void checkExpiredOfLuckyMoney(LocalDateTime expiredAt, LocalDateTime now) {
+    public boolean checkExpiredOfLuckyMoney(LocalDateTime expiredAt, LocalDateTime now) {
         log.info("Check expired of lucky money");
-        if (expiredAt.isBefore(now)) {
-            throw new LuckyMoneyExpiredException();
-        }
-        log.info("Check expired of lucky money successfully");
+        return expiredAt.isBefore(now);
     }
 
     @Override
-    public void checkUserHadReceived(long luckyMoneyId, String receiverId) {
+    public boolean checkUserHadReceived(long luckyMoneyId, String receiverId) {
         log.info("Check user had received ?");
-        if (receivedLuckyMoneyRepository.existsByLuckyMoneyIdAndReceiverId(luckyMoneyId, receiverId)) {
-            throw new HadReceivedException();
-        }
-        log.info("Not yet");
+        return receivedLuckyMoneyRepository.existsByLuckyMoneyIdAndReceiverId(luckyMoneyId, receiverId);
     }
 
     @Override
@@ -197,7 +190,7 @@ public class LuckyMoneyServiceUtilImpl implements LuckyMoneyServiceUtil {
     }
 
     @Override
-    public long transferMoneyFromUser(String userId, Long walletId, String softToken, String message) {
+    public long transferMoneyFromUser(String userId, Long walletId, String softToken, String message) throws CannotTransferMoneyException {
         log.info("Transfer from user {} to wallet {} by softToken {}", userId, walletId, softToken);
         CreateTransferFromUserRequest request = CreateTransferFromUserRequest.builder()
                 .userId(userId)

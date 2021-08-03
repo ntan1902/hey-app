@@ -28,4 +28,6 @@ public interface WalletRepository extends JpaRepository<Wallet, Long> {
 
     boolean existsByOwnerIdAndRefFrom(String userId, String refFrom);
 
+    long countAllByOwnerIdAndRefFrom(String ownerId, String refFrom);
+
 }
