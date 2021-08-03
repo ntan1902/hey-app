@@ -1,6 +1,8 @@
 import axios from "axios";
 import _ from "lodash";
-// import { store } from "../store";
+import { store } from "../store";
+
+import { isAuthenticated, getJwtFromStorage } from "./utils";
 
 let callback401 = null;
 
@@ -28,9 +30,11 @@ axiosInstance.interceptors.response.use(
 
 axiosInstance.interceptors.request.use(
   (config) => {
-    // config.headers.authorization = `Bearer ${
-    //   store.getState().auth.login.token
-    // }`;
+    if (!isAuthenticated()) {
+      const jwt = getJwtFromStorage();
+      config.headers.authorization = `Bearer ${jwt}`;
+    }
+
     return config;
   },
   (error) => {

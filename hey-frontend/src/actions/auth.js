@@ -135,8 +135,8 @@ const getProfile = () => async (dispatch) => {
   return new Promise(async (resolve, reject) => {
     try {
       const { data } = await AuthAPI.getProfile();
-      await dispatch(onGetProfile(data.payload));
-      resolve({ data: data, success: true });
+      // await dispatch(onGetProfile(data.payload));
+      resolve({ data: data.payload, success: true });
     } catch (err) {
       console.log(err.response);
       reject({ data: err.response.data.message, success: false });

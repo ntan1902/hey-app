@@ -35,7 +35,7 @@ class NormalLoginForm extends React.Component {
           this.props.history.push("/");
         });
         // api.post(`/api/v1/users/login`, values).then((res) => {
-        //   // setUserIdToStorage(res.data.data.userId);
+        //   setUserIdToStorage(res.data.data.userId);
         // });
       }
     });

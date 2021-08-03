@@ -71,6 +71,7 @@ public class UserServiceImpl implements UserDetailsService, UserService {
                 registerRequest.getUsername(),
                 registerRequest.getEmail()
         )) {
+            log.error("username or email already existed: {}, {}", registerRequest.getUsername(), registerRequest.getEmail());
             throw new UsernameEmailExistedException("username or email already existed");
         }
 
@@ -82,7 +83,7 @@ public class UserServiceImpl implements UserDetailsService, UserService {
                 passwordEncoder.encode(registerRequest.getPassword())
         );
 
-        userRepository.save(user);
+//        userRepository.save(user);
 
         // Call api register to Vert.x
         registerToVertx(userRepository.save(user));
@@ -146,7 +147,7 @@ public class UserServiceImpl implements UserDetailsService, UserService {
         return new HasPinResponse(!user.getPin().isEmpty());
     }
 
-    private void registerToVertx(User user) {
+    public void registerToVertx(User user) {
         log.info("Inside registerToVertx of UserServiceImpl: {}", user);
         RegisterRequestToChat registerRequestToChat = userMapper.registerRequest2Chat(user);
         restTemplate.postForObject(serviceProperties.getChat() + "/api/public/register", registerRequestToChat, Void.class);

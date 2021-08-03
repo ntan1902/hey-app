@@ -18,10 +18,16 @@ import {
   submitChatMessage,
 } from "../actions/chatAction";
 import { connect } from "react-redux";
-import { isAuthenticated, isEmptyString } from "../utils/utils";
+import {
+  isAuthenticated,
+  isEmptyString,
+  setUserIdToStorage,
+  clearStorage,
+} from "../utils/utils";
 import { Redirect } from "react-router-dom";
 import $ from "jquery";
-
+import { channingActions } from "../utils";
+import { bindAuthActions, bindPaymentActions } from "../actions";
 const { Header, Content, Footer, Sider } = Layout;
 const { TextArea } = Input;
 
@@ -38,6 +44,18 @@ class Main extends React.Component {
 
   componentDidMount() {
     this.props.initialWebSocket();
+
+    this.props
+      .actions()
+      .authActions.getProfile()
+      .then((res) => {
+        this.props.actions().paymentActions.getBalance();
+        setUserIdToStorage(res.data.id);
+        console.log("Res", res.data);
+      })
+      .catch((err) => {
+        clearStorage();
+      });
   }
 
   componentWillUnmount() {}
@@ -119,47 +137,7 @@ class Main extends React.Component {
               </Menu.Item>
             </Menu>
           </Sider>
-          {/* <Sider
-            breakpoint="lg"
-            collapsedWidth="0"
-            theme="light"
-            onBreakpoint={(broken) => {}}
-            onCollapse={(collapsed, type) => {}}
-            style={{ flexDirection: "row" }}
-            // width="300"
-            // id="sub-side-menu"
-          > */}
           {this.renderMainSlide()}
-          {/* </Sider> */}
-          {/* <Sider
-            breakpoint="lg"
-            collapsedWidth="0"
-            theme="light"
-            onBreakpoint={(broken) => {}}
-            onCollapse={(collapsed, type) => {}}
-            width="300"
-            id="sub-side-menu"
-          >
-            <Profile />
-            <div className="menu-separation" />
-            {this.state.menuaction == 1 ? <ChatList /> : <AddressBook />}
-          </Sider>
-          <div className="chat-container" style={{ padding: 0 }}>
-            <ChatHeader />
-            <MessagePanel />
-            <div className="chat-footer">
-              <TextArea
-                id="messageTextArea"
-                onPressEnter={this.handleMessageEnter}
-                rows={1}
-                placeholder="Type a new message"
-                ref="messageTextArea"
-              />
-              <Button type="primary" onClick={this.handleSendClick}>
-                Send
-              </Button>
-            </div>
-          </div> */}
         </Layout>
       </div>
     );
@@ -185,6 +163,9 @@ function mapDispatchToProps(dispatch) {
     },
     submitChatMessage(message) {
       dispatch(submitChatMessage(message));
+    },
+    actions() {
+      return channingActions({}, dispatch, bindAuthActions, bindPaymentActions);
     },
   };
 }

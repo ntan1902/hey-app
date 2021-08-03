@@ -1,46 +1,90 @@
-import React from 'react';
+import React from "react";
 import CustomAvatar from "./custom-avatar";
-import {Popover} from "antd";
-import {SlideDown} from "react-slidedown";
+import { Popover } from "antd";
+import { SlideDown } from "react-slidedown";
 
 class ChatItem extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      showDate: false
+      showDate: false,
     };
     this.handleItemClick = this.handleItemClick.bind(this);
-  };
+  }
 
   handleItemClick(e) {
     let newState = this.state.showDate;
     if (newState) {
-      newState = false
+      newState = false;
     } else {
       newState = true;
     }
     this.setState({
-      showDate: newState
-    })
+      showDate: newState,
+    });
   }
 
-  render() {
-    var cssClass = this.props.type == 1 ? 'chat-item-owner' : 'chat-item-other';
-    var cssContentClass = this.props.type == 1 ? 'chat-item-content-owner' : 'chat-item-content-other';
+  renderChat = () => {
+    var cssContentClass =
+      this.props.type == 1
+        ? "chat-item-content-owner"
+        : "chat-item-content-other";
+    const data = JSON.parse(this.props.value);
+
     return (
-      <div onClick={this.handleItemClick} className={'chat-item chat-item-outer ' + cssClass}>
-        <div className={'chat-item ' + cssClass}>
-          <CustomAvatar type="chat-avatar" avatar={this.props.avatar} show={this.props.showavatar}/>
-          <div className={'chat-item-content ' + cssContentClass}>{this.props.value}</div>
-        </div>
-        {this.state.showDate ?
-          <SlideDown>
-          <div className={'chat-item-date'}>{this.props.date}</div>
-          </SlideDown>
-          : ''}
+      <div
+        className={"chat-item-content " + cssContentClass}
+        style={{
+          padding: 10,
+          // paddingLeft: 10,
+          // paddingright: 10,
+          margin: 0,
+          marginLeft: this.props.type == 1 ? 0 : 5,
+          marginRight: this.props.type == 1 ? 5 : 0,
+
+          // height: ,
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        {data.type == "transfer"
+          ? "Transfer: " + data.content.amount + "$"
+          : data.content.message}
       </div>
-    )
+    );
+  };
+
+  render() {
+    var cssClass = this.props.type == 1 ? "chat-item-owner" : "chat-item-other";
+    var cssContentClass =
+      this.props.type == 1
+        ? "chat-item-content-owner"
+        : "chat-item-content-other";
+    return (
+      <div
+        onClick={this.handleItemClick}
+        className={"chat-item chat-item-outer " + cssClass}
+        style={{ margin: 0, marginBottom: 10 }}
+      >
+        <div className={"chat-item " + cssClass}>
+          <CustomAvatar
+            type="chat-avatar"
+            avatar={this.props.avatar}
+            show={this.props.showavatar}
+          />
+          {this.renderChat()}
+        </div>
+        {this.state.showDate ? (
+          <SlideDown>
+            <div className={"chat-item-date"}>{this.props.date}</div>
+          </SlideDown>
+        ) : (
+          ""
+        )}
+      </div>
+    );
   }
-};
+}
 
 export default ChatItem;

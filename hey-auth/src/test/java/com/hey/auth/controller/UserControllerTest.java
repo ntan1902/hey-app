@@ -2,9 +2,9 @@ package com.hey.auth.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hey.auth.dto.api.ApiResponse;
-import com.hey.auth.dto.system.*;
-import com.hey.auth.dto.user.UserDTO;
-import com.hey.auth.service.SystemService;
+import com.hey.auth.dto.user.*;
+import com.hey.auth.exception.user.EmptyPinException;
+import com.hey.auth.exception.user.PinNotMatchedException;
 import com.hey.auth.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -19,31 +19,27 @@ import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.BDDMockito.given;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-
+import static org.mockito.Mockito.doNothing;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 
 @ExtendWith(MockitoExtension.class)
-class SystemControllerTest {
+class UserControllerTest {
     private MockMvc mockMvc;
 
     @InjectMocks
-    private SystemController underTest;
+    private UserController underTest;
 
-    @Mock
-    private SystemService systemService;
     @Mock
     private UserService userService;
 
-    private JacksonTester<SystemLoginRequest> jsLoginRequest;
-    private JacksonTester<AuthorizeRequest> jsAuthorizeRequest;
-    private JacksonTester<SystemAuthorizeRequest> jsSystemAuthorizeRequest;
-    private JacksonTester<SoftTokenRequest> jsSoftTokenRequest;
     private JacksonTester<ApiResponse> jsApiResponse;
+    private JacksonTester<RegisterRequest> jsRegisterRequest;
+    private JacksonTester<PinRequest> jsPinRequest;
+    private JacksonTester<PinAmountRequest> jsPinAmountRequest;
+
 
     @BeforeEach
     void setUp() {
@@ -54,29 +50,25 @@ class SystemControllerTest {
     }
 
     @Test
-    void login() throws Exception {
+    void register() throws Exception {
         // given
-        SystemLoginRequest request = new SystemLoginRequest("payment", "123456");
+        RegisterRequest registerRequest = new RegisterRequest("ntan", "123", "ntan@gmail.com", "Trinh An");
 
-        SystemLoginResponse payload = new SystemLoginResponse(
-                "dump",
-                "Bearer"
-        );
-        given(systemService.login(request)).willReturn(payload);
+        doNothing().when(userService).register(registerRequest);
 
         ApiResponse expected = ApiResponse.builder()
                 .success(true)
-                .code(HttpStatus.OK.value())
+                .code(HttpStatus.CREATED.value())
                 .message("")
-                .payload(payload)
+                .payload("Register successfully")
                 .build();
 
         // when
         MockHttpServletResponse actual = mockMvc.perform(
-                post("/auth/api/v1/systems/login")
+                post("/auth/api/v1/users/register")
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
-                        .content(jsLoginRequest.write(request).getJson()))
+                        .content(jsRegisterRequest.write(registerRequest).getJson()))
                 .andReturn().getResponse();
 
         // then
@@ -87,119 +79,66 @@ class SystemControllerTest {
     }
 
     @Test
-    void authorizeUser() throws Exception {
+    void registerEmptyUsername() throws Exception {
         // given
-        AuthorizeRequest softTokenRequest = new AuthorizeRequest(
-                "dump"
-        );
-        AuthorizeResponse payload = new AuthorizeResponse(
-                "uuid"
-        );
-        given(systemService.authorizeUser(softTokenRequest)).willReturn(payload);
-
-        ApiResponse expected = ApiResponse.builder()
-                .success(true)
-                .code(HttpStatus.OK.value())
-                .message("")
-                .payload(payload)
-                .build();
+        RegisterRequest registerRequest = new RegisterRequest("", "123", "ntan@gmail.com", "Trinh An");
 
         // when
         MockHttpServletResponse actual = mockMvc.perform(
-                post("/auth/api/v1/systems/authorizeUser")
+                post("/auth/api/v1/users/register")
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
-                        .content(jsAuthorizeRequest.write(softTokenRequest).getJson()))
+                        .content(jsRegisterRequest.write(registerRequest).getJson()))
                 .andReturn().getResponse();
 
         // then
-        assertThat(actual.getStatus()).isEqualTo(HttpStatus.OK.value());
-        assertThat(actual.getContentAsString()).isEqualTo(
-                jsApiResponse.write(expected).getJson()
-        );
+        assertThat(actual.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     @Test
-    void authorizeSystem() throws Exception {
+    void registerEmptyPassword() throws Exception {
         // given
-        SystemAuthorizeRequest authorizeRequest = new SystemAuthorizeRequest(
-                "dump"
-        );
-        SystemAuthorizeResponse payload = new SystemAuthorizeResponse(
-                "uuid",
-                "payment"
-        );
-        given(systemService.authorizeSystem(authorizeRequest)).willReturn(payload);
-
-        ApiResponse expected = ApiResponse.builder()
-                .success(true)
-                .code(HttpStatus.OK.value())
-                .message("")
-                .payload(payload)
-                .build();
+        RegisterRequest registerRequest = new RegisterRequest("ntan", "", "ntan@gmail.com", "Trinh An");
 
         // when
         MockHttpServletResponse actual = mockMvc.perform(
-                post("/auth/api/v1/systems/authorizeSystem")
+                post("/auth/api/v1/users/register")
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
-                        .content(jsSystemAuthorizeRequest.write(authorizeRequest).getJson()))
+                        .content(jsRegisterRequest.write(registerRequest).getJson()))
                 .andReturn().getResponse();
 
         // then
-        assertThat(actual.getStatus()).isEqualTo(HttpStatus.OK.value());
-        assertThat(actual.getContentAsString()).isEqualTo(
-                jsApiResponse.write(expected).getJson()
-        );
+        assertThat(actual.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     @Test
-    void authorizeSoftToken() throws Exception {
+    void registerNotValidEmail() throws Exception {
         // given
-        SoftTokenRequest softTokenRequest = new SoftTokenRequest(
-                "dump"
-        );
-        UserIdAmountResponse payload = new UserIdAmountResponse(
-                "uuid",
-                50000L
-        );
-        given(systemService.authorizeSoftToken(softTokenRequest)).willReturn(payload);
-
-        ApiResponse expected = ApiResponse.builder()
-                .success(true)
-                .code(HttpStatus.OK.value())
-                .message("Authorize soft token successfully")
-                .payload(payload)
-                .build();
+        RegisterRequest registerRequest = new RegisterRequest("ntan", "123", "ntangmail.com", "Trinh An");
 
         // when
         MockHttpServletResponse actual = mockMvc.perform(
-                post("/auth/api/v1/systems/authorizeSoftToken")
+                post("/auth/api/v1/users/register")
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
-                        .content(jsSoftTokenRequest.write(softTokenRequest).getJson()))
+                        .content(jsRegisterRequest.write(registerRequest).getJson()))
                 .andReturn().getResponse();
 
         // then
-        assertThat(actual.getStatus()).isEqualTo(HttpStatus.OK.value());
-        assertThat(actual.getContentAsString()).isEqualTo(
-                jsApiResponse.write(expected).getJson()
-        );
+        assertThat(actual.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     @Test
-    void getUserInfo() throws Exception {
+    void getInfo() throws Exception {
         // given
-        String userId = "uuid";
-
         UserDTO payload = UserDTO.builder()
-                .id(userId)
-                .username("ntan1902")
+                .id("uuid")
+                .email("ntan@gmail.com")
+                .username("ntan")
                 .fullName("Trinh An")
-                .email("ntan1902@gmail.com")
                 .build();
-
-        given(userService.findById(userId)).willReturn(payload);
+        given(userService.findById()).willReturn(payload);
 
         ApiResponse expected = ApiResponse.builder()
                 .success(true)
@@ -207,41 +146,9 @@ class SystemControllerTest {
                 .message("")
                 .payload(payload)
                 .build();
-
         // when
         MockHttpServletResponse actual = mockMvc.perform(
-                get("/auth/api/v1/systems/getUserInfo/" + userId)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON))
-                .andReturn().getResponse();
-
-        // then
-        assertThat(actual.getStatus()).isEqualTo(HttpStatus.OK.value());
-        assertThat(actual.getContentAsString()).isEqualTo(
-            jsApiResponse.write(expected).getJson()
-        );
-    }
-    @Test
-    void getSystemInfo() throws Exception {
-        // given
-        String systemId = "uuid";
-
-        SystemDTO payload = new SystemDTO(systemId, "payment", 0);
-
-        given(systemService.findById(systemId)).willReturn(payload);
-
-        ApiResponse expected = ApiResponse.builder()
-                .success(true)
-                .code(HttpStatus.OK.value())
-                .message("")
-                .payload(payload)
-                .build();
-
-        // when
-        MockHttpServletResponse actual = mockMvc.perform(
-                get("/auth/api/v1/systems/getSystemInfo/" + systemId)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON))
+                get("/auth/api/v1/users/getInfo"))
                 .andReturn().getResponse();
 
         // then
@@ -249,5 +156,87 @@ class SystemControllerTest {
         assertThat(actual.getContentAsString()).isEqualTo(
                 jsApiResponse.write(expected).getJson()
         );
+    }
+
+    @Test
+    void createPin() throws Exception {
+        // given
+        PinRequest request = new PinRequest("123456");
+        doNothing().when(userService).createPin(request);
+
+        ApiResponse expected = ApiResponse.builder()
+                .success(true)
+                .code(HttpStatus.CREATED.value())
+                .message("Create PIN successfully")
+                .payload("")
+                .build();
+        // when
+        MockHttpServletResponse actual = mockMvc.perform(
+                post("/auth/api/v1/users/createPin")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .content(jsPinRequest.write(request).getJson()))
+                .andReturn().getResponse();
+
+        // then
+        assertThat(actual.getStatus()).isEqualTo(HttpStatus.OK.value());
+        assertThat(actual.getContentAsString()).isEqualTo(
+                jsApiResponse.write(expected).getJson()
+        );
+    }
+
+    @Test
+    void hasPin() throws Exception {
+        // given
+        HasPinResponse payload = new HasPinResponse(true);
+
+        given(userService.hasPin()).willReturn(payload);
+
+        ApiResponse expected = ApiResponse.builder()
+                .success(true)
+                .code(HttpStatus.OK.value())
+                .message("")
+                .payload(payload)
+                .build();
+        // when
+        MockHttpServletResponse actual = mockMvc.perform(
+                get("/auth/api/v1/users/hasPin"))
+                .andReturn().getResponse();
+
+        // then
+        assertThat(actual.getStatus()).isEqualTo(HttpStatus.OK.value());
+        assertThat(actual.getContentAsString()).isEqualTo(
+                jsApiResponse.write(expected).getJson()
+        );
+    }
+
+    @Test
+    void createSoftToken() throws Exception {
+        // given
+        PinAmountRequest request = new PinAmountRequest("123456", 5000L);
+        SoftTokenResponse payload = new SoftTokenResponse("1232132131fdf");
+
+        given(userService.createSoftToken(request)).willReturn(payload);
+
+        ApiResponse expected = ApiResponse.builder()
+                .success(true)
+                .code(HttpStatus.CREATED.value())
+                .message("")
+                .payload(payload)
+                .build();
+        // when
+        MockHttpServletResponse actual = mockMvc.perform(
+                post("/auth/api/v1/users/createSoftTokenByPin")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .content(jsPinAmountRequest.write(request).getJson()))
+                .andReturn().getResponse();
+
+        // then
+        assertThat(actual.getStatus()).isEqualTo(HttpStatus.OK.value());
+        assertThat(actual.getContentAsString()).isEqualTo(
+                jsApiResponse.write(expected).getJson()
+        );
+
     }
 }

@@ -86,10 +86,11 @@ class Profile extends React.Component {
       <div className="wrapper">
         <div className="profile-left">
           <div className="box user-name">Hey! - {this.props.userFullName}</div>
+          <div className="box status">Balance - {this.props.balance}$</div>
           <div className="box status">
             {this.state.status_box_state ? (
               <div onClick={this.openStatusBoxStateStatus}>
-                {this.props.userStatus}
+                Status: {this.props.userStatus}
               </div>
             ) : (
               <Input
@@ -118,6 +119,7 @@ function mapStateToProps(state) {
     userFullName: state.userReducer.userFullName,
     userName: state.userReducer.userName,
     userStatus: state.userReducer.userStatus,
+    balance: state.paymentReducer.balance,
   };
 }
 
