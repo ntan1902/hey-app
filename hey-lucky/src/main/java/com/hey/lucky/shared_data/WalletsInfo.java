@@ -37,7 +37,7 @@ public class WalletsInfo {
     }
 
     @EventListener(ApplicationReadyEvent.class)
-    public void getAllWallets() {
+    public void getAllWallets() throws CannotGetWalletException {
         GetAllWalletsResponse getAllWalletsResponse = paymentApi.getAllWallets();
         if (getAllWalletsResponse.getSuccess()) {
             log.info("Get all wallet");

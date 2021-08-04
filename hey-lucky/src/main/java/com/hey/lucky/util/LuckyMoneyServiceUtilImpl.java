@@ -54,14 +54,8 @@ public class LuckyMoneyServiceUtilImpl implements LuckyMoneyServiceUtil {
     }
 
     @Override
-    public void transferMoneyToUser(Long systemWalletId, String receiverId, long amount, String wishMessage) throws CannotTransferMoneyException {
-        log.info("Transfer {} to user {} by wallet {}", amount, receiverId, systemWalletId);
-        CreateTransferToUserRequest request = CreateTransferToUserRequest.builder()
-                .walletId(systemWalletId)
-                .receiverId(receiverId)
-                .amount(amount)
-                .message(wishMessage)
-                .build();
+    public void transferMoneyToUser(CreateTransferToUserRequest request) throws CannotTransferMoneyException {
+        log.info("Transfer {} to user {} by wallet {}", request.getAmount(), request.getReceiverId(), request.getWalletId());
         CreateTransferToUserResponse response = paymentApi.createTransferToUser(request);
         if (!response.getSuccess()) {
             throw new CannotTransferMoneyException(response.getMessage());
@@ -69,7 +63,7 @@ public class LuckyMoneyServiceUtilImpl implements LuckyMoneyServiceUtil {
     }
 
     @Override
-    public boolean checkUserInSession(String userId, String sessionId) throws ErrCallApiException {
+    public boolean isUserInSession(String userId, String sessionId) throws ErrCallApiException {
         log.info("Check user {} is in group chat {}", userId, sessionId);
         CheckUserInSessionChatResponse response = chatApi.checkUserInSessionChat(new CheckUserInSessionChatRequest(userId, sessionId));
         if (!response.isSuccess()) {
@@ -124,24 +118,13 @@ public class LuckyMoneyServiceUtilImpl implements LuckyMoneyServiceUtil {
 
 
     @Override
-    public boolean checkOutOfBag(int restBag) {
-        return restBag == 0;
-    }
-
-    @Override
-    public boolean checkExpiredOfLuckyMoney(LocalDateTime expiredAt, LocalDateTime now) {
-        log.info("Check expired of lucky money");
-        return expiredAt.isBefore(now);
-    }
-
-    @Override
-    public boolean checkUserHadReceived(long luckyMoneyId, String receiverId) {
+    public boolean hadUserReceived(long luckyMoneyId, String receiverId) {
         log.info("Check user had received ?");
         return receivedLuckyMoneyRepository.existsByLuckyMoneyIdAndReceiverId(luckyMoneyId, receiverId);
     }
 
     @Override
-    public void sendMessageReceiveLuckyMoney(String receiverId, String sessionChatId, long luckeyMoneyId, long amount, String wishMessage, LocalDateTime now) {
+    public void sendMessageReceiveLuckyMoney(String receiverId, String sessionChatId, long luckeyMoneyId, long amount, String wishMessage, LocalDateTime now) throws ErrCallChatApiException {
         log.info("Send message receive lucky money");
         CreateReceiveLuckyMoneyMessageRequest request = CreateReceiveLuckyMoneyMessageRequest.builder()
                 .receiverId(receiverId)
@@ -177,7 +160,7 @@ public class LuckyMoneyServiceUtilImpl implements LuckyMoneyServiceUtil {
     }
 
     @Override
-    public void sendMessageLuckyMoney(String userId, String sessionChatId, String message, long luckyMoneyId, LocalDateTime createdAt) {
+    public void sendMessageLuckyMoney(String userId, String sessionChatId, String message, long luckyMoneyId, LocalDateTime createdAt) throws ErrCallChatApiException {
         log.info("Send message lucky money");
         CreateLuckyMoneyMessageRequest request = CreateLuckyMoneyMessageRequest.builder()
                 .userId(userId)
@@ -190,14 +173,9 @@ public class LuckyMoneyServiceUtilImpl implements LuckyMoneyServiceUtil {
     }
 
     @Override
-    public long transferMoneyFromUser(String userId, Long walletId, String softToken, String message) throws CannotTransferMoneyException {
-        log.info("Transfer from user {} to wallet {} by softToken {}", userId, walletId, softToken);
-        CreateTransferFromUserRequest request = CreateTransferFromUserRequest.builder()
-                .userId(userId)
-                .message(message)
-                .softToken(softToken)
-                .walletId(walletId)
-                .build();
+    public long transferMoneyFromUser(CreateTransferFromUserRequest request) throws CannotTransferMoneyException {
+        log.info("Transfer from user {} to wallet {} by softToken {}", request.getUserId(), request.getWalletId(), request.getSoftToken());
+
         CreateTransferFromUserResponse response = paymentApi.createTransferFromUser(request);
         if (!response.getSuccess()) {
             log.error("can't transfer money");

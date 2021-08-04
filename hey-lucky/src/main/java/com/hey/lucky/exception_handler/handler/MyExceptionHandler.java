@@ -24,53 +24,63 @@ public class MyExceptionHandler {
     }
 
     @ExceptionHandler(value = {CannotTransferMoneyException.class})
-    public ResponseEntity<ApiResponse> handleCannotTransferMoneyException(Exception exception){
+    public ResponseEntity<ApiResponse> handleCannotTransferMoneyException(Exception exception) {
         log.error(exception.getMessage());
         HttpStatus code = HttpStatus.INTERNAL_SERVER_ERROR;
         return getResponse(code, exception.getMessage());
     }
+
     @ExceptionHandler(value = {InvalidLuckyMoneyException.class})
-    public ResponseEntity<ApiResponse> handleLuckyMoneyInvalidException(Exception exception){
+    public ResponseEntity<ApiResponse> handleLuckyMoneyInvalidException(Exception exception) {
         log.error(exception.getMessage());
         HttpStatus code = HttpStatus.BAD_REQUEST;
         return getResponse(code, exception.getMessage());
     }
 
     @ExceptionHandler(value = {LuckyMoneyExpiredException.class})
-    public ResponseEntity<ApiResponse> handleLuckyMoneyExpiredException(Exception exception){
+    public ResponseEntity<ApiResponse> handleLuckyMoneyExpiredException(Exception exception) {
         log.error(exception.getMessage());
         HttpStatus code = HttpStatus.BAD_REQUEST;
         return getResponse(code, exception.getMessage());
     }
 
     @ExceptionHandler(value = {OutOfBagException.class})
-    public ResponseEntity<ApiResponse> handleOutOfBagException(Exception exception){
+    public ResponseEntity<ApiResponse> handleOutOfBagException(Exception exception) {
         log.error(exception.getMessage());
         HttpStatus code = HttpStatus.NOT_ACCEPTABLE;
         return getResponse(code, exception.getMessage());
     }
 
     @ExceptionHandler(value = {CannotGetUserInfo.class})
-    public ResponseEntity<ApiResponse> handleCannotGetUserInfo(Exception exception){
+    public ResponseEntity<ApiResponse> handleCannotGetUserInfo(Exception exception) {
         log.error(exception.getMessage());
         HttpStatus code = HttpStatus.NOT_ACCEPTABLE;
         return getResponse(code, exception.getMessage());
     }
+
     @ExceptionHandler(value = {ErrCallApiException.class})
-    public ResponseEntity<ApiResponse> handleErrCallApiException(Exception exception){
+    public ResponseEntity<ApiResponse> handleErrCallApiException(Exception exception) {
         log.error(exception.getMessage());
         HttpStatus code = HttpStatus.INTERNAL_SERVER_ERROR;
         return getResponse(code, exception.getMessage());
     }
+
+    @ExceptionHandler(value = {ErrCallChatApiException.class})
+    public ResponseEntity<ApiResponse> handleErrCallChatApiException(Exception exception) {
+        log.error(exception.getMessage());
+        HttpStatus code = HttpStatus.CREATED;
+        return getResponse(code, exception.getMessage());
+    }
+
     @ExceptionHandler(value = {HadReceivedException.class})
-    public ResponseEntity<ApiResponse> handleHadReceivedException(Exception exception){
+    public ResponseEntity<ApiResponse> handleHadReceivedException(Exception exception) {
         log.error(exception.getMessage());
         HttpStatus code = HttpStatus.BAD_REQUEST;
         return getResponse(code, exception.getMessage());
     }
 
     @ExceptionHandler(value = {UnauthorizeException.class})
-    public ResponseEntity<ApiResponse> handleUnauthorizeException(Exception exception){
+    public ResponseEntity<ApiResponse> handleUnauthorizeException(Exception exception) {
         log.error(exception.getMessage());
         HttpStatus code = HttpStatus.UNAUTHORIZED;
         return getResponse(code, exception.getMessage());
