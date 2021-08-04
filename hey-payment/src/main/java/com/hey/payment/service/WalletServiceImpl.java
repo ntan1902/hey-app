@@ -22,6 +22,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -67,13 +68,11 @@ public class WalletServiceImpl implements WalletService {
     }
 
     @Override
-    public WalletDTO getWalletOfUser(String userId) {
+    public WalletDTO getWalletOfUser(String userId) throws HaveNoWalletException {
         log.info("Inside getWalletOfUser of WalletServiceImpl with id {}", userId);
-        return walletRepository.findByOwnerIdAndRefFrom(userId, OwnerWalletRefFrom.USERS)
-                .map(walletMapper::wallet2WalletDTO).orElseThrow(() -> {
-                    log.error("User {} have no wallet", userId);
-                    throw new HaveNoWalletException();
-                });
+        Wallet wallet = walletRepository.findByOwnerIdAndRefFrom(userId, OwnerWalletRefFrom.USERS)
+                .orElseThrow(HaveNoWalletException::new);
+        return walletMapper.wallet2WalletDTO(wallet);
     }
 
     @Override
@@ -84,7 +83,7 @@ public class WalletServiceImpl implements WalletService {
     }
 
     @Override
-    public WalletDTO createWallet(User user) {
+    public WalletDTO createWallet(User user) throws HadWalletException {
         log.info("Inside createWallet of WalletServiceImpl: {}", user);
         if (walletRepository.existsByOwnerIdAndRefFrom(user.getId(), OwnerWalletRefFrom.USERS)) {
             throw new HadWalletException();

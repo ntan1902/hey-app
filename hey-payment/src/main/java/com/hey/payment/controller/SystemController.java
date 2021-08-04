@@ -5,6 +5,7 @@ import com.hey.payment.dto.system.SystemCreateTransferToUserRequest;
 import com.hey.payment.dto.system.WalletSystemDTO;
 import com.hey.payment.dto.user.ApiResponse;
 import com.hey.payment.entity.System;
+import com.hey.payment.exception_handler.exception.*;
 import com.hey.payment.service.TransferStatementService;
 import com.hey.payment.service.WalletService;
 import lombok.AllArgsConstructor;
@@ -27,7 +28,7 @@ public class SystemController {
     private final TransferStatementService transferStatementService;
 
     @GetMapping("/getAllWallets")
-    public ResponseEntity<ApiResponse> getAllWalletOfSystem() {
+    public ResponseEntity<ApiResponse<?>> getAllWalletOfSystem() {
         System system = getCurrentSystem();
         log.info("System {} getAllWalletOfSystem", system.getId());
         List<WalletSystemDTO> walletSystemDTOList = walletService.getAllWalletsOfSystem(system);
@@ -39,14 +40,14 @@ public class SystemController {
     }
 
     @PostMapping("/createTransferToUser")
-    public ResponseEntity<ApiResponse> createTransferToUser(@RequestBody SystemCreateTransferToUserRequest request) {
+    public ResponseEntity<ApiResponse<?>> createTransferToUser(@RequestBody SystemCreateTransferToUserRequest request) throws NegativeAmountException, WrongSourceException, MaxAmountException, HaveNoWalletException {
         System system = getCurrentSystem();
         log.info("System {} createTransferToUser", system.getId());
         return ResponseEntity.ok(transferStatementService.systemCreateTransferToUser(system, request));
     }
 
     @PostMapping("/createTransferFromUser")
-    public ResponseEntity<ApiResponse> createTransferFromUser(@RequestBody SystemCreateTransferFromUserRequest request) {
+    public ResponseEntity<ApiResponse<?>> createTransferFromUser(@RequestBody SystemCreateTransferFromUserRequest request) throws NegativeAmountException, WrongSourceException, MaxAmountException, SoftTokenAuthorizeException, WrongTargetException {
         System system = getCurrentSystem();
         log.info("System {} createTransferFromUser", system.getId());
         return ResponseEntity.ok(transferStatementService.systemCreateTransferFromUser(system, request));

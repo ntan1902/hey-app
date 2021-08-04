@@ -46,7 +46,6 @@ public class UserServiceImpl implements UserDetailsService, UserService {
         log.info("Inside loadUserByUsername: {}", username);
         return userRepository.findByUsername(username)
                 .orElseThrow(() -> {
-                    log.error("User {} not found", username);
                     throw new UsernameNotFoundException("User " + username + " not found");
                 });
     }
@@ -71,7 +70,6 @@ public class UserServiceImpl implements UserDetailsService, UserService {
                 registerRequest.getUsername(),
                 registerRequest.getEmail()
         )) {
-            log.error("username or email already existed: {}, {}", registerRequest.getUsername(), registerRequest.getEmail());
             throw new UsernameEmailExistedException("username or email already existed");
         }
 
@@ -82,8 +80,6 @@ public class UserServiceImpl implements UserDetailsService, UserService {
         user.setPassword(
                 passwordEncoder.encode(registerRequest.getPassword())
         );
-
-//        userRepository.save(user);
 
         // Call api register to Vert.x
         registerToVertx(userRepository.save(user));
@@ -100,10 +96,7 @@ public class UserServiceImpl implements UserDetailsService, UserService {
     public UserDTO findById(String userId) throws UserIdNotFoundException {
         log.info("Inside findById({}) of UserServiceImpl", userId);
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> {
-                    log.error("User Id {} not found", userId);
-                    return new UserIdNotFoundException("User Id " + userId + " not found");
-                });
+                .orElseThrow(() -> new UserIdNotFoundException("User Id " + userId + " not found"));
         return userMapper.user2UserDTO(user);
     }
 
@@ -127,12 +120,10 @@ public class UserServiceImpl implements UserDetailsService, UserService {
 
         // Check if user has pin
         if (user.getPin().isEmpty()) {
-            log.error("Pin is not created yet!");
             throw new EmptyPinException("Pin is not created yet!");
         }
 
         if (!passwordEncoder.matches(pinAmountRequest.getPin(), user.getPin())) {
-            log.error("Pin: {} not matched", pinAmountRequest.getPin());
             throw new PinNotMatchedException("Pin: " + pinAmountRequest.getPin() + " not matched");
         }
 

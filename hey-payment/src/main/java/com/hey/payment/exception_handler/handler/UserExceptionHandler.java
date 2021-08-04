@@ -119,5 +119,10 @@ public class UserExceptionHandler {
         return getResponse(code, exception.getMessage());
     }
 
-
+    @ExceptionHandler(value = {SourceAndTargetAreTheSameException.class})
+    public ResponseEntity<ApiResponse> handleSourceAndTargetAreTheSameException(Exception exception) {
+        log.error(exception.getMessage());
+        HttpStatus code = HttpStatus.BAD_REQUEST;
+        return getResponse(code, exception.getMessage());
+    }
 }

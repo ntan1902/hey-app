@@ -41,7 +41,6 @@ public class SystemServiceImpl implements SystemService {
         log.info("Inside loadSystemBySystemName: {}", systemName);
         return systemRepository.findBySystemName(systemName)
                 .orElseThrow(() -> {
-                    log.error("System {} not found", systemName);
                     throw new UsernameNotFoundException("System " + systemName + " not found");
                 });
     }
@@ -50,10 +49,7 @@ public class SystemServiceImpl implements SystemService {
     public System loadSystemById(String systemId) throws SystemIdNotFoundException {
         log.info("Inside loadSystemById: {}", systemId);
         return systemRepository.findById(systemId)
-                .orElseThrow(() -> {
-                    log.error("System Id {} not found", systemId);
-                    return new SystemIdNotFoundException("System Id " + systemId + " not found");
-                });
+                .orElseThrow(() -> new SystemIdNotFoundException("System Id " + systemId + " not found"));
     }
 
     @Override
@@ -64,7 +60,6 @@ public class SystemServiceImpl implements SystemService {
 
         if (passwordEncoder.matches(loginRequest.getSystemKey(), system.getSystemKey())) {
             String jwt = jwtSystemUtil.generateToken(system);
-
             return new SystemLoginResponse(jwt, "Bearer");
         } else {
             throw new SystemKeyInvalidException("System not valid");
@@ -78,12 +73,10 @@ public class SystemServiceImpl implements SystemService {
         if (jwtUserUtil.validateToken(authorizeRequest.getJwtUser())) {
             String userId = jwtUserUtil.getUserIdFromJwt(authorizeRequest.getJwtUser());
             if (!userRepository.existsById(userId)) {
-                log.error("User Id {} not found", userId);
                 throw new UserIdNotFoundException("User Id " + userId + " not found");
             }
             return new AuthorizeResponse(userId);
         } else {
-            log.error("Invalid JWT token: {}", authorizeRequest.getJwtUser());
             throw new InvalidJwtTokenException("Invalid JWT token");
         }
     }
@@ -94,14 +87,10 @@ public class SystemServiceImpl implements SystemService {
         if (jwtSystemUtil.validateToken(authorizeRequest.getJwtSystem())) {
             String systemId = jwtSystemUtil.getSystemIdFromJwt(authorizeRequest.getJwtSystem());
             System system = systemRepository.findById(systemId)
-                    .orElseThrow(() -> {
-                        log.error("System Id {} not found", systemId);
-                        return new SystemIdNotFoundException("System Id " + systemId + " not found");
-                    });
+                    .orElseThrow(() -> new SystemIdNotFoundException("System Id " + systemId + " not found"));
 
             return new SystemAuthorizeResponse(systemId,system.getSystemName());
         } else {
-            log.error("Invalid JWT token: {}", authorizeRequest.getJwtSystem());
             throw new InvalidJwtTokenException("Invalid JWT token");
         }
     }
@@ -118,16 +107,12 @@ public class SystemServiceImpl implements SystemService {
             long amountFromJwt = jwtSoftTokenUtil.getAmountFromJwt(softToken);
 
             User user = userRepository.findById(userId)
-                    .orElseThrow(() -> {
-                        log.error("User Id {} not found", userId);
-                        return new UserIdNotFoundException("User Id " + userId + " not found");
-                    });
+                    .orElseThrow(() -> new UserIdNotFoundException("User Id " + userId + " not found"));
 
             // Check pin
             if (passwordEncoder.matches(pinFromJwt, user.getPin())) {
                 return new UserIdAmountResponse(userId, amountFromJwt);
             } else {
-                log.error("Pin: {} not matched", pinFromJwt);
                 throw new PinNotMatchedException("Pin: " + pinFromJwt + " not matched");
             }
 
@@ -140,10 +125,7 @@ public class SystemServiceImpl implements SystemService {
     public SystemDTO findById(String systemId) throws SystemIdNotFoundException {
         log.info("Inside findById of SystemServiceImpl: {}", systemId);
         System system = systemRepository.findById(systemId)
-                .orElseThrow(() -> {
-                    log.error("System Id {} not found", systemId);
-                    return new SystemIdNotFoundException("System Id " + systemId + " not found");
-                });
+                .orElseThrow(() -> new SystemIdNotFoundException("System Id " + systemId + " not found"));
         return systemMapper.system2systemDTO(system);
     }
 
