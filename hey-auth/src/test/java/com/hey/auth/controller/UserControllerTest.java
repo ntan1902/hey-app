@@ -3,8 +3,6 @@ package com.hey.auth.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hey.auth.dto.api.ApiResponse;
 import com.hey.auth.dto.user.*;
-import com.hey.auth.exception.user.EmptyPinException;
-import com.hey.auth.exception.user.PinNotMatchedException;
 import com.hey.auth.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

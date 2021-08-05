@@ -1,6 +1,7 @@
 package com.hey.payment.controller;
 
 import com.hey.payment.dto.system.SystemCreateTransferFromUserRequest;
+import com.hey.payment.dto.system.SystemCreateTransferFromUserResponse;
 import com.hey.payment.dto.system.SystemCreateTransferToUserRequest;
 import com.hey.payment.dto.system.WalletSystemDTO;
 import com.hey.payment.dto.user.ApiResponse;
@@ -28,29 +29,48 @@ public class SystemController {
     private final TransferStatementService transferStatementService;
 
     @GetMapping("/getAllWallets")
-    public ResponseEntity<ApiResponse<?>> getAllWalletOfSystem() {
+    public ResponseEntity<ApiResponse<Object>> getAllWalletOfSystem() {
         System system = getCurrentSystem();
         log.info("System {} getAllWalletOfSystem", system.getId());
         List<WalletSystemDTO> walletSystemDTOList = walletService.getAllWalletsOfSystem(system);
-        return ResponseEntity.ok(ApiResponse.builder()
-                .success(true)
-                .code(HttpStatus.OK.value())
-                .payload(walletSystemDTOList)
-                .build());
+        return ResponseEntity.ok(
+                ApiResponse.builder()
+                        .success(true)
+                        .code(HttpStatus.OK.value())
+                        .message("")
+                        .payload(walletSystemDTOList)
+                        .build()
+        );
     }
 
     @PostMapping("/createTransferToUser")
-    public ResponseEntity<ApiResponse<?>> createTransferToUser(@RequestBody SystemCreateTransferToUserRequest request) throws NegativeAmountException, WrongSourceException, MaxAmountException, HaveNoWalletException {
+    public ResponseEntity<ApiResponse<Object>> createTransferToUser(@RequestBody SystemCreateTransferToUserRequest request) throws NegativeAmountException, WrongSourceException, MaxAmountException, HaveNoWalletException, BalanceNotEnoughException, MaxBalanceException, WrongTargetException {
         System system = getCurrentSystem();
         log.info("System {} createTransferToUser", system.getId());
-        return ResponseEntity.ok(transferStatementService.systemCreateTransferToUser(system, request));
+        transferStatementService.systemCreateTransferToUser(system, request);
+        return ResponseEntity.ok(
+                ApiResponse.builder()
+                        .success(true)
+                        .code(HttpStatus.OK.value())
+                        .message("Transfer successfully")
+                        .payload("")
+                        .build()
+        );
     }
 
     @PostMapping("/createTransferFromUser")
-    public ResponseEntity<ApiResponse<?>> createTransferFromUser(@RequestBody SystemCreateTransferFromUserRequest request) throws NegativeAmountException, WrongSourceException, MaxAmountException, SoftTokenAuthorizeException, WrongTargetException {
+    public ResponseEntity<ApiResponse<Object>> createTransferFromUser(@RequestBody SystemCreateTransferFromUserRequest request) throws NegativeAmountException, WrongSourceException, MaxAmountException, SoftTokenAuthorizeException, WrongTargetException, BalanceNotEnoughException, MaxBalanceException {
         System system = getCurrentSystem();
         log.info("System {} createTransferFromUser", system.getId());
-        return ResponseEntity.ok(transferStatementService.systemCreateTransferFromUser(system, request));
+        SystemCreateTransferFromUserResponse payload = transferStatementService.systemCreateTransferFromUser(system, request);
+        return ResponseEntity.ok(
+                ApiResponse.builder()
+                        .success(true)
+                        .code(HttpStatus.OK.value())
+                        .message("Transfer successfully")
+                        .payload(payload)
+                        .build()
+        );
     }
 
     private System getCurrentSystem() {

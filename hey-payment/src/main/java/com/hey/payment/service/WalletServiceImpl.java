@@ -1,5 +1,6 @@
 package com.hey.payment.service;
 
+import com.hey.payment.constant.MoneyConstant;
 import com.hey.payment.constant.OwnerWalletRefFrom;
 import com.hey.payment.dto.auth_system.GetSystemsResponse;
 import com.hey.payment.dto.system.SystemDTO;
@@ -8,8 +9,7 @@ import com.hey.payment.dto.user.WalletDTO;
 import com.hey.payment.entity.System;
 import com.hey.payment.entity.User;
 import com.hey.payment.entity.Wallet;
-import com.hey.payment.exception_handler.exception.HadWalletException;
-import com.hey.payment.exception_handler.exception.HaveNoWalletException;
+import com.hey.payment.exception_handler.exception.*;
 import com.hey.payment.mapper.WalletMapper;
 import com.hey.payment.repository.WalletRepository;
 import lombok.AllArgsConstructor;
@@ -18,6 +18,7 @@ import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.cloud.client.loadbalancer.LoadBalanced;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.LinkedList;
@@ -65,6 +66,34 @@ public class WalletServiceImpl implements WalletService {
             walletRepository.saveAll(wallets);
         }
 
+    }
+
+    @Override
+    @Transactional
+    public void transferMoney(long sourceWalletId, long targetWalletId, long amount) throws WrongSourceException, WrongTargetException, MaxBalanceException, BalanceNotEnoughException {
+        // Get and lock 2 wallets
+        Wallet sourceWallet = walletRepository.getWalletById(sourceWalletId)
+                .orElseThrow(WrongSourceException::new);
+
+        Wallet targetWallet = walletRepository.getWalletById(targetWalletId)
+                .orElseThrow(WrongTargetException::new);
+        long sourceBalance = sourceWallet.getBalance();
+        long targetBalance = targetWallet.getBalance();
+        if (isMaxBalance(targetBalance + amount)) {
+            throw new MaxBalanceException();
+        }
+        if (sourceBalance >= amount) {
+            sourceWallet.setBalance(sourceBalance - amount);
+            targetWallet.setBalance(targetBalance + amount);
+            walletRepository.save(sourceWallet);
+            walletRepository.save(targetWallet);
+        } else {
+            throw new BalanceNotEnoughException();
+        }
+    }
+
+    public boolean isMaxBalance(long balance) {
+        return balance > MoneyConstant.MAX_BALANCE;
     }
 
     @Override
