@@ -111,6 +111,7 @@ public class TransferStatementServiceImpl implements TransferStatementService {
         // Transfer money
         try {
             walletService.transferMoney(sourceWallet.getId(), targetWallet.getId(), amount);
+            
             // Transfer money successfully
             transferStatement.setStatus(TransferStatus.SUCCESS);
             transferStatementRepository.save(transferStatement);
