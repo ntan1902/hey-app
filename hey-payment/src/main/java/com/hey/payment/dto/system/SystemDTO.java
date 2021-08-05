@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class SystemDTO {
-    private long id;
+    private String id;
     private String systemName;
     private int numberOfWallet;
 }

@@ -13,7 +13,13 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Table(name="transfer_statements")
+@Table(
+        name="transfer_statements",
+        indexes = {
+                @Index(name = "i_source_id", columnList = "source_id"),
+                @Index(name = "i_target_id", columnList = "target_id")
+        }
+)
 public class TransferStatement {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -31,6 +37,8 @@ public class TransferStatement {
     private LocalDateTime createdAt;
 
     private Integer status;
+
+    private String message;
 
     @Column(name = "transfer_fee")
     private Long transferFee;

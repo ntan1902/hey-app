@@ -2,6 +2,11 @@ package com.hey.service;
 
 import com.hey.manager.UserWsChannelManager;
 import com.hey.model.*;
+import com.hey.model.lucky.LuckyMoneyMessageRequest;
+import com.hey.model.lucky.ReceiveLuckyMoneyMessageRequest;
+import com.hey.model.lucky.UserIdSessionIdRequest;
+import com.hey.model.lucky.UserIdSessionIdResponse;
+import com.hey.model.payment.TransferMessageRequest;
 import com.hey.util.ErrorCode;
 import com.hey.util.GenerationUtils;
 import com.hey.util.HeyHttpStatusException;
@@ -14,7 +19,6 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.util.*;
 import java.util.stream.Collectors;
-
 
 public class APIService extends BaseService {
 
@@ -30,17 +34,20 @@ public class APIService extends BaseService {
         final User user = Json.decodeValue(jsonData, User.class);
 
         if (StringUtils.isBlank(user.getUserName())) {
-            future.fail(new HeyHttpStatusException(HttpStatus.BAD_REQUEST.code(), ErrorCode.REGISTER_USERNAME_EMPTY.code(), "User Name cannot be empty"));
+            future.fail(new HeyHttpStatusException(HttpStatus.BAD_REQUEST.code(),
+                    ErrorCode.REGISTER_USERNAME_EMPTY.code(), "User Name cannot be empty"));
             return future;
         }
 
         if (StringUtils.isBlank(user.getFullName())) {
-            future.fail(new HeyHttpStatusException(HttpStatus.BAD_REQUEST.code(), ErrorCode.REGISTER_FULLNAME_EMPTY.code(), "Full Name cannot be empty"));
+            future.fail(new HeyHttpStatusException(HttpStatus.BAD_REQUEST.code(),
+                    ErrorCode.REGISTER_FULLNAME_EMPTY.code(), "Full Name cannot be empty"));
             return future;
         }
 
         if (StringUtils.isBlank(user.getPassword())) {
-            future.fail(new HeyHttpStatusException(HttpStatus.BAD_REQUEST.code(), ErrorCode.REGISTER_PASSWORD_EMPTY.code(), "Password cannot be empty"));
+            future.fail(new HeyHttpStatusException(HttpStatus.BAD_REQUEST.code(),
+                    ErrorCode.REGISTER_PASSWORD_EMPTY.code(), "Password cannot be empty"));
             return future;
         }
 
@@ -48,7 +55,8 @@ public class APIService extends BaseService {
 
         getUserAuthFuture.compose(existedUserAuth -> {
             if (existedUserAuth != null) {
-                throw new HeyHttpStatusException(HttpStatus.BAD_REQUEST.code(), ErrorCode.REGISTER_USERNAME_UNIQUED.code(), "User Name is duplicated");
+                throw new HeyHttpStatusException(HttpStatus.BAD_REQUEST.code(),
+                        ErrorCode.REGISTER_USERNAME_UNIQUED.code(), "User Name is duplicated");
             } else {
 
                 Future<User> insertUserFuture = insertUser(user);
@@ -56,7 +64,6 @@ public class APIService extends BaseService {
                 insertUserFuture.compose(userRes -> {
 
                     future.complete(userRes);
-
 
                 }, Future.future().setHandler(handler -> {
                     future.fail(handler.cause());
@@ -95,11 +102,11 @@ public class APIService extends BaseService {
 
                         ChatListItem chatListItem = new ChatListItem();
 
-                        List<String> listFullNameExcludedCurrentUser = getListFullNameExcludedCurrentUser(userId, chatList.getUserHashes());
+                        List<String> listFullNameExcludedCurrentUser = getListFullNameExcludedCurrentUser(userId,
+                                chatList.getUserHashes());
                         if (listFullNameExcludedCurrentUser.size() > 1) {
                             String groupName = listFullNameExcludedCurrentUser.stream()
-                                    .map(fullName -> fullName.split(" ")[0])
-                                    .collect(Collectors.joining(", "));
+                                    .map(fullName -> fullName.split(" ")[0]).collect(Collectors.joining(", "));
                             chatListItem.setName(groupName);
                             chatListItem.setGroupChat(true);
                         } else {
@@ -116,7 +123,6 @@ public class APIService extends BaseService {
                     ChatListResponse chatListResponse = new ChatListResponse();
                     chatListResponse.setItems(chatListItems);
                     future.complete(chatListResponse);
-
 
                 } else {
                     future.fail(ar.cause());
@@ -188,7 +194,8 @@ public class APIService extends BaseService {
         return future;
     }
 
-    public Future<UsernameExistedResponse> checkUsernameExisted(UsernameExistedRequest usernameExistedRequest, String userId) {
+    public Future<UsernameExistedResponse> checkUsernameExisted(UsernameExistedRequest usernameExistedRequest,
+            String userId) {
 
         Future<UsernameExistedResponse> future = Future.future();
 
@@ -209,7 +216,8 @@ public class APIService extends BaseService {
 
                         future.complete(usernameExistedResponse);
                     } else {
-                        throw new HeyHttpStatusException(HttpStatus.BAD_REQUEST.code(), ErrorCode.START_GROUP_CHAT_USERNAME_NOT_FRIEND.code(), "User Name is not friend");
+                        throw new HeyHttpStatusException(HttpStatus.BAD_REQUEST.code(),
+                                ErrorCode.START_GROUP_CHAT_USERNAME_NOT_FRIEND.code(), "User Name is not friend");
                     }
 
                 }, Future.future().setHandler(handler -> {
@@ -217,7 +225,8 @@ public class APIService extends BaseService {
                 }));
 
             } else {
-                throw new HeyHttpStatusException(HttpStatus.BAD_REQUEST.code(), ErrorCode.START_GROUP_CHAT_USERNAME_NOT_EXISTED.code(), "User Name is not existed");
+                throw new HeyHttpStatusException(HttpStatus.BAD_REQUEST.code(),
+                        ErrorCode.START_GROUP_CHAT_USERNAME_NOT_EXISTED.code(), "User Name is not existed");
             }
 
         }, Future.future().setHandler(handler -> {
@@ -266,12 +275,13 @@ public class APIService extends BaseService {
         return future;
     }
 
-
-    public Future<WaitingChatHeaderResponse> waitingChatHeader(WaitingChatHeaderRequest waitingChatHeaderRequest, String userId) {
+    public Future<WaitingChatHeaderResponse> waitingChatHeader(WaitingChatHeaderRequest waitingChatHeaderRequest,
+            String userId) {
 
         Future<WaitingChatHeaderResponse> future = Future.future();
 
-        Future<List<UserAuth>> getUserAuthsFuture = getUserAuths(Arrays.asList(waitingChatHeaderRequest.getUsernames()));
+        Future<List<UserAuth>> getUserAuthsFuture = getUserAuths(
+                Arrays.asList(waitingChatHeaderRequest.getUsernames()));
 
         getUserAuthsFuture.compose(userAuths -> {
 
@@ -310,7 +320,8 @@ public class APIService extends BaseService {
         Future<AddFriendResponse> future = Future.future();
 
         if (StringUtils.isBlank(addFriendRequest.getUsername())) {
-            future.fail(new HeyHttpStatusException(HttpStatus.BAD_REQUEST.code(), ErrorCode.ADD_FRIEND_USERNAME_EMPTY.code(), "User Name cannot be empty"));
+            future.fail(new HeyHttpStatusException(HttpStatus.BAD_REQUEST.code(),
+                    ErrorCode.ADD_FRIEND_USERNAME_EMPTY.code(), "User Name cannot be empty"));
         }
 
         Future<UserAuth> getUserAuthFuture = dataRepository.getUserAuth(addFriendRequest.getUsername());
@@ -324,7 +335,8 @@ public class APIService extends BaseService {
                 isFriendFuture.compose(isFriend -> {
 
                     if (isFriend) {
-                        future.fail(new HeyHttpStatusException(HttpStatus.BAD_REQUEST.code(), ErrorCode.ADD_FRIEND_USERNAME_ALREADY.code(), "User Name was added as friend"));
+                        future.fail(new HeyHttpStatusException(HttpStatus.BAD_REQUEST.code(),
+                                ErrorCode.ADD_FRIEND_USERNAME_ALREADY.code(), "User Name was added as friend"));
 
                     } else {
 
@@ -339,15 +351,18 @@ public class APIService extends BaseService {
                             UserFull friendUserFull = userFulls.get(1);
 
                             FriendList friendList = new FriendList();
-                            friendList.setCurrentUserHashes(new UserHash(currentUserFull.getUserId(), currentUserFull.getFullName()));
-                            friendList.setFriendUserHashes(new UserHash(friendUserFull.getUserId(), friendUserFull.getFullName()));
+                            friendList.setCurrentUserHashes(
+                                    new UserHash(currentUserFull.getUserId(), currentUserFull.getFullName()));
+                            friendList.setFriendUserHashes(
+                                    new UserHash(friendUserFull.getUserId(), friendUserFull.getFullName()));
 
                             Future<FriendList> insertFriendListFuture = dataRepository.insertFriendList(friendList);
 
                             insertFriendListFuture.compose(friendListRes -> {
 
                                 List<Future> getUserStatusAndUserOnlineFuture = new ArrayList<>();
-                                getUserStatusAndUserOnlineFuture.add(dataRepository.getUserStatus(friendUserFull.getUserId()));
+                                getUserStatusAndUserOnlineFuture
+                                        .add(dataRepository.getUserStatus(friendUserFull.getUserId()));
                                 getUserStatusAndUserOnlineFuture.add(isUserOnline(friendUserFull.getUserId()));
 
                                 CompositeFuture cp = CompositeFuture.all(getUserStatusAndUserOnlineFuture);
@@ -385,7 +400,8 @@ public class APIService extends BaseService {
                 }));
 
             } else {
-                throw new HeyHttpStatusException(HttpStatus.BAD_REQUEST.code(), ErrorCode.ADD_FRIEND_USERNAME_NOT_EXISTED.code(), "User Name is not existed");
+                throw new HeyHttpStatusException(HttpStatus.BAD_REQUEST.code(),
+                        ErrorCode.ADD_FRIEND_USERNAME_NOT_EXISTED.code(), "User Name is not existed");
             }
 
         }, Future.future().setHandler(handler -> {
@@ -495,37 +511,49 @@ public class APIService extends BaseService {
         }
 
         String keyPattern = "friend:list:" + userId + ":*";
+        String keyPatternReverse = "friend:list:*:" + userId;
 
-        Future<List<String>> getKeysByPatternFuture = dataRepository.getKeysByPattern(keyPattern);
+        List<Future> getKeysByPatternFutures = new ArrayList<>();
 
-        getKeysByPatternFuture.compose(keys -> {
+        getKeysByPatternFutures.add(dataRepository.getKeysByPattern(keyPattern));
+        getKeysByPatternFutures.add(dataRepository.getKeysByPattern(keyPatternReverse));
 
-            List<Future> getFriendListFutures = new ArrayList<>();
+        CompositeFuture cp = CompositeFuture.all(getKeysByPatternFutures);
+        cp.setHandler(ar -> {
+            if (ar.succeeded()) {
+                List<String> keys = new ArrayList<>();
+                for (int index = 0; index < getKeysByPatternFutures.size(); ++index) {
+                    keys.addAll(cp.resultAt(index));
+                }
 
-            for (String friendListKey : keys) {
-                getFriendListFutures.add(dataRepository.getFriendList(friendListKey, userId));
+                List<Future> getFriendListFutures = new ArrayList<>();
+
+                for (String friendListKey : keys) {
+                    getFriendListFutures.add(dataRepository.getFriendList(friendListKey, userId));
+                }
+
+                CompositeFuture cp2 = CompositeFuture.all(getFriendListFutures);
+                cp2.setHandler(ar2 -> {
+                    if (ar2.succeeded()) {
+
+                        List<FriendList> friendLists = new ArrayList<>();
+                        for (int index = 0; index < getFriendListFutures.size(); ++index) {
+                            if (cp2.resultAt(index) != null) {
+                                friendLists.add(cp2.resultAt(index));
+                            }
+                        }
+                        future.complete(friendLists);
+
+                    } else {
+                        future.fail(ar2.cause());
+                    }
+                });
+
+            } else {
+                future.fail(ar.cause());
             }
 
-            CompositeFuture cp = CompositeFuture.all(getFriendListFutures);
-            cp.setHandler(ar -> {
-                if (ar.succeeded()) {
-
-                    List<FriendList> friendLists = new ArrayList<>();
-                    for (int index = 0; index < getFriendListFutures.size(); ++index) {
-                        if (cp.resultAt(index) != null) {
-                            friendLists.add(cp.resultAt(index));
-                        }
-                    }
-                    future.complete(friendLists);
-
-                } else {
-                    future.fail(ar.cause());
-                }
-            });
-
-        }, Future.future().setHandler(handler -> {
-            //future.fail(handler.cause());
-        }));
+        });
 
         return future;
     }
@@ -586,7 +614,6 @@ public class APIService extends BaseService {
             }, Future.future().setHandler(handler -> {
                 future.fail(handler.cause());
             }));
-
 
         }, Future.future().setHandler(handler -> {
             future.fail(handler.cause());
@@ -727,17 +754,16 @@ public class APIService extends BaseService {
         Future<Boolean> future = Future.future();
 
         // Find session id of source id and target id
-        Future<String> getSessionId = getSessionIdOfUser1AndUser2(
-                transferMessageRequest.getSourceId().toString(),
-                transferMessageRequest.getTargetId().toString()
-        );
+        Future<String> getSessionId = getSessionIdOfUser1AndUser2(transferMessageRequest.getSourceId().toString(),
+                transferMessageRequest.getTargetId().toString());
 
         getSessionId.compose(sessionId -> {
-            if("-1".equals(sessionId)) {
-                insertNewChatOfUser1AndUser2(transferMessageRequest);
+            if ("-1".equals(sessionId)) {
+                insertNewChat(transferMessageRequest);
             } else {
-                insertNewChatOnExistedSessionOfUser1AndUser2(transferMessageRequest, sessionId);
+                insertNewChatOnExistedSessionId(transferMessageRequest, sessionId);
             }
+            future.complete(true);
         }, Future.future().setHandler(handler -> {
             future.fail(handler.cause());
         }));
@@ -745,22 +771,42 @@ public class APIService extends BaseService {
         return future;
     }
 
-    private void insertNewChatOnExistedSessionOfUser1AndUser2(TransferMessageRequest transferMessageRequest, String sessionId) {
+    public Future<Boolean> createLuckyMoneyMessage(LuckyMoneyMessageRequest luckyMoneyMessageRequest) {
+        Future<Boolean> future = Future.future();
 
-        Future<UserFull> getUserFullFuture = dataRepository.getUserFull(transferMessageRequest.getSourceId().toString());
+        insertNewChatOnExistedSessionId(luckyMoneyMessageRequest);
+        future.complete(true);
+        return future;
+    }
+
+    private void insertNewChatOnExistedSessionId(LuckyMoneyMessageRequest luckyMoneyMessageRequest) {
+        Future<UserFull> getUserFullFuture = dataRepository
+                .getUserFull(luckyMoneyMessageRequest.getUserId().toString());
         getUserFullFuture.compose(userFull -> {
+            JsonObject content = new JsonObject();
+            content.put("userId", luckyMoneyMessageRequest.getUserId());
+            content.put("luckyMoneyId", luckyMoneyMessageRequest.getLuckyMoneyId());
+            content.put("createdAt", luckyMoneyMessageRequest.getCreatedAt());
+            content.put("message", luckyMoneyMessageRequest.getMessage());
+            content.put("sessionId", luckyMoneyMessageRequest.getSessionId());
+
+            JsonObject luckyMoneyResponse = new JsonObject();
+            luckyMoneyResponse.put("type", "transfer");
+            luckyMoneyResponse.put("content", content);
+
             ChatMessage chatMessage = new ChatMessage();
             chatMessage.setUserHash(new UserHash(userFull.getUserId(), userFull.getFullName()));
-            chatMessage.setSessionId(sessionId);
-            chatMessage.setMessage(transferMessageRequest.getMessage());
+            chatMessage.setSessionId(luckyMoneyMessageRequest.getSessionId());
+            chatMessage.setMessage(luckyMoneyResponse.encode());
             chatMessage.setCreatedDate(new Date());
 
-            Future<ChatMessage> insertChatMessagesAndUpdateChatListAndUpdateUnseenCountFuture =
-                    insertChatMessagesAndUpdateChatListAndUpdateUnseenCount(chatMessage);
+            Future<ChatMessage> insertChatMessagesAndUpdateChatListAndUpdateUnseenCountFuture = insertChatMessagesAndUpdateChatListAndUpdateUnseenCount(
+                    chatMessage);
 
             Future<ChatList> getChatListBySessionIdFuture = getChatListBySessionId(chatMessage.getSessionId());
 
-            CompositeFuture cp = CompositeFuture.all(insertChatMessagesAndUpdateChatListAndUpdateUnseenCountFuture, getChatListBySessionIdFuture);
+            CompositeFuture cp = CompositeFuture.all(insertChatMessagesAndUpdateChatListAndUpdateUnseenCountFuture,
+                    getChatListBySessionIdFuture);
             cp.setHandler(ar -> {
                 if (ar.succeeded()) {
 
@@ -787,7 +833,63 @@ public class APIService extends BaseService {
         }));
     }
 
-    private void insertNewChatOfUser1AndUser2(TransferMessageRequest transferMessageRequest) {
+    private void insertNewChatOnExistedSessionId(TransferMessageRequest transferMessageRequest, String sessionId) {
+
+        Future<UserFull> getUserFullFuture = dataRepository
+                .getUserFull(transferMessageRequest.getSourceId().toString());
+        getUserFullFuture.compose(userFull -> {
+            JsonObject content = new JsonObject();
+            content.put("sourceId", transferMessageRequest.getSourceId());
+            content.put("targetId", transferMessageRequest.getTargetId());
+            content.put("amount", transferMessageRequest.getAmount());
+            content.put("createdAt", transferMessageRequest.getCreatedAt());
+            content.put("message", transferMessageRequest.getMessage());
+            content.put("sessionId", sessionId);
+
+            JsonObject transferMessageResponse = new JsonObject();
+            transferMessageResponse.put("type", "transfer");
+            transferMessageResponse.put("content", content);
+
+            ChatMessage chatMessage = new ChatMessage();
+            chatMessage.setUserHash(new UserHash(userFull.getUserId(), userFull.getFullName()));
+            chatMessage.setSessionId(sessionId);
+            chatMessage.setMessage(transferMessageResponse.encode());
+            chatMessage.setCreatedDate(new Date());
+
+            Future<ChatMessage> insertChatMessagesAndUpdateChatListAndUpdateUnseenCountFuture = insertChatMessagesAndUpdateChatListAndUpdateUnseenCount(
+                    chatMessage);
+
+            Future<ChatList> getChatListBySessionIdFuture = getChatListBySessionId(chatMessage.getSessionId());
+
+            CompositeFuture cp = CompositeFuture.all(insertChatMessagesAndUpdateChatListAndUpdateUnseenCountFuture,
+                    getChatListBySessionIdFuture);
+            cp.setHandler(ar -> {
+                if (ar.succeeded()) {
+
+                    ChatList chatList = cp.resultAt(1);
+
+                    ChatMessageResponse response = new ChatMessageResponse();
+                    response.setType(IWsMessage.TYPE_CHAT_MESSAGE_RESPONSE);
+                    response.setCreatedDate(chatMessage.getCreatedDate());
+                    response.setName(userFull.getFullName());
+                    response.setMessage(chatMessage.getMessage());
+                    response.setSessionId(chatMessage.getSessionId());
+                    response.setUserId(chatMessage.getUserHash().getUserId());
+                    for (UserHash userhash : chatList.getUserHashes()) {
+                        userWsChannelManager.sendMessage(response, userhash.getUserId());
+                    }
+
+                } else {
+                    throw new RuntimeException(ar.cause());
+                }
+            });
+
+        }, Future.future().setHandler(handler -> {
+            throw new RuntimeException(handler.cause());
+        }));
+    }
+
+    private void insertNewChat(TransferMessageRequest transferMessageRequest) {
         List<String> userIds = new ArrayList<>();
         userIds.add(transferMessageRequest.getSourceId().toString());
         userIds.add(transferMessageRequest.getTargetId().toString());
@@ -801,10 +903,22 @@ public class APIService extends BaseService {
             }
             String sessionId = GenerationUtils.generateId();
 
+            JsonObject content = new JsonObject();
+            content.put("sourceId", transferMessageRequest.getSourceId());
+            content.put("targetId", transferMessageRequest.getTargetId());
+            content.put("amount", transferMessageRequest.getAmount());
+            content.put("createdAt", transferMessageRequest.getCreatedAt());
+            content.put("message", transferMessageRequest.getMessage());
+            content.put("sessionId", sessionId);
+
+            JsonObject transferMessageResponse = new JsonObject();
+            transferMessageResponse.put("type", "transfer");
+            transferMessageResponse.put("content", content);
+
             ChatMessage chatMessage = new ChatMessage();
             chatMessage.setUserHash(userHashes.get(0));
             chatMessage.setSessionId(sessionId);
-            chatMessage.setMessage(transferMessageRequest.getMessage());
+            chatMessage.setMessage(transferMessageResponse.encode());
             chatMessage.setCreatedDate(new Date());
 
             ChatList chatList = new ChatList();
@@ -819,27 +933,18 @@ public class APIService extends BaseService {
             Future<ChatMessage> insertChatMessageFuture = dataRepository.insertChatMessage(chatMessage);
 
             List<String> userFriendIds = userIds.subList(1, userIds.size());
-            Future<HashMap<String, Long>> increaseUnseenCountFuture = increaseUnseenCount(userFriendIds, chatList.getSessionId());
+            Future<HashMap<String, Long>> increaseUnseenCountFuture = increaseUnseenCount(userFriendIds,
+                    chatList.getSessionId());
 
-            CompositeFuture cp = CompositeFuture.all(insertChatMessageFuture, insertChatListFuture, increaseUnseenCountFuture);
+            CompositeFuture cp = CompositeFuture.all(insertChatMessageFuture, insertChatListFuture,
+                    increaseUnseenCountFuture);
             cp.setHandler(ar -> {
                 if (ar.succeeded()) {
-
-                    TransferMessageContent content = new TransferMessageContent();
-                    content.setSourceId(transferMessageRequest.getSourceId());
-                    content.setTargetId(transferMessageRequest.getTargetId());
-                    content.setAmount(transferMessageRequest.getAmount());
-                    content.setCreatedAt(transferMessageRequest.getCreatedAt());
-
-                    TransferMessageResponse transferMessageResponse = new TransferMessageResponse();
-                    transferMessageResponse.setType("transfer");
-                    transferMessageResponse.setContent(content);
-
-//                    NewChatSessionResponse newChatSessionResponse = new NewChatSessionResponse();
-//                    newChatSessionResponse.setType(IWsMessage.TYPE_CHAT_NEW_SESSION_RESPONSE);
-//                    newChatSessionResponse.setSessionId(chatMessage.getSessionId());
+                    NewChatSessionResponse newChatSessionResponse = new NewChatSessionResponse();
+                    newChatSessionResponse.setType(IWsMessage.TYPE_CHAT_NEW_SESSION_RESPONSE);
+                    newChatSessionResponse.setSessionId(chatMessage.getSessionId());
                     for (UserHash userhash : chatList.getUserHashes()) {
-                        userWsChannelManager.sendMessage(transferMessageResponse, userhash.getUserId());
+                        userWsChannelManager.sendMessage(newChatSessionResponse, userhash.getUserId());
                     }
 
                 } else {
@@ -851,6 +956,23 @@ public class APIService extends BaseService {
             throw new RuntimeException(handler.cause());
         }));
 
+    }
+
+    public Future<UserIdSessionIdResponse> checkUserExistInSession(UserIdSessionIdRequest request) {
+        Future<UserIdSessionIdResponse> future = Future.future();
+
+        // Find list session id of user id
+        Future<List<String>> getSessionIds = getSessionIdOfUser(request.getUserId().toString());
+
+        getSessionIds.compose(sessionIds -> {
+            UserIdSessionIdResponse response = new UserIdSessionIdResponse();
+            response.setExisted(sessionIds.contains(request.getSessionId()));
+            future.complete(response);
+        }, Future.future().setHandler(handler -> {
+            future.fail(handler.cause());
+        }));
+
+        return future;
     }
 
     public Future<String> getSessionIdOfUser1AndUser2(String userId1, String userId2) {
@@ -890,4 +1012,102 @@ public class APIService extends BaseService {
         return future;
     }
 
+    public Future<List<String>> getSessionIdOfUser(String userId) {
+        Future<List<String>> future = Future.future();
+
+        String chatListKey = "chat:list:*:" + userId + ":*";
+        String chatListKeyReverse = "chat:list:*:" + "*:" + userId;
+
+        List<Future> getKeysByPatternFutures = new ArrayList<>();
+
+        getKeysByPatternFutures.add(dataRepository.getKeysByPattern(chatListKey));
+        getKeysByPatternFutures.add(dataRepository.getKeysByPattern(chatListKeyReverse));
+
+        CompositeFuture cp = CompositeFuture.all(getKeysByPatternFutures);
+        cp.setHandler(ar -> {
+            if (ar.succeeded()) {
+
+                List<String> sessionIds = new ArrayList<>();
+
+                List<String> keys = new ArrayList<>();
+                for (int index = 0; index < getKeysByPatternFutures.size(); ++index) {
+                    keys.addAll(cp.resultAt(index));
+                }
+
+                if (keys.size() > 0) {
+                    // chat:list:sessionId:user:user:...
+
+                    sessionIds = keys.stream().map(key -> key.split(":")[2]).collect(Collectors.toList());
+                }
+
+                future.complete(sessionIds);
+            } else {
+                future.fail(ar.cause());
+            }
+        });
+
+        return future;
+    }
+
+    public Future<Boolean> receiveLuckyMoneyMessage(ReceiveLuckyMoneyMessageRequest request) {
+        Future<Boolean> future = Future.future();
+
+        insertNewChatOnExistedSessionId(request);
+        future.complete(true);
+        return future;
+    }
+
+    private void insertNewChatOnExistedSessionId(ReceiveLuckyMoneyMessageRequest request) {
+        Future<UserFull> getUserFullFuture = dataRepository.getUserFull(request.getReceiverId().toString());
+        getUserFullFuture.compose(userFull -> {
+            JsonObject content = new JsonObject();
+            content.put("userId", request.getReceiverId());
+            content.put("luckyMoneyId", request.getLuckyMoneyId());
+            content.put("createdAt", request.getCreatedAt());
+            content.put("message", request.getMessage());
+            content.put("sessionId", request.getSessionId());
+            content.put("amount", request.getAmount());
+
+            JsonObject receiveLuckyReponse = new JsonObject();
+            receiveLuckyReponse.put("type", "transfer");
+            receiveLuckyReponse.put("content", content);
+
+            ChatMessage chatMessage = new ChatMessage();
+            chatMessage.setUserHash(new UserHash(userFull.getUserId(), userFull.getFullName()));
+            chatMessage.setSessionId(request.getSessionId());
+            chatMessage.setMessage(receiveLuckyReponse.encode());
+            chatMessage.setCreatedDate(new Date());
+
+            Future<ChatMessage> insertChatMessagesAndUpdateChatListAndUpdateUnseenCountFuture = insertChatMessagesAndUpdateChatListAndUpdateUnseenCount(
+                    chatMessage);
+
+            Future<ChatList> getChatListBySessionIdFuture = getChatListBySessionId(chatMessage.getSessionId());
+
+            CompositeFuture cp = CompositeFuture.all(insertChatMessagesAndUpdateChatListAndUpdateUnseenCountFuture,
+                    getChatListBySessionIdFuture);
+            cp.setHandler(ar -> {
+                if (ar.succeeded()) {
+
+                    ChatList chatList = cp.resultAt(1);
+
+                    ChatMessageResponse response = new ChatMessageResponse();
+                    response.setType(IWsMessage.TYPE_CHAT_MESSAGE_RESPONSE);
+                    response.setCreatedDate(chatMessage.getCreatedDate());
+                    response.setName(userFull.getFullName());
+                    response.setMessage(chatMessage.getMessage());
+                    response.setSessionId(chatMessage.getSessionId());
+                    response.setUserId(chatMessage.getUserHash().getUserId());
+                    for (UserHash userhash : chatList.getUserHashes()) {
+                        userWsChannelManager.sendMessage(response, userhash.getUserId());
+                    }
+
+                } else {
+                    throw new RuntimeException(ar.cause());
+                }
+            });
+
+        }, Future.future().setHandler(handler -> {
+            throw new RuntimeException(handler.cause());
+        }));
+    }
 }

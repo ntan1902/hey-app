@@ -1,6 +1,6 @@
 package com.hey.payment.exception_handler.exception;
 
-public class HaveNoWalletException extends RuntimeException{
+public class HaveNoWalletException extends Exception{
     public HaveNoWalletException(){
         super("Have no wallet yet");
     }

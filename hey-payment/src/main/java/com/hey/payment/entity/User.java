@@ -15,7 +15,7 @@ import java.util.Collection;
 @AllArgsConstructor
 @Builder
 public class User implements UserDetails {
-    private long id;
+    private String id;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

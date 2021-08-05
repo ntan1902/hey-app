@@ -9,8 +9,9 @@ import {
   REMOVE_START_CHAT_GROUP,
   RESET_UNSEEN,
   START_CHAT_GROUP,
-  START_CHAT_SINGLE, USER_SELECTED,
-  WEBSOCKET_FETCHED
+  START_CHAT_SINGLE,
+  USER_SELECTED,
+  WEBSOCKET_FETCHED,
 } from "../actions/chatAction";
 
 const initialState = {
@@ -19,12 +20,12 @@ const initialState = {
   messageHeader: {},
   webSocket: null,
   currentSessionId: null,
-  startChatGroupList:[],
+  startChatGroupList: [],
   startChatGroupError: false,
-  startChatGroupErrorMessage: '',
+  startChatGroupErrorMessage: "",
   waitingGroupUsernames: [],
-  userSelectedKeys: []
-}
+  userSelectedKeys: [],
+};
 
 export default function reduce(state = initialState, action) {
   switch (action.type) {
@@ -32,55 +33,50 @@ export default function reduce(state = initialState, action) {
       return {
         ...state,
         chatList: action.fetchedChatlist,
-        messageHeader: action.messageHeader
-
-      }
+        messageHeader: action.messageHeader,
+      };
     case CHATLIST_REFETCHED:
       return {
         ...state,
-        chatList: action.fetchedChatlist
-
-      }
+        chatList: action.fetchedChatlist,
+      };
     case USER_SELECTED:
       return {
         ...state,
-        userSelectedKeys: action.userSelectedKeys
-      }
+        userSelectedKeys: action.userSelectedKeys,
+      };
     case ADD_NEW_START_CHAT_GROUP_FAIL:
       return {
         ...state,
         startChatGroupError: true,
-        startChatGroupErrorMessage: action.error
-
-      }
+        startChatGroupErrorMessage: action.error,
+      };
     case ADD_NEW_START_CHAT_GROUP:
       return {
         ...state,
         startChatGroupError: false,
-        startChatGroupErrorMessage: '',
-        startChatGroupList: action.startChatGroupList
-
-      }
+        startChatGroupErrorMessage: "",
+        startChatGroupList: action.startChatGroupList,
+      };
     case REMOVE_START_CHAT_GROUP:
       return {
         ...state,
-        startChatGroupList: action.startChatGroupList
-
-      }
+        startChatGroupList: action.startChatGroupList,
+      };
     case START_CHAT_GROUP:
       return {
         ...state,
         messageItems: action.messageItems,
         waitingGroupUsernames: action.waitingGroupUsernames,
         currentSessionId: action.currentSessionId,
-        startChatGroupList: []
+        startChatGroupList: [],
       };
     case START_CHAT_SINGLE:
       return {
         ...state,
         messageItems: action.messageItems,
         waitingGroupUsernames: action.waitingGroupUsernames,
-        currentSessionId: action.currentSessionId
+        currentSessionId: action.currentSessionId,
       };
     case MESSAGE_PANEL_FETCHED:
       return {
@@ -89,23 +85,23 @@ export default function reduce(state = initialState, action) {
         waitingGroupUsernames: [],
         currentSessionId: action.currentSessionId,
         chatList: action.chatList,
-        userSelected: action.userSelected
+        userSelected: action.userSelected,
       };
     case NEW_MESSAGE_IN_PANEL_FETCHED:
       return {
         ...state,
         messageItems: action.messageItems,
-        chatList: action.chatList
+        chatList: action.chatList,
       };
     case MESSAGE_HEADER_FETCHED:
       return {
         ...state,
-        messageHeader: action.messageHeader
+        messageHeader: action.messageHeader,
       };
     case WEBSOCKET_FETCHED:
       return {
         ...state,
-        webSocket: action.webSocket
+        webSocket: action.webSocket,
       };
     default:
       return state;

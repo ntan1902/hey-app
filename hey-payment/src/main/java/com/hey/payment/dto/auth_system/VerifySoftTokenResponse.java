@@ -14,7 +14,7 @@ public class VerifySoftTokenResponse {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class SoftTokenEncoded {
-        long userId;
+        String userId;
         long amount;
     }
     Boolean success;

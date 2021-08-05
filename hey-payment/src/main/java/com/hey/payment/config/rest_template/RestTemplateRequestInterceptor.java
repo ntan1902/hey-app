@@ -8,10 +8,10 @@ import org.springframework.http.client.ClientHttpResponse;
 import java.io.IOException;
 
 public class RestTemplateRequestInterceptor implements ClientHttpRequestInterceptor {
-    private final String jwtService;
+    private final String token;
 
-    public RestTemplateRequestInterceptor(String jwtService) {
-        this.jwtService = jwtService;
+    public RestTemplateRequestInterceptor(String token) {
+        this.token = token;
     }
 
     @Override
@@ -19,7 +19,7 @@ public class RestTemplateRequestInterceptor implements ClientHttpRequestIntercep
             HttpRequest request,
             byte[] body,
             ClientHttpRequestExecution execution) throws IOException {
-        request.getHeaders().add("Authorization", jwtService);
+        request.getHeaders().setBearerAuth(token);
         return execution.execute(request, body);
     }
 }

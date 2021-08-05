@@ -13,7 +13,7 @@ public final class JsonUtils {
         JsonObject objectResult = new JsonObject(Json.encodePrettily(message));
         JsonObject object = new JsonObject();
         object.put("success", true);
-        object.put("code", HttpStatus.OK);
+        object.put("code", HttpStatus.OK.code());
         object.put("message", "");
         object.put("payload", objectResult);
         return Json.encodePrettily(object);
@@ -22,7 +22,7 @@ public final class JsonUtils {
     public static String toSuccessJSON(String message) {
         JsonObject object = new JsonObject();
         object.put("success", true);
-        object.put("code", HttpStatus.OK);
+        object.put("code", HttpStatus.OK.code());
         object.put("message", message);
         object.put("payload", "");
         return Json.encodePrettily(object);
@@ -35,7 +35,7 @@ public final class JsonUtils {
     public static String toError500JSON() {
         JsonObject object = new JsonObject();
         object.put("success", false);
-        object.put("code", HttpStatus.INTERNAL_SERVER_ERROR);
+        object.put("code", HttpStatus.INTERNAL_SERVER_ERROR.code());
         object.put("message", "Oops, The handler was unable to complete your request. We will be back soon :(");
         object.put("payload", "");
         return Json.encodePrettily(object);

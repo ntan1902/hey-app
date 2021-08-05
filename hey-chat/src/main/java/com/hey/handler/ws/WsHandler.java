@@ -8,6 +8,7 @@ import com.hey.service.APIService;
 import com.hey.util.GenerationUtils;
 import io.vertx.core.CompositeFuture;
 import io.vertx.core.Future;
+import io.vertx.core.json.JsonObject;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -87,10 +88,17 @@ public class WsHandler {
             }
             String sessionId = GenerationUtils.generateId();
 
+            JsonObject content = new JsonObject();
+            content.put("message", request.getMessage());
+
+            JsonObject messageRequest = new JsonObject();
+            messageRequest.put("type", "message");
+            messageRequest.put("content", content);
+
             ChatMessage chatMessage = new ChatMessage();
             chatMessage.setUserHash(userHashes.get(0));
             chatMessage.setSessionId(sessionId);
-            chatMessage.setMessage(request.getMessage());
+            chatMessage.setMessage(messageRequest.encode());
             chatMessage.setCreatedDate(new Date());
 
             ChatList chatList = new ChatList();
@@ -110,7 +118,6 @@ public class WsHandler {
             CompositeFuture cp = CompositeFuture.all(insertChatMessageFuture, insertChatListFuture, increaseUnseenCountFuture);
             cp.setHandler(ar -> {
                 if (ar.succeeded()) {
-
                     NewChatSessionResponse newChatSessionResponse = new NewChatSessionResponse();
                     newChatSessionResponse.setType(IWsMessage.TYPE_CHAT_NEW_SESSION_RESPONSE);
                     newChatSessionResponse.setSessionId(chatMessage.getSessionId());
@@ -163,14 +170,18 @@ public class WsHandler {
     private void insertChatMessageOnExistedChatSessionId(ChatMessageRequest request, String channelId, String userId) {
 
         Future<UserFull> getUserFullFuture = dataRepository.getUserFull(userId);
-        long startTime = System.currentTimeMillis();
         getUserFullFuture.compose(userFull -> {
-            long elapsed = System.currentTimeMillis() - startTime;
-            //System.out.println("Handler: " + elapsed);
+            JsonObject content = new JsonObject();
+            content.put("message", request.getMessage());
+
+            JsonObject messageRequest = new JsonObject();
+            messageRequest.put("type", "message");
+            messageRequest.put("content", content);
+
             ChatMessage chatMessage = new ChatMessage();
             chatMessage.setUserHash(new UserHash(userFull.getUserId(), userFull.getFullName()));
             chatMessage.setSessionId(request.getSessionId());
-            chatMessage.setMessage(request.getMessage());
+            chatMessage.setMessage(messageRequest.encode());
             chatMessage.setCreatedDate(new Date());
 
             Future<ChatMessage> insertChatMessagesAndUpdateChatListAndUpdateUnseenCountFuture =
@@ -191,7 +202,6 @@ public class WsHandler {
                     response.setMessage(chatMessage.getMessage());
                     response.setSessionId(chatMessage.getSessionId());
                     response.setUserId(chatMessage.getUserHash().getUserId());
-                    //userWsChannelManager.selfSendMessage(response, channelId);
                     for (UserHash userhash : chatList.getUserHashes()) {
                         userWsChannelManager.sendMessage(response, userhash.getUserId());
                     }

@@ -1,0 +1,40 @@
+server:
+  port: 5050
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka/
+  instance:
+    hostname: localhost
+
+spring:
+  application:
+    name: hey-gateway
+  cloud:
+    gateway:
+      routes:
+        - id: authModule
+          uri: lb://hey-auth
+          predicates:
+            - Path=/auth/api/**
+        - id: chatModule
+          uri: lb://hey-chat
+          predicates:
+            - Path=/chat/api/**
+        - id: paymentModule
+          uri: lb://hey-payment
+          predicates:
+            - Path=/payment/api/**
+        - id: luckyModule
+          uri: lb://hey-lucky
+          predicates:
+            - Path=/lucky/api/**
+      default-filters:
+        - DedupeResponseHeader=Access-Control-Allow-Credentials Access-Control-Allow-Origin
+      globalcors:
+        corsConfigurations:
+          '[/**]':
+            allowedOrigins: "*"
+            allowedMethods: "*"
+            allowedHeaders: "*"

@@ -2,7 +2,7 @@ package com.hey.verticle;
 
 import com.hey.api.ApiServer;
 import com.hey.api.WsServer;
-import com.hey.authentication.AuthService;
+import com.hey.auth.AuthService;
 import com.hey.cache.client.RedisCacheClient;
 import com.hey.handler.api.ProtectedApiHandler;
 import com.hey.handler.api.PublicApiHandler;
@@ -52,6 +52,7 @@ public class HeyVerticle extends AbstractVerticle {
                 PropertiesUtils.getInstance().getValue("auth.host"),
                 PropertiesUtils.getInstance().getValue("auth.baseurl") + "/login"
         ).sendJsonObject(loginInfo, httpResponseAsyncResult -> {
+            if (httpResponseAsyncResult.failed()) System.exit(1);
             JsonObject payload = httpResponseAsyncResult.result().bodyAsJsonObject().getJsonObject("payload");
             String tokenType = payload.getString("tokenType");
             AuthService.createInstance(webClient, tokenType + " " + payload.getString("accessToken"));

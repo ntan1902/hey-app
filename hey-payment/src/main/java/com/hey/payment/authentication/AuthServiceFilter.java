@@ -58,16 +58,22 @@ public class AuthServiceFilter extends OncePerRequestFilter {
         filterChain.doFilter(request, response);
     }
 
-    private long authorizeSystem(String token) {
+    private String authorizeSystem(String token) {
         HttpEntity<AuthorizeSystemRequest> requestEntity = new HttpEntity<>(new AuthorizeSystemRequest(token));
         AuthorizeSystemResponse authorizeUserResponse = restTemplate.postForObject("/authorizeSystem", requestEntity, AuthorizeSystemResponse.class);
-        return authorizeUserResponse.getPayload().getSystemId();
+        if (authorizeUserResponse != null) {
+            return authorizeUserResponse.getPayload().getSystemId();
+        }
+        return "";
     }
 
-    private long authorizeUser(String token) {
+    private String authorizeUser(String token) {
         HttpEntity<AuthorizeUserRequest> requestEntity = new HttpEntity<>(new AuthorizeUserRequest(token));
         AuthorizeUserResponse authorizeUserResponse = restTemplate.postForObject("/authorizeUser", requestEntity, AuthorizeUserResponse.class);
-        return authorizeUserResponse.getPayload().getUserId();
+        if (authorizeUserResponse != null) {
+            return authorizeUserResponse.getPayload().getUserId();
+        }
+        return "";
     }
 
     private String getTokenFromRequest(HttpServletRequest request) {
@@ -75,6 +81,6 @@ public class AuthServiceFilter extends OncePerRequestFilter {
         if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
             return bearerToken.substring(7);
         }
-        return null;
+        return "";
     }
 }
