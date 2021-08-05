@@ -49,4 +49,12 @@ public class LuckyMoney {
 
     @Column(name = "expired_at")
     LocalDateTime expiredAt;
+
+    public boolean isOutOfBag() {
+        return restBag == 0;
+    }
+
+    public boolean isExpired(LocalDateTime now) {
+        return expiredAt.isBefore(now);
+    }
 }

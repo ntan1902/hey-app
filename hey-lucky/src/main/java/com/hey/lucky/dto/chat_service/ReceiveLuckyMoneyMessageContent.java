@@ -1,4 +1,4 @@
-package com.hey.lucky.dto.payment_service;
+package com.hey.lucky.dto.chat_service;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,9 +9,11 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class CreateTransferToUserRequest {
-    private long walletId;
+public class ReceiveLuckyMoneyMessageContent {
+    private String sessionId;
     private String receiverId;
+    private long luckyMoneyId;
     private long amount;
     private String message;
+    private String createdAt;
 }

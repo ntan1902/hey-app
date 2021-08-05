@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class CreateTransferFromUserRequest {
+public class TransferFromUserRequest {
     private String userId;
     private long walletId;
     private String softToken;

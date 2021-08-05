@@ -1,7 +1,7 @@
 package com.hey.lucky.exception_handler.exception;
 
-public class LuckyMoneyInvalidException extends RuntimeException{
-    public LuckyMoneyInvalidException(){
+public class InvalidLuckyMoneyException extends Exception{
+    public InvalidLuckyMoneyException(){
         super("This lucky money is not exist");
     }
 }
