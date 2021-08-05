@@ -2,8 +2,10 @@ package com.hey.lucky.service;
 
 import com.hey.lucky.constant.TypeLuckyMoney;
 import com.hey.lucky.dto.auth_service.UserInfo;
-import com.hey.lucky.dto.payment_service.CreateTransferFromUserRequest;
-import com.hey.lucky.dto.payment_service.CreateTransferToUserRequest;
+import com.hey.lucky.dto.chat_service.LuckyMoneyMessageContent;
+import com.hey.lucky.dto.chat_service.ReceiveLuckyMoneyMessageContent;
+import com.hey.lucky.dto.payment_service.TransferFromUserRequest;
+import com.hey.lucky.dto.payment_service.TransferToUserRequest;
 import com.hey.lucky.dto.user.CreateLuckyMoneyRequest;
 import com.hey.lucky.dto.user.LuckyMoneyDetails;
 import com.hey.lucky.dto.user.ReceiveLuckyMoneyRequest;
@@ -54,6 +56,29 @@ class LuckyMoneyServiceImplTest {
     @Mock
     private LuckyMoneyMapper luckyMoneyMapper;
 
+    @Test
+    void createLuckyMoney_throw_UnauthorizeException() throws ErrCallApiException {
+        // given
+        CreateLuckyMoneyRequest request = CreateLuckyMoneyRequest.builder()
+                .sessionChatId("abc")
+                .numberBag(10)
+                .message("happy new year")
+                .softToken("abc-123")
+                .type(TypeLuckyMoney.RANDOM)
+                .build();
+        User user = new User("abc");
+        long walletId = 1L;
+
+        when(walletsInfo.getCurrentWallet()).thenReturn(walletId);
+        when(luckyMoneyServiceUtil.getCurrentUser()).thenReturn(user);
+
+        when(luckyMoneyServiceUtil.isUserInSession(anyString(), anyString())).thenReturn(false);
+
+
+        // when
+        // then
+        assertThrows(UnauthorizeException.class, ()-> luckyMoneyService.createLuckyMoney(request));
+    }
 
     @Test
     void createLuckyMoney() throws ErrCallApiException, CannotTransferMoneyException, ErrCallChatApiException, UnauthorizeException {
@@ -75,8 +100,8 @@ class LuckyMoneyServiceImplTest {
 
         when(luckyMoneyServiceUtil.isUserInSession(anyString(), anyString())).thenReturn(true);
 
-        when(luckyMoneyServiceUtil.transferMoneyFromUser(any(CreateTransferFromUserRequest.class))).thenReturn(amount);
-        doNothing().when(luckyMoneyServiceUtil).sendMessageLuckyMoney(anyString(), anyString(), anyString(), anyLong(), any());
+        when(luckyMoneyServiceUtil.transferMoneyFromUser(any(TransferFromUserRequest.class))).thenReturn(amount);
+        doNothing().when(luckyMoneyServiceUtil).sendMessageLuckyMoney(any(LuckyMoneyMessageContent.class));
         doAnswer(invocationOnMock -> {
             LuckyMoney firstAgr = invocationOnMock.getArgument(0);
             firstAgr.setId(1L);
@@ -124,7 +149,7 @@ class LuckyMoneyServiceImplTest {
     }
 
     @Test
-    void receiveLuckyMoney_throw_UnauthorizeException() throws ErrCallApiException {
+    void receiveLuckyMoney_throw_UnauthorizedException() throws ErrCallApiException {
         // given
         User user = new User("abc");
         ReceiveLuckyMoneyRequest request = ReceiveLuckyMoneyRequest.builder()
@@ -145,13 +170,11 @@ class LuckyMoneyServiceImplTest {
                 .expiredAt(createdAt.plusDays(1))
                 .build();
         when(luckyMoneyServiceUtil.getCurrentUser()).thenReturn(user);
-        when(luckyMoneyServiceUtil.isUserInSession(eq(user.getId()), eq(luckyMoney.getSessionChatId()))).thenReturn(false);
+        when(luckyMoneyServiceUtil.isUserInSession(user.getId(), luckyMoney.getSessionChatId())).thenReturn(false);
         when(luckyMoneyRepository.getLuckyMoneyById(request.getLuckyMoneyId())).thenReturn(Optional.of(luckyMoney));
         // when
         // then
-        assertThrows(UnauthorizeException.class, () -> {
-            luckyMoneyService.receiveLuckyMoney(request);
-        });
+        assertThrows(UnauthorizeException.class, () -> luckyMoneyService.receiveLuckyMoney(request));
 
     }
 
@@ -177,7 +200,7 @@ class LuckyMoneyServiceImplTest {
                 .build();
         when(luckyMoneyServiceUtil.getCurrentUser()).thenReturn(user);
         when(luckyMoneyRepository.getLuckyMoneyById(request.getLuckyMoneyId())).thenReturn(Optional.of(luckyMoney));
-        when(luckyMoneyServiceUtil.isUserInSession(eq(user.getId()), eq(luckyMoney.getSessionChatId()))).thenReturn(true);
+        when(luckyMoneyServiceUtil.isUserInSession(user.getId(), luckyMoney.getSessionChatId())).thenReturn(true);
         // when
 //        luckyMoneyService.receiveLuckyMoney(request);
         // then
@@ -207,8 +230,8 @@ class LuckyMoneyServiceImplTest {
                 .build();
         when(luckyMoneyServiceUtil.getCurrentUser()).thenReturn(user);
         when(luckyMoneyRepository.getLuckyMoneyById(request.getLuckyMoneyId())).thenReturn(Optional.of(luckyMoney));
-        when(luckyMoneyServiceUtil.isUserInSession(eq(user.getId()), eq(luckyMoney.getSessionChatId()))).thenReturn(true);
-        when(luckyMoneyServiceUtil.hadUserReceived(eq(luckyMoney.getId()), eq(user.getId()))).thenReturn(true);
+        when(luckyMoneyServiceUtil.isUserInSession(user.getId(), luckyMoney.getSessionChatId())).thenReturn(true);
+        when(luckyMoneyServiceUtil.hadUserReceived(luckyMoney.getId(), user.getId())).thenReturn(true);
 
         // when
 //        luckyMoneyService.receiveLuckyMoney(request);
@@ -239,8 +262,8 @@ class LuckyMoneyServiceImplTest {
                 .build();
         when(luckyMoneyServiceUtil.getCurrentUser()).thenReturn(user);
         when(luckyMoneyRepository.getLuckyMoneyById(request.getLuckyMoneyId())).thenReturn(Optional.of(luckyMoney));
-        when(luckyMoneyServiceUtil.isUserInSession(eq(user.getId()), eq(luckyMoney.getSessionChatId()))).thenReturn(true);
-        when(luckyMoneyServiceUtil.hadUserReceived(eq(luckyMoney.getId()), eq(user.getId()))).thenReturn(false);
+        when(luckyMoneyServiceUtil.isUserInSession(user.getId(), luckyMoney.getSessionChatId())).thenReturn(true);
+        when(luckyMoneyServiceUtil.hadUserReceived(luckyMoney.getId(), user.getId())).thenReturn(false);
 
         // when
 //        luckyMoneyService.receiveLuckyMoney(request);
@@ -273,13 +296,13 @@ class LuckyMoneyServiceImplTest {
         when(luckyMoneyServiceUtil.getCurrentUser()).thenReturn(user);
         when(luckyMoneyRepository.getLuckyMoneyById(anyLong())).thenReturn(Optional.of(luckyMoney));
 
-        when(luckyMoneyServiceUtil.isUserInSession(anyString(), eq(luckyMoney.getSessionChatId()))).thenReturn(true);
+        when(luckyMoneyServiceUtil.isUserInSession(anyString(), luckyMoney.getSessionChatId())).thenReturn(true);
         when(luckyMoneyServiceUtil.hadUserReceived(luckyMoney.getId(), user.getId())).thenReturn(false);
         long amount = 3_000L;
-        when(luckyMoneyServiceUtil.calculateAmountLuckyMoney(anyLong(), anyInt(), anyLong(), anyInt(), anyString())).thenReturn(amount);
+        when(luckyMoneyServiceUtil.calculateAmountLuckyMoney(any(LuckyMoney.class))).thenReturn(amount);
 
-        doNothing().when(luckyMoneyServiceUtil).transferMoneyToUser(any(CreateTransferToUserRequest.class));
-        doNothing().when(luckyMoneyServiceUtil).sendMessageReceiveLuckyMoney(eq(user.getId()), eq(luckyMoney.getSessionChatId()), eq(luckyMoney.getId()), eq(amount), eq(luckyMoney.getWishMessage()), any(LocalDateTime.class));
+        doNothing().when(luckyMoneyServiceUtil).transferMoneyToUser(any(TransferToUserRequest.class));
+        doNothing().when(luckyMoneyServiceUtil).sendMessageReceiveLuckyMoney(any(ReceiveLuckyMoneyMessageContent.class));
         ReceivedLuckyMoney expected = ReceivedLuckyMoney.builder()
                 .luckyMoneyId(luckyMoney.getId())
                 .receiverId(user.getId())
@@ -305,12 +328,10 @@ class LuckyMoneyServiceImplTest {
         String sessionId = "abc-123";
 
         when(luckyMoneyServiceUtil.getCurrentUser()).thenReturn(user);
-        when(luckyMoneyServiceUtil.isUserInSession(eq(user.getId()), eq(sessionId))).thenReturn(false);
+        when(luckyMoneyServiceUtil.isUserInSession(user.getId(), sessionId)).thenReturn(false);
         // when
         // then
-        assertThrows(UnauthorizeException.class, () -> {
-            luckyMoneyService.getAllLuckyMoneyOfSession(sessionId);
-        });
+        assertThrows(UnauthorizeException.class, () -> luckyMoneyService.getAllLuckyMoneyOfSession(sessionId));
 
     }
 
@@ -348,13 +369,13 @@ class LuckyMoneyServiceImplTest {
                 .expiredAt(now.plusDays(1))
                 .build());
         when(luckyMoneyServiceUtil.getCurrentUser()).thenReturn(user);
-        when(luckyMoneyServiceUtil.isUserInSession(eq(user.getId()), eq(sessionId))).thenReturn(true);
-        when(luckyMoneyRepository.findAllBySessionChatId(eq(sessionId))).thenReturn(expected);
+        when(luckyMoneyServiceUtil.isUserInSession(user.getId(), sessionId)).thenReturn(true);
+        when(luckyMoneyRepository.findAllBySessionChatId(sessionId)).thenReturn(expected);
         // when
         luckyMoneyService.getAllLuckyMoneyOfSession(sessionId);
         // then
         ArgumentCaptor<List<LuckyMoney>> argumentCaptor = ArgumentCaptor.forClass(List.class);
-        verify(luckyMoneyServiceUtil, times(1)).luckyMoneyList2LuckyMoneyDTOList(argumentCaptor.capture(), eq(user));
+        verify(luckyMoneyServiceUtil, times(1)).luckyMoneyList2LuckyMoneyDTOList(argumentCaptor.capture(), user);
         List<LuckyMoney> actual = argumentCaptor.getValue();
         assertEquals(expected, actual);
     }
@@ -392,8 +413,8 @@ class LuckyMoneyServiceImplTest {
                 .expiredAt(now.plusDays(1))
                 .build();
         when(luckyMoneyServiceUtil.getCurrentUser()).thenReturn(user);
-        when(luckyMoneyRepository.findLuckyMoneyById(eq(luckyMoneyId))).thenReturn(Optional.of(luckyMoney));
-        when(luckyMoneyServiceUtil.isUserInSession(eq(user.getId()), eq(luckyMoney.getSessionChatId()))).thenReturn(false);
+        when(luckyMoneyRepository.findLuckyMoneyById(luckyMoneyId)).thenReturn(Optional.of(luckyMoney));
+        when(luckyMoneyServiceUtil.isUserInSession(user.getId(), luckyMoney.getSessionChatId())).thenReturn(false);
         // when
         // then
         assertThrows(UnauthorizeException.class, () -> luckyMoneyService.getLuckyMoneyDetails(luckyMoneyId));
@@ -419,8 +440,8 @@ class LuckyMoneyServiceImplTest {
                 .expiredAt(now.plusDays(1))
                 .build();
         when(luckyMoneyServiceUtil.getCurrentUser()).thenReturn(user);
-        when(luckyMoneyRepository.findLuckyMoneyById(eq(luckyMoneyId))).thenReturn(Optional.of(luckyMoney));
-        when(luckyMoneyServiceUtil.isUserInSession(eq(user.getId()), eq(luckyMoney.getSessionChatId()))).thenReturn(true);
+        when(luckyMoneyRepository.findLuckyMoneyById(luckyMoneyId)).thenReturn(Optional.of(luckyMoney));
+        when(luckyMoneyServiceUtil.isUserInSession(user.getId(), luckyMoney.getSessionChatId())).thenReturn(true);
 
 
         UserInfo senderLuckyMoney = new UserInfo();
@@ -431,9 +452,9 @@ class LuckyMoneyServiceImplTest {
 
         List<UserReceiveInfo> receivedUsers = new ArrayList<>();
 
-        when(luckyMoneyServiceUtil.getUserInfo(eq(luckyMoney.getUserId()))).thenReturn(senderLuckyMoney);
+        when(luckyMoneyServiceUtil.getUserInfo(luckyMoney.getUserId())).thenReturn(senderLuckyMoney);
 
-        when(luckyMoneyServiceUtil.getListReceivedUsers(eq(luckyMoney.getId()))).thenReturn(receivedUsers);
+        when(luckyMoneyServiceUtil.getListReceivedUsers(luckyMoney.getId())).thenReturn(receivedUsers);
 
 
         LuckyMoneyDetails luckyMoneyDetails = LuckyMoneyDetails.builder()
@@ -456,55 +477,103 @@ class LuckyMoneyServiceImplTest {
                 .wishMessage("hello")
                 .build();
 
-        when(luckyMoneyMapper.luckyMoney2LuckyMoneyDetails(eq(luckyMoney))).thenReturn(luckyMoneyDetails);
+        when(luckyMoneyMapper.luckyMoney2LuckyMoneyDetails(luckyMoney)).thenReturn(luckyMoneyDetails);
         // when
         LuckyMoneyDetails actual = luckyMoneyService.getLuckyMoneyDetails(luckyMoneyId);
         // then
         assertEquals(expected, actual);
     }
 
-//    @Test
-//    void refundLuckyMoney_throw_CannotTranferMoneyException() throws CannotTransferMoneyException {
-//        // given
-//        LocalDateTime now = LocalDateTime.now();
-//        List<LuckyMoney> luckyMoneyList = new ArrayList<>();
-//        luckyMoneyList.add(LuckyMoney.builder()
-//                .sessionChatId("123-abc")
-//                .userId("123")
-//                .amount(50000L)
-//                .wishMessage("hello")
-//                .type(TypeLuckyMoney.EQUALLY)
-//                .restMoney(10000L)
-//                .numberBag(10)
-//                .restBag(1)
-//                .systemWalletId(12L)
-//                .createdAt(now.minusDays(1))
-//                .expiredAt(now.plusMinutes(2))
-//                .build());
-//        luckyMoneyList.add(LuckyMoney.builder()
-//                .sessionChatId("123-456")
-//                .userId("123")
-//                .amount(50000L)
-//                .wishMessage("hello")
-//                .type(TypeLuckyMoney.EQUALLY)
-//                .restMoney(10000L)
-//                .numberBag(10)
-//                .restBag(1)
-//                .systemWalletId(12L)
-//                .createdAt(now.minusDays(1))
-//                .expiredAt(now.plusMinutes(2))
-//                .build());
-//        when(luckyMoneyRepository.getAllByRestMoneyGreaterThanZeroAndExpiredAtBetween(any(LocalDateTime.class),any(LocalDateTime.class))).thenReturn(luckyMoneyList);
-//        doThrow(new CannotTransferMoneyException("Error from payment service")).when(luckyMoneyServiceUtil).transferMoneyToUser(any(CreateTransferToUserRequest.class));
-//        // when
-//        luckyMoneyService.refundLuckyMoney();
-//        // then
-//        ArgumentCaptor<LuckyMoney> argSave = ArgumentCaptor.forClass(LuckyMoney.class);
-//        verify(luckyMoneyRepository,times(2)).save(argSave.capture());
-//        List<LuckyMoney> actuals = argSave.getAllValues();
-//
-//        assertTrue(actuals.get(0).getExpiredAt().isAfter(luckyMoneyList.get(0).getExpiredAt()));
-//        assertTrue(actuals.get(1).getExpiredAt().isAfter(luckyMoneyList.get(1).getExpiredAt()));
-//    }
+    @Test
+    void refundLuckyMoney_throw_CannotTranferMoneyException() throws CannotTransferMoneyException {
+        // given
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime expired = now.plusMinutes(2);
+        List<LuckyMoney> luckyMoneyList = new ArrayList<>();
+        luckyMoneyList.add(LuckyMoney.builder()
+                .sessionChatId("123-abc")
+                .userId("123")
+                .amount(50000L)
+                .wishMessage("hello")
+                .type(TypeLuckyMoney.EQUALLY)
+                .restMoney(10000L)
+                .numberBag(10)
+                .restBag(1)
+                .systemWalletId(12L)
+                .createdAt(now.minusDays(1))
+                .expiredAt(expired)
+                .build());
+        luckyMoneyList.add(LuckyMoney.builder()
+                .sessionChatId("123-456")
+                .userId("123")
+                .amount(50000L)
+                .wishMessage("hello")
+                .type(TypeLuckyMoney.EQUALLY)
+                .restMoney(10000L)
+                .numberBag(10)
+                .restBag(1)
+                .systemWalletId(12L)
+                .createdAt(now.minusDays(1))
+                .expiredAt(expired)
+                .build());
+        when(luckyMoneyRepository.getAllByRestMoneyGreaterThanZeroAndExpiredAtBetween(any(LocalDateTime.class),any(LocalDateTime.class))).thenReturn(luckyMoneyList);
+        doThrow(new CannotTransferMoneyException("Error from payment service")).when(luckyMoneyServiceUtil).transferMoneyToUser(any(TransferToUserRequest.class));
+        // when
+        luckyMoneyService.refundLuckyMoney();
+        // then
+        ArgumentCaptor<LuckyMoney> argSave = ArgumentCaptor.forClass(LuckyMoney.class);
+        verify(luckyMoneyRepository,times(2)).save(argSave.capture());
+        List<LuckyMoney> actuals = argSave.getAllValues();
+
+        assertTrue(actuals.get(0).getExpiredAt().isAfter(expired));
+        assertTrue(actuals.get(1).getExpiredAt().isAfter(expired));
+    }
+
+    @Test
+    void refundLuckyMoney_Successfully() throws CannotTransferMoneyException {
+        // given
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime expired = now.plusMinutes(2);
+        List<LuckyMoney> luckyMoneyList = new ArrayList<>();
+        luckyMoneyList.add(LuckyMoney.builder()
+                .sessionChatId("123-abc")
+                .userId("123")
+                .amount(50000L)
+                .wishMessage("hello")
+                .type(TypeLuckyMoney.EQUALLY)
+                .restMoney(10000L)
+                .numberBag(10)
+                .restBag(1)
+                .systemWalletId(12L)
+                .createdAt(now.minusDays(1))
+                .expiredAt(expired)
+                .build());
+        luckyMoneyList.add(LuckyMoney.builder()
+                .sessionChatId("123-456")
+                .userId("123")
+                .amount(50000L)
+                .wishMessage("hello")
+                .type(TypeLuckyMoney.EQUALLY)
+                .restMoney(10000L)
+                .numberBag(10)
+                .restBag(1)
+                .systemWalletId(12L)
+                .createdAt(now.minusDays(1))
+                .expiredAt(expired)
+                .build());
+        when(luckyMoneyRepository.getAllByRestMoneyGreaterThanZeroAndExpiredAtBetween(any(LocalDateTime.class),any(LocalDateTime.class))).thenReturn(luckyMoneyList);
+        doNothing().when(luckyMoneyServiceUtil).transferMoneyToUser(any(TransferToUserRequest.class));
+        // when
+        luckyMoneyService.refundLuckyMoney();
+        // then
+        ArgumentCaptor<LuckyMoney> argSave = ArgumentCaptor.forClass(LuckyMoney.class);
+        verify(luckyMoneyRepository,times(2)).save(argSave.capture());
+        List<LuckyMoney> actuals = argSave.getAllValues();
+
+        for (LuckyMoney luckyMoney : actuals){
+            assertEquals( expired,luckyMoney.getExpiredAt());
+            assertEquals(0L,luckyMoney.getRestMoney());
+        }
+    }
 
 }

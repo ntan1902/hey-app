@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class CreateLuckyMoneyMessageRequest {
+public class LuckyMoneyMessageContent {
     private String userId;
     private String sessionId;
     private long luckyMoneyId;

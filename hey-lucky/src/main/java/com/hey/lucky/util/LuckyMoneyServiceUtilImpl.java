@@ -8,8 +8,8 @@ import com.hey.lucky.dto.auth_service.GetUserInfoResponse;
 import com.hey.lucky.dto.auth_service.UserInfo;
 import com.hey.lucky.dto.chat_service.CheckUserInSessionChatRequest;
 import com.hey.lucky.dto.chat_service.CheckUserInSessionChatResponse;
-import com.hey.lucky.dto.chat_service.CreateLuckyMoneyMessageRequest;
-import com.hey.lucky.dto.chat_service.CreateReceiveLuckyMoneyMessageRequest;
+import com.hey.lucky.dto.chat_service.LuckyMoneyMessageContent;
+import com.hey.lucky.dto.chat_service.ReceiveLuckyMoneyMessageContent;
 import com.hey.lucky.dto.payment_service.*;
 import com.hey.lucky.dto.user.LuckyMoneyDTO;
 import com.hey.lucky.dto.user.UserReceiveInfo;
@@ -23,7 +23,6 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -54,7 +53,7 @@ public class LuckyMoneyServiceUtilImpl implements LuckyMoneyServiceUtil {
     }
 
     @Override
-    public void transferMoneyToUser(CreateTransferToUserRequest request) throws CannotTransferMoneyException {
+    public void transferMoneyToUser(TransferToUserRequest request) throws CannotTransferMoneyException {
         log.info("Transfer {} to user {} by wallet {}", request.getAmount(), request.getReceiverId(), request.getWalletId());
         CreateTransferToUserResponse response = paymentApi.createTransferToUser(request);
         if (!response.getSuccess()) {
@@ -124,56 +123,42 @@ public class LuckyMoneyServiceUtilImpl implements LuckyMoneyServiceUtil {
     }
 
     @Override
-    public void sendMessageReceiveLuckyMoney(String receiverId, String sessionChatId, long luckeyMoneyId, long amount, String wishMessage, LocalDateTime now) throws ErrCallChatApiException {
+    public void sendMessageReceiveLuckyMoney(ReceiveLuckyMoneyMessageContent request) throws ErrCallChatApiException {
         log.info("Send message receive lucky money");
-        CreateReceiveLuckyMoneyMessageRequest request = CreateReceiveLuckyMoneyMessageRequest.builder()
-                .receiverId(receiverId)
-                .sessionId(sessionChatId)
-                .luckyMoneyId(luckeyMoneyId)
-                .amount(amount)
-                .message(wishMessage)
-                .createdAt(now.toString()).build();
         chatApi.createReceiveLuckyMoneyMessage(request);
     }
 
 
     @Override
-    public long calculateAmountLuckyMoney(Long restMoney, int restBag, long totalMoney, int totalBag, String type) {
+    public long calculateAmountLuckyMoney(LuckyMoney luckyMoney) {
         log.info("Calculate amount user will receive");
-        switch (type) {
+        switch (luckyMoney.getType()) {
             case TypeLuckyMoney.RANDOM: {
-                if (restBag == 1) {
-                    return restMoney;
+                if (luckyMoney.getRestBag() == 1) {
+                    return luckyMoney.getRestMoney();
                 }
-                long minPerBag = (long) ((totalMoney * 0.9) / totalBag);
+                long minPerBag = (long) ((luckyMoney.getAmount() * 0.9) / luckyMoney.getNumberBag());
                 Random random = new Random();
-                long randomMoney = restMoney - (minPerBag * restBag);
-                long result = minPerBag + (long) ((random.nextDouble() / restBag + random.nextDouble() / totalBag + (double) (restBag) / totalBag / totalBag) * randomMoney);
-                if (result > restMoney) return restMoney;
+                long randomMoney = luckyMoney.getRestMoney() - (minPerBag * luckyMoney.getRestBag());
+                long result = minPerBag + (long) ((random.nextDouble() / luckyMoney.getRestBag() + random.nextDouble() / luckyMoney.getNumberBag() + (double) (luckyMoney.getRestBag()) / luckyMoney.getNumberBag() / luckyMoney.getNumberBag()) * randomMoney);
+                if (result > luckyMoney.getRestMoney()) return luckyMoney.getRestMoney();
                 return result;
             }
             case TypeLuckyMoney.EQUALLY:
             default: {
-                return restMoney / restBag;
+                return luckyMoney.getRestMoney() / luckyMoney.getRestBag();
             }
         }
     }
 
     @Override
-    public void sendMessageLuckyMoney(String userId, String sessionChatId, String message, long luckyMoneyId, LocalDateTime createdAt) throws ErrCallChatApiException {
+    public void sendMessageLuckyMoney(LuckyMoneyMessageContent request) throws ErrCallChatApiException {
         log.info("Send message lucky money");
-        CreateLuckyMoneyMessageRequest request = CreateLuckyMoneyMessageRequest.builder()
-                .userId(userId)
-                .sessionId(sessionChatId)
-                .message(message)
-                .luckyMoneyId(luckyMoneyId)
-                .createdAt(createdAt.toString())
-                .build();
         chatApi.createLuckyMoneyMessage(request);
     }
 
     @Override
-    public long transferMoneyFromUser(CreateTransferFromUserRequest request) throws CannotTransferMoneyException {
+    public long transferMoneyFromUser(TransferFromUserRequest request) throws CannotTransferMoneyException {
         log.info("Transfer from user {} to wallet {} by softToken {}", request.getUserId(), request.getWalletId(), request.getSoftToken());
 
         CreateTransferFromUserResponse response = paymentApi.createTransferFromUser(request);

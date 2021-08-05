@@ -3,8 +3,6 @@ package com.hey.lucky.api;
 import com.hey.lucky.dto.payment_service.*;
 import com.hey.lucky.properties.ServiceProperties;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
@@ -21,14 +19,14 @@ public class PaymentApiImpl implements PaymentApi {
     }
 
     @Override
-    public CreateTransferFromUserResponse createTransferFromUser(CreateTransferFromUserRequest request) {
-        HttpEntity<CreateTransferFromUserRequest> requestHttpEntity = new HttpEntity<>(request);
+    public CreateTransferFromUserResponse createTransferFromUser(TransferFromUserRequest request) {
+        HttpEntity<TransferFromUserRequest> requestHttpEntity = new HttpEntity<>(request);
         return restTemplate.postForObject(serviceProperties.getPayment() + serviceProperties.getApiUrl() + "/createTransferFromUser", requestHttpEntity, CreateTransferFromUserResponse.class);
     }
 
     @Override
-    public CreateTransferToUserResponse createTransferToUser(CreateTransferToUserRequest request) {
-        HttpEntity<CreateTransferToUserRequest> requestHttpEntity = new HttpEntity<>(request);
+    public CreateTransferToUserResponse createTransferToUser(TransferToUserRequest request) {
+        HttpEntity<TransferToUserRequest> requestHttpEntity = new HttpEntity<>(request);
         return restTemplate.postForObject(serviceProperties.getPayment() + serviceProperties.getApiUrl() + "/createTransferToUser", requestHttpEntity, CreateTransferToUserResponse.class);
     }
 }
