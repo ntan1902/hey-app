@@ -26,10 +26,10 @@ class LuckyMoneyRepositoryTest {
         // given
         LuckyMoney expect = LuckyMoney.builder()
                 .userId("abc")
-                .systemWalletId(1l)
+                .systemWalletId(1L)
                 .sessionChatId("123abc")
-                .amount(50000l)
-                .restMoney(50000l)
+                .amount(50000L)
+                .restMoney(50000L)
                 .numberBag(10)
                 .restBag(10)
                 .type("random")
