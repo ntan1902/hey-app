@@ -2,6 +2,7 @@ package com.hey.payment.controller;
 
 import com.hey.payment.dto.user.*;
 import com.hey.payment.entity.User;
+import com.hey.payment.exception_handler.exception.*;
 import com.hey.payment.service.TransferStatementService;
 import com.hey.payment.service.WalletService;
 import lombok.AllArgsConstructor;
@@ -24,7 +25,7 @@ public class UserController {
     private final TransferStatementService transferStatementService;
 
     @GetMapping("/wallet")
-    public ResponseEntity<ApiResponse<?>> getMyWallet(){
+    public ResponseEntity<ApiResponse<?>> getMyWallet() throws HaveNoWalletException {
         User user = getCurrentUser();
         WalletDTO walletDTO = walletService.getWalletOfUser(user.getId());
         return ResponseEntity.ok(ApiResponse.builder()
@@ -35,7 +36,7 @@ public class UserController {
     }
 
     @PostMapping("/createTransfer")
-    public ResponseEntity<ApiResponse<?>> createTransfer(@RequestBody CreateTransferRequest createTransferRequest){
+    public ResponseEntity<ApiResponse<?>> createTransfer(@RequestBody CreateTransferRequest createTransferRequest) throws NegativeAmountException, MaxAmountException, HaveNoWalletException, SoftTokenAuthorizeException, WrongTargetException, SourceAndTargetAreTheSameException {
         User user = getCurrentUser();
         return ResponseEntity.ok(
                 transferStatementService.createTransfer(user, createTransferRequest)
@@ -43,7 +44,7 @@ public class UserController {
     }
 
     @PostMapping("/topup")
-    public ResponseEntity<ApiResponse<?>> topUp(@RequestBody TopUpRequest topupRequest){
+    public ResponseEntity<ApiResponse<?>> topUp(@RequestBody TopUpRequest topupRequest) throws MaxAmountException, MaxBalanceException, HaveNoWalletException, BankInvalidException {
         User user = getCurrentUser();
         transferStatementService.topUp(user,topupRequest);
         return ResponseEntity.ok(ApiResponse.builder()
@@ -56,7 +57,7 @@ public class UserController {
 
 
     @GetMapping("/getTransferStatement")
-    public ResponseEntity<ApiResponse<?>> getTransferStatement(){
+    public ResponseEntity<ApiResponse<?>> getTransferStatement() throws DatabaseHasErr, HaveNoWalletException, ApiErrException {
         User user = getCurrentUser();
         List<TransferStatementDTO> transferStatementDTOList = transferStatementService.getTransferStatementOfUser(user.getId());
         return ResponseEntity.ok(ApiResponse.builder()
@@ -67,7 +68,7 @@ public class UserController {
     }
 
     @PostMapping("/createWallet")
-    public ResponseEntity<ApiResponse<?>> createWallet(){
+    public ResponseEntity<ApiResponse<?>> createWallet() throws HadWalletException {
         User user = getCurrentUser();
         WalletDTO walletDTO = walletService.createWallet(user);
         return ResponseEntity.ok(ApiResponse.builder()
