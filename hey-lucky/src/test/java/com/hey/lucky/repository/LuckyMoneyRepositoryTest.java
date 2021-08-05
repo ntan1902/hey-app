@@ -1,8 +1,6 @@
 package com.hey.lucky.repository;
 
 import com.hey.lucky.entity.LuckyMoney;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -12,7 +10,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-
 
 @DataJpaTest
 class LuckyMoneyRepositoryTest {
@@ -26,10 +23,10 @@ class LuckyMoneyRepositoryTest {
         // given
         LuckyMoney expect = LuckyMoney.builder()
                 .userId("abc")
-                .systemWalletId(1l)
+                .systemWalletId(1L)
                 .sessionChatId("123abc")
-                .amount(50000l)
-                .restMoney(50000l)
+                .amount(50000L)
+                .restMoney(50000L)
                 .numberBag(10)
                 .restBag(10)
                 .type("random")
@@ -40,7 +37,7 @@ class LuckyMoneyRepositoryTest {
         luckyMoneyRepository.save(expect);
 
         // when
-        LuckyMoney actual = luckyMoneyRepository.getLuckyMoneyById(expect.getId()).get();
+        LuckyMoney actual = luckyMoneyRepository.getLuckyMoneyById(expect.getId()).orElse(null);
         // then
         assertThat(actual).isEqualTo(expect);
     }
@@ -50,10 +47,10 @@ class LuckyMoneyRepositoryTest {
         // given
         LuckyMoney expect = LuckyMoney.builder()
                 .userId("abc")
-                .systemWalletId(1l)
+                .systemWalletId(1L)
                 .sessionChatId("123abc")
-                .amount(50000l)
-                .restMoney(50000l)
+                .amount(50000L)
+                .restMoney(50000L)
                 .numberBag(10)
                 .restBag(10)
                 .type("random")
@@ -64,7 +61,7 @@ class LuckyMoneyRepositoryTest {
         luckyMoneyRepository.save(expect);
 
         // when
-        LuckyMoney actual = luckyMoneyRepository.findLuckyMoneyById(expect.getId()).get();
+        LuckyMoney actual = luckyMoneyRepository.findLuckyMoneyById(expect.getId()).orElse(null);
         // then
         assertThat(actual).isEqualTo(expect);
     }
@@ -74,10 +71,10 @@ class LuckyMoneyRepositoryTest {
         // given
         LuckyMoney lm = LuckyMoney.builder()
                 .userId("abc")
-                .systemWalletId(1l)
+                .systemWalletId(1L)
                 .sessionChatId("123abc")
-                .amount(50000l)
-                .restMoney(50000l)
+                .amount(50000L)
+                .restMoney(50000L)
                 .numberBag(10)
                 .restBag(10)
                 .type("random")
@@ -88,10 +85,10 @@ class LuckyMoneyRepositoryTest {
         luckyMoneyRepository.save(lm);
         LuckyMoney lm1 = LuckyMoney.builder()
                 .userId("abc")
-                .systemWalletId(1l)
+                .systemWalletId(1L)
                 .sessionChatId("123abc")
-                .amount(50000l)
-                .restMoney(50000l)
+                .amount(50000L)
+                .restMoney(50000L)
                 .numberBag(10)
                 .restBag(10)
                 .type("random")
@@ -102,10 +99,10 @@ class LuckyMoneyRepositoryTest {
         luckyMoneyRepository.save(lm1);
         LuckyMoney lm2 = LuckyMoney.builder()
                 .userId("abc")
-                .systemWalletId(1l)
+                .systemWalletId(1L)
                 .sessionChatId("123abc")
-                .amount(50000l)
-                .restMoney(50000l)
+                .amount(50000L)
+                .restMoney(50000L)
                 .numberBag(10)
                 .restBag(10)
                 .type("random")
@@ -116,10 +113,10 @@ class LuckyMoneyRepositoryTest {
         luckyMoneyRepository.save(lm2);
         LuckyMoney lm3 = LuckyMoney.builder()
                 .userId("abc")
-                .systemWalletId(1l)
+                .systemWalletId(1L)
                 .sessionChatId("1234abc")
-                .amount(50000l)
-                .restMoney(50000l)
+                .amount(50000L)
+                .restMoney(50000L)
                 .numberBag(10)
                 .restBag(10)
                 .type("random")
@@ -148,10 +145,10 @@ class LuckyMoneyRepositoryTest {
         // given
         LuckyMoney lm = LuckyMoney.builder()
                 .userId("abc")
-                .systemWalletId(1l)
+                .systemWalletId(1L)
                 .sessionChatId("123abc")
-                .amount(50000l)
-                .restMoney(50000l)
+                .amount(50000L)
+                .restMoney(50000L)
                 .numberBag(10)
                 .restBag(10)
                 .type("random")
@@ -162,10 +159,10 @@ class LuckyMoneyRepositoryTest {
         luckyMoneyRepository.save(lm);
         LuckyMoney lm1 = LuckyMoney.builder()
                 .userId("abc")
-                .systemWalletId(1l)
+                .systemWalletId(1L)
                 .sessionChatId("123abc")
-                .amount(50000l)
-                .restMoney(0l)
+                .amount(50000L)
+                .restMoney(0L)
                 .numberBag(10)
                 .restBag(10)
                 .type("random")
@@ -176,10 +173,10 @@ class LuckyMoneyRepositoryTest {
         luckyMoneyRepository.save(lm1);
         LuckyMoney lm2 = LuckyMoney.builder()
                 .userId("abc")
-                .systemWalletId(1l)
+                .systemWalletId(1L)
                 .sessionChatId("123abc")
-                .amount(50000l)
-                .restMoney(50000l)
+                .amount(50000L)
+                .restMoney(50000L)
                 .numberBag(10)
                 .restBag(10)
                 .type("random")
@@ -190,10 +187,10 @@ class LuckyMoneyRepositoryTest {
         luckyMoneyRepository.save(lm2);
         LuckyMoney lm3 = LuckyMoney.builder()
                 .userId("abc")
-                .systemWalletId(1l)
+                .systemWalletId(1L)
                 .sessionChatId("1234abc")
-                .amount(50000l)
-                .restMoney(50000l)
+                .amount(50000L)
+                .restMoney(50000L)
                 .numberBag(10)
                 .restBag(10)
                 .type("random")
