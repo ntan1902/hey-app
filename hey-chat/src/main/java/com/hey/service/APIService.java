@@ -754,8 +754,8 @@ public class APIService extends BaseService {
         Future<Boolean> future = Future.future();
 
         // Find session id of source id and target id
-        Future<String> getSessionId = getSessionIdOfUser1AndUser2(transferMessageRequest.getSourceId().toString(),
-                transferMessageRequest.getTargetId().toString());
+        Future<String> getSessionId = getSessionIdOfUser1AndUser2(transferMessageRequest.getSourceId(),
+                transferMessageRequest.getTargetId());
 
         getSessionId.compose(sessionId -> {
             if ("-1".equals(sessionId)) {
@@ -781,7 +781,7 @@ public class APIService extends BaseService {
 
     private void insertNewChatOnExistedSessionId(LuckyMoneyMessageRequest luckyMoneyMessageRequest) {
         Future<UserFull> getUserFullFuture = dataRepository
-                .getUserFull(luckyMoneyMessageRequest.getUserId().toString());
+                .getUserFull(luckyMoneyMessageRequest.getUserId());
         getUserFullFuture.compose(userFull -> {
             JsonObject content = new JsonObject();
             content.put("userId", luckyMoneyMessageRequest.getUserId());
@@ -791,7 +791,7 @@ public class APIService extends BaseService {
             content.put("sessionId", luckyMoneyMessageRequest.getSessionId());
 
             JsonObject luckyMoneyResponse = new JsonObject();
-            luckyMoneyResponse.put("type", "transfer");
+            luckyMoneyResponse.put("type", "createLuckyMoney");
             luckyMoneyResponse.put("content", content);
 
             ChatMessage chatMessage = new ChatMessage();
@@ -836,7 +836,7 @@ public class APIService extends BaseService {
     private void insertNewChatOnExistedSessionId(TransferMessageRequest transferMessageRequest, String sessionId) {
 
         Future<UserFull> getUserFullFuture = dataRepository
-                .getUserFull(transferMessageRequest.getSourceId().toString());
+                .getUserFull(transferMessageRequest.getSourceId());
         getUserFullFuture.compose(userFull -> {
             JsonObject content = new JsonObject();
             content.put("sourceId", transferMessageRequest.getSourceId());
@@ -891,8 +891,8 @@ public class APIService extends BaseService {
 
     private void insertNewChat(TransferMessageRequest transferMessageRequest) {
         List<String> userIds = new ArrayList<>();
-        userIds.add(transferMessageRequest.getSourceId().toString());
-        userIds.add(transferMessageRequest.getTargetId().toString());
+        userIds.add(transferMessageRequest.getSourceId());
+        userIds.add(transferMessageRequest.getTargetId());
 
         Future<List<UserFull>> getUserFullsFuture = getUserFulls(userIds);
         getUserFullsFuture.compose(userFulls -> {
@@ -962,7 +962,7 @@ public class APIService extends BaseService {
         Future<UserIdSessionIdResponse> future = Future.future();
 
         // Find list session id of user id
-        Future<List<String>> getSessionIds = getSessionIdOfUser(request.getUserId().toString());
+        Future<List<String>> getSessionIds = getSessionIdOfUser(request.getUserId());
 
         getSessionIds.compose(sessionIds -> {
             UserIdSessionIdResponse response = new UserIdSessionIdResponse();
@@ -1036,7 +1036,6 @@ public class APIService extends BaseService {
 
                 if (keys.size() > 0) {
                     // chat:list:sessionId:user:user:...
-
                     sessionIds = keys.stream().map(key -> key.split(":")[2]).collect(Collectors.toList());
                 }
 
@@ -1058,7 +1057,7 @@ public class APIService extends BaseService {
     }
 
     private void insertNewChatOnExistedSessionId(ReceiveLuckyMoneyMessageRequest request) {
-        Future<UserFull> getUserFullFuture = dataRepository.getUserFull(request.getReceiverId().toString());
+        Future<UserFull> getUserFullFuture = dataRepository.getUserFull(request.getReceiverId());
         getUserFullFuture.compose(userFull -> {
             JsonObject content = new JsonObject();
             content.put("userId", request.getReceiverId());
@@ -1069,7 +1068,7 @@ public class APIService extends BaseService {
             content.put("amount", request.getAmount());
 
             JsonObject receiveLuckyReponse = new JsonObject();
-            receiveLuckyReponse.put("type", "transfer");
+            receiveLuckyReponse.put("type", "receiveLuckyMoney");
             receiveLuckyReponse.put("content", content);
 
             ChatMessage chatMessage = new ChatMessage();
