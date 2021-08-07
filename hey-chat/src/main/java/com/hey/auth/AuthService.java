@@ -43,7 +43,7 @@ public class AuthService {
 
                         if (payload.containsKey("userId")) {
                             JsonObject user = new JsonObject();
-                            user.put("userId", payload.getString("userId").toString());
+                            user.put("userId", payload.getString("userId"));
                             resultHandler.handle(Future.succeededFuture(new JWTUser(user, "permissions")));
                         } else if (payload.containsKey("systemName")) {
                             JsonObject system = new JsonObject();

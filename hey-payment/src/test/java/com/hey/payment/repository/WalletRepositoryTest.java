@@ -93,7 +93,7 @@ class WalletRepositoryTest {
         underTest.save(expected);
 
         // when
-        Wallet actual = underTest.getByOwnerIdAndRefFrom("uuid", "users").get();
+        Wallet actual = underTest.findAndLockByOwnerIdAndRefFrom("uuid", "users").get();
 
         // then
         assertThat(actual).isEqualTo(expected);
@@ -111,7 +111,7 @@ class WalletRepositoryTest {
         underTest.save(expected);
 
         // when
-        Wallet actual = underTest.getWalletById(1L).get();
+        Wallet actual = underTest.findAndLockWalletById(1L).get();
 
         // then
         assertThat(actual).isEqualTo(expected);

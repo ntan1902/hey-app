@@ -105,20 +105,6 @@ public class UserExceptionHandler {
         return getResponse(code, exception.getMessage());
     }
 
-    @ExceptionHandler(value = {WrongSourceException.class})
-    public ResponseEntity<ApiResponse<Object>> handleWrongSourceException(Exception exception) {
-        log.error(exception.getMessage());
-        HttpStatus code = HttpStatus.BAD_REQUEST;
-        return getResponse(code, exception.getMessage());
-    }
-
-    @ExceptionHandler(value = {WrongTargetException.class})
-    public ResponseEntity<ApiResponse<Object>> handleWrongTargetException(Exception exception) {
-        log.error(exception.getMessage());
-        HttpStatus code = HttpStatus.BAD_REQUEST;
-        return getResponse(code, exception.getMessage());
-    }
-
     @ExceptionHandler(value = {SourceAndTargetAreTheSameException.class})
     public ResponseEntity<ApiResponse<Object>> handleSourceAndTargetAreTheSameException(Exception exception) {
         log.error(exception.getMessage());

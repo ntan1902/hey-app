@@ -49,9 +49,9 @@ class Main extends React.Component {
       .actions()
       .authActions.getProfile()
       .then((res) => {
-        this.props.actions().paymentActions.getBalance();
-        setUserIdToStorage(res.data.id);
-        console.log("Res", res.data);
+        // this.props.actions().paymentActions.getBalance();
+        // setUserIdToStorage(res.data.id);
+        // console.log("Res", res.data);
       })
       .catch((err) => {
         clearStorage();

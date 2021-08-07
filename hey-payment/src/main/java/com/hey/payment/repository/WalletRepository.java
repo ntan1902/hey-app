@@ -20,10 +20,10 @@ public interface WalletRepository extends JpaRepository<Wallet, Long> {
     Optional<Wallet> findWalletByIdAndOwnerId(Long walletId, String ownerId);
 
     @Lock(value = LockModeType.PESSIMISTIC_WRITE)
-    Optional<Wallet> getByOwnerIdAndRefFrom(String userId, String refFrom);
+    Optional<Wallet> findAndLockByOwnerIdAndRefFrom(String userId, String refFrom);
 
     @Lock(value = LockModeType.PESSIMISTIC_WRITE)
-    Optional<Wallet> getWalletById(Long walletId);
+    Optional<Wallet> findAndLockWalletById(Long walletId);
 
     boolean existsByOwnerIdAndRefFrom(String userId, String refFrom);
 

@@ -12,10 +12,8 @@ import com.hey.payment.entity.Wallet;
 import com.hey.payment.exception_handler.exception.*;
 import com.hey.payment.mapper.WalletMapper;
 import com.hey.payment.repository.WalletRepository;
-import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
-import org.springframework.cloud.client.loadbalancer.LoadBalanced;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,7 +21,6 @@ import org.springframework.web.client.RestTemplate;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -70,13 +67,13 @@ public class WalletServiceImpl implements WalletService {
 
     @Override
     @Transactional
-    public void transferMoney(long sourceWalletId, long targetWalletId, long amount) throws WrongSourceException, WrongTargetException, MaxBalanceException, BalanceNotEnoughException {
+    public void transferMoney(long sourceWalletId, long targetWalletId, long amount) throws MaxBalanceException, BalanceNotEnoughException, HaveNoWalletException {
         // Get and lock 2 wallets
-        Wallet sourceWallet = walletRepository.getWalletById(sourceWalletId)
-                .orElseThrow(WrongSourceException::new);
+        Wallet sourceWallet = walletRepository.findAndLockWalletById(sourceWalletId)
+                .orElseThrow(() -> new HaveNoWalletException("Source has no wallet"));
 
-        Wallet targetWallet = walletRepository.getWalletById(targetWalletId)
-                .orElseThrow(WrongTargetException::new);
+        Wallet targetWallet = walletRepository.findAndLockWalletById(targetWalletId)
+                .orElseThrow(() -> new HaveNoWalletException("Target has no wallet"));
         long sourceBalance = sourceWallet.getBalance();
         long targetBalance = targetWallet.getBalance();
         if (isMaxBalance(targetBalance + amount)) {
@@ -92,21 +89,17 @@ public class WalletServiceImpl implements WalletService {
         }
     }
 
-    public boolean isMaxBalance(long balance) {
-        return balance > MoneyConstant.MAX_BALANCE;
-    }
-
     @Override
-    public WalletDTO getWalletOfUser(String userId) throws HaveNoWalletException {
-        log.info("Inside getWalletOfUser of WalletServiceImpl with id {}", userId);
+    public WalletDTO findWalletOfUser(String userId) throws HaveNoWalletException {
+        log.info("Inside findWalletOfUser of WalletServiceImpl with id {}", userId);
         Wallet wallet = walletRepository.findByOwnerIdAndRefFrom(userId, OwnerWalletRefFrom.USERS)
-                .orElseThrow(HaveNoWalletException::new);
+                .orElseThrow(() -> new HaveNoWalletException("User has no wallet"));
         return walletMapper.wallet2WalletDTO(wallet);
     }
 
     @Override
-    public List<WalletSystemDTO> getAllWalletsOfSystem(System system) {
-        log.info("Inside getAllWalletOfSystem of WalletServiceImpl: {}", system.getId());
+    public List<WalletSystemDTO> findAllWalletsOfSystem(System system) {
+        log.info("Inside findAllWalletsOfSystem of WalletServiceImpl: {}", system.getId());
         return walletRepository.findAllByOwnerIdAndRefFrom(system.getId(), OwnerWalletRefFrom.SYSTEMS).stream()
                 .map(walletMapper::wallet2WalletSystemDTO).collect(Collectors.toList());
     }
@@ -123,4 +116,7 @@ public class WalletServiceImpl implements WalletService {
         return walletMapper.wallet2WalletDTO(wallet);
     }
 
+    public boolean isMaxBalance(long balance) {
+        return balance > MoneyConstant.MAX_BALANCE;
+    }
 }
