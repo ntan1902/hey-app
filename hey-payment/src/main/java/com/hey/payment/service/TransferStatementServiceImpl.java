@@ -170,6 +170,7 @@ public class TransferStatementServiceImpl implements TransferStatementService {
                 .transferFee(calculateTransferFee())
                 .message(request.getMessage())
                 .transferType(TransferType.TRANSFER)
+                .createdAt(LocalDateTime.now())
                 .build();
 
         transferStatementRepository.save(transferStatement);
@@ -226,6 +227,7 @@ public class TransferStatementServiceImpl implements TransferStatementService {
                 .transferFee(calculateTransferFee())
                 .message(request.getMessage())
                 .transferType(TransferType.TRANSFER)
+                .createdAt(LocalDateTime.now())
                 .build();
 
         transferStatementRepository.save(transferStatement);
