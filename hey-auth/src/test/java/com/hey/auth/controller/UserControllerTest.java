@@ -38,7 +38,6 @@ class UserControllerTest {
     private JacksonTester<PinRequest> jsPinRequest;
     private JacksonTester<PinAmountRequest> jsPinAmountRequest;
 
-
     @BeforeEach
     void setUp() {
         JacksonTester.initFields(this, new ObjectMapper());
@@ -228,6 +227,32 @@ class UserControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
                         .content(jsPinAmountRequest.write(request).getJson()))
+                .andReturn().getResponse();
+
+        // then
+        assertThat(actual.getStatus()).isEqualTo(HttpStatus.OK.value());
+        assertThat(actual.getContentAsString()).isEqualTo(
+                jsApiResponse.write(expected).getJson()
+        );
+
+    }
+
+    @Test
+    void findUsernameByUserId() throws Exception {
+        // given
+        String request = "uuid";
+        UsernameResponse payload = new UsernameResponse("ntan");
+        given(userService.findUsernameById(request)).willReturn(payload);
+
+        ApiResponse expected = ApiResponse.builder()
+                .success(true)
+                .code(HttpStatus.OK.value())
+                .message("")
+                .payload(payload)
+                .build();
+        // when
+        MockHttpServletResponse actual = mockMvc.perform(
+                get("/auth/api/v1/users/getUsername/" + request))
                 .andReturn().getResponse();
 
         // then

@@ -66,10 +66,10 @@ public class UserServiceImpl implements UserDetailsService, UserService {
         log.info("Inside register of UserServiceImpl: {}", registerRequest);
 
         // Check if username or email is existed
-        if (userRepository.existsByUsernameOrEmail(
+        if (Boolean.TRUE.equals(userRepository.existsByUsernameOrEmail(
                 registerRequest.getUsername(),
                 registerRequest.getEmail()
-        )) {
+        ))) {
             throw new UsernameEmailExistedException("username or email already existed");
         }
 
@@ -136,6 +136,15 @@ public class UserServiceImpl implements UserDetailsService, UserService {
         log.info("Inside hasPin of UserServiceImpl");
         User user = getCurrentUser();
         return new HasPinResponse(!user.getPin().isEmpty());
+    }
+
+    @Override
+    public UsernameResponse findUsernameById(String userId) throws UserIdNotFoundException {
+        log.info("Inside findUsernameById of UserSerivceImpl: {}", userId);
+
+        return userRepository.findById(userId)
+                .map(user -> new UsernameResponse(user.getUsername()))
+                .orElseThrow(() -> new UserIdNotFoundException("User Id " + userId + " not found"));
     }
 
     public void registerToVertx(User user) {
