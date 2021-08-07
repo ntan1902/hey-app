@@ -11,6 +11,7 @@ import com.hey.auth.jwt.JwtSoftTokenUtil;
 import com.hey.auth.mapper.UserMapper;
 import com.hey.auth.properties.ServiceProperties;
 import com.hey.auth.repository.UserRepository;
+import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -441,6 +442,29 @@ class UserServiceImplTest {
 
         // when
         HasPinResponse actual = underTest.hasPin();
+
+        // then
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @SneakyThrows
+    @Test
+    void findUsernameById() {
+        User user = User.builder()
+                .id("uuid")
+                .email("ntan@gmail.com")
+                .username("ntan")
+                .pin("")
+                .password("gdsgdsg")
+                .fullName("Trinh An")
+                .build();
+
+        given(userRepository.findById(user.getId())).willReturn(Optional.of(user));
+
+        UsernameResponse expected = new UsernameResponse(user.getUsername());
+
+        // when
+        UsernameResponse actual = underTest.findUsernameById(user.getId());
 
         // then
         assertThat(actual).isEqualTo(expected);

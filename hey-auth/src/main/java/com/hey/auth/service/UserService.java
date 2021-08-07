@@ -21,4 +21,6 @@ public interface UserService {
     SoftTokenResponse createSoftToken(PinAmountRequest pinAmountRequest) throws EmptyPinException, PinNotMatchedException;
 
     HasPinResponse hasPin();
+
+    UsernameResponse findUsernameById(String userId) throws UserIdNotFoundException;
 }
