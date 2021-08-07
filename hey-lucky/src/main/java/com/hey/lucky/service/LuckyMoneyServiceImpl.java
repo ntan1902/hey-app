@@ -170,7 +170,7 @@ public class LuckyMoneyServiceImpl implements LuckyMoneyService {
     }
 
     @Override
-    public List<LuckyMoneyDTO> getAllLuckyMoneyOfSession(String sessionId) throws UnauthorizeException, ErrCallApiException {
+    public List<LuckyMoneyDTO> getAllLuckyMoneyOfSession(String sessionId) throws UnauthorizeException, ErrCallApiException, CannotGetUserInfo {
         User user = luckyMoneyServiceUtil.getCurrentUser();
         log.info("User {} get all lucky money of chat group {}", user.getId(), sessionId);
 
