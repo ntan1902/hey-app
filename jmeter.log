@@ -1,0 +1,409 @@
+2021-08-06 20:26:59,429 INFO o.a.j.u.JMeterUtils: Setting Locale to en_US
+2021-08-06 20:26:59,452 INFO o.a.j.JMeter: Loading user properties from: /home/ubuntu/apache-jmeter-5.4.1/bin/user.properties
+2021-08-06 20:26:59,452 INFO o.a.j.JMeter: Loading system properties from: /home/ubuntu/apache-jmeter-5.4.1/bin/system.properties
+2021-08-06 20:26:59,458 INFO o.a.j.JMeter: Copyright (c) 1998-2021 The Apache Software Foundation
+2021-08-06 20:26:59,459 INFO o.a.j.JMeter: Version 5.4.1
+2021-08-06 20:26:59,459 INFO o.a.j.JMeter: java.version=11.0.11
+2021-08-06 20:26:59,459 INFO o.a.j.JMeter: java.vm.name=OpenJDK 64-Bit Server VM
+2021-08-06 20:26:59,459 INFO o.a.j.JMeter: os.name=Linux
+2021-08-06 20:26:59,459 INFO o.a.j.JMeter: os.arch=amd64
+2021-08-06 20:26:59,459 INFO o.a.j.JMeter: os.version=5.8.0-63-generic
+2021-08-06 20:26:59,459 INFO o.a.j.JMeter: file.encoding=UTF-8
+2021-08-06 20:26:59,459 INFO o.a.j.JMeter: java.awt.headless=null
+2021-08-06 20:26:59,459 INFO o.a.j.JMeter: Max memory     =4110417920
+2021-08-06 20:26:59,459 INFO o.a.j.JMeter: Available Processors =8
+2021-08-06 20:26:59,467 INFO o.a.j.JMeter: Default Locale=English (United States)
+2021-08-06 20:26:59,467 INFO o.a.j.JMeter: JMeter  Locale=English (United States)
+2021-08-06 20:26:59,467 INFO o.a.j.JMeter: JMeterHome=/home/ubuntu/apache-jmeter-5.4.1
+2021-08-06 20:26:59,467 INFO o.a.j.JMeter: user.dir  =/home/ubuntu/VSCode/hey-app
+2021-08-06 20:26:59,467 INFO o.a.j.JMeter: PWD       =/home/ubuntu/VSCode/hey-app
+2021-08-06 20:26:59,467 INFO o.a.j.JMeter: IP: 127.0.0.1 Name: PF1PGSM4 FullName: localhost
+2021-08-06 20:26:59,811 INFO o.a.j.JMeter: Setting LAF to: laf:javax.swing.plaf.nimbus.NimbusLookAndFeel
+2021-08-06 20:26:59,999 INFO o.a.j.JMeter: Loaded icon properties from org/apache/jmeter/images/icon.properties
+2021-08-06 20:27:17,952 INFO o.a.j.s.FileServer: Default base='/home/ubuntu/VSCode/hey-app'
+2021-08-06 20:27:17,956 INFO o.a.j.g.a.Load: Loading file: /home/ubuntu/Downloads/Add-employee.jmx
+2021-08-06 20:27:17,957 INFO o.a.j.s.FileServer: Set new base='/home/ubuntu/Downloads'
+2021-08-06 20:27:18,168 INFO o.a.j.s.SaveService: Testplan (JMX) version: 2.2. Testlog (JTL) version: 2.2
+2021-08-06 20:27:18,185 INFO o.a.j.s.SaveService: Using SaveService properties version 5.0
+2021-08-06 20:27:18,186 INFO o.a.j.s.SaveService: Using SaveService properties file encoding UTF-8
+2021-08-06 20:27:18,187 INFO o.a.j.s.SaveService: Loading file: /home/ubuntu/Downloads/Add-employee.jmx
+2021-08-06 20:27:18,215 INFO o.a.j.p.h.c.CookieManager: Settings: Delete null: true Check: true Allow variable: true Save: false Prefix: COOKIE_
+2021-08-06 20:27:18,218 INFO o.a.j.p.h.c.CacheManager: Will only cache the following methods: [GET]
+2021-08-06 20:27:18,226 INFO o.a.j.p.h.s.HTTPSamplerBase: Parser for text/html is org.apache.jmeter.protocol.http.parser.LagartoBasedHtmlParser
+2021-08-06 20:27:18,226 INFO o.a.j.p.h.s.HTTPSamplerBase: Parser for application/xhtml+xml is org.apache.jmeter.protocol.http.parser.LagartoBasedHtmlParser
+2021-08-06 20:27:18,226 INFO o.a.j.p.h.s.HTTPSamplerBase: Parser for application/xml is org.apache.jmeter.protocol.http.parser.LagartoBasedHtmlParser
+2021-08-06 20:27:18,226 INFO o.a.j.p.h.s.HTTPSamplerBase: Parser for text/xml is org.apache.jmeter.protocol.http.parser.LagartoBasedHtmlParser
+2021-08-06 20:27:18,226 INFO o.a.j.p.h.s.HTTPSamplerBase: Parser for text/vnd.wap.wml is org.apache.jmeter.protocol.http.parser.RegexpHTMLParser
+2021-08-06 20:27:18,227 INFO o.a.j.p.h.s.HTTPSamplerBase: Parser for text/css is org.apache.jmeter.protocol.http.parser.CssParser
+2021-08-06 20:27:18,513 INFO o.a.j.s.SampleResult: Note: Sample TimeStamps are START times
+2021-08-06 20:27:18,513 INFO o.a.j.s.SampleResult: sampleresult.default.encoding is set to ISO-8859-1
+2021-08-06 20:27:18,513 INFO o.a.j.s.SampleResult: sampleresult.useNanoTime=true
+2021-08-06 20:27:18,514 INFO o.a.j.s.SampleResult: sampleresult.nanoThreadSleep=5000
+2021-08-06 20:27:18,697 INFO o.a.j.v.ViewResultsFullVisualizer: Add JavaFX to your Java installation if you want to use renderer: org.apache.jmeter.visualizers.RenderInBrowser
+2021-08-06 20:27:18,761 INFO o.a.j.s.FileServer: Set new base='/home/ubuntu/Downloads'
+2021-08-06 20:29:03,554 INFO o.a.j.e.StandardJMeterEngine: Running the test!
+2021-08-06 20:29:03,556 INFO o.a.j.s.SampleEvent: List of sample_variables: []
+2021-08-06 20:29:03,556 INFO o.a.j.s.SampleEvent: List of sample_variables: []
+2021-08-06 20:29:03,558 INFO o.a.j.e.u.CompoundVariable: Note: Function class names must contain the string: '.functions.'
+2021-08-06 20:29:03,558 INFO o.a.j.e.u.CompoundVariable: Note: Function class names must not contain the string: '.gui.'
+2021-08-06 20:29:03,820 INFO o.a.j.g.u.JMeterMenuBar: setRunning(true, *local*)
+2021-08-06 20:29:03,833 INFO o.a.j.e.StandardJMeterEngine: Starting ThreadGroup: 1 : Thread Group
+2021-08-06 20:29:03,833 INFO o.a.j.e.StandardJMeterEngine: Starting 1 threads for group Thread Group.
+2021-08-06 20:29:03,833 INFO o.a.j.e.StandardJMeterEngine: Thread will continue on error
+2021-08-06 20:29:03,833 INFO o.a.j.t.ThreadGroup: Starting thread group... number=1 threads=1 ramp-up=1 delayedStart=false
+2021-08-06 20:29:03,842 INFO o.a.j.t.ThreadGroup: Started thread group number 1
+2021-08-06 20:29:03,842 INFO o.a.j.e.StandardJMeterEngine: All thread groups have been started
+2021-08-06 20:29:03,846 INFO o.a.j.t.JMeterThread: Thread started: Thread Group 1-1
+2021-08-06 20:29:03,864 INFO o.a.j.p.h.s.HTTPHCAbstractImpl: Local host = PF1PGSM4
+2021-08-06 20:29:03,871 INFO o.a.j.p.h.s.HTTPHC4Impl: HTTP request retry count = 0
+2021-08-06 20:29:04,097 INFO o.a.j.p.h.p.BaseParser: Created org.apache.jmeter.protocol.http.parser.LagartoBasedHtmlParser
+2021-08-06 20:29:04,194 INFO o.a.j.p.h.s.ResourcesDownloader: Creating ResourcesDownloader with keepalive_inseconds : 60
+2021-08-06 20:29:04,239 INFO o.a.j.p.h.p.BaseParser: Created org.apache.jmeter.protocol.http.parser.CssParser
+2021-08-06 20:29:04,239 INFO o.a.j.p.h.p.BaseParser: Created org.apache.jmeter.protocol.http.parser.CssParser
+2021-08-06 20:29:04,239 INFO o.a.j.p.h.p.BaseParser: Created org.apache.jmeter.protocol.http.parser.CssParser
+2021-08-06 20:29:04,240 INFO o.a.j.p.h.p.BaseParser: Created org.apache.jmeter.protocol.http.parser.CssParser
+2021-08-06 20:29:04,240 INFO o.a.j.p.h.p.BaseParser: Created org.apache.jmeter.protocol.http.parser.CssParser
+2021-08-06 20:29:04,502 WARN c.h.c.r.e.LoggingCSSParseErrorHandler: Browser compliant mode skipped CSS from [1217:29] starting at token '
+  ' until [1218:17] to token ';' (based on com.helger.css.parser.ParseException: Encountered unexpected token: "*" "*"
+    at line 1218, column 3.
+
+Was expecting one of:
+
+    ";"
+    "@bottom-center"
+    "@bottom-left"
+    "@bottom-left-corner"
+    "@bottom-right"
+    "@bottom-right-corner"
+    "@charset"
+    "@import"
+    "@left-bottom"
+    "@left-middle"
+    "@left-top"
+    "@media"
+    "@namespace"
+    "@page"
+    "@right-bottom"
+    "@right-middle"
+    "@right-top"
+    "@supports"
+    "@top-center"
+    "@top-left"
+    "@top-left-corner"
+    "@top-right"
+    "@top-right-corner"
+    "}"
+    <AT_UNKNOWN>
+    <FONTFACE_SYM>
+    <IDENT>
+    <KEYFRAMES_SYM>
+    <S>
+    <VIEWPORT_SYM>
+)
+2021-08-06 20:29:04,506 WARN c.h.c.r.e.LoggingCSSParseErrorHandler: Browser compliant mode skipped CSS from [1276:35] starting at token '
+  ' until [1277:26] to token ';' (based on com.helger.css.parser.ParseException: Encountered unexpected token: "*" "*"
+    at line 1277, column 3.
+
+Was expecting one of:
+
+    ";"
+    "@bottom-center"
+    "@bottom-left"
+    "@bottom-left-corner"
+    "@bottom-right"
+    "@bottom-right-corner"
+    "@charset"
+    "@import"
+    "@left-bottom"
+    "@left-middle"
+    "@left-top"
+    "@media"
+    "@namespace"
+    "@page"
+    "@right-bottom"
+    "@right-middle"
+    "@right-top"
+    "@supports"
+    "@top-center"
+    "@top-left"
+    "@top-left-corner"
+    "@top-right"
+    "@top-right-corner"
+    "}"
+    <AT_UNKNOWN>
+    <FONTFACE_SYM>
+    <IDENT>
+    <KEYFRAMES_SYM>
+    <S>
+    <VIEWPORT_SYM>
+)
+2021-08-06 20:29:04,507 WARN c.h.c.r.e.LoggingCSSParseErrorHandler: Browser compliant mode skipped CSS from [1278:24] starting at token ':' until [1287:1] to token '}' (based on com.helger.css.parser.ParseException: Encountered unexpected token: " " <S>
+    at line 1278, column 25.
+
+Was expecting one of:
+
+    ":"
+    <FUNCTION_NTH>
+    <IDENT>
+)
+2021-08-06 20:29:11,905 WARN c.h.c.r.e.LoggingCSSParseErrorHandler: Browser compliant mode skipped CSS from [24:27] starting at token '
+    ' until [25:21] to token ';' (based on com.helger.css.parser.ParseException: Encountered unexpected token: "*" "*"
+    at line 25, column 5.
+
+Was expecting one of:
+
+    ";"
+    "@bottom-center"
+    "@bottom-left"
+    "@bottom-left-corner"
+    "@bottom-right"
+    "@bottom-right-corner"
+    "@charset"
+    "@import"
+    "@left-bottom"
+    "@left-middle"
+    "@left-top"
+    "@media"
+    "@namespace"
+    "@page"
+    "@right-bottom"
+    "@right-middle"
+    "@right-top"
+    "@supports"
+    "@top-center"
+    "@top-left"
+    "@top-left-corner"
+    "@top-right"
+    "@top-right-corner"
+    "}"
+    <AT_UNKNOWN>
+    <FONTFACE_SYM>
+    <IDENT>
+    <KEYFRAMES_SYM>
+    <S>
+    <VIEWPORT_SYM>
+)
+2021-08-06 20:29:11,906 WARN c.h.c.r.e.LoggingCSSParseErrorHandler: Browser compliant mode skipped CSS from [26:10] starting at token ':' until [27:1] to token '}' (based on com.helger.css.parser.ParseException: Encountered unexpected token: " " <S>
+    at line 26, column 11.
+
+Was expecting one of:
+
+    ":"
+    <FUNCTION_NTH>
+    <IDENT>
+)
+2021-08-06 20:29:23,937 INFO o.a.j.t.JMeterThread: Thread is done: Thread Group 1-1
+2021-08-06 20:29:23,938 INFO o.a.j.t.JMeterThread: Thread finished: Thread Group 1-1
+2021-08-06 20:29:23,940 INFO o.a.j.e.StandardJMeterEngine: Notifying test listeners of end of test
+2021-08-06 20:29:23,941 INFO o.a.j.g.u.JMeterMenuBar: setRunning(false, *local*)
+2021-08-06 20:34:42,434 INFO o.a.j.v.ViewResultsFullVisualizer: Add JavaFX to your Java installation if you want to use renderer: org.apache.jmeter.visualizers.RenderInBrowser
+2021-08-06 20:34:42,482 INFO o.a.j.g.a.Load: Loading file: /home/ubuntu/Downloads/Add-employee (1).jmx
+2021-08-06 20:34:42,482 INFO o.a.j.s.FileServer: Set new base='/home/ubuntu/Downloads'
+2021-08-06 20:34:42,482 INFO o.a.j.s.SaveService: Loading file: /home/ubuntu/Downloads/Add-employee (1).jmx
+2021-08-06 20:34:42,540 INFO o.a.j.s.FileServer: Set new base='/home/ubuntu/Downloads'
+2021-08-06 20:35:19,523 INFO o.a.j.g.a.Load: Loading file: /home/ubuntu/Downloads/Add-employee.jmx
+2021-08-06 20:35:19,524 INFO o.a.j.s.FileServer: Set new base='/home/ubuntu/Downloads'
+2021-08-06 20:35:19,524 INFO o.a.j.s.SaveService: Loading file: /home/ubuntu/Downloads/Add-employee.jmx
+2021-08-06 20:35:19,586 INFO o.a.j.v.ViewResultsFullVisualizer: Add JavaFX to your Java installation if you want to use renderer: org.apache.jmeter.visualizers.RenderInBrowser
+2021-08-06 20:35:19,639 INFO o.a.j.s.FileServer: Set new base='/home/ubuntu/Downloads'
+2021-08-06 20:35:39,781 INFO o.a.j.e.StandardJMeterEngine: Running the test!
+2021-08-06 20:35:39,782 INFO o.a.j.s.SampleEvent: List of sample_variables: []
+2021-08-06 20:35:39,785 INFO o.a.j.g.u.JMeterMenuBar: setRunning(true, *local*)
+2021-08-06 20:35:39,856 INFO o.a.j.e.StandardJMeterEngine: Starting ThreadGroup: 1 : Thread Group
+2021-08-06 20:35:39,856 INFO o.a.j.e.StandardJMeterEngine: Starting 1 threads for group Thread Group.
+2021-08-06 20:35:39,856 INFO o.a.j.e.StandardJMeterEngine: Thread will continue on error
+2021-08-06 20:35:39,856 INFO o.a.j.t.ThreadGroup: Starting thread group... number=1 threads=1 ramp-up=1 delayedStart=false
+2021-08-06 20:35:39,858 INFO o.a.j.t.ThreadGroup: Started thread group number 1
+2021-08-06 20:35:39,858 INFO o.a.j.e.StandardJMeterEngine: All thread groups have been started
+2021-08-06 20:35:39,859 INFO o.a.j.t.JMeterThread: Thread started: Thread Group 1-1
+2021-08-06 20:36:07,941 INFO o.a.j.t.JMeterThread: Thread is done: Thread Group 1-1
+2021-08-06 20:36:07,941 INFO o.a.j.t.JMeterThread: Thread finished: Thread Group 1-1
+2021-08-06 20:36:07,942 INFO o.a.j.e.StandardJMeterEngine: Notifying test listeners of end of test
+2021-08-06 20:36:07,942 INFO o.a.j.g.u.JMeterMenuBar: setRunning(false, *local*)
+2021-08-06 20:43:06,405 INFO o.a.j.e.StandardJMeterEngine: Running the test!
+2021-08-06 20:43:06,407 INFO o.a.j.s.SampleEvent: List of sample_variables: []
+2021-08-06 20:43:06,412 INFO o.a.j.g.u.JMeterMenuBar: setRunning(true, *local*)
+2021-08-06 20:43:06,478 INFO o.a.j.e.StandardJMeterEngine: Starting ThreadGroup: 1 : Thread Group
+2021-08-06 20:43:06,479 INFO o.a.j.e.StandardJMeterEngine: Starting 1 threads for group Thread Group.
+2021-08-06 20:43:06,479 INFO o.a.j.e.StandardJMeterEngine: Thread will continue on error
+2021-08-06 20:43:06,479 INFO o.a.j.t.ThreadGroup: Starting thread group... number=1 threads=1 ramp-up=1 delayedStart=false
+2021-08-06 20:43:06,480 INFO o.a.j.t.ThreadGroup: Started thread group number 1
+2021-08-06 20:43:06,480 INFO o.a.j.e.StandardJMeterEngine: All thread groups have been started
+2021-08-06 20:43:06,481 INFO o.a.j.t.JMeterThread: Thread started: Thread Group 1-1
+2021-08-06 20:43:28,061 INFO o.a.j.t.JMeterThread: Thread is done: Thread Group 1-1
+2021-08-06 20:43:28,062 INFO o.a.j.t.JMeterThread: Thread finished: Thread Group 1-1
+2021-08-06 20:43:28,062 INFO o.a.j.e.StandardJMeterEngine: Notifying test listeners of end of test
+2021-08-06 20:43:28,062 INFO o.a.j.g.u.JMeterMenuBar: setRunning(false, *local*)
+2021-08-06 20:47:04,933 INFO o.a.j.e.StandardJMeterEngine: Running the test!
+2021-08-06 20:47:04,934 INFO o.a.j.s.SampleEvent: List of sample_variables: []
+2021-08-06 20:47:04,937 INFO o.a.j.g.u.JMeterMenuBar: setRunning(true, *local*)
+2021-08-06 20:47:04,998 INFO o.a.j.e.StandardJMeterEngine: Starting ThreadGroup: 1 : Thread Group
+2021-08-06 20:47:04,999 INFO o.a.j.e.StandardJMeterEngine: Starting 1 threads for group Thread Group.
+2021-08-06 20:47:04,999 INFO o.a.j.e.StandardJMeterEngine: Thread will continue on error
+2021-08-06 20:47:04,999 INFO o.a.j.t.ThreadGroup: Starting thread group... number=1 threads=1 ramp-up=1 delayedStart=false
+2021-08-06 20:47:05,000 INFO o.a.j.t.ThreadGroup: Started thread group number 1
+2021-08-06 20:47:05,000 INFO o.a.j.e.StandardJMeterEngine: All thread groups have been started
+2021-08-06 20:47:05,001 INFO o.a.j.t.JMeterThread: Thread started: Thread Group 1-1
+2021-08-06 20:47:24,446 INFO o.a.j.t.JMeterThread: Thread is done: Thread Group 1-1
+2021-08-06 20:47:24,446 INFO o.a.j.t.JMeterThread: Thread finished: Thread Group 1-1
+2021-08-06 20:47:24,447 INFO o.a.j.e.StandardJMeterEngine: Notifying test listeners of end of test
+2021-08-06 20:47:24,448 INFO o.a.j.g.u.JMeterMenuBar: setRunning(false, *local*)
+2021-08-06 20:50:00,197 INFO o.a.j.e.StandardJMeterEngine: Running the test!
+2021-08-06 20:50:00,198 INFO o.a.j.s.SampleEvent: List of sample_variables: []
+2021-08-06 20:50:00,200 INFO o.a.j.g.u.JMeterMenuBar: setRunning(true, *local*)
+2021-08-06 20:50:00,263 INFO o.a.j.e.StandardJMeterEngine: Starting ThreadGroup: 1 : Thread Group
+2021-08-06 20:50:00,263 INFO o.a.j.e.StandardJMeterEngine: Starting 1 threads for group Thread Group.
+2021-08-06 20:50:00,263 INFO o.a.j.e.StandardJMeterEngine: Thread will continue on error
+2021-08-06 20:50:00,263 INFO o.a.j.t.ThreadGroup: Starting thread group... number=1 threads=1 ramp-up=1 delayedStart=false
+2021-08-06 20:50:00,264 INFO o.a.j.t.ThreadGroup: Started thread group number 1
+2021-08-06 20:50:00,264 INFO o.a.j.e.StandardJMeterEngine: All thread groups have been started
+2021-08-06 20:50:00,265 INFO o.a.j.t.JMeterThread: Thread started: Thread Group 1-1
+2021-08-06 20:50:24,673 INFO o.a.j.t.JMeterThread: Thread is done: Thread Group 1-1
+2021-08-06 20:50:24,673 INFO o.a.j.t.JMeterThread: Thread finished: Thread Group 1-1
+2021-08-06 20:50:24,674 INFO o.a.j.e.StandardJMeterEngine: Notifying test listeners of end of test
+2021-08-06 20:50:24,674 INFO o.a.j.g.u.JMeterMenuBar: setRunning(false, *local*)
+2021-08-06 20:50:45,877 INFO o.a.j.e.StandardJMeterEngine: Running the test!
+2021-08-06 20:50:45,878 INFO o.a.j.s.SampleEvent: List of sample_variables: []
+2021-08-06 20:50:45,883 INFO o.a.j.g.u.JMeterMenuBar: setRunning(true, *local*)
+2021-08-06 20:50:45,957 INFO o.a.j.e.StandardJMeterEngine: Starting ThreadGroup: 1 : Thread Group
+2021-08-06 20:50:45,957 INFO o.a.j.e.StandardJMeterEngine: Starting 1 threads for group Thread Group.
+2021-08-06 20:50:45,957 INFO o.a.j.e.StandardJMeterEngine: Thread will continue on error
+2021-08-06 20:50:45,957 INFO o.a.j.t.ThreadGroup: Starting thread group... number=1 threads=1 ramp-up=1 delayedStart=false
+2021-08-06 20:50:45,958 INFO o.a.j.t.ThreadGroup: Started thread group number 1
+2021-08-06 20:50:45,958 INFO o.a.j.e.StandardJMeterEngine: All thread groups have been started
+2021-08-06 20:50:45,959 INFO o.a.j.t.JMeterThread: Thread started: Thread Group 1-1
+2021-08-06 20:51:07,092 INFO o.a.j.t.JMeterThread: Thread is done: Thread Group 1-1
+2021-08-06 20:51:07,092 INFO o.a.j.t.JMeterThread: Thread finished: Thread Group 1-1
+2021-08-06 20:51:07,094 INFO o.a.j.e.StandardJMeterEngine: Notifying test listeners of end of test
+2021-08-06 20:51:07,094 INFO o.a.j.g.u.JMeterMenuBar: setRunning(false, *local*)
+2021-08-06 20:52:20,829 INFO o.a.j.e.StandardJMeterEngine: Running the test!
+2021-08-06 20:52:20,834 INFO o.a.j.s.SampleEvent: List of sample_variables: []
+2021-08-06 20:52:20,839 INFO o.a.j.g.u.JMeterMenuBar: setRunning(true, *local*)
+2021-08-06 20:52:20,909 INFO o.a.j.e.StandardJMeterEngine: Starting ThreadGroup: 1 : Thread Group
+2021-08-06 20:52:20,909 INFO o.a.j.e.StandardJMeterEngine: Starting 1 threads for group Thread Group.
+2021-08-06 20:52:20,909 INFO o.a.j.e.StandardJMeterEngine: Thread will continue on error
+2021-08-06 20:52:20,910 INFO o.a.j.t.ThreadGroup: Starting thread group... number=1 threads=1 ramp-up=1 delayedStart=false
+2021-08-06 20:52:20,910 INFO o.a.j.t.ThreadGroup: Started thread group number 1
+2021-08-06 20:52:20,910 INFO o.a.j.e.StandardJMeterEngine: All thread groups have been started
+2021-08-06 20:52:20,911 INFO o.a.j.t.JMeterThread: Thread started: Thread Group 1-1
+2021-08-06 20:52:46,440 INFO o.a.j.t.JMeterThread: Thread is done: Thread Group 1-1
+2021-08-06 20:52:46,440 INFO o.a.j.t.JMeterThread: Thread finished: Thread Group 1-1
+2021-08-06 20:52:46,442 INFO o.a.j.e.StandardJMeterEngine: Notifying test listeners of end of test
+2021-08-06 20:52:46,442 INFO o.a.j.g.u.JMeterMenuBar: setRunning(false, *local*)
+2021-08-06 20:53:30,640 INFO o.a.j.e.StandardJMeterEngine: Running the test!
+2021-08-06 20:53:30,641 INFO o.a.j.s.SampleEvent: List of sample_variables: []
+2021-08-06 20:53:30,644 INFO o.a.j.g.u.JMeterMenuBar: setRunning(true, *local*)
+2021-08-06 20:53:30,723 INFO o.a.j.e.StandardJMeterEngine: Starting ThreadGroup: 1 : Thread Group
+2021-08-06 20:53:30,723 INFO o.a.j.e.StandardJMeterEngine: Starting 1 threads for group Thread Group.
+2021-08-06 20:53:30,723 INFO o.a.j.e.StandardJMeterEngine: Thread will continue on error
+2021-08-06 20:53:30,723 INFO o.a.j.t.ThreadGroup: Starting thread group... number=1 threads=1 ramp-up=1 delayedStart=false
+2021-08-06 20:53:30,724 INFO o.a.j.t.ThreadGroup: Started thread group number 1
+2021-08-06 20:53:30,724 INFO o.a.j.e.StandardJMeterEngine: All thread groups have been started
+2021-08-06 20:53:30,724 INFO o.a.j.t.JMeterThread: Thread started: Thread Group 1-1
+2021-08-06 20:53:58,764 INFO o.a.j.t.JMeterThread: Thread is done: Thread Group 1-1
+2021-08-06 20:53:58,764 INFO o.a.j.t.JMeterThread: Thread finished: Thread Group 1-1
+2021-08-06 20:53:58,764 INFO o.a.j.e.StandardJMeterEngine: Notifying test listeners of end of test
+2021-08-06 20:53:58,764 INFO o.a.j.g.u.JMeterMenuBar: setRunning(false, *local*)
+2021-08-06 20:59:05,489 INFO o.a.j.g.a.Load: Loading file: /home/ubuntu/Downloads/Add-employee (1).jmx
+2021-08-06 20:59:05,489 INFO o.a.j.s.FileServer: Set new base='/home/ubuntu/Downloads'
+2021-08-06 20:59:05,490 INFO o.a.j.s.SaveService: Loading file: /home/ubuntu/Downloads/Add-employee (1).jmx
+2021-08-06 20:59:05,512 INFO o.a.j.s.FileServer: Set new base='/home/ubuntu/Downloads'
+2021-08-06 20:59:18,110 INFO o.a.j.v.ViewResultsFullVisualizer: Add JavaFX to your Java installation if you want to use renderer: org.apache.jmeter.visualizers.RenderInBrowser
+2021-08-06 20:59:20,446 INFO o.a.j.e.StandardJMeterEngine: Running the test!
+2021-08-06 20:59:20,447 INFO o.a.j.s.SampleEvent: List of sample_variables: []
+2021-08-06 20:59:20,450 INFO o.a.j.g.u.JMeterMenuBar: setRunning(true, *local*)
+2021-08-06 20:59:20,535 INFO o.a.j.e.StandardJMeterEngine: Starting ThreadGroup: 1 : Thread Group
+2021-08-06 20:59:20,535 INFO o.a.j.e.StandardJMeterEngine: Starting 1 threads for group Thread Group.
+2021-08-06 20:59:20,535 INFO o.a.j.e.StandardJMeterEngine: Thread will continue on error
+2021-08-06 20:59:20,535 INFO o.a.j.t.ThreadGroup: Starting thread group... number=1 threads=1 ramp-up=1 delayedStart=false
+2021-08-06 20:59:20,536 INFO o.a.j.t.ThreadGroup: Started thread group number 1
+2021-08-06 20:59:20,536 INFO o.a.j.e.StandardJMeterEngine: All thread groups have been started
+2021-08-06 20:59:20,537 INFO o.a.j.t.JMeterThread: Thread started: Thread Group 1-1
+2021-08-06 20:59:20,540 INFO o.a.j.p.h.s.h.LazyLayeredConnectionSocketFactory: Setting up HTTPS TrustAll Socket Factory
+2021-08-06 20:59:20,544 INFO o.a.j.u.JsseSSLManager: Using default SSL protocol: TLS
+2021-08-06 20:59:20,545 INFO o.a.j.u.JsseSSLManager: SSL session context: per-thread
+2021-08-06 20:59:20,589 INFO o.a.j.u.SSLManager: JmeterKeyStore Location:  type JKS
+2021-08-06 20:59:20,592 INFO o.a.j.u.SSLManager: KeyStore created OK
+2021-08-06 20:59:20,592 WARN o.a.j.u.SSLManager: Keystore file not found, loading empty keystore
+2021-08-06 20:59:30,761 INFO o.a.j.g.a.Start: Stopping test
+2021-08-06 20:59:30,775 INFO o.a.j.t.JMeterThread: Stopping: Thread Group 1-1
+2021-08-06 20:59:30,776 WARN o.a.j.t.JMeterThread: The delay timer was interrupted - probably did not wait as long as intended.
+2021-08-06 20:59:30,777 INFO o.a.j.t.JMeterThread: Thread finished: Thread Group 1-1
+2021-08-06 20:59:30,781 INFO o.a.j.e.StandardJMeterEngine: Notifying test listeners of end of test
+2021-08-06 20:59:30,781 INFO o.a.j.g.u.JMeterMenuBar: setRunning(false, *local*)
+2021-08-06 20:59:33,078 INFO o.a.j.e.StandardJMeterEngine: Running the test!
+2021-08-06 20:59:33,078 INFO o.a.j.s.SampleEvent: List of sample_variables: []
+2021-08-06 20:59:33,079 INFO o.a.j.g.u.JMeterMenuBar: setRunning(true, *local*)
+2021-08-06 20:59:33,151 INFO o.a.j.e.StandardJMeterEngine: Starting ThreadGroup: 1 : Thread Group
+2021-08-06 20:59:33,151 INFO o.a.j.e.StandardJMeterEngine: Starting 1 threads for group Thread Group.
+2021-08-06 20:59:33,151 INFO o.a.j.e.StandardJMeterEngine: Thread will continue on error
+2021-08-06 20:59:33,151 INFO o.a.j.t.ThreadGroup: Starting thread group... number=1 threads=1 ramp-up=1 delayedStart=false
+2021-08-06 20:59:33,152 INFO o.a.j.t.ThreadGroup: Started thread group number 1
+2021-08-06 20:59:33,152 INFO o.a.j.e.StandardJMeterEngine: All thread groups have been started
+2021-08-06 20:59:33,153 INFO o.a.j.t.JMeterThread: Thread started: Thread Group 1-1
+2021-08-06 20:59:58,198 INFO o.a.j.t.JMeterThread: Thread is done: Thread Group 1-1
+2021-08-06 20:59:58,198 INFO o.a.j.t.JMeterThread: Thread finished: Thread Group 1-1
+2021-08-06 20:59:58,199 INFO o.a.j.e.StandardJMeterEngine: Notifying test listeners of end of test
+2021-08-06 20:59:58,200 INFO o.a.j.g.u.JMeterMenuBar: setRunning(false, *local*)
+2021-08-06 21:01:17,521 INFO o.a.j.e.StandardJMeterEngine: Running the test!
+2021-08-06 21:01:17,521 INFO o.a.j.s.SampleEvent: List of sample_variables: []
+2021-08-06 21:01:17,523 INFO o.a.j.g.u.JMeterMenuBar: setRunning(true, *local*)
+2021-08-06 21:01:17,587 INFO o.a.j.e.StandardJMeterEngine: Starting ThreadGroup: 1 : Thread Group
+2021-08-06 21:01:17,587 INFO o.a.j.e.StandardJMeterEngine: Starting 1 threads for group Thread Group.
+2021-08-06 21:01:17,587 INFO o.a.j.e.StandardJMeterEngine: Thread will continue on error
+2021-08-06 21:01:17,587 INFO o.a.j.t.ThreadGroup: Starting thread group... number=1 threads=1 ramp-up=1 delayedStart=false
+2021-08-06 21:01:17,588 INFO o.a.j.t.ThreadGroup: Started thread group number 1
+2021-08-06 21:01:17,588 INFO o.a.j.e.StandardJMeterEngine: All thread groups have been started
+2021-08-06 21:01:17,589 INFO o.a.j.t.JMeterThread: Thread started: Thread Group 1-1
+2021-08-06 21:01:43,820 INFO o.a.j.t.JMeterThread: Thread is done: Thread Group 1-1
+2021-08-06 21:01:43,820 INFO o.a.j.t.JMeterThread: Thread finished: Thread Group 1-1
+2021-08-06 21:01:43,821 INFO o.a.j.e.StandardJMeterEngine: Notifying test listeners of end of test
+2021-08-06 21:01:43,821 INFO o.a.j.g.u.JMeterMenuBar: setRunning(false, *local*)
+2021-08-06 21:02:41,370 INFO o.a.j.e.StandardJMeterEngine: Running the test!
+2021-08-06 21:02:41,372 INFO o.a.j.s.SampleEvent: List of sample_variables: []
+2021-08-06 21:02:41,375 INFO o.a.j.g.u.JMeterMenuBar: setRunning(true, *local*)
+2021-08-06 21:02:41,465 INFO o.a.j.e.StandardJMeterEngine: Starting ThreadGroup: 1 : Thread Group
+2021-08-06 21:02:41,465 INFO o.a.j.e.StandardJMeterEngine: Starting 1 threads for group Thread Group.
+2021-08-06 21:02:41,465 INFO o.a.j.e.StandardJMeterEngine: Thread will continue on error
+2021-08-06 21:02:41,465 INFO o.a.j.t.ThreadGroup: Starting thread group... number=1 threads=1 ramp-up=1 delayedStart=false
+2021-08-06 21:02:41,466 INFO o.a.j.t.ThreadGroup: Started thread group number 1
+2021-08-06 21:02:41,467 INFO o.a.j.e.StandardJMeterEngine: All thread groups have been started
+2021-08-06 21:02:41,467 INFO o.a.j.t.JMeterThread: Thread started: Thread Group 1-1
+2021-08-06 21:03:03,903 INFO o.a.j.t.JMeterThread: Thread is done: Thread Group 1-1
+2021-08-06 21:03:03,904 INFO o.a.j.t.JMeterThread: Thread finished: Thread Group 1-1
+2021-08-06 21:03:03,905 INFO o.a.j.e.StandardJMeterEngine: Notifying test listeners of end of test
+2021-08-06 21:03:03,906 INFO o.a.j.g.u.JMeterMenuBar: setRunning(false, *local*)
+2021-08-06 21:04:38,771 INFO o.a.j.e.StandardJMeterEngine: Running the test!
+2021-08-06 21:04:38,773 INFO o.a.j.s.SampleEvent: List of sample_variables: []
+2021-08-06 21:04:38,776 INFO o.a.j.g.u.JMeterMenuBar: setRunning(true, *local*)
+2021-08-06 21:04:38,855 INFO o.a.j.e.StandardJMeterEngine: Starting ThreadGroup: 1 : Thread Group
+2021-08-06 21:04:38,855 INFO o.a.j.e.StandardJMeterEngine: Starting 1 threads for group Thread Group.
+2021-08-06 21:04:38,855 INFO o.a.j.e.StandardJMeterEngine: Thread will continue on error
+2021-08-06 21:04:38,855 INFO o.a.j.t.ThreadGroup: Starting thread group... number=1 threads=1 ramp-up=1 delayedStart=false
+2021-08-06 21:04:38,856 INFO o.a.j.t.ThreadGroup: Started thread group number 1
+2021-08-06 21:04:38,856 INFO o.a.j.e.StandardJMeterEngine: All thread groups have been started
+2021-08-06 21:04:38,857 INFO o.a.j.t.JMeterThread: Thread started: Thread Group 1-1
+2021-08-06 21:05:00,021 INFO o.a.j.t.JMeterThread: Thread is done: Thread Group 1-1
+2021-08-06 21:05:00,021 INFO o.a.j.t.JMeterThread: Thread finished: Thread Group 1-1
+2021-08-06 21:05:00,021 INFO o.a.j.e.StandardJMeterEngine: Notifying test listeners of end of test
+2021-08-06 21:05:00,021 INFO o.a.j.g.u.JMeterMenuBar: setRunning(false, *local*)
+2021-08-06 21:23:13,543 INFO o.a.j.v.ViewResultsFullVisualizer: Add JavaFX to your Java installation if you want to use renderer: org.apache.jmeter.visualizers.RenderInBrowser
+2021-08-06 21:23:13,571 INFO o.a.j.g.a.Load: Loading file: /home/ubuntu/Downloads/Add-employee (2).jmx
+2021-08-06 21:23:13,572 INFO o.a.j.s.FileServer: Set new base='/home/ubuntu/Downloads'
+2021-08-06 21:23:13,572 INFO o.a.j.s.SaveService: Loading file: /home/ubuntu/Downloads/Add-employee (2).jmx
+2021-08-06 21:23:13,597 INFO o.a.j.s.FileServer: Set new base='/home/ubuntu/Downloads'
+2021-08-06 21:23:24,104 INFO o.a.j.v.ViewResultsFullVisualizer: Add JavaFX to your Java installation if you want to use renderer: org.apache.jmeter.visualizers.RenderInBrowser
+2021-08-06 21:23:25,758 INFO o.a.j.e.StandardJMeterEngine: Running the test!
+2021-08-06 21:23:25,759 INFO o.a.j.s.SampleEvent: List of sample_variables: []
+2021-08-06 21:23:25,760 INFO o.a.j.g.u.JMeterMenuBar: setRunning(true, *local*)
+2021-08-06 21:23:25,826 INFO o.a.j.e.StandardJMeterEngine: Starting ThreadGroup: 1 : Thread Group
+2021-08-06 21:23:25,826 INFO o.a.j.e.StandardJMeterEngine: Starting 1 threads for group Thread Group.
+2021-08-06 21:23:25,826 INFO o.a.j.e.StandardJMeterEngine: Thread will continue on error
+2021-08-06 21:23:25,826 INFO o.a.j.t.ThreadGroup: Starting thread group... number=1 threads=1 ramp-up=1 delayedStart=false
+2021-08-06 21:23:25,827 INFO o.a.j.t.ThreadGroup: Started thread group number 1
+2021-08-06 21:23:25,827 INFO o.a.j.e.StandardJMeterEngine: All thread groups have been started
+2021-08-06 21:23:25,827 INFO o.a.j.t.JMeterThread: Thread started: Thread Group 1-1
+2021-08-06 21:23:26,135 INFO o.a.j.t.JMeterThread: Thread is done: Thread Group 1-1
+2021-08-06 21:23:26,135 INFO o.a.j.t.JMeterThread: Thread finished: Thread Group 1-1
+2021-08-06 21:23:26,135 INFO o.a.j.e.StandardJMeterEngine: Notifying test listeners of end of test
+2021-08-06 21:23:26,135 INFO o.a.j.g.u.JMeterMenuBar: setRunning(false, *local*)

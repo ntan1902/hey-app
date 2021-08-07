@@ -27,7 +27,7 @@ public class UserController {
     @GetMapping("/wallet")
     public ResponseEntity<ApiResponse<Object>> getMyWallet() throws HaveNoWalletException {
         User user = getCurrentUser();
-        WalletDTO walletDTO = walletService.getWalletOfUser(user.getId());
+        WalletDTO walletDTO = walletService.findWalletOfUser(user.getId());
         return ResponseEntity.ok(
                 ApiResponse.builder()
                         .success(true)
@@ -39,7 +39,7 @@ public class UserController {
     }
 
     @PostMapping("/createTransfer")
-    public ResponseEntity<ApiResponse<Object>> createTransfer(@RequestBody CreateTransferRequest createTransferRequest) throws NegativeAmountException, MaxAmountException, HaveNoWalletException, SoftTokenAuthorizeException, WrongTargetException, SourceAndTargetAreTheSameException, WrongSourceException, BalanceNotEnoughException, MaxBalanceException {
+    public ResponseEntity<ApiResponse<Object>> createTransfer(@RequestBody CreateTransferRequest createTransferRequest) throws NegativeAmountException, MaxAmountException, HaveNoWalletException, SoftTokenAuthorizeException, SourceAndTargetAreTheSameException,BalanceNotEnoughException, MaxBalanceException {
         User user = getCurrentUser();
         transferStatementService.createTransfer(user, createTransferRequest);
         return ResponseEntity.ok(

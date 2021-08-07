@@ -32,7 +32,7 @@ public class SystemController {
     public ResponseEntity<ApiResponse<Object>> getAllWalletOfSystem() {
         System system = getCurrentSystem();
         log.info("System {} getAllWalletOfSystem", system.getId());
-        List<WalletSystemDTO> walletSystemDTOList = walletService.getAllWalletsOfSystem(system);
+        List<WalletSystemDTO> walletSystemDTOList = walletService.findAllWalletsOfSystem(system);
         return ResponseEntity.ok(
                 ApiResponse.builder()
                         .success(true)
@@ -44,7 +44,7 @@ public class SystemController {
     }
 
     @PostMapping("/createTransferToUser")
-    public ResponseEntity<ApiResponse<Object>> createTransferToUser(@RequestBody SystemCreateTransferToUserRequest request) throws NegativeAmountException, WrongSourceException, MaxAmountException, HaveNoWalletException, BalanceNotEnoughException, MaxBalanceException, WrongTargetException {
+    public ResponseEntity<ApiResponse<Object>> createTransferToUser(@RequestBody SystemCreateTransferToUserRequest request) throws NegativeAmountException, MaxAmountException, HaveNoWalletException, BalanceNotEnoughException, MaxBalanceException {
         System system = getCurrentSystem();
         log.info("System {} createTransferToUser", system.getId());
         transferStatementService.systemCreateTransferToUser(system, request);
@@ -59,7 +59,7 @@ public class SystemController {
     }
 
     @PostMapping("/createTransferFromUser")
-    public ResponseEntity<ApiResponse<Object>> createTransferFromUser(@RequestBody SystemCreateTransferFromUserRequest request) throws NegativeAmountException, WrongSourceException, MaxAmountException, SoftTokenAuthorizeException, WrongTargetException, BalanceNotEnoughException, MaxBalanceException {
+    public ResponseEntity<ApiResponse<Object>> createTransferFromUser(@RequestBody SystemCreateTransferFromUserRequest request) throws NegativeAmountException, MaxAmountException, SoftTokenAuthorizeException, BalanceNotEnoughException, MaxBalanceException, HaveNoWalletException {
         System system = getCurrentSystem();
         log.info("System {} createTransferFromUser", system.getId());
         SystemCreateTransferFromUserResponse payload = transferStatementService.systemCreateTransferFromUser(system, request);
