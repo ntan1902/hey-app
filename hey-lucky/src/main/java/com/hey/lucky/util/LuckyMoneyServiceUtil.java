@@ -25,7 +25,7 @@ public interface LuckyMoneyServiceUtil {
 
     UserInfo getUserInfo(String userId) throws CannotGetUserInfo;
 
-    List<LuckyMoneyDTO> luckyMoneyList2LuckyMoneyDTOList(List<LuckyMoney> luckyMoneyList, User user);
+    List<LuckyMoneyDTO> luckyMoneyList2LuckyMoneyDTOList(List<LuckyMoney> luckyMoneyList, User user) throws CannotGetUserInfo;
 
     boolean hadUserReceived(long luckyMoneyId, String receiverId);
 
