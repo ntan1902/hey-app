@@ -50,6 +50,7 @@ class VerifyPIN extends React.Component {
           ...this.props.data,
         })
         .then((res) => {
+          if (this.props.cb) this.props.cb();
           this.setState({ handleSoftToken: false, softToken: "" });
         });
       return true;
@@ -61,6 +62,7 @@ class VerifyPIN extends React.Component {
         message: this.props.message,
       })
       .then((res) => {
+        if (this.props.cb) this.props.cb();
         this.setState({ handleSoftToken: false, softToken: "" });
       });
   };

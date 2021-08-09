@@ -138,7 +138,7 @@ const createLuckymoney = (data) => async (dispatch) => {
     try {
       const res = await PaymentAPI.createLuckymoney(data);
       await dispatch(getBalance());
-      // await dispatch(switchMainScreen("TransferSuccess"));
+      await dispatch(changeStateLuckyMoneyPopup(true, false));
       resolve({ success: true });
     } catch (err) {
       reject({ error: err, success: false });
