@@ -212,12 +212,7 @@ class WalletServiceImplTest {
     @Test
     void createWallet() {
         User user = User.builder().id("uuid").build();
-        Wallet sourceWallet = Wallet.builder()
-                .id(1L)
-                .ownerId("uuid")
-                .refFrom("users")
-                .balance(5000L)
-                .build();
+
         when(walletRepository.existsByOwnerIdAndRefFrom(user.getId(), OwnerWalletRefFrom.USERS))
                 .thenReturn(false);
 

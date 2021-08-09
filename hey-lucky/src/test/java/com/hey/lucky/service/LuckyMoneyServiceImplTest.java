@@ -336,7 +336,7 @@ class LuckyMoneyServiceImplTest {
     }
 
     @Test
-    void getAllLuckyMoneyOfSession_successfully() throws ErrCallApiException, UnauthorizeException {
+    void getAllLuckyMoneyOfSession_successfully() throws ErrCallApiException, UnauthorizeException, CannotGetUserInfo {
         // given
         User user = new User("abc");
         String sessionId = "123-abc";
