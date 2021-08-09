@@ -1,10 +1,12 @@
 package com.hey.payment.service;
 
+import com.hey.payment.api.AuthApi;
 import com.hey.payment.constant.MoneyConstant;
 import com.hey.payment.constant.OwnerWalletRefFrom;
 import com.hey.payment.dto.auth_system.GetSystemsResponse;
 import com.hey.payment.dto.system.SystemDTO;
 import com.hey.payment.dto.system.WalletSystemDTO;
+import com.hey.payment.dto.user.HasWalletResponse;
 import com.hey.payment.dto.user.WalletDTO;
 import com.hey.payment.entity.System;
 import com.hey.payment.entity.User;
@@ -33,12 +35,12 @@ public class WalletServiceImpl implements WalletService {
 
     private final WalletMapper walletMapper;
 
-    private final RestTemplate restTemplate;
+    private final AuthApi authApi;
 
     @EventListener(ApplicationReadyEvent.class)
     public void getSystems() {
         log.info("Inside getSystems of WalletServiceImpl");
-        GetSystemsResponse response = restTemplate.getForObject("/getSystems", GetSystemsResponse.class);
+        GetSystemsResponse response = authApi.getSystems();
         log.info("{}", response);
 
         if (response != null) {
@@ -85,6 +87,7 @@ public class WalletServiceImpl implements WalletService {
         }
     }
 
+
     @Override
     public WalletDTO findWalletOfUser(String userId) throws HaveNoWalletException {
         log.info("Inside findWalletOfUser of WalletServiceImpl with id {}", userId);
@@ -114,6 +117,14 @@ public class WalletServiceImpl implements WalletService {
         walletRepository.save(wallet);
 
         return walletMapper.wallet2WalletDTO(wallet);
+    }
+
+    @Override
+    public HasWalletResponse hasWallet(User user) {
+        log.info("Inside hasWallet of WalletServiceImpl with user {}", user);
+        Wallet wallet = walletRepository.findByOwnerIdAndRefFrom(user.getId(), OwnerWalletRefFrom.USERS)
+                .orElse(null);
+        return new HasWalletResponse(wallet != null);
     }
 
     public boolean isMaxBalance(long balance) {

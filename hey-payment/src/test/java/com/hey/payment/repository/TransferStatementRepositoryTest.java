@@ -4,6 +4,7 @@ import com.hey.payment.entity.TransferStatement;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.test.annotation.DirtiesContext;
 
 import java.util.Arrays;
@@ -44,7 +45,7 @@ class TransferStatementRepositoryTest {
         underTest.saveAll(expected);
 
         // when
-        List<TransferStatement> actual = underTest.findAllBySourceIdOrTargetId(1L);
+        List<TransferStatement> actual = underTest.findAllBySourceIdOrTargetId(1L, PageRequest.of(0, 10));
 
         // then
         assertThat(actual).isEqualTo(expected);
