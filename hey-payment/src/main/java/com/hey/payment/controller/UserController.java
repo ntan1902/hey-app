@@ -6,6 +6,7 @@ import com.hey.payment.exception_handler.exception.*;
 import com.hey.payment.service.TransferStatementService;
 import com.hey.payment.service.WalletService;
 import lombok.AllArgsConstructor;
+import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -39,7 +40,7 @@ public class UserController {
     }
 
     @PostMapping("/createTransfer")
-    public ResponseEntity<ApiResponse<Object>> createTransfer(@RequestBody CreateTransferRequest createTransferRequest) throws NegativeAmountException, MaxAmountException, HaveNoWalletException, SoftTokenAuthorizeException, SourceAndTargetAreTheSameException,BalanceNotEnoughException, MaxBalanceException {
+    public ResponseEntity<ApiResponse<Object>> createTransfer(@RequestBody CreateTransferRequest createTransferRequest) throws NegativeAmountException, MaxAmountException, HaveNoWalletException, SoftTokenAuthorizeException, SourceAndTargetAreTheSameException, BalanceNotEnoughException, MaxBalanceException {
         User user = getCurrentUser();
         transferStatementService.createTransfer(user, createTransferRequest);
         return ResponseEntity.ok(
@@ -67,10 +68,14 @@ public class UserController {
     }
 
 
+    @SneakyThrows
     @GetMapping("/getTransferStatement")
-    public ResponseEntity<ApiResponse<Object>> getTransferStatement() throws DatabaseHasErr, HaveNoWalletException, ApiErrException {
+    public ResponseEntity<ApiResponse<Object>> getTransferStatement(
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "size", defaultValue = "10") int size) {
         User user = getCurrentUser();
-        List<TransferStatementDTO> transferStatementDTOList = transferStatementService.getTransferStatementOfUser(user.getId());
+        List<TransferStatementDTO> transferStatementDTOList =
+                transferStatementService.getTransferStatementOfUser(user.getId(), page, size);
         return ResponseEntity.ok(
                 ApiResponse.builder()
                         .success(true)
@@ -91,6 +96,18 @@ public class UserController {
                         .message("Create wallet successfully")
                         .payload(walletDTO).build()
         );
+    }
+
+    @GetMapping("/hasWallet")
+    public ResponseEntity<ApiResponse<Object>> hasWallet() {
+        User user = getCurrentUser();
+        HasWalletResponse payload = walletService.hasWallet(user);
+        return ResponseEntity.ok(ApiResponse.builder()
+                .success(true)
+                .code(HttpStatus.OK.value())
+                .message("")
+                .payload(payload)
+                .build());
     }
 
     private User getCurrentUser() {

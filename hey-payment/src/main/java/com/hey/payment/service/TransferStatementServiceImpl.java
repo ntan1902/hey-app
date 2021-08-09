@@ -26,6 +26,14 @@ import com.hey.payment.repository.TransferStatementRepository;
 import com.hey.payment.repository.WalletRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
+import org.springframework.cache.annotation.EnableCaching;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -37,6 +45,7 @@ import java.util.List;
 @Log4j2
 @Service
 @AllArgsConstructor
+@EnableCaching
 public class TransferStatementServiceImpl implements TransferStatementService {
 
     private final TransferStatementRepository transferStatementRepository;
@@ -141,6 +150,7 @@ public class TransferStatementServiceImpl implements TransferStatementService {
     }
 
     @Override
+    @CachePut(value = "transfer_statements", key = "#request.receiverId")
     public void systemCreateTransferToUser(System system, SystemCreateTransferToUserRequest request) throws NegativeAmountException, MaxAmountException, HaveNoWalletException, BalanceNotEnoughException, MaxBalanceException {
         log.info("System use wallet {} transfer {} to user {}", request.getWalletId(), request.getAmount(), request.getReceiverId());
 
@@ -278,11 +288,13 @@ public class TransferStatementServiceImpl implements TransferStatementService {
     }
 
     @Override
-    public List<TransferStatementDTO> getTransferStatementOfUser(String userId) throws HaveNoWalletException, DatabaseHasErr, ApiErrException {
+    public List<TransferStatementDTO> getTransferStatementOfUser(String userId, int page, int size) throws HaveNoWalletException, DatabaseHasErr, ApiErrException {
         Wallet wallet = walletRepository.findByOwnerIdAndRefFrom(userId, OwnerWalletRefFrom.USERS)
                 .orElseThrow(() -> new HaveNoWalletException(USER_HAS_NO_WALLET));
 
-        List<TransferStatement> transferStatements = transferStatementRepository.findAllBySourceIdOrTargetId(wallet.getId());
+        // Pagination and Sort createdAt descending
+        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
+        List<TransferStatement> transferStatements = transferStatementRepository.findAllBySourceIdOrTargetId(wallet.getId(), pageable);
 
         return listTransferStatement2ListTransferStatementDTO(transferStatements);
     }

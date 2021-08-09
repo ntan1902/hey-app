@@ -26,4 +26,9 @@ public class AuthApiImpl implements AuthApi {
         HttpEntity<VerifySoftTokenRequest> entity = new HttpEntity<>(new VerifySoftTokenRequest(softToken));
         return restTemplate.postForObject("/authorizeSoftToken", entity, VerifySoftTokenResponse.class);
     }
+
+    @Override
+    public GetSystemsResponse getSystems() {
+        return restTemplate.getForObject("/getSystems", GetSystemsResponse.class);
+    }
 }

@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 @Entity
@@ -20,7 +21,10 @@ import java.time.LocalDateTime;
                 @Index(name = "i_target_id", columnList = "target_id")
         }
 )
-public class TransferStatement {
+public class TransferStatement implements Serializable {
+
+    private static final long serialVersionUID = 1905122041950251207L;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

@@ -2,6 +2,7 @@ package com.hey.payment.service;
 
 
 import com.hey.payment.dto.system.WalletSystemDTO;
+import com.hey.payment.dto.user.HasWalletResponse;
 import com.hey.payment.dto.user.WalletDTO;
 import com.hey.payment.entity.System;
 import com.hey.payment.entity.User;
@@ -21,4 +22,6 @@ public interface WalletService {
     void getSystems();
 
     void transferMoney(long sourceWalletId, long targetWalletId, long amount) throws MaxBalanceException, BalanceNotEnoughException, HaveNoWalletException;
+
+    HasWalletResponse hasWallet(User user);
 }

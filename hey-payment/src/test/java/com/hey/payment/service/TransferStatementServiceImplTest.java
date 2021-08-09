@@ -28,6 +28,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.PageRequest;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
@@ -1102,7 +1103,7 @@ class TransferStatementServiceImplTest {
         List<TransferStatementDTO> transferStatementDTOs = Collections.singletonList(transferStatementDTO);
 
         when(walletRepository.findByOwnerIdAndRefFrom("uuid1", OwnerWalletRefFrom.USERS)).thenReturn(Optional.of(sourceWallet));
-        when(transferStatementRepository.findAllBySourceIdOrTargetId(sourceWallet.getId())).thenReturn(transferStatements);
+        when(transferStatementRepository.findAllBySourceIdOrTargetId(sourceWallet.getId(), PageRequest.of(0, 10))).thenReturn(transferStatements);
 
         when(transferStatementMapper.ts2TsDTO(transferStatement)).thenReturn(transferStatementDTO);
 
@@ -1113,7 +1114,7 @@ class TransferStatementServiceImplTest {
         when(authApi.getUserInfo(targetWallet.getOwnerId())).thenReturn(targetResponse);
 
         // when
-        List<TransferStatementDTO> actual = underTest.getTransferStatementOfUser("uuid1");
+        List<TransferStatementDTO> actual = underTest.getTransferStatementOfUser("uuid1", 0, 10);
 
         // then
         assertThat(actual).isEqualTo(transferStatementDTOs);
@@ -1169,7 +1170,7 @@ class TransferStatementServiceImplTest {
                 .build();
 
         when(walletRepository.findByOwnerIdAndRefFrom("uuid1", OwnerWalletRefFrom.USERS)).thenReturn(Optional.of(sourceWallet));
-        when(transferStatementRepository.findAllBySourceIdOrTargetId(sourceWallet.getId())).thenReturn(transferStatements);
+        when(transferStatementRepository.findAllBySourceIdOrTargetId(sourceWallet.getId(), PageRequest.of(0, 10))).thenReturn(transferStatements);
 
         when(transferStatementMapper.ts2TsDTO(transferStatement)).thenReturn(transferStatementDTO);
 
@@ -1180,7 +1181,7 @@ class TransferStatementServiceImplTest {
         // when
 
         // then
-        assertThatThrownBy(() -> underTest.getTransferStatementOfUser("uuid1"))
+        assertThatThrownBy(() -> underTest.getTransferStatementOfUser("uuid1", 0, 10))
                 .isInstanceOf(ApiErrException.class);
     }
 
@@ -1245,7 +1246,7 @@ class TransferStatementServiceImplTest {
                 .build();
 
         when(walletRepository.findByOwnerIdAndRefFrom("uuid1", OwnerWalletRefFrom.USERS)).thenReturn(Optional.of(sourceWallet));
-        when(transferStatementRepository.findAllBySourceIdOrTargetId(sourceWallet.getId())).thenReturn(transferStatements);
+        when(transferStatementRepository.findAllBySourceIdOrTargetId(sourceWallet.getId(), PageRequest.of(0, 10))).thenReturn(transferStatements);
 
         when(transferStatementMapper.ts2TsDTO(transferStatement)).thenReturn(transferStatementDTO);
 
@@ -1258,7 +1259,7 @@ class TransferStatementServiceImplTest {
         // when
 
         // then
-        assertThatThrownBy(() -> underTest.getTransferStatementOfUser("uuid1"))
+        assertThatThrownBy(() -> underTest.getTransferStatementOfUser("uuid1", 0, 10))
                 .isInstanceOf(ApiErrException.class);
     }
 
@@ -1324,7 +1325,7 @@ class TransferStatementServiceImplTest {
         List<TransferStatementDTO> transferStatementDTOs = Collections.singletonList(transferStatementDTO);
 
         when(walletRepository.findByOwnerIdAndRefFrom("uuid1", OwnerWalletRefFrom.USERS)).thenReturn(Optional.of(sourceWallet));
-        when(transferStatementRepository.findAllBySourceIdOrTargetId(sourceWallet.getId())).thenReturn(transferStatements);
+        when(transferStatementRepository.findAllBySourceIdOrTargetId(sourceWallet.getId(), PageRequest.of(0, 10))).thenReturn(transferStatements);
 
         when(transferStatementMapper.ts2TsDTO(transferStatement)).thenReturn(transferStatementDTO);
 
@@ -1335,7 +1336,7 @@ class TransferStatementServiceImplTest {
         when(authApi.getSystemInfo(targetWallet.getOwnerId())).thenReturn(targetResponse);
 
         // when
-        List<TransferStatementDTO> actual = underTest.getTransferStatementOfUser("uuid1");
+        List<TransferStatementDTO> actual = underTest.getTransferStatementOfUser("uuid1", 0, 10);
 
         // then
         assertThat(actual).isEqualTo(transferStatementDTOs);
