@@ -56,6 +56,16 @@ public class RedisCacheClient implements DataRepository {
         return "friend:list:" + userId1 + ":" + userId2;
     }
 
+    String generateWaitingFriendListKey(String userId1, String userId2) {
+
+        return "waiting_friend:list:" + userId1 + ":" + userId2;
+    }
+
+    String generateWaitingFriendListKey(List<String> userIds) {
+
+        return "waiting_friend:list:" + String.join(":", userIds);
+    }
+
     String generateUserStatusKey(String userId) {
 
         return "user_status:" + userId;
@@ -264,7 +274,65 @@ public class RedisCacheClient implements DataRepository {
     }
 
     @Override
+    public Future<FriendList> insertWaitingFriendList(FriendList friendList) {
+
+        Future<FriendList> future = Future.future();
+
+        JsonObject friendListJsonObject = new JsonObject();
+        List<String> userIds = new ArrayList<>();
+        userIds.add(friendList.getCurrentUserHashes().getUserId());
+        userIds.add(friendList.getFriendUserHashes().getUserId());
+        friendListJsonObject.put(friendList.getCurrentUserHashes().getUserId(), friendList.getCurrentUserHashes().getFullName());
+        friendListJsonObject.put(friendList.getFriendUserHashes().getUserId(), friendList.getFriendUserHashes().getFullName());
+
+        client.hmset(generateWaitingFriendListKey(userIds), friendListJsonObject, res -> {
+            if (res.succeeded()) {
+                future.complete(friendList);
+            } else {
+                future.fail(res.cause());
+            }
+        });
+
+        return future;
+    }
+
+    @Override
     public Future<FriendList> getFriendList(String friendListKey, String currentUserId) {
+
+        Future<FriendList> future = Future.future();
+
+        client.hgetall(friendListKey, res -> {
+            if (res.succeeded()) {
+                Set<String> fieldNames = res.result().fieldNames();
+
+                if (fieldNames.size() == 2) {
+                    FriendList friendList = new FriendList();
+
+                    for (String fieldName : fieldNames) {
+
+                        if (currentUserId.equals(fieldName)) {
+                            friendList.setCurrentUserHashes(new UserHash(fieldName, res.result().getString(fieldName)));
+                        } else {
+                            friendList.setFriendUserHashes(new UserHash(fieldName, res.result().getString(fieldName)));
+                        }
+                    }
+
+                    future.complete(friendList);
+
+                } else {
+                    future.complete(null);
+                }
+
+            } else {
+                future.fail(res.cause());
+            }
+        });
+
+        return future;
+    }
+
+    @Override
+    public Future<FriendList> getWaitingFriendList(String friendListKey, String currentUserId) {
 
         Future<FriendList> future = Future.future();
 
@@ -480,6 +548,21 @@ public class RedisCacheClient implements DataRepository {
     public Future<Long> deleteFriend(String userId, String friendId) {
         Future<Long> future = Future.future();
         client.del(generateFriendListKey(userId, friendId), deleteFriendRes -> {
+            if (deleteFriendRes.succeeded()) {
+                future.complete(deleteFriendRes.result());
+
+            } else {
+                future.fail(deleteFriendRes.cause());
+            }
+        });
+
+        return future;
+    }
+
+    @Override
+    public Future<Long> deleteWaitingFriend(String userId, String friendId) {
+        Future<Long> future = Future.future();
+        client.del(generateWaitingFriendListKey(friendId, userId), deleteFriendRes -> {
             if (deleteFriendRes.succeeded()) {
                 future.complete(deleteFriendRes.result());
 

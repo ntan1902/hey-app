@@ -56,6 +56,14 @@ public class ProtectedApiHandler extends BaseHandler {
                             LogUtils.log("User  " + userId + " request address book");
                             getAddressBook(response, requestObject, userId);
                             break;
+                        case "/waitingfriend":
+                            LogUtils.log("User  " + userId + " request address book");
+                            getWaitingFriends(response, requestObject, userId);
+                            break;
+                        case "/closewaitingfriend":
+                            LogUtils.log("User  " + userId + " request address book");
+                            deleteWaitingFriend(response, requestObject, userId);
+                            break;
                         case "/usernameexisted":
                             LogUtils.log("User  " + userId + " check username " + requestObject);
                             checkUsernameExisted(response, requestObject, userId);
@@ -124,6 +132,39 @@ public class ProtectedApiHandler extends BaseHandler {
                     .setStatusCode(HttpStatus.OK.code())
                     .putHeader("content-type", "application/json; charset=utf-8")
                     .end(JsonUtils.toSuccessJSON(addressBookResponse));
+
+        }, Future.future().setHandler(handler -> {
+            handleException(handler.cause(), response);
+        }));
+    }
+
+    public void getWaitingFriends(HttpServerResponse response, JsonObject requestObject, String userId) {
+
+        Future<AddressBookResponse> getAddressBookFuture = apiService.getWaitingFriends(userId);
+
+        getAddressBookFuture.compose(addressBookResponse -> {
+
+            response
+                    .setStatusCode(HttpStatus.OK.code())
+                    .putHeader("content-type", "application/json; charset=utf-8")
+                    .end(JsonUtils.toSuccessJSON(addressBookResponse));
+
+        }, Future.future().setHandler(handler -> {
+            handleException(handler.cause(), response);
+        }));
+    }
+
+    public void deleteWaitingFriend(HttpServerResponse response, JsonObject requestObject, String userId) {
+        GetSessionIdRequest getSessionIdRequest = requestObject.mapTo(GetSessionIdRequest.class);
+
+        Future<JsonObject> getAddressBookFuture = apiService.deleteWaitingFriend(getSessionIdRequest,userId);
+
+        getAddressBookFuture.compose(addressBookResponse -> {
+
+            response
+                    .setStatusCode(HttpStatus.OK.code())
+                    .putHeader("content-type", "application/json; charset=utf-8")
+                    .end(JsonUtils.toSuccessJSON("OK"));
 
         }, Future.future().setHandler(handler -> {
             handleException(handler.cause(), response);

@@ -6,6 +6,8 @@ import com.hey.model.*;
 import com.hey.repository.DataRepository;
 import com.hey.service.APIService;
 import com.hey.util.GenerationUtils;
+import com.hey.util.HttpStatus;
+import com.hey.util.JsonUtils;
 import io.vertx.core.CompositeFuture;
 import io.vertx.core.Future;
 import io.vertx.core.json.JsonObject;
@@ -61,6 +63,30 @@ public class WsHandler {
 
     }
 
+    public void handleAddFriendRequest(ChatContainerRequest request, String channelId, String userId) {
+        String sessionId = request.getSessionId();
+
+        AddFriendRequest addFriendRequest = new AddFriendRequest();
+        addFriendRequest.setUsername(sessionId);
+
+        Future<AddFriendResponse> addWaitingFriendFuture = apiService.addWaitingFriend(addFriendRequest, userId);
+
+        addWaitingFriendFuture.compose(addWaitingFriendResponse -> {
+            AddressBookItem responseItem = addWaitingFriendResponse.getItem();
+
+            NewChatSessionResponse newChatSessionResponse = new NewChatSessionResponse();
+            newChatSessionResponse.setType(IWsMessage.TYPE_NOTIFICATION_ADD_FRIEND_RESPONSE);
+            newChatSessionResponse.setSessionId(userId);
+            userWsChannelManager.sendMessage(newChatSessionResponse, responseItem.getUserId());
+
+        }, Future.future().setHandler(handler -> {
+            throw new RuntimeException(handler.cause());
+        }));
+
+
+
+    }
+
     public void handleChatMessageRequest(ChatMessageRequest request, String channelId, String userId) {
 
         if ("-1".equals(request.getSessionId())) {
@@ -76,7 +102,8 @@ public class WsHandler {
         }
     }
 
-    private void insertChatMessageOnNewChatSessionId(ChatMessageRequest request, String channelId, List<String> userIds) {
+    private void insertChatMessageOnNewChatSessionId(ChatMessageRequest request, String channelId,
+            List<String> userIds) {
 
         Future<List<UserFull>> getUserFullsFuture = apiService.getUserFulls(userIds);
 
@@ -113,15 +140,17 @@ public class WsHandler {
             Future<ChatMessage> insertChatMessageFuture = dataRepository.insertChatMessage(chatMessage);
 
             List<String> userFriendIds = userIds.subList(1, userIds.size());
-            Future<HashMap<String, Long>> increaseUnseenCountFuture = apiService.increaseUnseenCount(userFriendIds, chatList.getSessionId());
+            Future<HashMap<String, Long>> increaseUnseenCountFuture = apiService.increaseUnseenCount(userFriendIds,
+                    chatList.getSessionId());
 
-            CompositeFuture cp = CompositeFuture.all(insertChatMessageFuture, insertChatListFuture, increaseUnseenCountFuture);
+            CompositeFuture cp = CompositeFuture.all(insertChatMessageFuture, insertChatListFuture,
+                    increaseUnseenCountFuture);
             cp.setHandler(ar -> {
                 if (ar.succeeded()) {
                     NewChatSessionResponse newChatSessionResponse = new NewChatSessionResponse();
                     newChatSessionResponse.setType(IWsMessage.TYPE_CHAT_NEW_SESSION_RESPONSE);
                     newChatSessionResponse.setSessionId(chatMessage.getSessionId());
-                    //userWsChannelManager.selfSendMessage(newChatSessionResponse, channelId);
+                    // userWsChannelManager.selfSendMessage(newChatSessionResponse, channelId);
                     for (UserHash userhash : chatList.getUserHashes()) {
                         userWsChannelManager.sendMessage(newChatSessionResponse, userhash.getUserId());
                     }
@@ -137,7 +166,8 @@ public class WsHandler {
 
     }
 
-    private void insertChatMessageBetweenTwoOnNewChatSessionId(ChatMessageRequest request, String channelId, String userId) {
+    private void insertChatMessageBetweenTwoOnNewChatSessionId(ChatMessageRequest request, String channelId,
+            String userId) {
 
         List<String> userIds = new ArrayList<>();
         userIds.add(userId);
@@ -148,7 +178,6 @@ public class WsHandler {
     }
 
     private void insertChatMessageGroupOnNewChatSessionId(ChatMessageRequest request, String channelId, String userId) {
-
 
         Future<List<UserAuth>> getUserAuthsFuture = apiService.getUserAuths(request.getUsernames());
 
@@ -184,12 +213,14 @@ public class WsHandler {
             chatMessage.setMessage(messageRequest.encode());
             chatMessage.setCreatedDate(new Date());
 
-            Future<ChatMessage> insertChatMessagesAndUpdateChatListAndUpdateUnseenCountFuture =
-                    apiService.insertChatMessagesAndUpdateChatListAndUpdateUnseenCount(chatMessage);
+            Future<ChatMessage> insertChatMessagesAndUpdateChatListAndUpdateUnseenCountFuture = apiService
+                    .insertChatMessagesAndUpdateChatListAndUpdateUnseenCount(chatMessage);
 
-            Future<ChatList> getChatListBySessionIdFuture = apiService.getChatListBySessionId(chatMessage.getSessionId());
+            Future<ChatList> getChatListBySessionIdFuture = apiService
+                    .getChatListBySessionId(chatMessage.getSessionId());
 
-            CompositeFuture cp = CompositeFuture.all(insertChatMessagesAndUpdateChatListAndUpdateUnseenCountFuture, getChatListBySessionIdFuture);
+            CompositeFuture cp = CompositeFuture.all(insertChatMessagesAndUpdateChatListAndUpdateUnseenCountFuture,
+                    getChatListBySessionIdFuture);
             cp.setHandler(ar -> {
                 if (ar.succeeded()) {
 
@@ -236,7 +267,6 @@ public class WsHandler {
             }
 
             future.complete(chatItems);
-
 
         }, Future.future().setHandler(handler -> {
             future.fail(handler.cause());

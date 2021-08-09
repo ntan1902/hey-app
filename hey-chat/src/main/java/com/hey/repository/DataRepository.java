@@ -28,7 +28,11 @@ public interface DataRepository {
 
     public Future<FriendList> insertFriendList(FriendList friendList);
 
+    public Future<FriendList> insertWaitingFriendList(FriendList friendList);
+
     public Future<FriendList> getFriendList(String friendListKey, String currentUserId);
+
+    public Future<FriendList> getWaitingFriendList(String friendListKey, String currentUserId);
 
     public Future<ChatList> insertChatList(ChatList chatList);
 
@@ -45,4 +49,6 @@ public interface DataRepository {
     public Future<Long> deleteUnseenCount(String userId, String sessionId);
 
     Future<Long> deleteFriend(String userId, String friendId);
+
+    Future<Long> deleteWaitingFriend(String userId, String friendId);
 }

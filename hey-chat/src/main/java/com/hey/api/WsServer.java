@@ -63,13 +63,16 @@ public class WsServer {
                                 String userId = event.result().principal().getString("userId");
                                 LogUtils.log("User " + userId + " registering new connection with id: " + id);
                                 LOGGER.info("registering new connection with id: " + id + " for user: " + userId);
-                                userWsChannelManager.registerChannel(userId, id).setHandler(ar -> handleNotificationCase(ar, userId, true));
+                                userWsChannelManager.registerChannel(userId, id)
+                                        .setHandler(ar -> handleNotificationCase(ar, userId, true));
 
                                 ws.closeHandler(new Handler<Void>() {
                                     @Override
                                     public void handle(final Void event) {
-                                        LOGGER.info("un-registering connection with id: " + id + " for user: " + userId);
-                                        userWsChannelManager.removeChannel(userId, id).setHandler(ar -> handleNotificationCase(ar, userId, false));
+                                        LOGGER.info(
+                                                "un-registering connection with id: " + id + " for user: " + userId);
+                                        userWsChannelManager.removeChannel(userId, id)
+                                                .setHandler(ar -> handleNotificationCase(ar, userId, false));
                                     }
                                 });
 
@@ -82,16 +85,30 @@ public class WsServer {
                                             ObjectMapper mapper = new ObjectMapper();
                                             switch (type) {
                                                 case IWsMessage.TYPE_CHAT_ITEM_REQUEST:
-                                                    ChatContainerRequest chatContainerRequest = mapper.readValue(data.toString(), ChatContainerRequest.class);
-                                                    LogUtils.log("User " + userId + " load chat container " + chatContainerRequest.getSessionId());
-                                                    wsHandler.handleChatContainerRequest(chatContainerRequest, id, userId);
+                                                    ChatContainerRequest chatContainerRequest = mapper
+                                                            .readValue(data.toString(), ChatContainerRequest.class);
+                                                    LogUtils.log("User " + userId + " load chat container "
+                                                            + chatContainerRequest.getSessionId());
+                                                    wsHandler.handleChatContainerRequest(chatContainerRequest, id,
+                                                            userId);
+                                                    break;
+                                                case IWsMessage.TYPE_NOTIFICATION_ADD_FRIEND_REQUEST:
+                                                    ChatContainerRequest chatContainerRequest2 = mapper
+                                                            .readValue(data.toString(), ChatContainerRequest.class);
+                                                    LogUtils.log("User " + userId + " load chat container "
+                                                            + chatContainerRequest2.getSessionId());
+                                                    wsHandler.handleAddFriendRequest(chatContainerRequest2, id, userId);
                                                     break;
                                                 case IWsMessage.TYPE_CHAT_MESSAGE_REQUEST:
-                                                    ChatMessageRequest chatMessageRequest = mapper.readValue(data.toString(), ChatMessageRequest.class);
+                                                    ChatMessageRequest chatMessageRequest = mapper
+                                                            .readValue(data.toString(), ChatMessageRequest.class);
                                                     if (!"-1".equals(chatMessageRequest.getSessionId()))
-                                                        LogUtils.log("User " + userId + " send a chat message to " + chatMessageRequest.getSessionId());
+                                                        LogUtils.log("User " + userId + " send a chat message to "
+                                                                + chatMessageRequest.getSessionId());
                                                     else
-                                                        LogUtils.log("User " + userId + " start a chat message to " + ArrayUtils.toString(chatMessageRequest.getUsernames()));
+                                                        LogUtils.log("User " + userId + " start a chat message to "
+                                                                + ArrayUtils
+                                                                        .toString(chatMessageRequest.getUsernames()));
                                                     wsHandler.handleChatMessageRequest(chatMessageRequest, id, userId);
                                                     break;
                                             }
@@ -191,9 +208,9 @@ public class WsServer {
                 @Override
                 public void handle(final Buffer data) {
                     sockJSSocket.write(data);
-                    //JsonObject json = new JsonObject(data.toString());
-                    //ObjectMapper m = new ObjectMapper();
-                    //sockJSSocket.close();
+                    // JsonObject json = new JsonObject(data.toString());
+                    // ObjectMapper m = new ObjectMapper();
+                    // sockJSSocket.close();
                 }
             });
 
