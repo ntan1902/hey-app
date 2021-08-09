@@ -82,9 +82,90 @@ public class WsHandler {
         }, Future.future().setHandler(handler -> {
             throw new RuntimeException(handler.cause());
         }));
+    }
+
+    public void handleAddFriendToSessionRequest(AddFriendToSessionRequest request, String channelId, String userId) {
+        String sessionId = request.getSessionId();
+
+        Future<ChatList> getChatListBySessionIdFuture = apiService
+                .getChatListBySessionId(sessionId);
+
+        getChatListBySessionIdFuture.compose(chatList -> {
+
+            Future<Long> deleteSessionFuture = dataRepository
+                    .deleteSessionKey(chatList);
+
+            deleteSessionFuture.compose(res -> {
+                List<String> userIds = new ArrayList<String>();
+                userIds.add(request.getUserId());
+                Future<List<UserFull>> getUserFullsFuture = apiService.getUserFulls(userIds);
+
+                getUserFullsFuture.compose(userFulls -> {
+
+                    List<UserHash> userHashes = chatList.getUserHashes();
+                    UserHash me = userHashes.get(0);
+                    for (UserFull userFull : userFulls) {
+                        if(userFull.getUserId() == userId) me = new UserHash(userFull.getUserId(), userFull.getFullName());
+                        userHashes.add(new UserHash(userFull.getUserId(), userFull.getFullName()));
+                    }
+
+                    JsonObject content = new JsonObject();
+                    content.put("message", "Add " + userFulls.get(0).getFullName() + " to group");
+
+                    JsonObject messageRequest = new JsonObject();
+                    messageRequest.put("type", "message");
+                    messageRequest.put("content", content);
+
+
+                    ChatMessage chatMessage = new ChatMessage();
+                    chatMessage.setUserHash(me);
+                    chatMessage.setSessionId(sessionId);
+                    chatMessage.setMessage(messageRequest.encode());
+                    chatMessage.setCreatedDate(new Date());
+
+                    chatList.setSessionId(sessionId);
+                    chatList.setUpdatedDate(new Date());
+                    chatList.setUserHashes(userHashes);
+                    chatList.setLastMessage(chatMessage.getMessage());
+                    chatList.setUpdatedDate(chatMessage.getCreatedDate());
+
+                    Future<ChatList> insertChatListFuture = dataRepository.insertChatList(chatList);
+
+                    Future<ChatMessage> insertChatMessageFuture = dataRepository.insertChatMessage(chatMessage);
+
+                    List<String> userFriendIds = userIds.subList(1, userIds.size());
+                    Future<HashMap<String, Long>> increaseUnseenCountFuture = apiService.increaseUnseenCount(userFriendIds,
+                            chatList.getSessionId());
+
+                    CompositeFuture cp = CompositeFuture.all(insertChatMessageFuture, insertChatListFuture,
+                            increaseUnseenCountFuture);
+                    cp.setHandler(ar -> {
+                        if (ar.succeeded()) {
+                            NewChatSessionResponse newChatSessionResponse = new NewChatSessionResponse();
+                            newChatSessionResponse.setType(IWsMessage.TYPE_CHAT_NEW_SESSION_RESPONSE);
+                            newChatSessionResponse.setSessionId(chatMessage.getSessionId());
+                            // userWsChannelManager.selfSendMessage(newChatSessionResponse, channelId);
+                            for (UserHash userhash : chatList.getUserHashes()) {
+                                userWsChannelManager.sendMessage(newChatSessionResponse, userhash.getUserId());
+                            }
+
+                        } else {
+                            throw new RuntimeException(ar.cause());
+                        }
+                    });
+
+                }, Future.future().setHandler(handler -> {
+                    throw new RuntimeException(handler.cause());
+                }));
+            }, Future.future().setHandler(handler -> {
+                throw new RuntimeException(handler.cause());
+            }));
 
 
 
+        }, Future.future().setHandler(handler -> {
+            throw new RuntimeException(handler.cause());
+        }));
     }
 
     public void handleChatMessageRequest(ChatMessageRequest request, String channelId, String userId) {

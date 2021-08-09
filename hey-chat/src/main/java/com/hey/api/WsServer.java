@@ -4,12 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hey.handler.ws.WsHandler;
 import com.hey.manager.JwtManager;
 import com.hey.manager.UserWsChannelManager;
-import com.hey.model.ChatContainerRequest;
-import com.hey.model.ChatMessageRequest;
-import com.hey.model.FriendList;
-import com.hey.model.IWsMessage;
-import com.hey.model.UserOfflineResponse;
-import com.hey.model.UserOnlineResponse;
+import com.hey.model.*;
 import com.hey.util.LogUtils;
 import com.hey.util.PropertiesUtils;
 import io.vertx.core.AsyncResult;
@@ -98,6 +93,13 @@ public class WsServer {
                                                     LogUtils.log("User " + userId + " load chat container "
                                                             + chatContainerRequest2.getSessionId());
                                                     wsHandler.handleAddFriendRequest(chatContainerRequest2, id, userId);
+                                                    break;
+                                                case IWsMessage.TYPE_ADD_FRIEND_TO_SESSION_REQUEST:
+                                                    AddFriendToSessionRequest chatContainerRequest3 = mapper
+                                                            .readValue(data.toString(), AddFriendToSessionRequest.class);
+                                                    LogUtils.log("User " + userId + " load chat container "
+                                                            + chatContainerRequest3.getSessionId());
+                                                    wsHandler.handleAddFriendToSessionRequest(chatContainerRequest3, id, userId);
                                                     break;
                                                 case IWsMessage.TYPE_CHAT_MESSAGE_REQUEST:
                                                     ChatMessageRequest chatMessageRequest = mapper

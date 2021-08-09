@@ -48,7 +48,11 @@ public interface DataRepository {
 
     public Future<Long> deleteUnseenCount(String userId, String sessionId);
 
-    Future<Long> deleteFriend(String userId, String friendId);
+    public Future<Long> deleteFriend(String userId, String friendId);
 
-    Future<Long> deleteWaitingFriend(String userId, String friendId);
+    public Future<Long> deleteSessionKey(ChatList chatList);
+
+    public Future<ChatList> addFriendToSession(ChatList chatList);
+
+    public Future<Long> deleteWaitingFriend(String userId, String friendId);
 }

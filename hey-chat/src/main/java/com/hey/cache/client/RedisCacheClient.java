@@ -32,6 +32,7 @@ public class RedisCacheClient implements DataRepository {
     private RedisClient client;
 
     private static int numScanCount;
+    private String key;
 
     public RedisCacheClient(RedisClient client) {
         this.client = client;
@@ -553,6 +554,55 @@ public class RedisCacheClient implements DataRepository {
 
             } else {
                 future.fail(deleteFriendRes.cause());
+            }
+        });
+
+
+        return future;
+    }
+
+    @Override
+    public Future<Long> deleteSessionKey(ChatList chatList) {
+        Future<Long> future = Future.future();
+
+        List<String> userIds = new ArrayList<>();
+        for (UserHash userHash : chatList.getUserHashes()) {
+            userIds.add(userHash.getUserId());
+        }
+
+        client.del(generateChatListKey(chatList.getSessionId(), userIds), deleteFriendRes -> {
+            if (deleteFriendRes.succeeded()) {
+                future.complete(deleteFriendRes.result());
+
+            } else {
+                future.fail(deleteFriendRes.cause());
+            }
+        });
+
+        return future;
+    }
+
+    @Override
+    public Future<ChatList> addFriendToSession(ChatList chatList) {
+        Future<ChatList> future = Future.future();
+
+        JsonObject chatListJsonObject = new JsonObject();
+        String updatedDate = String.valueOf(chatList.getUpdatedDate() != null ? chatList.getUpdatedDate().getTime() : new Date().getTime());
+        chatListJsonObject.put("updated_date", updatedDate);
+        List<String> userIds = new ArrayList<>();
+        for (UserHash userHash : chatList.getUserHashes()) {
+            chatListJsonObject.put(userHash.getUserId(), userHash.getFullName());
+            userIds.add(userHash.getUserId());
+        }
+
+        chatListJsonObject.put("last_message", StringUtils.isEmpty(chatList.getLastMessage()) ? "no message" : chatList.getLastMessage());
+
+
+        client.hmset(generateChatListKey(chatList.getSessionId(), userIds), chatListJsonObject, res -> {
+            if (res.succeeded()) {
+                future.complete(chatList);
+            } else {
+                future.fail(res.cause());
             }
         });
 
