@@ -299,7 +299,6 @@ public class TransferStatementServiceImpl implements TransferStatementService {
 
             Wallet targetWallet = walletRepository.findById(transferStatement.getTargetId())
                     .orElseThrow(DatabaseHasErr::new);
-
             OwnerInfo targetOwner = getOwnerInfo(targetWallet.getOwnerId(), targetWallet.getRefFrom());
             transferStatementDTO.setTarget(targetOwner);
 

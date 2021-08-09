@@ -40,7 +40,7 @@ public class LuckyMoneyController {
                 .build());
     }
     @GetMapping("/getAllLuckyMoney")
-    public ResponseEntity<ApiResponse<Object>> getAllLuckyMoneyOfGroupChat(@RequestParam String sessionId) throws UnauthorizeException, ErrCallApiException {
+    public ResponseEntity<ApiResponse<Object>> getAllLuckyMoneyOfGroupChat(@RequestParam String sessionId) throws UnauthorizeException, ErrCallApiException, CannotGetUserInfo {
         log.info("Get all lucky money");
         List<LuckyMoneyDTO> luckyMoneyDTOList = luckyMoneyService.getAllLuckyMoneyOfSession(sessionId);
         return ResponseEntity.ok(ApiResponse.builder()
