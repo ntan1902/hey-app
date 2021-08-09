@@ -96,8 +96,8 @@ class AddressBook extends React.Component {
             onSelect={this.handleCurrentChange}
           >
             {this.state.data.map((item, index) => (
-              <Menu.Item key={index}>
-                <div style={{ fontSize: 25, fontWeight: "lighter" }}>
+              <Menu.Item key={index} style={{ height: 40 }}>
+                <div style={{ fontSize: 15, fontWeight: "lighter" }}>
                   {item.title}
                 </div>
               </Menu.Item>

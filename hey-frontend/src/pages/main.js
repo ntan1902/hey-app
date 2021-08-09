@@ -49,11 +49,21 @@ class Main extends React.Component {
       .actions()
       .authActions.getProfile()
       .then((res) => {
-        // this.props.actions().paymentActions.getBalance();
-        // setUserIdToStorage(res.data.id);
-        // console.log("Res", res.data);
+        setUserIdToStorage(res.data.id);
+
+        this.props
+          .actions()
+          .paymentActions.checkBalance()
+          .then((res) => {
+            this.props.actions().paymentActions.getBalance();
+          })
+          .catch((err) => {
+            this.props.actions().paymentActions.getBalance();
+          });
+        console.log("Res", res.data);
       })
       .catch((err) => {
+        console.log("Err", err);
         clearStorage();
       });
   }
@@ -132,9 +142,9 @@ class Main extends React.Component {
               <Menu.Item key="3">
                 <Icon type="pay-circle" style={{ fontSize: 30 }} />
               </Menu.Item>
-              <Menu.Item key="4">
+              {/* <Menu.Item key="4">
                 <Icon type="user" style={{ fontSize: 30 }} />
-              </Menu.Item>
+              </Menu.Item> */}
             </Menu>
           </Sider>
           {this.renderMainSlide()}

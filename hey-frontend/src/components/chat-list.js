@@ -66,12 +66,16 @@ class ChatList extends React.Component {
                       style={{ overflow: "hidden", paddingTop: 5 }}
                     >
                       <div className="user-name">{item.name}</div>
-                      <div className="history-message">{item.lastMessage}</div>
+                      <div className="history-message">
+                        {JSON.parse(item.lastMessage).content.message}
+                      </div>
                     </div>
                   ) : (
                     <div style={{ overflow: "hidden", paddingTop: 5 }}>
                       <div className="user-name">{item.name}</div>
-                      <div className="history-message">{item.lastMessage}</div>
+                      <div className="history-message">
+                        {JSON.parse(item.lastMessage).content.message}
+                      </div>
                     </div>
                   )}
                   {item.unread > 0 ? (

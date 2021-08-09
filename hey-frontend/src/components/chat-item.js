@@ -3,6 +3,10 @@ import CustomAvatar from "./custom-avatar";
 import { Popover } from "antd";
 import { SlideDown } from "react-slidedown";
 
+import { Card, Icon, Avatar } from "antd";
+
+const { Meta } = Card;
+
 class ChatItem extends React.Component {
   constructor(props) {
     super(props);
@@ -30,7 +34,76 @@ class ChatItem extends React.Component {
         ? "chat-item-content-owner"
         : "chat-item-content-other";
     const data = JSON.parse(this.props.value);
+    console.log(data);
 
+    if (data.content.luckyMoneyId) {
+      return (
+        <Card
+          style={{ width: 300, borderRadius: 10 }}
+          cover={
+            <img
+              alt="example"
+              src="https://inanlvc.com/wp-content/uploads/2018/11/ec060164843433.5adfa04ae146d-1.jpg"
+            />
+          }
+          actions={
+            [
+              // <Icon type="setting" key="setting" />,
+              // <Icon type="edit" key="edit" />,
+              // <Icon type="ellipsis" key="ellipsis" />,
+            ]
+          }
+        >
+          {data.content.amount ? (
+            <Meta
+              avatar={
+                <Avatar src="https://thietbiketnoi.com/wp-content/uploads/2020/12/phong-nen-hinh-nen-background-dep-cho-tet-chuc-mung-nam-moi-36.jpg" />
+              }
+              title={"Received " + data.content.amount + "vnđ"}
+              description={
+                "Lucky Money With the best wishes: " + data.content.message
+              }
+            />
+          ) : (
+            <Meta
+              avatar={
+                <Avatar src="https://thietbiketnoi.com/wp-content/uploads/2020/12/phong-nen-hinh-nen-background-dep-cho-tet-chuc-mung-nam-moi-36.jpg" />
+              }
+              title="Created a Lucky Money"
+              description={data.content.message}
+            />
+          )}
+        </Card>
+      );
+    }
+    if (data.type == "transfer") {
+      return (
+        <Card
+          style={{ width: 300, borderRadius: 10 }}
+          cover={
+            <img
+              alt="example"
+              src="https://media.istockphoto.com/photos/modern-keyboard-with-blue-money-transfer-button-picture-id904359234?k=6&m=904359234&s=612x612&w=0&h=DsG3gsI0NEtYd-iGjcn2ICMsXGMLDAdda7jMCf0xSq4="
+            />
+          }
+          actions={
+            [
+              // <Icon type="setting" key="setting" />,
+              // <Icon type="edit" key="edit" />,
+              // <Icon type="ellipsis" key="ellipsis" />,
+            ]
+          }
+        >
+          <Meta
+            // avatar={
+            //   <Avatar src="https://thietbiketnoi.com/wp-content/uploads/2020/12/phong-nen-hinh-nen-background-dep-cho-tet-chuc-mung-nam-moi-36.jpg" />
+            // }
+            title={"Send " + data.content.amount + "vnđ"}
+            description={data.content.message}
+          />
+        </Card>
+      );
+    }
     return (
       <div
         className={"chat-item-content " + cssContentClass}
@@ -61,6 +134,7 @@ class ChatItem extends React.Component {
       this.props.type == 1
         ? "chat-item-content-owner"
         : "chat-item-content-other";
+    console.log("this");
     return (
       <div
         onClick={this.handleItemClick}

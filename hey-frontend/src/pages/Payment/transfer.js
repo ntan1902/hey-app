@@ -4,6 +4,7 @@ import { Button, Icon, Input } from "antd";
 import NumericInput from "../../components/numberic-input";
 import Transfer from "../../components/transfer";
 import AddFriendTransfer from "../../components/add-friend-transfer";
+import { DocTien } from "../../utils";
 
 import { channingActions } from "../../utils";
 import { bindPaymentActions } from "../../actions";
@@ -107,6 +108,8 @@ class MessagePanel extends React.Component {
             padding: 30,
             display: "flex",
             flexDirection: "column",
+            paddingTop: 60,
+            borderRadius: 30,
           }}
         >
           <div>
@@ -118,9 +121,7 @@ class MessagePanel extends React.Component {
                 alignItems: "center",
               }}
             >
-              <div
-                style={{ fontSize: 20, marginRight: 100, fontWeight: "bold" }}
-              >
+              <div style={{ fontSize: 20, width: 150, fontWeight: 200 }}>
                 Transfer To
               </div>
               <AddFriendTransfer
@@ -132,47 +133,67 @@ class MessagePanel extends React.Component {
               ></AddFriendTransfer>
             </div>
             <div
-              style={{ display: "flex", flexDirection: "row", marginTop: 50 }}
+              style={{
+                display: "flex",
+                flexDirection: "row",
+                marginTop: 50,
+              }}
             >
               <div
                 style={{
                   fontSize: 20,
                   // marginRight: 100,
-                  fontWeight: "bold",
+                  fontWeight: 200,
                   width: 150,
                 }}
               >
                 Amount
               </div>
-              <NumericInput
-                style={{ width: "50%" }}
-                value={this.state.amount}
-                onChange={(value) => {
-                  this.setState({ amount: value });
-                }}
-              />
+              <div
+                style={{ display: "flex", flexDirection: "column", flex: 1 }}
+              >
+                <NumericInput
+                  style={{ width: "50%" }}
+                  value={this.state.amount}
+                  onChange={(value) => {
+                    this.setState({ amount: value });
+                  }}
+                />
+                <p style={{ marginTop: 5, marginLeft: 10, color: "#ACB1C0" }}>
+                  {new DocTien().doc(this.state.amount)}
+                </p>
+              </div>
             </div>
             <div
-              style={{ display: "flex", flexDirection: "row", marginTop: 50 }}
+              style={{
+                display: "flex",
+                flexDirection: "row",
+                marginTop: 30,
+                flex: 1,
+              }}
             >
               <div
                 style={{
                   fontSize: 20,
                   // marginRight: 100,
-                  fontWeight: "bold",
+                  fontWeight: 200,
                   width: 150,
                 }}
               >
                 Message
               </div>
-              <Input
-                style={{ width: "50%" }}
-                placeholder="Message to your friend"
-                value={this.state.message}
-                onChange={(e) => {
-                  this.setState({ message: e.target.value });
-                }}
-              />
+              <div
+                style={{ display: "flex", flexDirection: "column", flex: 1 }}
+              >
+                <Input
+                  style={{ width: "50%" }}
+                  placeholder="Message to your friend"
+                  value={this.state.message}
+                  onChange={(e) => {
+                    this.setState({ message: e.target.value });
+                  }}
+                />
+              </div>
             </div>
           </div>
           <div style={{ flex: 1, padding: 30 }}>

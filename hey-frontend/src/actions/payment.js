@@ -4,11 +4,12 @@ import { PaymentAPI, AuthAPI } from "../api";
 
 /* Get */
 
-const onShow = (screenName) => {
+const onShow = (screenName, data) => {
   console.log("ON show", screenName);
   return {
     type: actionTypes.ON_SHOW,
     layoutType: screenName,
+    mainScreenData: data,
   };
 };
 
@@ -49,11 +50,11 @@ const changeStateLuckyMoneyPopup = (state, isCreate) => {
   };
 };
 
-const switchMainScreen = (screenName) => async (dispatch) => {
+const switchMainScreen = (screenName, data = null) => async (dispatch) => {
   return new Promise(async (resolve, reject) => {
     try {
-      console.log(screenName);
-      await dispatch(onShow(screenName));
+      console.log(screenName, data);
+      await dispatch(onShow(screenName, data));
       resolve({ success: true });
     } catch (err) {
       reject({ error: err, success: false });
@@ -82,6 +83,19 @@ const getBalance = () => async (dispatch) => {
       await dispatch(updateBalance(res.data.payload.balance));
       resolve({ success: true });
     } catch (err) {
+      reject({ error: err, success: false });
+    }
+  });
+};
+
+const checkBalance = () => async (dispatch) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const res = await PaymentAPI.checkBalance();
+
+      resolve({ success: true });
+    } catch (err) {
+      console.log("Err");
       reject({ error: err, success: false });
     }
   });
@@ -116,6 +130,58 @@ const transfer = (data) => async (dispatch) => {
   });
 };
 
+const createLuckymoney = (data) => async (dispatch) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const res = await PaymentAPI.createLuckymoney(data);
+      await dispatch(getBalance());
+      // await dispatch(switchMainScreen("TransferSuccess"));
+      resolve({ success: true });
+    } catch (err) {
+      reject({ error: err, success: false });
+    }
+  });
+};
+
+const getListLuckymoney = (sessionId) => async (dispatch) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const res = await PaymentAPI.getListLuckymoney(sessionId);
+      await dispatch(getBalance());
+      // await dispatch(switchMainScreen("TransferSuccess"));
+      resolve({ data: res.data.payload, success: true });
+    } catch (err) {
+      reject({ error: err, success: false });
+    }
+  });
+};
+
+const receivedLuckymoney = (data) => async (dispatch) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const res = await PaymentAPI.receivedLuckymoney(data);
+      await dispatch(getBalance());
+      // await dispatch(switchMainScreen("TransferSuccess"));
+      resolve({ data: res.data.payload, success: true });
+    } catch (err) {
+      reject({ error: err, success: false });
+    }
+  });
+};
+
+const getAllTransferStatement = (data) => async (dispatch) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const res = await PaymentAPI.getAllTransferStatement();
+      // await dispatch(getBalance());
+      // await dispatch(switchMainScreen("TransferSuccess"));
+      resolve({ data: res.data.payload, success: true });
+    } catch (err) {
+      reject({ error: err, success: false });
+    }
+  });
+};
+
 export const paymentActions = {
   /* Get Event */
   switchMainScreen,
@@ -127,6 +193,11 @@ export const paymentActions = {
   getBalance,
   topup,
   transfer,
+  createLuckymoney,
+  getListLuckymoney,
+  receivedLuckymoney,
+  getAllTransferStatement,
+  checkBalance,
 };
 
 export function bindPaymentActions(currentActions, dispatch) {

@@ -298,7 +298,7 @@ export function receiveNewUserChatGroup(result) {
     let startChatGroupList = deepcopy(
       store.getState().chatReducer.startChatGroupList
     );
-    startChatGroupList.push(result.data.data.username);
+    startChatGroupList.push(result.data.payload.username);
     return {
       type: ADD_NEW_START_CHAT_GROUP,
       startChatGroupList: startChatGroupList,
@@ -317,7 +317,7 @@ export function startNewChatGroup() {
         createWaitingChatHeaderRequest(waitingGroupUsernames)
       )
       .then((res) => {
-        store.dispatch(changeMessageHeader(res.data.data.title, "", true));
+        store.dispatch(changeMessageHeader(res.data.payload.title, "", true));
       });
     return {
       type: START_CHAT_GROUP,
