@@ -5,7 +5,8 @@ export const PaymentAPI = {
   /* Get Event */
 
   getBalance: () => axios.get(`${API_PAYMENT}/api/v1/me/wallet`),
-  checkBalance: () => axios.post(`${API_PAYMENT}/api/v1/me/createWallet`),
+  checkBalance: () => axios.get(`${API_PAYMENT}/api/v1/me/hasWallet`),
+  createBalance: () => axios.post(`${API_PAYMENT}/api/v1/me/createWallet`),
 
   topup: (data) => axios.post(`${API_PAYMENT}/api/v1/me/topup`, data),
   transfer: (data) =>

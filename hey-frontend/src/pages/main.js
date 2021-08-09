@@ -56,9 +56,6 @@ class Main extends React.Component {
           .paymentActions.checkBalance()
           .then((res) => {
             this.props.actions().paymentActions.getBalance();
-          })
-          .catch((err) => {
-            this.props.actions().paymentActions.getBalance();
           });
         console.log("Res", res.data);
       })

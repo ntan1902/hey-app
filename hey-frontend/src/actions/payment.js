@@ -92,7 +92,10 @@ const checkBalance = () => async (dispatch) => {
   return new Promise(async (resolve, reject) => {
     try {
       const res = await PaymentAPI.checkBalance();
-
+      if (res.data.payload.hasWallet == false) {
+        console.log(res, "Chekc Balance");
+        await PaymentAPI.createBalance();
+      }
       resolve({ success: true });
     } catch (err) {
       console.log("Err");
