@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.io.Serializable;
 
 @Entity
 @Data
@@ -18,7 +19,9 @@ import javax.persistence.*;
                 @Index(name = "i_owner_id", columnList = "owner_id"),
         }
 )
-public class Wallet {
+public class Wallet implements Serializable {
+    private static final long serialVersionUID = 1905122041950251207L;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

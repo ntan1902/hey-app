@@ -45,7 +45,6 @@ import java.util.List;
 @Log4j2
 @Service
 @AllArgsConstructor
-@EnableCaching
 public class TransferStatementServiceImpl implements TransferStatementService {
 
     private final TransferStatementRepository transferStatementRepository;

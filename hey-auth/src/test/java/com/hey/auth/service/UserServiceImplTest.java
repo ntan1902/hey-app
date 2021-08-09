@@ -1,5 +1,6 @@
 package com.hey.auth.service;
 
+import com.hey.auth.api.ChatApi;
 import com.hey.auth.dto.user.*;
 import com.hey.auth.dto.vertx.RegisterRequestToChat;
 import com.hey.auth.entity.User;
@@ -50,10 +51,7 @@ class UserServiceImplTest {
     private PasswordEncoder passwordEncoder;
 
     @Mock
-    private RestTemplate restTemplate;
-
-    @Mock
-    private ServiceProperties serviceProperties;
+    private ChatApi chatApi;
 
     @Test
     void loadUserByUsername() {
@@ -152,13 +150,7 @@ class UserServiceImplTest {
 
         given(userRepository.save(user)).willReturn(user);
 
-        given(userMapper.registerRequest2Chat(user)).willReturn(requestToChat);
-
-        given(serviceProperties.getChat()).willReturn("https://hey-chat/chat");
-
-        Void t = null;
-        given(restTemplate.postForObject("https://hey-chat/chat/api/public/register", requestToChat, Void.class)).willReturn(t);
-
+        doNothing().when(chatApi).register(user);
 
         // when
         underTest.register(request);

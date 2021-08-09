@@ -14,6 +14,7 @@ import org.springframework.web.client.RestTemplate;
 @SpringBootApplication
 @EnableDiscoveryClient
 @EnableConfigurationProperties
+@EnableCaching
 public class HeyPaymentApplication {
 
     public static void main(String[] args) {
