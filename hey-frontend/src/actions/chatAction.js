@@ -104,6 +104,14 @@ export function loadNewAddFriend(sessionId) {
   return { type: EMPTY };
 }
 
+export function addFriendToSession(sessionId, userId) {
+  store
+    .getState()
+    .chatReducer.webSocket.json(createAddFriendToSession(sessionId, userId));
+  message.success("Sending friend request to " + sessionId);
+  return { type: EMPTY };
+}
+
 export function specialLoadChatContainer(sessionId) {
   let chatList = [];
   let timeout = function () {
@@ -468,6 +476,15 @@ function createLoadNewAddFriendRequest(sessionId) {
   const req = {
     type: "ADD_FRIEND_REQUEST",
     sessionId: sessionId,
+  };
+  return req;
+}
+
+function createAddFriendToSession(sessionId, userId) {
+  const req = {
+    type: "ADD_FRIEND_TO_SESSION_REQUEST",
+    sessionId: sessionId,
+    userId: userId,
   };
   return req;
 }

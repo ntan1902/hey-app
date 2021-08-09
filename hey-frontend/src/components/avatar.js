@@ -1,10 +1,8 @@
-import React from 'react';
+import React from "react";
 
 class Avatar extends React.Component {
   render() {
-    return (
-      <div className="friend-avatar"/>
-    );
+    return <div className="friend-avatar" />;
   }
 }
 
