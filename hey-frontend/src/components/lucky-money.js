@@ -21,6 +21,9 @@ import { channingActions } from "../utils";
 import { bindPaymentActions } from "../actions";
 
 import { Row, Col } from "antd";
+import { Card, Avatar } from "antd";
+
+const { Meta } = Card;
 
 class AddFriend extends React.Component {
   constructor(props) {
@@ -30,7 +33,7 @@ class AddFriend extends React.Component {
       confirmLoading: false,
       ModalText: "Content of the modal",
       isCreate: false,
-      data: [{}, {}, {}, {}, {}, {}],
+      data: [],
       topupType: 1,
       moneyEachBag: "",
       numberOfBag: "",
@@ -40,6 +43,42 @@ class AddFriend extends React.Component {
     this.handleCancel = this.handleCancel.bind(this);
     this.showModal = this.showModal.bind(this);
   }
+
+  componentWillReceiveProps() {
+    console.log("This mount");
+    if (this.props.currentSessionId) {
+      this.props.paymentActions
+        .getListLuckymoney(this.props.currentSessionId)
+        .then((res) => {
+          let lm = [
+            ...res.data.filter((x) => !x.received),
+            ...res.data.filter((x) => !!x.received),
+          ];
+          console.log("Hi", lm);
+
+          this.setState({ data: lm });
+        });
+    }
+  }
+
+  handleReceived = (id) => {
+    this.props.paymentActions
+      .receivedLuckymoney({ luckyMoneyId: id })
+      .then((res) => {
+        console.log(res, "Pin");
+        this.props.paymentActions
+          .getListLuckymoney(this.props.currentSessionId)
+          .then((res) => {
+            console.log("This mount", res);
+            let lm = [
+              ...res.data.filter((x) => !x.received),
+              ...res.data.filter((x) => !!x.received),
+            ];
+            console.log("Hi", lm);
+            this.setState({ data: lm });
+          });
+      });
+  };
 
   showModal = () => {
     this.props.paymentActions.changeStateLuckyMoneyPopup(true);
@@ -117,6 +156,7 @@ class AddFriend extends React.Component {
   };
 
   renderCreateLuckyMoney = () => {
+    console.log("current session ID", this.props.currentSessionId);
     return (
       <div
         style={{
@@ -147,7 +187,7 @@ class AddFriend extends React.Component {
                 alignItems: "center",
               }}
             >
-              <div style={{ fontSize: 20, width: 250, fontWeight: "bold" }}>
+              <div style={{ fontSize: 20, width: 250, fontWeight: 200 }}>
                 Lucky Money type
               </div>
               <div
@@ -185,7 +225,7 @@ class AddFriend extends React.Component {
                     type="bank"
                   />
                 </Button>
-                <div style={{ fontWeight: "bold" }}>Equally Devided</div>
+                <div style={{ fontWeight: 400 }}>Equally Devided</div>
               </div>
               <div
                 style={{
@@ -221,13 +261,13 @@ class AddFriend extends React.Component {
                     type="credit-card"
                   />
                 </Button>
-                <div style={{ fontWeight: "bold" }}>Random</div>
+                <div style={{ fontWeight: 400 }}>Random</div>
               </div>
             </div>
             <div
               style={{ display: "flex", flexDirection: "row", marginTop: 50 }}
             >
-              <div style={{ fontSize: 20, width: 250, fontWeight: "bold" }}>
+              <div style={{ fontSize: 20, width: 250, fontWeight: 200 }}>
                 Money of each bags
               </div>
               <NumericInput
@@ -241,7 +281,7 @@ class AddFriend extends React.Component {
             <div
               style={{ display: "flex", flexDirection: "row", marginTop: 50 }}
             >
-              <div style={{ fontSize: 20, width: 250, fontWeight: "bold" }}>
+              <div style={{ fontSize: 20, width: 250, fontWeight: 200 }}>
                 Number of each bags
               </div>
               <NumericInput
@@ -255,7 +295,7 @@ class AddFriend extends React.Component {
             <div
               style={{ display: "flex", flexDirection: "row", marginTop: 50 }}
             >
-              <div style={{ fontSize: 20, width: 250, fontWeight: "bold" }}>
+              <div style={{ fontSize: 20, width: 250, fontWeight: 200 }}>
                 Wish message
               </div>
               <Input
@@ -277,20 +317,30 @@ class AddFriend extends React.Component {
               alignItems: "flex-end",
             }}
           >
-            <Transfer amount={this.state.amount}></Transfer>
+            <Transfer
+              amount={this.state.moneyEachBag * this.state.numberOfBag}
+              type={"lm"}
+              data={{
+                message: this.state.message,
+                numberBag: this.state.numberOfBag,
+                type: this.state.topupType == 1 ? "equally" : "random",
+                sessionChatId: this.props.currentSessionId,
+              }}
+            ></Transfer>
           </div>
         </div>
       </div>
     );
   };
 
-  luckyMoneyItem = () => {
+  luckyMoneyItem = (e) => {
+    console.log(e);
     return (
       <Col
         style={{
           display: "flex",
           width: 300,
-          height: 450,
+          height: 352,
           padding: 20,
         }}
         span={4}
@@ -313,100 +363,70 @@ class AddFriend extends React.Component {
               top: 10,
               left: 35,
               backgroundColor: "white",
+              zIndex: 100,
             }}
           >
-            From Ly Gioi An
+            From {e.senderName}
           </div>
-          <p
-            style={{
-              margin: 0,
-              padding: 0,
-              marginTop: 15,
-              fontSize: 20,
-              fontWeight: "lighter",
-            }}
-          >
-            Click "Open" to receive
-          </p>
-          <div
+          <Card
             style={{
               width: "100%",
-              height: 150,
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
+              height: "100%",
+              borderRadius: 10,
             }}
-          >
-            <div
-              style={{
-                width: 100,
-                height: 100,
-                borderRadius: 100,
-                borderWidth: 2,
-                borderStyle: "solid",
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                marginTop: 15,
-              }}
-            >
-              <p
+            cover={
+              <img
+                alt="example"
+                src="https://png.pngtree.com/thumb_back/fh260/background/20201230/pngtree-fan-shaped-new-year-red-envelopes-for-2021-image_517238.jpg"
+              />
+            }
+            actions={[
+              // <Icon type="setting" key="setting" />,
+              // <Icon type="edit" key="edit" />,
+              <div
                 style={{
-                  margin: 0,
-                  padding: 0,
-                  fontSize: 20,
-                  fontWeight: "bolder",
+                  display: "flex",
+                  paddingBottom: 20,
+                  height: 20,
+                  justifyContent: "center",
+                  alignContent: "center",
                 }}
               >
-                Open
-              </p>
-            </div>
-          </div>
-          <p
-            style={{
-              margin: 0,
-              padding: 0,
-              marginTop: 30,
-              fontSize: 20,
-              fontWeight: "lighter",
-            }}
+                <a
+                  onClick={() => this.handleReceived(e.luckyMoneyId)}
+                  style={{
+                    margin: 0,
+                    padding: 0,
+                    fontSize: 12,
+                    fontWeight: 600,
+                    color: "black",
+                  }}
+                >
+                  Receive Lucky Money
+                </a>
+              </div>,
+            ]}
           >
-            Happy New Year
-          </p>
-          <div
-            style={{
-              flex: 1,
-              display: "flex",
-              alignItems: "flex-end",
-              paddingBottom: 20,
-            }}
-          >
-            <a
-              style={{
-                margin: 0,
-                padding: 0,
-                fontSize: 20,
-                fontWeight: "lighter",
-                textDecoration: "underline",
-
-                color: "black",
-              }}
-            >
-              Detail
-            </a>
-          </div>
+            <Meta
+              avatar={
+                <Avatar src="https://thietbiketnoi.com/wp-content/uploads/2020/12/phong-nen-hinh-nen-background-dep-cho-tet-chuc-mung-nam-moi-36.jpg" />
+              }
+              description={e.restBag + " bags left, get it now!"}
+              title={e.wishMessage}
+            />
+          </Card>
         </div>
       </Col>
     );
   };
 
-  luckyMoneyReceivedItem = () => {
+  luckyMoneyReceivedItem = (e) => {
     return (
       <Col
         style={{
           display: "flex",
           width: 300,
-          height: 450,
+          height: 352,
           padding: 20,
         }}
         span={4}
@@ -429,85 +449,59 @@ class AddFriend extends React.Component {
               top: 10,
               left: 35,
               backgroundColor: "white",
+              zIndex: 100,
             }}
           >
-            From Ly Gioi An
+            From {e.senderName}
           </div>
-          <p
-            style={{
-              margin: 0,
-              padding: 0,
-              marginTop: 15,
-              fontSize: 20,
-              fontWeight: "bold",
-            }}
-          >
-            You Received
-          </p>
-          <div
+          <Card
             style={{
               width: "100%",
-              height: 150,
-              paddingTop: 20,
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              flexDirection: "column",
+              height: "100%",
+              borderRadius: 10,
             }}
+            cover={
+              <img
+                alt="example"
+                src="https://inanlvc.com/wp-content/uploads/2018/11/ec060164843433.5adfa04ae146d-1.jpg"
+              />
+            }
+            actions={[
+              // <Icon type="setting" key="setting" />,
+              // <Icon type="edit" key="edit" />,
+              <div
+                style={{
+                  display: "flex",
+                  paddingBottom: 20,
+                  height: 20,
+                  justifyContent: "center",
+                  alignContent: "center",
+                }}
+              >
+                <a
+                  style={{
+                    margin: 0,
+                    padding: 0,
+                    fontSize: 12,
+                    fontWeight: "lighter",
+                    color: "black",
+                  }}
+                >
+                  Detail
+                  <Icon type="edit" key="edit" />
+                </a>
+              </div>,
+            ]}
           >
-            <Icon
-              style={{
-                fontSize: 50,
-                color: "black",
-                fontWeight: "lighter",
-              }}
-              type="dollar"
+            <Meta
+              avatar={
+                <Avatar src="https://thietbiketnoi.com/wp-content/uploads/2020/12/phong-nen-hinh-nen-background-dep-cho-tet-chuc-mung-nam-moi-36.jpg" />
+              }
+              description={"Received " + e.receivedMoney + "vnđ"}
+              title={e.wishMessage}
             />
-            <p
-              style={{
-                margin: 0,
-                padding: 0,
-                marginTop: 20,
-                fontSize: 20,
-                fontWeight: "bolder",
-              }}
-            >
-              3.000đ
-            </p>
-          </div>
-          <p
-            style={{
-              margin: 0,
-              padding: 0,
-              marginTop: 30,
-              fontSize: 20,
-              fontWeight: "lighter",
-            }}
-          >
-            Happy New Year
-          </p>
-          <div
-            style={{
-              flex: 1,
-              display: "flex",
-              alignItems: "flex-end",
-              paddingBottom: 20,
-            }}
-          >
-            <a
-              style={{
-                margin: 0,
-                padding: 0,
-                fontSize: 20,
-                fontWeight: "lighter",
-                textDecoration: "underline",
-
-                color: "black",
-              }}
-            >
-              Detail
-            </a>
-          </div>
+          </Card>
+          {/* </div> */}
         </div>
       </Col>
     );
@@ -515,7 +509,7 @@ class AddFriend extends React.Component {
 
   renderLuckyMoneyItems = () => {
     return this.state.data.map((e, index) => {
-      if (index == 2 || index == 3) return this.luckyMoneyReceivedItem(e);
+      if (e.received == true) return this.luckyMoneyReceivedItem(e);
       return this.luckyMoneyItem(e);
     });
   };
@@ -538,7 +532,7 @@ class AddFriend extends React.Component {
           style={{
             margin: 0,
             padding: 0,
-            fontSize: 30,
+            fontSize: 20,
             fontWeight: "lighter",
           }}
         >
@@ -560,7 +554,7 @@ class AddFriend extends React.Component {
             style={{
               margin: 0,
               padding: 0,
-              fontSize: 30,
+              fontSize: 20,
               fontWeight: "lighter",
               marginRight: 10,
             }}
@@ -570,7 +564,7 @@ class AddFriend extends React.Component {
           <Icon
             onClick={() => this.setState({ isCreate: true })}
             style={{
-              fontSize: 40,
+              fontSize: 30,
               color: "#ggg",
             }}
             type="plus-circle"
@@ -610,6 +604,7 @@ export default connect(
   (state) => ({
     luckyMoneyPopup: state.paymentReducer.luckyMoneyPopup,
     isCreate: state.paymentReducer.isCreate,
+    currentSessionId: state.chatReducer.currentSessionId,
   }),
   (dispatch) => channingActions({}, dispatch, bindPaymentActions)
 )(AddFriend);

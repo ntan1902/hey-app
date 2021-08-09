@@ -66,12 +66,13 @@ class Topup extends React.Component {
         >
           <Button
             style={{
-              backgroundColor: this.state.paymentType == 1 ? "blue" : "white",
+              backgroundColor:
+                this.props.layoutType == "topup" ? "#1890FF" : "white",
               borderColor: "black",
               color: "black",
               borderRadius: 200,
-              height: 50,
-              width: 50,
+              height: 70,
+              width: 70,
               justifyContent: "center",
               alignItems: "center",
               padding: 0,
@@ -82,12 +83,12 @@ class Topup extends React.Component {
             <Icon
               style={{
                 fontSize: 30,
-                color: this.state.paymentType == 1 ? "white" : "black",
+                color: this.props.layoutType == "topup" ? "white" : "black",
               }}
               type="bank"
             />
           </Button>
-          <div style={{ fontWeight: "bold" }}>Topup</div>
+          <div style={{ fontWeight: 500 }}>Topup</div>
         </div>
         <div
           style={{
@@ -99,12 +100,13 @@ class Topup extends React.Component {
         >
           <Button
             style={{
-              backgroundColor: this.state.paymentType == 2 ? "blue" : "white",
+              backgroundColor:
+                this.props.layoutType == "transfer" ? "#1890FF" : "white",
               borderColor: "black",
               color: "black",
               borderRadius: 200,
-              height: 50,
-              width: 50,
+              height: 70,
+              width: 70,
               justifyContent: "center",
               alignItems: "center",
               padding: 0,
@@ -115,12 +117,12 @@ class Topup extends React.Component {
             <Icon
               style={{
                 fontSize: 30,
-                color: this.state.paymentType == 2 ? "white" : "black",
+                color: this.props.layoutType == "transfer" ? "white" : "black",
               }}
               type="credit-card"
             />
           </Button>
-          <div style={{ fontWeight: "bold" }}>Transfer</div>
+          <div style={{ fontWeight: 500 }}>Transfer</div>
         </div>
       </div>
     );
@@ -132,6 +134,7 @@ export default connect(
     addFriendError: state.addressBookReducer.addFriendError,
     addFriendErrorMessage: state.addressBookReducer.addFriendErrorMessage,
     addFriendPopup: state.addressBookReducer.topup,
+    layoutType: state.paymentReducer.layoutType,
   }),
   (dispatch) => channingActions({}, dispatch, bindPaymentActions)
 )(Topup);

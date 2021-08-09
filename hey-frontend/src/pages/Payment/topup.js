@@ -3,7 +3,7 @@ import { connect } from "react-redux";
 import { Button, Icon, Input } from "antd";
 import NumericInput from "../../components/numberic-input";
 import Transfer from "../../components/transfer";
-
+import { DocTien } from "../../utils";
 import { channingActions } from "../../utils";
 import { bindPaymentActions } from "../../actions";
 import { Result } from "antd";
@@ -46,7 +46,7 @@ class MessagePanel extends React.Component {
     ];
     const data2 = [
       { title: "500,000", value: "500000" },
-      { title: "1,000,000", value: "10000000" },
+      { title: "1,000,000", value: "1000000" },
       { title: "2,000,000", value: "2000000" },
     ];
 
@@ -105,6 +105,7 @@ class MessagePanel extends React.Component {
             padding: 30,
             display: "flex",
             flexDirection: "column",
+            borderRadius: 30,
           }}
         >
           <div>
@@ -116,9 +117,7 @@ class MessagePanel extends React.Component {
                 alignItems: "center",
               }}
             >
-              <div
-                style={{ fontSize: 20, marginRight: 100, fontWeight: "bold" }}
-              >
+              <div style={{ fontSize: 20, marginRight: 100, fontWeight: 200 }}>
                 Topup From
               </div>
               <div
@@ -133,12 +132,12 @@ class MessagePanel extends React.Component {
                 <Button
                   style={{
                     backgroundColor:
-                      this.state.topupType == 1 ? "blue" : "white",
+                      this.state.topupType == 1 ? "#1890FF" : "white",
                     borderColor: "black",
                     color: "black",
                     borderRadius: 200,
-                    height: 50,
-                    width: 50,
+                    height: 80,
+                    width: 80,
                     justifyContent: "center",
                     alignItems: "center",
                     padding: 0,
@@ -149,6 +148,7 @@ class MessagePanel extends React.Component {
                   type="primary"
                 >
                   <Icon
+                    theme="outlined"
                     style={{
                       fontSize: 30,
                       color: this.state.topupType == 2 ? "black" : "white",
@@ -156,7 +156,7 @@ class MessagePanel extends React.Component {
                     type="bank"
                   />
                 </Button>
-                <div style={{ fontWeight: "bold" }}>Bank</div>
+                <div style={{ fontWeight: 400 }}>Bank</div>
               </div>
               <div
                 style={{
@@ -169,12 +169,12 @@ class MessagePanel extends React.Component {
                 <Button
                   style={{
                     backgroundColor:
-                      this.state.topupType == 2 ? "blue" : "white",
+                      this.state.topupType == 2 ? "#1890FF" : "white",
                     borderColor: "black",
                     color: "black",
                     borderRadius: 200,
-                    height: 50,
-                    width: 50,
+                    height: 80,
+                    width: 80,
                     justifyContent: "center",
                     alignItems: "center",
                     padding: 0,
@@ -192,24 +192,29 @@ class MessagePanel extends React.Component {
                     type="credit-card"
                   />
                 </Button>
-                <div style={{ fontWeight: "bold" }}>Card</div>
+                <div style={{ fontWeight: 400 }}>Card</div>
               </div>
             </div>
             <div
               style={{ display: "flex", flexDirection: "row", marginTop: 50 }}
             >
-              <div
-                style={{ fontSize: 20, marginRight: 100, fontWeight: "bold" }}
-              >
+              <div style={{ fontSize: 20, marginRight: 100, fontWeight: 200 }}>
                 Amount
               </div>
-              <NumericInput
-                style={{ width: "50%" }}
-                value={this.state.amount}
-                onChange={(value) => {
-                  this.setState({ amount: value });
-                }}
-              />
+              <div
+                style={{ display: "flex", flexDirection: "column", flex: 1 }}
+              >
+                <NumericInput
+                  style={{ width: "50%" }}
+                  value={this.state.amount}
+                  onChange={(value) => {
+                    this.setState({ amount: value });
+                  }}
+                />
+                <p style={{ marginTop: 5, marginLeft: 10, color: "#ACB1C0" }}>
+                  {new DocTien().doc(this.state.amount)}
+                </p>
+              </div>
             </div>
           </div>
           <div style={{ flex: 1, padding: 30 }}>
@@ -228,10 +233,10 @@ class MessagePanel extends React.Component {
                 borderColor: "black",
                 color: "black",
                 height: 50,
-                width: 100,
+                width: 250,
                 justifyContent: "center",
                 alignItems: "center",
-
+                backgroundColor: "white",
                 padding: 0,
               }}
               type="primary"
@@ -243,7 +248,16 @@ class MessagePanel extends React.Component {
                   });
               }}
             >
-              Confirm
+              <p
+                style={{
+                  fontsize: 20,
+                  fontWeight: 400,
+                  padding: 0,
+                  margin: 0,
+                }}
+              >
+                Confirm
+              </p>
             </Button>
             {/* <Transfer amount={this.state.amount}></Transfer> */}
           </div>

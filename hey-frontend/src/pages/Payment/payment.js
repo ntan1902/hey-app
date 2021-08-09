@@ -21,22 +21,7 @@ class AddressBook extends React.Component {
     this.state = {
       current: [],
       newselect: [],
-      data: [
-        { type: "Topup", message: "Happy New Year", isRead: false },
-        { type: "Transfer", message: "Ahihi", isRead: true },
-        { type: "Topup", message: "Happy New Year", isRead: true },
-        { type: "Transfer", message: "Ahihi", isRead: true },
-        { type: "Topup", message: "Happy New Year", isRead: false },
-        { type: "Transfer", message: "Ahihi", isRead: true },
-        { type: "Topup", message: "Happy New Year", isRead: true },
-        { type: "Transfer", message: "Ahihi", isRead: true },
-        { type: "Topup", message: "Happy New Year", isRead: false },
-        { type: "Transfer", message: "Ahihi", isRead: false },
-        { type: "Topup", message: "Happy New Year", isRead: false },
-        { type: "Transfer", message: "Ahihi", isRead: true },
-        { type: "Topup", message: "Happy New Year", isRead: false },
-        { type: "Transfer", message: "Ahihi", isRead: true },
-      ],
+      data: [],
     };
     this.handleCurrentChange = this.handleCurrentChange.bind(this);
     this.handleNewChange = this.handleNewChange.bind(this);
@@ -44,6 +29,11 @@ class AddressBook extends React.Component {
 
   componentDidMount() {
     // this.props.loadAddressBookList();
+    console.log("Did Mount");
+    this.props.paymentActions.getAllTransferStatement().then((res) => {
+      this.setState({ data: res.data });
+      console.log("res");
+    });
   }
 
   handleCurrentChange(event) {
@@ -53,7 +43,7 @@ class AddressBook extends React.Component {
       newselect: [],
     });
     this.props.paymentActions
-      .switchMainScreen("transferStatement")
+      .switchMainScreen("transferStatement", this.state.data[event.key])
       .then((res) => {
         console.log("res");
       });
@@ -90,6 +80,7 @@ class AddressBook extends React.Component {
   }
 
   render() {
+    if (this.state.data == []) return;
     return (
       <div className="d-flex flex-column full-height address-book-menu">
         <Topup />
@@ -113,8 +104,14 @@ class AddressBook extends React.Component {
                 </div>
 
                 <div style={{ overflow: "hidden", paddingTop: 5 }}>
-                  <div className="user-name">{item.type}</div>
-                  <div className="history-message">{item.message}</div>
+                  <div className="user-name">
+                    {item.transferType == "topup"
+                      ? "Topup"
+                      : item.transferType == "transfer"
+                      ? "Transfer"
+                      : "LuckyMoney"}
+                  </div>
+                  <div className="history-message">{item.description}</div>
                   {item.isRead ? (
                     <div
                       className="status-point"

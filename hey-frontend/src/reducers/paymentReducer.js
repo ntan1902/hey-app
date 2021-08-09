@@ -8,6 +8,7 @@ const initialState = {
   luckyMoneyPopup: false,
   isCreate: false,
   balance: "0",
+  mainScreenData: null,
 };
 
 export default (state = initialState, action = {}) => {
@@ -16,6 +17,7 @@ export default (state = initialState, action = {}) => {
       return {
         ...state,
         layoutType: action.layoutType,
+        mainScreenData: action.mainScreenData,
       };
     case actionTypes.ON_SHOW_PIN:
       return {

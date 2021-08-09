@@ -5,6 +5,9 @@ import NumericInput from "../../components/numberic-input";
 import Transfer from "../../components/transfer";
 import AddFriendTransfer from "../../components/add-friend-transfer";
 
+import { channingActions } from "../../utils";
+import { bindPaymentActions } from "../../actions";
+
 class MessagePanel extends React.Component {
   constructor(props) {
     super(props);
@@ -87,6 +90,9 @@ class MessagePanel extends React.Component {
   };
 
   render() {
+    if (this.props.mainScreenData == null) return;
+    console.log(this.props.mainScreenData);
+    const data = this.props.mainScreenData;
     return (
       <div
         style={{
@@ -117,7 +123,7 @@ class MessagePanel extends React.Component {
               <div
                 style={{ fontSize: 20, marginRight: 100, fontWeight: "bold" }}
               >
-                Transfer To:
+                Transfer To: {data.target.fullName}
               </div>
               {/* <AddFriendTransfer></AddFriendTransfer> */}
             </div>
@@ -142,7 +148,7 @@ class MessagePanel extends React.Component {
                   width: 150,
                 }}
               >
-                100.000đ
+                {data.amount}vnđ
               </div>
             </div>
             <div
@@ -165,7 +171,7 @@ class MessagePanel extends React.Component {
                   fontWeight: "bold",
                 }}
               >
-                Happy New Year!
+                {data.description}
               </div>
             </div>
           </div>
@@ -175,14 +181,12 @@ class MessagePanel extends React.Component {
   }
 }
 
-function mapStateToProps(state) {
-  return {
-    messageItems: state.chatReducer.messageItems,
-  };
-}
-
-function mapDispatchToProps(dispatch) {
-  return {};
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(MessagePanel);
+export default connect(
+  (state) => ({
+    addFriendError: state.addressBookReducer.addFriendError,
+    addFriendErrorMessage: state.addressBookReducer.addFriendErrorMessage,
+    addFriendPopup: state.addressBookReducer.topup,
+    mainScreenData: state.paymentReducer.mainScreenData,
+  }),
+  (dispatch) => channingActions({}, dispatch, bindPaymentActions)
+)(MessagePanel);
