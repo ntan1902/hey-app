@@ -12,6 +12,7 @@ import com.hey.payment.entity.Wallet;
 import com.hey.payment.exception_handler.exception.*;
 import com.hey.payment.mapper.WalletMapper;
 import com.hey.payment.repository.WalletRepository;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
@@ -25,6 +26,7 @@ import java.util.stream.Collectors;
 
 @Service
 @Log4j2
+@RequiredArgsConstructor
 public class WalletServiceImpl implements WalletService {
 
     private final WalletRepository walletRepository;
@@ -32,12 +34,6 @@ public class WalletServiceImpl implements WalletService {
     private final WalletMapper walletMapper;
 
     private final RestTemplate restTemplate;
-
-    public WalletServiceImpl(WalletRepository walletRepository, WalletMapper walletMapper, RestTemplate restTemplate) {
-        this.walletRepository = walletRepository;
-        this.walletMapper = walletMapper;
-        this.restTemplate = restTemplate;
-    }
 
     @EventListener(ApplicationReadyEvent.class)
     public void getSystems() {
@@ -110,7 +106,11 @@ public class WalletServiceImpl implements WalletService {
         if (walletRepository.existsByOwnerIdAndRefFrom(user.getId(), OwnerWalletRefFrom.USERS)) {
             throw new HadWalletException();
         }
-        Wallet wallet = Wallet.builder().ownerId(user.getId()).balance(0L).refFrom(OwnerWalletRefFrom.USERS).build();
+        Wallet wallet = Wallet.builder()
+                .ownerId(user.getId())
+                .balance(0L)
+                .refFrom(OwnerWalletRefFrom.USERS)
+                .build();
         walletRepository.save(wallet);
 
         return walletMapper.wallet2WalletDTO(wallet);
