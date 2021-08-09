@@ -187,7 +187,7 @@ class AddFriend extends React.Component {
                 alignItems: "center",
               }}
             >
-              <div style={{ fontSize: 20, width: 250, fontWeight: "bold" }}>
+              <div style={{ fontSize: 20, width: 250, fontWeight: 200 }}>
                 Lucky Money type
               </div>
               <div
@@ -225,7 +225,7 @@ class AddFriend extends React.Component {
                     type="bank"
                   />
                 </Button>
-                <div style={{ fontWeight: "bold" }}>Equally Devided</div>
+                <div style={{ fontWeight: 400 }}>Equally Devided</div>
               </div>
               <div
                 style={{
@@ -261,13 +261,13 @@ class AddFriend extends React.Component {
                     type="credit-card"
                   />
                 </Button>
-                <div style={{ fontWeight: "bold" }}>Random</div>
+                <div style={{ fontWeight: 400 }}>Random</div>
               </div>
             </div>
             <div
               style={{ display: "flex", flexDirection: "row", marginTop: 50 }}
             >
-              <div style={{ fontSize: 20, width: 250, fontWeight: "bold" }}>
+              <div style={{ fontSize: 20, width: 250, fontWeight: 200 }}>
                 Money of each bags
               </div>
               <NumericInput
@@ -281,7 +281,7 @@ class AddFriend extends React.Component {
             <div
               style={{ display: "flex", flexDirection: "row", marginTop: 50 }}
             >
-              <div style={{ fontSize: 20, width: 250, fontWeight: "bold" }}>
+              <div style={{ fontSize: 20, width: 250, fontWeight: 200 }}>
                 Number of each bags
               </div>
               <NumericInput
@@ -295,7 +295,7 @@ class AddFriend extends React.Component {
             <div
               style={{ display: "flex", flexDirection: "row", marginTop: 50 }}
             >
-              <div style={{ fontSize: 20, width: 250, fontWeight: "bold" }}>
+              <div style={{ fontSize: 20, width: 250, fontWeight: 200 }}>
                 Wish message
               </div>
               <Input
