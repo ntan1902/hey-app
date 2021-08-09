@@ -139,14 +139,26 @@ public class WsHandler {
 
                     CompositeFuture cp = CompositeFuture.all(insertChatMessageFuture, insertChatListFuture,
                             increaseUnseenCountFuture);
+                    UserHash finalMe = me;
                     cp.setHandler(ar -> {
                         if (ar.succeeded()) {
                             NewChatSessionResponse newChatSessionResponse = new NewChatSessionResponse();
                             newChatSessionResponse.setType(IWsMessage.TYPE_CHAT_NEW_SESSION_RESPONSE);
                             newChatSessionResponse.setSessionId(chatMessage.getSessionId());
                             // userWsChannelManager.selfSendMessage(newChatSessionResponse, channelId);
+                            userWsChannelManager.sendMessage(newChatSessionResponse, request.getUserId());
+
+
+                            ChatMessageResponse newMessageResponse = new ChatMessageResponse();
+                            newMessageResponse.setMessage(chatMessage.getMessage());
+                            newMessageResponse.setSessionId(chatMessage.getSessionId());
+                            newMessageResponse.setName(finalMe.getFullName());
+                            newMessageResponse.setUserId(chatMessage.getUserHash().getUserId());
+                            newMessageResponse.setCreatedDate(chatMessage.getCreatedDate());
+                            newMessageResponse.setType(IWsMessage.TYPE_CHAT_MESSAGE_RESPONSE);
+
                             for (UserHash userhash : chatList.getUserHashes()) {
-                                userWsChannelManager.sendMessage(newChatSessionResponse, userhash.getUserId());
+                                userWsChannelManager.sendMessage(newMessageResponse, userhash.getUserId());
                             }
 
                         } else {
