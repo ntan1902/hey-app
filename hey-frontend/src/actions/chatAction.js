@@ -11,6 +11,8 @@ import { message } from "antd/lib/index";
 import { changeUserOnlineStatus } from "./addressBookAction";
 import { statusNotification } from "../components/status-notification";
 import { loadWaitingFriendList } from "./addressBookAction";
+import { AuthAPI } from "../api";
+
 export const EMPTY = "chatlist.EMPTY";
 export const CHATLIST_FETCHED = "chatlist.CHATLIST_FETCHED";
 export const CHATLIST_REFETCHED = "chatlist.CHATLIST_REFETCHED";
@@ -279,12 +281,14 @@ export function changeMessageHeader(title, avatar, groupchat) {
   return { type: MESSAGE_HEADER_FETCHED, messageHeader: header };
 }
 
-export function addNewUserChatGroup(userName) {
-  if (isEmptyString(userName)) {
+export function addNewUserChatGroup(userId) {
+  if (isEmptyString(userId)) {
     let error = "Please input username :(";
     return { type: ADD_NEW_START_CHAT_GROUP_FAIL, error: error };
   } else {
-    return function (dispatch) {
+    return async function (dispatch) {
+      const res = await AuthAPI.getUsername(userId);
+      const userName = res.data.payload.username;
       return api
         .post(
           `/api/protected/usernameexisted`,
@@ -333,13 +337,18 @@ export function startNewChatGroup() {
     let messageItems = [];
     let waitingGroupUsernames = store.getState().chatReducer.startChatGroupList;
     let currentSessionId = "-1";
+    console.log("start new chat group");
     api
       .post(
         `/api/protected/waitingchatheader`,
         createWaitingChatHeaderRequest(waitingGroupUsernames)
       )
       .then((res) => {
+        console.log("start new chat", res);
         store.dispatch(changeMessageHeader(res.data.payload.title, "", true));
+      })
+      .catch((err) => {
+        console.log("ERR", err.response);
       });
     return {
       type: START_CHAT_GROUP,
