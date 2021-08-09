@@ -5,8 +5,12 @@ import { isEmptyString } from "../utils/utils";
 import deepcopy from "deepcopy";
 import { Icon, notification } from "antd";
 import { statusNotification } from "../components/status-notification";
+import { AuthAPI } from "../api";
+import { message } from "antd";
 
 export const ADDRESSBOOK_FETCHED = "addressBook.ADDRESSBOOK_FETCHED";
+export const WAITINGFRIEND_FETCHED = "addressBook.WAITINGFRIEND_FETCHED";
+
 export const ADD_FRIEND_FAIL = "addressBook.ADD_FRIEND_FAIL";
 export const ADD_FRIEND = "addressBook.ADD_FRIEND";
 export const ADD_FRIEND_POPUP_STATE = "addressBook.ADD_FRIEND_POPUP_STATE";
@@ -21,6 +25,14 @@ export function loadAddressBookList() {
   };
 }
 
+export function loadWaitingFriendList() {
+  return function (dispatch) {
+    return getWaitingFriendList().then((result) => {
+      dispatch(receivedWaitingFriend(result));
+    });
+  };
+}
+
 export function receivedAddressBook(addressbook) {
   const fetchedAddressBook = addressbook;
   let fetchedNewAddressBookList = store.getState().addressBookReducer
@@ -29,6 +41,15 @@ export function receivedAddressBook(addressbook) {
     type: ADDRESSBOOK_FETCHED,
     fetchedAddressBookList: fetchedAddressBook,
     fetchedNewAddressBookList: fetchedNewAddressBookList,
+  };
+}
+
+export function receivedWaitingFriend(addressbook) {
+  const waitingFriendList = addressbook;
+
+  return {
+    type: WAITINGFRIEND_FETCHED,
+    waitingFriendList: waitingFriendList,
   };
 }
 
@@ -54,17 +75,44 @@ export function receivedSessionId(result, userId) {
   return { type: EMPTY };
 }
 
-export function addNewFriend(userName) {
+export function addNewFriend(userId) {
+  if (isEmptyString(userId)) {
+    let error = "Please input username :(";
+    return { type: ADD_FRIEND_FAIL, error: error };
+  } else {
+    return async function (dispatch) {
+      const res = await AuthAPI.getUsername(userId);
+      return api
+        .post(
+          `/api/protected/addfriend`,
+          createAddFriendRequest(res.data.payload.username)
+        )
+        .then((result) => {
+          console.log(result);
+          dispatch(rejectWaitingFriend(userId));
+          dispatch(receiveAddFriendResult(result));
+          dispatch(loadWaitingFriendList());
+        });
+    };
+  }
+}
+
+export function rejectWaitingFriend(userName) {
   if (isEmptyString(userName)) {
     let error = "Please input username :(";
     return { type: ADD_FRIEND_FAIL, error: error };
   } else {
     return function (dispatch) {
       return api
-        .post(`/api/protected/addfriend`, createAddFriendRequest(userName))
+        .post(
+          `/api/protected/closewaitingfriend`,
+          createGetSessionIdRequest(userName)
+        )
         .then((result) => {
           console.log(result);
-          dispatch(receiveAddFriendResult(result));
+          dispatch(loadWaitingFriendList());
+
+          // dispatch(receiveAddFriendResult(result));
         });
     };
   }
@@ -155,6 +203,48 @@ function processUsernameForAvatar(username) {
 function getAddressBookList() {
   var promise = new Promise(function (resolve, reject) {
     api.get(`/api/protected/addressbook`).then((res) => {
+      var items = res.data.payload.items;
+      console.log("Friend Result", items);
+
+      var results = [];
+      var onlineResults = [];
+      var offlineResults = [];
+      for (var index = 0; index < items.length; ++index) {
+        var addressbookItem = {
+          name: items[index].name,
+          userId: items[index].userId,
+          avatar: processUsernameForAvatar(items[index].name),
+          status: items[index].status,
+          isOnline: items[index].online,
+        };
+        if (items[index].online) {
+          onlineResults.push(addressbookItem);
+        } else {
+          offlineResults.push(addressbookItem);
+        }
+        onlineResults.sort(function (a, b) {
+          if (a.name < b.name) return -1;
+          if (a.name > b.name) return 1;
+          return 0;
+        });
+        offlineResults.sort(function (a, b) {
+          if (a.name < b.name) return -1;
+          if (a.name > b.name) return 1;
+          return 0;
+        });
+
+        results = onlineResults.concat(offlineResults);
+      }
+      console.log("Friend Result", results);
+      resolve(results);
+    });
+  });
+  return promise;
+}
+
+function getWaitingFriendList() {
+  var promise = new Promise(function (resolve, reject) {
+    api.get(`/api/protected/waitingfriend`).then((res) => {
       var items = res.data.payload.items;
       console.log("Friend Result", items);
 

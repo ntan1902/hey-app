@@ -10,7 +10,7 @@ import deepcopy from "deepcopy";
 import { message } from "antd/lib/index";
 import { changeUserOnlineStatus } from "./addressBookAction";
 import { statusNotification } from "../components/status-notification";
-
+import { loadWaitingFriendList } from "./addressBookAction";
 export const EMPTY = "chatlist.EMPTY";
 export const CHATLIST_FETCHED = "chatlist.CHATLIST_FETCHED";
 export const CHATLIST_REFETCHED = "chatlist.CHATLIST_REFETCHED";
@@ -35,6 +35,8 @@ export function initialWebSocket() {
     onopen: (e) => {},
     onmessage: (e) => {
       var data = JSON.parse(e.data);
+      console.log("New Socket");
+      console.log(data, "New Socket");
       switch (data.type) {
         case "CHAT_ITEMS_RESPONSE":
           store.dispatch(changeMessageItems(data.chatItems, data.sessionId));
@@ -50,6 +52,10 @@ export function initialWebSocket() {
           break;
         case "USER_OFFLINE_RESPONSE":
           store.dispatch(receivedUserOffline(data));
+          break;
+        case "ADD_FRIEND_RESPONSE":
+          message.success("New Friend Request !!!");
+          store.dispatch(loadWaitingFriendList());
           break;
       }
     },
@@ -87,6 +93,14 @@ export function loadChatContainer(sessionId) {
   store
     .getState()
     .chatReducer.webSocket.json(createLoadChatContainerRequest(sessionId));
+  return { type: EMPTY };
+}
+
+export function loadNewAddFriend(sessionId) {
+  store
+    .getState()
+    .chatReducer.webSocket.json(createLoadNewAddFriendRequest(sessionId));
+  message.success("Sending friend request to " + sessionId);
   return { type: EMPTY };
 }
 
@@ -445,6 +459,14 @@ function processUsernameForAvatar(username) {
 function createLoadChatContainerRequest(sessionId) {
   const req = {
     type: "CHAT_ITEMS_REQUEST",
+    sessionId: sessionId,
+  };
+  return req;
+}
+
+function createLoadNewAddFriendRequest(sessionId) {
+  const req = {
+    type: "ADD_FRIEND_REQUEST",
     sessionId: sessionId,
   };
   return req;
