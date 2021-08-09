@@ -149,7 +149,6 @@ public class TransferStatementServiceImpl implements TransferStatementService {
     }
 
     @Override
-    @CachePut(value = "transfer_statements", key = "#request.receiverId")
     public void systemCreateTransferToUser(System system, SystemCreateTransferToUserRequest request) throws NegativeAmountException, MaxAmountException, HaveNoWalletException, BalanceNotEnoughException, MaxBalanceException {
         log.info("System use wallet {} transfer {} to user {}", request.getWalletId(), request.getAmount(), request.getReceiverId());
 
@@ -281,6 +280,7 @@ public class TransferStatementServiceImpl implements TransferStatementService {
                 .transferFee(calculateTransferFee())
                 .transferType(TransferType.TOPUP)
                 .status(TransferStatus.SUCCESS)
+                .createdAt(LocalDateTime.now())
                 .message("TopUp from bank " + topupRequest.getBankId())
                 .build();
         transferStatementRepository.save(transferStatement);
