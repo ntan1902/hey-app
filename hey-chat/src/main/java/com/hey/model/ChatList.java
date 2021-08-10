@@ -9,6 +9,10 @@ public class ChatList implements Serializable {
     private String sessionId;
     private Date updatedDate;
     private String lastMessage;
+    private Boolean isGroup;
+    private String groupName;
+    private String owner;
+
 
     public List<UserHash> getUserHashes() {
         return userHashes;
@@ -41,4 +45,29 @@ public class ChatList implements Serializable {
     public void setLastMessage(String lastMessage) {
         this.lastMessage = lastMessage;
     }
+
+    public Boolean getGroup() {
+        return isGroup;
+    }
+
+    public void setGroup(Boolean group) {
+        isGroup = group;
+    }
+
+    public String getGroupName() {
+        return groupName;
+    }
+
+    public void setGroupName(String groupName) {
+        this.groupName = groupName;
+    }
+
+    public String getOwner() {
+        return owner;
+    }
+
+    public void setOwner(String owner) {
+        this.owner = owner;
+    }
+
 }
