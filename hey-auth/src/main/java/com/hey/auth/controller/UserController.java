@@ -89,14 +89,4 @@ public class UserController {
                 .build());
     }
 
-    @PatchMapping("/editProfile")
-    public ResponseEntity<ApiResponse> editUser(@RequestBody @Valid EditUserRequest request) throws UsernameEmailExistedException {
-        userService.editUser(request);
-        return ResponseEntity.ok(ApiResponse.builder()
-                .success(true)
-                .code(HttpStatus.CREATED.value())
-                .message("Edit profile successfully")
-                .payload("")
-                .build());
-    }
 }

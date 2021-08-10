@@ -147,15 +147,19 @@ public class UserServiceImpl implements UserDetailsService, UserService {
     }
 
     @Override
-    public void editUser(EditUserRequest request) throws UsernameEmailExistedException {
+    public void editUser(String userId, EditUserRequest request) throws UsernameEmailExistedException, UserIdNotFoundException {
         log.info("Inside editUser of UserServiceImpl: {}", request);
-        User user = getCurrentUser();
 
-        boolean emailPresent = userRepository.findByEmail(request.getEmail())
-                .isPresent();
-        if(emailPresent){
+        boolean emailPresent =
+                userRepository
+                        .findByEmail(request.getEmail())
+                        .isPresent();
+        if (emailPresent) {
             throw new UsernameEmailExistedException("Email already exists. Please choose another");
         }
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserIdNotFoundException("User Id " + userId + " not found"));
 
         user.setEmail(request.getEmail());
         user.setFullName(request.getFullName());

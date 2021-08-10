@@ -598,31 +598,23 @@ public class RedisCacheClient implements DataRepository {
         return future;
     }
 
-    private ChatList convertJsonObjectToChatList(JsonObject jsonObject, String chatListkey) {
+    private ChatList convertJsonObjectToChatList(JsonObject jsonObject, String chatListKey) {
         ChatList chatList = new ChatList();
         List<UserHash> userHashes = new ArrayList<>();
-        Set<String> fieldNames = jsonObject.fieldNames();
-        for (String fieldName : fieldNames) {
 
-            switch (fieldName) {
-                case "updated_date":
-                    chatList.setUpdatedDate(new Date(Long.parseLong(jsonObject.getString(fieldName))));
-                    break;
-                case "last_message":
-                    chatList.setLastMessage(jsonObject.getString(fieldName));
-                    break;
-                default:
-                    UserHash userHash = new UserHash(fieldName, jsonObject.getString(fieldName));
-                    userHashes.add(userHash);
-                    break;
-            }
-        }
-
-        chatList.setUserHashes(userHashes);
-        String[] componentKey = chatListkey.split(":");
+        // chat:list:sessionId:user1:user2
+        String[] componentKey = chatListKey.split(":");
         if (componentKey.length > 3) {
             chatList.setSessionId(componentKey[2]);
         }
+
+        chatList.setUpdatedDate(new Date(Long.parseLong(jsonObject.getString("updated_date"))));
+        chatList.setLastMessage(jsonObject.getString("last_message"));
+        for(int i = 3; i < componentKey.length; i++) {
+            UserHash userHash = new UserHash(componentKey[i], jsonObject.getString(componentKey[i]));
+            userHashes.add(userHash);
+        }
+        chatList.setUserHashes(userHashes);
 
         return chatList;
     }

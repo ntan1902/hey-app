@@ -1,5 +1,6 @@
 package com.hey.service;
 
+import com.hey.auth.AuthService;
 import com.hey.manager.UserWsChannelManager;
 import com.hey.model.*;
 import com.hey.model.lucky.LuckyMoneyMessageRequest;
@@ -22,11 +23,14 @@ import java.util.stream.Collectors;
 
 public class APIService extends BaseService {
 
-    private UserWsChannelManager userWsChannelManager;
+    private final UserWsChannelManager userWsChannelManager;
+    private final AuthService authService;
 
-    public void setUserWsChannelManager(UserWsChannelManager userWsChannelManager) {
+    public APIService(UserWsChannelManager userWsChannelManager, AuthService authService) {
         this.userWsChannelManager = userWsChannelManager;
+        this.authService = authService;
     }
+
 
     public Future<User> registerUser(String jsonData) {
         Future<User> future = Future.future();
@@ -812,7 +816,6 @@ public class APIService extends BaseService {
     public Future<ChatList> getChatListBySessionId(String sessionId) {
 
         Future<ChatList> future = Future.future();
-        List<ChatList> chatLists = new ArrayList<>();
 
         String keyPattern = "chat:list:" + sessionId + "*";
 
@@ -1323,5 +1326,81 @@ public class APIService extends BaseService {
         }, Future.future().setHandler(handler -> {
             throw new RuntimeException(handler.cause());
         }));
+    }
+
+    public Future<JsonObject> editProfile(EditProfileRequest editProfileRequest, String userId) {
+        Future<JsonObject> future = Future.future();
+        List<Future> futures = new ArrayList<>();
+
+        // UserFull
+        Future<UserFull> getUserFullFuture = dataRepository.getUserFull(userId);
+        getUserFullFuture.compose(userFull -> {
+            userFull.setUserId(userId);
+            userFull.setFullName(editProfileRequest.getFullName());
+            futures.add(dataRepository.insertUserFull(userFull));
+        }, Future.future().setHandler(handler -> future.fail(handler.cause())));
+
+        // ChatList
+        Future<List<ChatList>> getChatListsFuture = getChatLists(userId);
+        getChatListsFuture.compose(chatLists -> {
+            chatLists.forEach(chatList -> {
+                // Update UserHashes in ChatList
+                List<UserHash> userHashes = chatList.getUserHashes();
+
+                userHashes.forEach(userHash -> {
+                    if(userHash.getUserId().equals(userId)) {
+                        userHash.setFullName(editProfileRequest.getFullName());
+                    }
+                });
+                chatList.setUserHashes(userHashes);
+                futures.add(dataRepository.insertChatList(chatList));
+
+                // Update ChatMessage of Session Id
+                Future<List<ChatMessage>> getChatMessagesFuture = getChatMessages(chatList.getSessionId());
+
+                getChatMessagesFuture.compose(chatMessages -> {
+                    chatMessages.forEach(chatMessage -> {
+                        UserHash userHash = chatMessage.getUserHash();
+                        if(userHash.getUserId().equals(userId)) {
+                            userHash.setFullName(editProfileRequest.getFullName());
+                        }
+                        chatMessage.setUserHash(userHash);
+                        futures.add(dataRepository.insertChatMessage(chatMessage));
+
+                    });
+                }, Future.future().setHandler(handler -> future.fail(handler.cause())));
+            });
+        }, Future.future().setHandler(handler -> future.fail(handler.cause())));
+
+
+
+        // FriendList
+        Future<List<FriendList>> getFriendListsFuture = getFriendLists(userId);
+        getFriendListsFuture.compose(friendLists -> {
+            friendLists.forEach(friendList -> {
+                UserHash friendUserHashes = friendList.getFriendUserHashes();
+                UserHash currentUserHashes = friendList.getCurrentUserHashes();
+                if(friendUserHashes.getUserId().equals(userId)) {
+                    friendUserHashes.setFullName(editProfileRequest.getFullName());
+                }
+                if(currentUserHashes.getUserId().equals(userId)) {
+                    currentUserHashes.setFullName(editProfileRequest.getFullName());
+                }
+
+                friendList.setFriendUserHashes(friendUserHashes);
+                friendList.setCurrentUserHashes(currentUserHashes);
+                futures.add(dataRepository.insertFriendList(friendList));
+            });
+        }, Future.future().setHandler(handler -> future.fail(handler.cause())));
+
+        CompositeFuture cp = CompositeFuture.all(futures);
+        cp.setHandler(ar -> {
+            if (ar.succeeded()) {
+                authService.editProfile(editProfileRequest, userId, event -> future.complete(event.result()));
+            } else {
+                future.fail(ar.cause());
+            }
+        });
+        return future;
     }
 }
