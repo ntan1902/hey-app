@@ -28,7 +28,7 @@ class NormalLoginForm extends React.Component {
     e.preventDefault();
     this.props.form.validateFields((error, values) => {
       if (!error) {
-        console.log("value", values);
+        console.log("value", process.env);
         this.props.authActions.authentication(values).then((res) => {
           console.log("REs", res);
           setJwtToStorage(res.data.token);

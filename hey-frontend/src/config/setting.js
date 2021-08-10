@@ -2,7 +2,7 @@
  * Basic Setting Variables Define
  */
 
-export const IS_DEV = process.env.NODE_ENV === "development";
+export const IS_DEV = process.env.REACT_APP_NODE_ENV === "development";
 
 export const SITE_NAME = "Bugs";
 export const SITE_URL = IS_DEV
