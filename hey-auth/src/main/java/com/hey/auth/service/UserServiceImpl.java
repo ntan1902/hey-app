@@ -139,11 +139,29 @@ public class UserServiceImpl implements UserDetailsService, UserService {
 
     @Override
     public UsernameResponse findUsernameById(String userId) throws UserIdNotFoundException {
-        log.info("Inside findUsernameById of UserSerivceImpl: {}", userId);
+        log.info("Inside findUsernameById of UserServiceImpl: {}", userId);
 
         return userRepository.findById(userId)
                 .map(user -> new UsernameResponse(user.getUsername()))
                 .orElseThrow(() -> new UserIdNotFoundException("User Id " + userId + " not found"));
+    }
+
+    @Override
+    public void editUser(EditUserRequest request) throws UsernameEmailExistedException {
+        log.info("Inside editUser of UserServiceImpl: {}", request);
+        User user = getCurrentUser();
+
+        boolean emailPresent = userRepository.findByEmail(request.getEmail())
+                .isPresent();
+        if(emailPresent){
+            throw new UsernameEmailExistedException("Email already exists. Please choose another");
+        }
+
+        user.setEmail(request.getEmail());
+        user.setFullName(request.getFullName());
+
+        userRepository.save(user);
+
     }
 
 }

@@ -23,4 +23,6 @@ public interface UserService {
     HasPinResponse hasPin();
 
     UsernameResponse findUsernameById(String userId) throws UserIdNotFoundException;
+
+    void editUser(EditUserRequest request) throws UsernameEmailExistedException;
 }

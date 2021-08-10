@@ -306,6 +306,7 @@ public class RedisCacheClient implements DataRepository {
         JsonObject chatListJsonObject = new JsonObject();
         String updatedDate = String.valueOf(chatList.getUpdatedDate() != null ? chatList.getUpdatedDate().getTime() : new Date().getTime());
         chatListJsonObject.put("updated_date", updatedDate);
+
         List<String> userIds = new ArrayList<>();
         for (UserHash userHash : chatList.getUserHashes()) {
             chatListJsonObject.put(userHash.getUserId(), userHash.getFullName());
@@ -313,7 +314,7 @@ public class RedisCacheClient implements DataRepository {
         }
 
         chatListJsonObject.put("last_message", StringUtils.isEmpty(chatList.getLastMessage()) ? "no message" : chatList.getLastMessage());
-
+        
         client.hmset(generateChatListKey(chatList.getSessionId(), userIds), chatListJsonObject, res -> {
             if (res.succeeded()) {
                 future.complete(chatList);
