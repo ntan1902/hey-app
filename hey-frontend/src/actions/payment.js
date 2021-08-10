@@ -50,6 +50,13 @@ const changeStateLuckyMoneyPopup = (state, isCreate) => {
   };
 };
 
+export const changeStateAddFriendPopup = (state) => {
+  return {
+    type: actionTypes.ADD_FRIEND_TO_SESSION,
+    isAddFriendToSession: state,
+  };
+};
+
 const switchMainScreen = (screenName, data = null) => async (dispatch) => {
   return new Promise(async (resolve, reject) => {
     try {
@@ -138,7 +145,7 @@ const createLuckymoney = (data) => async (dispatch) => {
     try {
       const res = await PaymentAPI.createLuckymoney(data);
       await dispatch(getBalance());
-      // await dispatch(switchMainScreen("TransferSuccess"));
+      await dispatch(changeStateLuckyMoneyPopup(true, false));
       resolve({ success: true });
     } catch (err) {
       reject({ error: err, success: false });
@@ -201,6 +208,7 @@ export const paymentActions = {
   receivedLuckymoney,
   getAllTransferStatement,
   checkBalance,
+  changeStateAddFriendPopup,
 };
 
 export function bindPaymentActions(currentActions, dispatch) {

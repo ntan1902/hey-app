@@ -9,6 +9,7 @@ const initialState = {
   isCreate: false,
   balance: "0",
   mainScreenData: null,
+  isAddFriendToSession: false,
 };
 
 export default (state = initialState, action = {}) => {
@@ -49,6 +50,11 @@ export default (state = initialState, action = {}) => {
         ...state,
         luckyMoneyPopup: action.luckyMoneyPopup,
         isCreate: action.isCreate,
+      };
+    case actionTypes.ADD_FRIEND_TO_SESSION:
+      return {
+        ...state,
+        isAddFriendToSession: action.isAddFriendToSession,
       };
     case actionTypes.ON_UPDATE_BALANCE:
       return {

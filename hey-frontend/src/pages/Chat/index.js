@@ -17,6 +17,7 @@ import { isAuthenticated, isEmptyString } from "../../utils/utils";
 import { Redirect } from "react-router-dom";
 import $ from "jquery";
 import LuckyMoney from "../../components/lucky-money";
+import AddFriendSession from "../../components/add-friend-session";
 
 const { Header, Content, Footer, Sider } = Layout;
 const { TextArea } = Input;
@@ -84,6 +85,7 @@ class Chat extends React.Component {
           </Sider>
           <div className="chat-container" style={{ padding: 0 }}>
             <LuckyMoney></LuckyMoney>
+            <AddFriendSession></AddFriendSession>
             <ChatHeader />
             <MessagePanel />
             <div className="chat-footer">

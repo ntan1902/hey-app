@@ -72,9 +72,8 @@ public class HeyVerticle extends AbstractVerticle {
             userWsChannelManager.setSharedData(vertx.sharedData());
 
             // API Service
-            APIService apiService = new APIService();
+            APIService apiService = new APIService(userWsChannelManager, AuthService.getInstance());
             apiService.setDataRepository(repository);
-            apiService.setUserWsChannelManager(userWsChannelManager);
 
             // Protected API Handler
             ProtectedApiHandler protectedApiHandler = new ProtectedApiHandler();

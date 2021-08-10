@@ -268,7 +268,9 @@ class AddFriend extends React.Component {
               style={{ display: "flex", flexDirection: "row", marginTop: 50 }}
             >
               <div style={{ fontSize: 20, width: 250, fontWeight: 200 }}>
-                Money of each bags
+                {this.state.topupType == 1
+                  ? "Money of each bags"
+                  : "Total money"}
               </div>
               <NumericInput
                 style={{ width: "50%" }}
@@ -282,7 +284,7 @@ class AddFriend extends React.Component {
               style={{ display: "flex", flexDirection: "row", marginTop: 50 }}
             >
               <div style={{ fontSize: 20, width: 250, fontWeight: 200 }}>
-                Number of each bags
+                Number of bags
               </div>
               <NumericInput
                 style={{ width: "50%" }}
@@ -318,13 +320,25 @@ class AddFriend extends React.Component {
             }}
           >
             <Transfer
-              amount={this.state.moneyEachBag * this.state.numberOfBag}
+              amount={
+                this.state.topupType == 1
+                  ? this.state.moneyEachBag * this.state.numberOfBag
+                  : this.state.moneyEachBag
+              }
               type={"lm"}
               data={{
                 message: this.state.message,
                 numberBag: this.state.numberOfBag,
                 type: this.state.topupType == 1 ? "equally" : "random",
                 sessionChatId: this.props.currentSessionId,
+              }}
+              cb={() => {
+                this.setState({
+                  topupType: 1,
+                  moneyEachBag: "",
+                  numberOfBag: "",
+                  message: "",
+                });
               }}
             ></Transfer>
           </div>

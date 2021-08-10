@@ -2,15 +2,18 @@ package com.hey.auth.controller;
 
 import com.hey.auth.dto.api.ApiResponse;
 import com.hey.auth.dto.system.*;
+import com.hey.auth.dto.user.EditUserRequest;
 import com.hey.auth.dto.user.UserDTO;
 import com.hey.auth.exception.jwt.InvalidJwtTokenException;
 import com.hey.auth.exception.system.SystemIdNotFoundException;
 import com.hey.auth.exception.system.SystemKeyInvalidException;
 import com.hey.auth.exception.user.PinNotMatchedException;
 import com.hey.auth.exception.user.UserIdNotFoundException;
+import com.hey.auth.exception.user.UsernameEmailExistedException;
 import com.hey.auth.service.SystemService;
 import com.hey.auth.service.UserService;
 import lombok.AllArgsConstructor;
+import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -103,6 +106,20 @@ public class SystemController {
                 .code(HttpStatus.OK.value())
                 .message("")
                 .payload(payload)
+                .build());
+    }
+
+
+    @PatchMapping("/editProfile/{userId}")
+    public ResponseEntity<ApiResponse> editUser(
+            @PathVariable("userId") String userId,
+            @RequestBody @Valid EditUserRequest request) throws UsernameEmailExistedException, UserIdNotFoundException {
+        userService.editUser(userId, request);
+        return ResponseEntity.ok(ApiResponse.builder()
+                .success(true)
+                .code(HttpStatus.CREATED.value())
+                .message("Edit profile successfully")
+                .payload("")
                 .build());
     }
 }

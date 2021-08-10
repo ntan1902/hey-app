@@ -7,6 +7,7 @@ public class ChatMessageRequest extends WsMessage implements Serializable {
     private String message;
     private String sessionId;
     private List<String> usernames;
+    private String groupName;
     private boolean groupChat;
 
     public String getMessage() {
@@ -31,6 +32,14 @@ public class ChatMessageRequest extends WsMessage implements Serializable {
 
     public void setUsernames(List<String> usernames) {
         this.usernames = usernames;
+    }
+
+    public String getGroupName() {
+        return groupName;
+    }
+
+    public void setGroupName(String groupName) {
+        this.groupName = groupName;
     }
 
     public boolean isGroupChat() {
