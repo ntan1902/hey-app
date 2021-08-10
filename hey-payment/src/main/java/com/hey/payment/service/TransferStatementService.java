@@ -14,13 +14,13 @@ import com.hey.payment.exception_handler.exception.*;
 import java.util.List;
 
 public interface TransferStatementService {
-    void createTransfer(User user, CreateTransferRequest createTransferRequest) throws SoftTokenAuthorizeException, NegativeAmountException, MaxAmountException, HaveNoWalletException, WrongTargetException, SourceAndTargetAreTheSameException, WrongSourceException, BalanceNotEnoughException, MaxBalanceException;
+    void createTransfer(User user, CreateTransferRequest createTransferRequest) throws SoftTokenAuthorizeException, NegativeAmountException, MaxAmountException, HaveNoWalletException,  SourceAndTargetAreTheSameException,  BalanceNotEnoughException, MaxBalanceException;
 
     void topUp(User user, TopUpRequest topupRequest) throws MaxAmountException, MaxBalanceException, HaveNoWalletException, BankInvalidException;
 
-    List<TransferStatementDTO> getTransferStatementOfUser(String userId) throws HaveNoWalletException, DatabaseHasErr, ApiErrException;
+    List<TransferStatementDTO> getTransferStatementOfUser(String userId, int page, int size) throws HaveNoWalletException, DatabaseHasErr, ApiErrException;
 
-    void systemCreateTransferToUser(System system, SystemCreateTransferToUserRequest request) throws NegativeAmountException, MaxAmountException, WrongSourceException, HaveNoWalletException, BalanceNotEnoughException, MaxBalanceException, WrongTargetException;
+    void systemCreateTransferToUser(System system, SystemCreateTransferToUserRequest request) throws NegativeAmountException, MaxAmountException,  HaveNoWalletException, BalanceNotEnoughException, MaxBalanceException;
 
-    SystemCreateTransferFromUserResponse systemCreateTransferFromUser(System system, SystemCreateTransferFromUserRequest request) throws SoftTokenAuthorizeException, NegativeAmountException, WrongSourceException, MaxAmountException, WrongTargetException, BalanceNotEnoughException, MaxBalanceException;
+    SystemCreateTransferFromUserResponse systemCreateTransferFromUser(System system, SystemCreateTransferFromUserRequest request) throws SoftTokenAuthorizeException, NegativeAmountException,  MaxAmountException,  BalanceNotEnoughException, MaxBalanceException, HaveNoWalletException;
 }

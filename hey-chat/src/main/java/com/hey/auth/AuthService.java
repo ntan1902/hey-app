@@ -1,5 +1,6 @@
 package com.hey.auth;
 
+import com.hey.model.EditProfileRequest;
 import com.hey.util.PropertiesUtils;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
@@ -43,7 +44,7 @@ public class AuthService {
 
                         if (payload.containsKey("userId")) {
                             JsonObject user = new JsonObject();
-                            user.put("userId", payload.getString("userId").toString());
+                            user.put("userId", payload.getString("userId"));
                             resultHandler.handle(Future.succeededFuture(new JWTUser(user, "permissions")));
                         } else if (payload.containsKey("systemName")) {
                             JsonObject system = new JsonObject();
@@ -55,5 +56,16 @@ public class AuthService {
                     }
                 });
 
+    }
+
+    public void editProfile(EditProfileRequest editProfileRequest, String userId, Handler<AsyncResult<JsonObject>> resultHandler) {
+        Integer port = PropertiesUtils.getInstance().getIntValue("auth.port");
+        String host = PropertiesUtils.getInstance().getValue("auth.host");
+
+        String baseURL = PropertiesUtils.getInstance().getValue("auth.baseurl");
+        String url = baseURL + "/editProfile/" + userId;
+
+        webClient.patch(port, host, url).putHeader("Authorization", jwt).sendJson(editProfileRequest,
+                httpResponseAsyncResult -> resultHandler.handle(Future.succeededFuture(httpResponseAsyncResult.result().bodyAsJsonObject())));
     }
 }

@@ -1,5 +1,6 @@
 package com.hey.auth.service;
 
+import com.hey.auth.api.ChatApi;
 import com.hey.auth.dto.user.*;
 import com.hey.auth.dto.vertx.RegisterRequestToChat;
 import com.hey.auth.entity.User;
@@ -37,9 +38,7 @@ public class UserServiceImpl implements UserDetailsService, UserService {
     private final JwtSoftTokenUtil jwtSoftTokenUtil;
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
-    private final RestTemplate restTemplate;
-
-    private final ServiceProperties serviceProperties;
+    private final ChatApi chatApi;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -66,10 +65,10 @@ public class UserServiceImpl implements UserDetailsService, UserService {
         log.info("Inside register of UserServiceImpl: {}", registerRequest);
 
         // Check if username or email is existed
-        if (userRepository.existsByUsernameOrEmail(
+        if (Boolean.TRUE.equals(userRepository.existsByUsernameOrEmail(
                 registerRequest.getUsername(),
                 registerRequest.getEmail()
-        )) {
+        ))) {
             throw new UsernameEmailExistedException("username or email already existed");
         }
 
@@ -82,7 +81,7 @@ public class UserServiceImpl implements UserDetailsService, UserService {
         );
 
         // Call api register to Vert.x
-        registerToVertx(userRepository.save(user));
+        chatApi.register(userRepository.save(user));
     }
 
     @Override
@@ -138,9 +137,35 @@ public class UserServiceImpl implements UserDetailsService, UserService {
         return new HasPinResponse(!user.getPin().isEmpty());
     }
 
-    public void registerToVertx(User user) {
-        log.info("Inside registerToVertx of UserServiceImpl: {}", user);
-        RegisterRequestToChat registerRequestToChat = userMapper.registerRequest2Chat(user);
-        restTemplate.postForObject(serviceProperties.getChat() + "/api/public/register", registerRequestToChat, Void.class);
+    @Override
+    public UsernameResponse findUsernameById(String userId) throws UserIdNotFoundException {
+        log.info("Inside findUsernameById of UserServiceImpl: {}", userId);
+
+        return userRepository.findById(userId)
+                .map(user -> new UsernameResponse(user.getUsername()))
+                .orElseThrow(() -> new UserIdNotFoundException("User Id " + userId + " not found"));
     }
+
+    @Override
+    public void editUser(String userId, EditUserRequest request) throws UsernameEmailExistedException, UserIdNotFoundException {
+        log.info("Inside editUser of UserServiceImpl: {}", request);
+
+        boolean emailPresent =
+                userRepository
+                        .findByEmail(request.getEmail())
+                        .isPresent();
+        if (emailPresent) {
+            throw new UsernameEmailExistedException("Email already exists. Please choose another");
+        }
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserIdNotFoundException("User Id " + userId + " not found"));
+
+        user.setEmail(request.getEmail());
+        user.setFullName(request.getFullName());
+
+        userRepository.save(user);
+
+    }
+
 }

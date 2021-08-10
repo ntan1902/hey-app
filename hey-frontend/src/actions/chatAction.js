@@ -10,6 +10,8 @@ import deepcopy from "deepcopy";
 import { message } from "antd/lib/index";
 import { changeUserOnlineStatus } from "./addressBookAction";
 import { statusNotification } from "../components/status-notification";
+import { loadWaitingFriendList } from "./addressBookAction";
+import { AuthAPI } from "../api";
 
 export const EMPTY = "chatlist.EMPTY";
 export const CHATLIST_FETCHED = "chatlist.CHATLIST_FETCHED";
@@ -35,6 +37,8 @@ export function initialWebSocket() {
     onopen: (e) => {},
     onmessage: (e) => {
       var data = JSON.parse(e.data);
+      console.log("New Socket");
+      console.log(data, "New Socket");
       switch (data.type) {
         case "CHAT_ITEMS_RESPONSE":
           store.dispatch(changeMessageItems(data.chatItems, data.sessionId));
@@ -50,6 +54,10 @@ export function initialWebSocket() {
           break;
         case "USER_OFFLINE_RESPONSE":
           store.dispatch(receivedUserOffline(data));
+          break;
+        case "ADD_FRIEND_RESPONSE":
+          message.success("New Friend Request !!!");
+          store.dispatch(loadWaitingFriendList());
           break;
       }
     },
@@ -87,6 +95,22 @@ export function loadChatContainer(sessionId) {
   store
     .getState()
     .chatReducer.webSocket.json(createLoadChatContainerRequest(sessionId));
+  return { type: EMPTY };
+}
+
+export function loadNewAddFriend(sessionId) {
+  store
+    .getState()
+    .chatReducer.webSocket.json(createLoadNewAddFriendRequest(sessionId));
+  message.success("Sending friend request to " + sessionId);
+  return { type: EMPTY };
+}
+
+export function addFriendToSession(sessionId, userId) {
+  store
+    .getState()
+    .chatReducer.webSocket.json(createAddFriendToSession(sessionId, userId));
+  message.success("Sending friend request to " + sessionId);
   return { type: EMPTY };
 }
 
@@ -257,12 +281,14 @@ export function changeMessageHeader(title, avatar, groupchat) {
   return { type: MESSAGE_HEADER_FETCHED, messageHeader: header };
 }
 
-export function addNewUserChatGroup(userName) {
-  if (isEmptyString(userName)) {
+export function addNewUserChatGroup(userId) {
+  if (isEmptyString(userId)) {
     let error = "Please input username :(";
     return { type: ADD_NEW_START_CHAT_GROUP_FAIL, error: error };
   } else {
-    return function (dispatch) {
+    return async function (dispatch) {
+      const res = await AuthAPI.getUsername(userId);
+      const userName = res.data.payload.username;
       return api
         .post(
           `/api/protected/usernameexisted`,
@@ -298,7 +324,7 @@ export function receiveNewUserChatGroup(result) {
     let startChatGroupList = deepcopy(
       store.getState().chatReducer.startChatGroupList
     );
-    startChatGroupList.push(result.data.data.username);
+    startChatGroupList.push(result.data.payload.username);
     return {
       type: ADD_NEW_START_CHAT_GROUP,
       startChatGroupList: startChatGroupList,
@@ -311,13 +337,18 @@ export function startNewChatGroup() {
     let messageItems = [];
     let waitingGroupUsernames = store.getState().chatReducer.startChatGroupList;
     let currentSessionId = "-1";
+    console.log("start new chat group");
     api
       .post(
         `/api/protected/waitingchatheader`,
         createWaitingChatHeaderRequest(waitingGroupUsernames)
       )
       .then((res) => {
-        store.dispatch(changeMessageHeader(res.data.data.title, "", true));
+        console.log("start new chat", res);
+        store.dispatch(changeMessageHeader(res.data.payload.title, "", true));
+      })
+      .catch((err) => {
+        console.log("ERR", err.response);
       });
     return {
       type: START_CHAT_GROUP,
@@ -446,6 +477,23 @@ function createLoadChatContainerRequest(sessionId) {
   const req = {
     type: "CHAT_ITEMS_REQUEST",
     sessionId: sessionId,
+  };
+  return req;
+}
+
+function createLoadNewAddFriendRequest(sessionId) {
+  const req = {
+    type: "ADD_FRIEND_REQUEST",
+    sessionId: sessionId,
+  };
+  return req;
+}
+
+function createAddFriendToSession(sessionId, userId) {
+  const req = {
+    type: "ADD_FRIEND_TO_SESSION_REQUEST",
+    sessionId: sessionId,
+    userId: userId,
   };
   return req;
 }

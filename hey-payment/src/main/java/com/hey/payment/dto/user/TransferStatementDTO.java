@@ -6,7 +6,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Date;
+import java.io.Serializable;
+import java.time.LocalDateTime;
 
 @Data
 @AllArgsConstructor
@@ -17,7 +18,7 @@ public class TransferStatementDTO {
     private OwnerInfo target;
     private String transferCode;
     private long amount;
-    private Date createdAt;
+    private LocalDateTime createdAt;
     private int status;
     private long transferFee;
     private String description;

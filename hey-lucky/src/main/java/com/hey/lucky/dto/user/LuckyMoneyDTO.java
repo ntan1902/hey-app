@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 public class LuckyMoneyDTO {
+    private String senderName;
     private long luckyMoneyId;
     private boolean isReceived;
     private long receivedMoney;

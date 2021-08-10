@@ -52,7 +52,7 @@ public class HeyVerticle extends AbstractVerticle {
                 PropertiesUtils.getInstance().getValue("auth.host"),
                 PropertiesUtils.getInstance().getValue("auth.baseurl") + "/login"
         ).sendJsonObject(loginInfo, httpResponseAsyncResult -> {
-            if (httpResponseAsyncResult.failed()) System.exit(1);
+//            if (httpResponseAsyncResult.failed()) System.exit(1);
             JsonObject payload = httpResponseAsyncResult.result().bodyAsJsonObject().getJsonObject("payload");
             String tokenType = payload.getString("tokenType");
             AuthService.createInstance(webClient, tokenType + " " + payload.getString("accessToken"));
@@ -72,9 +72,8 @@ public class HeyVerticle extends AbstractVerticle {
             userWsChannelManager.setSharedData(vertx.sharedData());
 
             // API Service
-            APIService apiService = new APIService();
+            APIService apiService = new APIService(userWsChannelManager, AuthService.getInstance());
             apiService.setDataRepository(repository);
-            apiService.setUserWsChannelManager(userWsChannelManager);
 
             // Protected API Handler
             ProtectedApiHandler protectedApiHandler = new ProtectedApiHandler();

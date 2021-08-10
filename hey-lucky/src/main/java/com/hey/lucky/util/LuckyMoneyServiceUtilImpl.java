@@ -26,7 +26,6 @@ import org.springframework.stereotype.Component;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-import java.util.stream.Collectors;
 
 @Component
 @Log4j2
@@ -98,9 +97,12 @@ public class LuckyMoneyServiceUtilImpl implements LuckyMoneyServiceUtil {
     }
 
     @Override
-    public List<LuckyMoneyDTO> luckyMoneyList2LuckyMoneyDTOList(List<LuckyMoney> luckyMoneyList, User user) {
-        return luckyMoneyList.stream().map(luckyMoney -> {
+    public List<LuckyMoneyDTO> luckyMoneyList2LuckyMoneyDTOList(List<LuckyMoney> luckyMoneyList, User user) throws CannotGetUserInfo {
+        List<LuckyMoneyDTO> luckyMoneyDTOList = new ArrayList<>();
+        for (LuckyMoney luckyMoney : luckyMoneyList){
+            UserInfo sender = getUserInfo(luckyMoney.getUserId());
             LuckyMoneyDTO luckyMoneyDTO = luckyMoneyMapper.luckyMoney2LuckyMoneyDTO(luckyMoney);
+            luckyMoneyDTO.setSenderName(sender.getFullName());
             ReceivedLuckyMoney receivedLuckyMoney = receivedLuckyMoneyRepository.findByLuckyMoneyIdAndReceiverId(luckyMoney.getId(), user.getId());
             if (receivedLuckyMoney == null) {
                 luckyMoneyDTO.setReceived(false);
@@ -111,8 +113,9 @@ public class LuckyMoneyServiceUtilImpl implements LuckyMoneyServiceUtil {
                 luckyMoneyDTO.setReceivedMoney(receivedLuckyMoney.getAmount());
                 luckyMoneyDTO.setReceivedAt(receivedLuckyMoney.getCreatedAt().toString());
             }
-            return luckyMoneyDTO;
-        }).collect(Collectors.toList());
+            luckyMoneyDTOList.add(  luckyMoneyDTO);
+        }
+        return luckyMoneyDTOList;
     }
 
 

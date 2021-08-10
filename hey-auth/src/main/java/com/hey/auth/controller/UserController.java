@@ -4,6 +4,7 @@ import com.hey.auth.dto.api.*;
 import com.hey.auth.dto.user.*;
 import com.hey.auth.exception.user.EmptyPinException;
 import com.hey.auth.exception.user.PinNotMatchedException;
+import com.hey.auth.exception.user.UserIdNotFoundException;
 import com.hey.auth.exception.user.UsernameEmailExistedException;
 import com.hey.auth.service.UserService;
 import lombok.AllArgsConstructor;
@@ -72,6 +73,17 @@ public class UserController {
         return ResponseEntity.ok(ApiResponse.builder()
                 .success(true)
                 .code(HttpStatus.CREATED.value())
+                .message("")
+                .payload(payload)
+                .build());
+    }
+
+    @GetMapping("/getUsername/{userId}")
+    public ResponseEntity<ApiResponse> findUsernameByUserId(@PathVariable("userId") String userId) throws UserIdNotFoundException {
+        UsernameResponse payload = userService.findUsernameById(userId);
+        return ResponseEntity.ok(ApiResponse.builder()
+                .success(true)
+                .code(HttpStatus.OK.value())
                 .message("")
                 .payload(payload)
                 .build());

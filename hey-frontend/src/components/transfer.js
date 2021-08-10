@@ -43,6 +43,18 @@ class VerifyPIN extends React.Component {
   };
 
   handleTransferOK = (e) => {
+    if (this.props.type == "lm") {
+      this.props.paymentActions
+        .createLuckymoney({
+          softToken: this.state.softToken,
+          ...this.props.data,
+        })
+        .then((res) => {
+          if (this.props.cb) this.props.cb();
+          this.setState({ handleSoftToken: false, softToken: "" });
+        });
+      return true;
+    }
     this.props.paymentActions
       .transfer({
         targetId: this.props.targetId,
@@ -50,6 +62,7 @@ class VerifyPIN extends React.Component {
         message: this.props.message,
       })
       .then((res) => {
+        if (this.props.cb) this.props.cb();
         this.setState({ handleSoftToken: false, softToken: "" });
       });
   };

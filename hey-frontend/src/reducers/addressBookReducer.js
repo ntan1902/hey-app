@@ -5,10 +5,12 @@ import {
   ADDRESSBOOK_FETCHED,
   CHANGE_STATUS,
   TOP_UP,
+  WAITINGFRIEND_FETCHED,
 } from "../actions/addressBookAction";
 
 const initialState = {
   addressBookList: [],
+  waitingFriendList: [],
   newAddressBookList: [],
   addFriendError: false,
   addFriendErrorMessage: "",
@@ -23,6 +25,11 @@ export default function reduce(state = initialState, action) {
         ...state,
         addressBookList: action.fetchedAddressBookList,
         newAddressBookList: action.fetchedNewAddressBookList,
+      };
+    case WAITINGFRIEND_FETCHED:
+      return {
+        ...state,
+        waitingFriendList: action.waitingFriendList,
       };
     case ADD_FRIEND:
       return {

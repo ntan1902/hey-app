@@ -1,6 +1,9 @@
 package com.hey.payment.repository;
 
 import com.hey.payment.entity.Wallet;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
@@ -13,6 +16,12 @@ import java.util.Optional;
 
 @Repository
 public interface WalletRepository extends JpaRepository<Wallet, Long> {
+    @Cacheable(value = "wallets", key = "#id")
+    Optional<Wallet> findById(String id);
+
+    @CachePut(value = "wallets", key = "#p0.id")
+    Wallet save(Wallet wallet);
+
     Optional<Wallet> findByOwnerIdAndRefFrom(String userId, String refFrom);
 
     List<Wallet> findAllByOwnerIdAndRefFrom(String systemId, String refFrom);
@@ -20,12 +29,10 @@ public interface WalletRepository extends JpaRepository<Wallet, Long> {
     Optional<Wallet> findWalletByIdAndOwnerId(Long walletId, String ownerId);
 
     @Lock(value = LockModeType.PESSIMISTIC_WRITE)
-    Optional<Wallet> getByOwnerIdAndRefFrom(String userId, String refFrom);
+    Optional<Wallet> findAndLockByOwnerIdAndRefFrom(String userId, String refFrom);
 
     @Lock(value = LockModeType.PESSIMISTIC_WRITE)
-    // @Query(value = "SELECT * FROM wallets w WHERE w.id=?1 FOR UPDATE",
-    // nativeQuery = true)
-    Optional<Wallet> getWalletById(Long walletId);
+    Optional<Wallet> findAndLockWalletById(Long walletId);
 
     boolean existsByOwnerIdAndRefFrom(String userId, String refFrom);
 

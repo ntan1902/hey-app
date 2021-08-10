@@ -8,6 +8,8 @@ const initialState = {
   luckyMoneyPopup: false,
   isCreate: false,
   balance: "0",
+  mainScreenData: null,
+  isAddFriendToSession: false,
 };
 
 export default (state = initialState, action = {}) => {
@@ -16,6 +18,7 @@ export default (state = initialState, action = {}) => {
       return {
         ...state,
         layoutType: action.layoutType,
+        mainScreenData: action.mainScreenData,
       };
     case actionTypes.ON_SHOW_PIN:
       return {
@@ -47,6 +50,11 @@ export default (state = initialState, action = {}) => {
         ...state,
         luckyMoneyPopup: action.luckyMoneyPopup,
         isCreate: action.isCreate,
+      };
+    case actionTypes.ADD_FRIEND_TO_SESSION:
+      return {
+        ...state,
+        isAddFriendToSession: action.isAddFriendToSession,
       };
     case actionTypes.ON_UPDATE_BALANCE:
       return {

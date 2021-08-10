@@ -32,6 +32,7 @@ public class RedisCacheClient implements DataRepository {
     private RedisClient client;
 
     private static int numScanCount;
+    private String key;
 
     public RedisCacheClient(RedisClient client) {
         this.client = client;
@@ -54,6 +55,16 @@ public class RedisCacheClient implements DataRepository {
     String generateFriendListKey(String userId1, String userId2) {
 
         return "friend:list:" + userId1 + ":" + userId2;
+    }
+
+    String generateWaitingFriendListKey(String userId1, String userId2) {
+
+        return "waiting_friend:list:" + userId1 + ":" + userId2;
+    }
+
+    String generateWaitingFriendListKey(List<String> userIds) {
+
+        return "waiting_friend:list:" + String.join(":", userIds);
     }
 
     String generateUserStatusKey(String userId) {
@@ -264,7 +275,65 @@ public class RedisCacheClient implements DataRepository {
     }
 
     @Override
+    public Future<FriendList> insertWaitingFriendList(FriendList friendList) {
+
+        Future<FriendList> future = Future.future();
+
+        JsonObject friendListJsonObject = new JsonObject();
+        List<String> userIds = new ArrayList<>();
+        userIds.add(friendList.getCurrentUserHashes().getUserId());
+        userIds.add(friendList.getFriendUserHashes().getUserId());
+        friendListJsonObject.put(friendList.getCurrentUserHashes().getUserId(), friendList.getCurrentUserHashes().getFullName());
+        friendListJsonObject.put(friendList.getFriendUserHashes().getUserId(), friendList.getFriendUserHashes().getFullName());
+
+        client.hmset(generateWaitingFriendListKey(userIds), friendListJsonObject, res -> {
+            if (res.succeeded()) {
+                future.complete(friendList);
+            } else {
+                future.fail(res.cause());
+            }
+        });
+
+        return future;
+    }
+
+    @Override
     public Future<FriendList> getFriendList(String friendListKey, String currentUserId) {
+
+        Future<FriendList> future = Future.future();
+
+        client.hgetall(friendListKey, res -> {
+            if (res.succeeded()) {
+                Set<String> fieldNames = res.result().fieldNames();
+
+                if (fieldNames.size() == 2) {
+                    FriendList friendList = new FriendList();
+
+                    for (String fieldName : fieldNames) {
+
+                        if (currentUserId.equals(fieldName)) {
+                            friendList.setCurrentUserHashes(new UserHash(fieldName, res.result().getString(fieldName)));
+                        } else {
+                            friendList.setFriendUserHashes(new UserHash(fieldName, res.result().getString(fieldName)));
+                        }
+                    }
+
+                    future.complete(friendList);
+
+                } else {
+                    future.complete(null);
+                }
+
+            } else {
+                future.fail(res.cause());
+            }
+        });
+
+        return future;
+    }
+
+    @Override
+    public Future<FriendList> getWaitingFriendList(String friendListKey, String currentUserId) {
 
         Future<FriendList> future = Future.future();
 
@@ -306,6 +375,7 @@ public class RedisCacheClient implements DataRepository {
         JsonObject chatListJsonObject = new JsonObject();
         String updatedDate = String.valueOf(chatList.getUpdatedDate() != null ? chatList.getUpdatedDate().getTime() : new Date().getTime());
         chatListJsonObject.put("updated_date", updatedDate);
+
         List<String> userIds = new ArrayList<>();
         for (UserHash userHash : chatList.getUserHashes()) {
             chatListJsonObject.put(userHash.getUserId(), userHash.getFullName());
@@ -313,7 +383,7 @@ public class RedisCacheClient implements DataRepository {
         }
 
         chatListJsonObject.put("last_message", StringUtils.isEmpty(chatList.getLastMessage()) ? "no message" : chatList.getLastMessage());
-
+        
         client.hmset(generateChatListKey(chatList.getSessionId(), userIds), chatListJsonObject, res -> {
             if (res.succeeded()) {
                 future.complete(chatList);
@@ -488,34 +558,63 @@ public class RedisCacheClient implements DataRepository {
             }
         });
 
+
         return future;
     }
 
-    private ChatList convertJsonObjectToChatList(JsonObject jsonObject, String chatListkey) {
-        ChatList chatList = new ChatList();
-        List<UserHash> userHashes = new ArrayList<>();
-        Set<String> fieldNames = jsonObject.fieldNames();
-        for (String fieldName : fieldNames) {
+    @Override
+    public Future<Long> deleteSessionKey(ChatList chatList) {
+        Future<Long> future = Future.future();
 
-            switch (fieldName) {
-                case "updated_date":
-                    chatList.setUpdatedDate(new Date(Long.parseLong(jsonObject.getString(fieldName))));
-                    break;
-                case "last_message":
-                    chatList.setLastMessage(jsonObject.getString(fieldName));
-                    break;
-                default:
-                    UserHash userHash = new UserHash(fieldName, jsonObject.getString(fieldName));
-                    userHashes.add(userHash);
-                    break;
-            }
+        List<String> userIds = new ArrayList<>();
+        for (UserHash userHash : chatList.getUserHashes()) {
+            userIds.add(userHash.getUserId());
         }
 
-        chatList.setUserHashes(userHashes);
-        String[] componentKey = chatListkey.split(":");
+        client.del(generateChatListKey(chatList.getSessionId(), userIds), deleteFriendRes -> {
+            if (deleteFriendRes.succeeded()) {
+                future.complete(deleteFriendRes.result());
+
+            } else {
+                future.fail(deleteFriendRes.cause());
+            }
+        });
+
+        return future;
+    }
+
+    @Override
+    public Future<Long> deleteWaitingFriend(String userId, String friendId) {
+        Future<Long> future = Future.future();
+        client.del(generateWaitingFriendListKey(friendId, userId), deleteFriendRes -> {
+            if (deleteFriendRes.succeeded()) {
+                future.complete(deleteFriendRes.result());
+
+            } else {
+                future.fail(deleteFriendRes.cause());
+            }
+        });
+
+        return future;
+    }
+
+    private ChatList convertJsonObjectToChatList(JsonObject jsonObject, String chatListKey) {
+        ChatList chatList = new ChatList();
+        List<UserHash> userHashes = new ArrayList<>();
+
+        // chat:list:sessionId:user1:user2
+        String[] componentKey = chatListKey.split(":");
         if (componentKey.length > 3) {
             chatList.setSessionId(componentKey[2]);
         }
+
+        chatList.setUpdatedDate(new Date(Long.parseLong(jsonObject.getString("updated_date"))));
+        chatList.setLastMessage(jsonObject.getString("last_message"));
+        for(int i = 3; i < componentKey.length; i++) {
+            UserHash userHash = new UserHash(componentKey[i], jsonObject.getString(componentKey[i]));
+            userHashes.add(userHash);
+        }
+        chatList.setUserHashes(userHashes);
 
         return chatList;
     }
