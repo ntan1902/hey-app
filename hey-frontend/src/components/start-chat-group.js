@@ -80,11 +80,20 @@ class StartChatGroup extends React.Component {
           )}
           {/* <p className="model-label">Please enter user name:</p>
           <div className="first-line">
-            <Input ref={(ref) => {
-              this.ref = ref;
-            }} id="add-user-name" className="add-user-name" onPressEnter={this.addMoreUsername}/> <Button
-            onClick={this.addMoreUsername} type="primary"
-            shape="circle" icon="plus"/>
+            <Input
+              ref={(ref) => {
+                this.ref = ref;
+              }}
+              id="add-user-name"
+              className="add-user-name"
+              onPressEnter={this.addMoreUsername}
+            />
+            <Button
+              onClick={this.addMoreUsername}
+              type="primary"
+              shape="circle"
+              icon="plus"
+            />
           </div>
            */}
           <div className="first-line">

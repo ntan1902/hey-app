@@ -96,21 +96,24 @@ public class WsHandler {
                     .deleteSessionKey(chatList);
 
             deleteSessionFuture.compose(res -> {
-                List<String> userIds = new ArrayList<String>();
+                List<String> userIds = new ArrayList<>();
                 userIds.add(request.getUserId());
                 Future<List<UserFull>> getUserFullsFuture = apiService.getUserFulls(userIds);
 
                 getUserFullsFuture.compose(userFulls -> {
 
                     List<UserHash> userHashes = chatList.getUserHashes();
+
                     UserHash me = userHashes.get(0);
                     for (UserFull userFull : userFulls) {
-                        if(userFull.getUserId() == userId) me = new UserHash(userFull.getUserId(), userFull.getFullName());
+                        if(userFull.getUserId().equals(userId)) {
+                            me = new UserHash(userFull.getUserId(), userFull.getFullName());
+                        }
                         userHashes.add(new UserHash(userFull.getUserId(), userFull.getFullName()));
                     }
 
                     JsonObject content = new JsonObject();
-                    content.put("message", "Add " + userFulls.get(0).getFullName() + " to group");
+                    content.put("message", me.getFullName() + " add " + userFulls.get(0).getFullName() + " to group");
 
                     JsonObject messageRequest = new JsonObject();
                     messageRequest.put("type", "message");
@@ -139,15 +142,14 @@ public class WsHandler {
 
                     CompositeFuture cp = CompositeFuture.all(insertChatMessageFuture, insertChatListFuture,
                             increaseUnseenCountFuture);
+
                     UserHash finalMe = me;
                     cp.setHandler(ar -> {
                         if (ar.succeeded()) {
                             NewChatSessionResponse newChatSessionResponse = new NewChatSessionResponse();
                             newChatSessionResponse.setType(IWsMessage.TYPE_CHAT_NEW_SESSION_RESPONSE);
                             newChatSessionResponse.setSessionId(chatMessage.getSessionId());
-                            // userWsChannelManager.selfSendMessage(newChatSessionResponse, channelId);
                             userWsChannelManager.sendMessage(newChatSessionResponse, request.getUserId());
-
 
                             ChatMessageResponse newMessageResponse = new ChatMessageResponse();
                             newMessageResponse.setMessage(chatMessage.getMessage());

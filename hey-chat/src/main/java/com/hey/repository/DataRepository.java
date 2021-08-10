@@ -52,7 +52,5 @@ public interface DataRepository {
 
     public Future<Long> deleteSessionKey(ChatList chatList);
 
-    public Future<ChatList> addFriendToSession(ChatList chatList);
-
     public Future<Long> deleteWaitingFriend(String userId, String friendId);
 }

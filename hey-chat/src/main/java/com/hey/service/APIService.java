@@ -187,9 +187,7 @@ public class APIService extends BaseService {
                 }
             });
 
-        }, Future.future().setHandler(handler -> {
-            future.fail(handler.cause());
-        }));
+        }, Future.future().setHandler(handler -> future.fail(handler.cause())));
 
         return future;
     }

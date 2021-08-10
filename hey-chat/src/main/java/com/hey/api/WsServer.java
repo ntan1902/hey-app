@@ -38,103 +38,97 @@ public class WsServer {
     }
 
     public static WsServer newInstance() {
-        WsServer wsServer = new WsServer();
-        return wsServer;
+        return new WsServer();
     }
 
     public Future<Void> createWsServer(Vertx vertx) {
         Future future = Future.succeededFuture();
-        vertx.createHttpServer().websocketHandler(new Handler<ServerWebSocket>() {
-            @Override
-            public void handle(final ServerWebSocket ws) {
-                final String id = ws.textHandlerID();
-                String query = ws.query();
-                if (!StringUtils.isBlank(query)) {
-                    String jwt = query.substring(query.indexOf('=') + 1);
-                    if (!StringUtils.isBlank(jwt)) {
-                        JsonObject authObj = new JsonObject().put("jwtUser", jwt);
-                        jwtManager.authenticate(authObj, event -> {
-                            if (event.succeeded()) {
-                                String userId = event.result().principal().getString("userId");
-                                LogUtils.log("User " + userId + " registering new connection with id: " + id);
-                                LOGGER.info("registering new connection with id: " + id + " for user: " + userId);
-                                userWsChannelManager.registerChannel(userId, id)
-                                        .setHandler(ar -> handleNotificationCase(ar, userId, true));
+        vertx.createHttpServer().websocketHandler(ws -> {
+            final String id = ws.textHandlerID();
+            String query = ws.query();
+            if (!StringUtils.isBlank(query)) {
+                String jwt = query.substring(query.indexOf('=') + 1);
+                if (!StringUtils.isBlank(jwt)) {
+                    JsonObject authObj = new JsonObject().put("jwtUser", jwt);
+                    jwtManager.authenticate(authObj, event -> {
+                        if (event.succeeded()) {
+                            String userId = event.result().principal().getString("userId");
 
-                                ws.closeHandler(new Handler<Void>() {
-                                    @Override
-                                    public void handle(final Void event) {
-                                        LOGGER.info(
-                                                "un-registering connection with id: " + id + " for user: " + userId);
-                                        userWsChannelManager.removeChannel(userId, id)
-                                                .setHandler(ar -> handleNotificationCase(ar, userId, false));
+                            LogUtils.log("User " + userId + " registering new connection with id: " + id);
+                            LOGGER.info("registering new connection with id: {} for user: {}", id, userId);
+
+                            userWsChannelManager.registerChannel(userId, id)
+                                    .setHandler(ar -> handleNotificationCase(ar, userId, true));
+
+                            ws.closeHandler(event1 -> {
+                                LOGGER.info("un-registering connection with id: {} for user: {}", id, userId);
+                                userWsChannelManager.removeChannel(userId, id)
+                                        .setHandler(ar -> handleNotificationCase(ar, userId, false));
+                            });
+
+                            ws.handler(data -> {
+                                try {
+                                    JsonObject json = new JsonObject(data.toString());
+                                    String type = json.getString("type");
+                                    ObjectMapper mapper = new ObjectMapper();
+                                    switch (type) {
+                                        case IWsMessage.TYPE_CHAT_ITEM_REQUEST:
+                                            ChatContainerRequest chatContainerRequest = mapper
+                                                    .readValue(data.toString(), ChatContainerRequest.class);
+                                            LogUtils.log("User " + userId + " load chat container "
+                                                    + chatContainerRequest.getSessionId());
+                                            wsHandler.handleChatContainerRequest(chatContainerRequest, id,
+                                                    userId);
+                                            break;
+
+                                        case IWsMessage.TYPE_NOTIFICATION_ADD_FRIEND_REQUEST:
+                                            ChatContainerRequest chatContainerRequest2 = mapper
+                                                    .readValue(data.toString(), ChatContainerRequest.class);
+                                            LogUtils.log("User " + userId + " add friend request "
+                                                    + chatContainerRequest2.getSessionId());
+                                            wsHandler.handleAddFriendRequest(chatContainerRequest2, id, userId);
+                                            break;
+
+                                        case IWsMessage.TYPE_ADD_FRIEND_TO_SESSION_REQUEST:
+                                            AddFriendToSessionRequest chatContainerRequest3 = mapper
+                                                    .readValue(data.toString(), AddFriendToSessionRequest.class);
+                                            LogUtils.log("User " + userId + " add friend to group "
+                                                    + chatContainerRequest3.getSessionId());
+                                            wsHandler.handleAddFriendToSessionRequest(chatContainerRequest3, id, userId);
+                                            break;
+
+                                        case IWsMessage.TYPE_CHAT_MESSAGE_REQUEST:
+                                            ChatMessageRequest chatMessageRequest = mapper
+                                                    .readValue(data.toString(), ChatMessageRequest.class);
+                                            if (!"-1".equals(chatMessageRequest.getSessionId()))
+                                                LogUtils.log("User " + userId + " send a chat message to "
+                                                        + chatMessageRequest.getSessionId());
+                                            else
+                                                LogUtils.log("User " + userId + " start a chat message to "
+                                                        + ArrayUtils
+                                                        .toString(chatMessageRequest.getUsernames()));
+                                            wsHandler.handleChatMessageRequest(chatMessageRequest, id, userId);
+                                            break;
                                     }
-                                });
+                                } catch (IOException e) {
+                                    LOGGER.error(data.toString(), e);
+                                }
+                            });
+                        } else {
+                            LOGGER.info("Authentication Failed for id: {}", id);
+                            ws.reject();
+                        }
+                    });
 
-                                ws.handler(new Handler<Buffer>() {
-                                    @Override
-                                    public void handle(final Buffer data) {
-                                        try {
-                                            JsonObject json = new JsonObject(data.toString());
-                                            String type = json.getString("type");
-                                            ObjectMapper mapper = new ObjectMapper();
-                                            switch (type) {
-                                                case IWsMessage.TYPE_CHAT_ITEM_REQUEST:
-                                                    ChatContainerRequest chatContainerRequest = mapper
-                                                            .readValue(data.toString(), ChatContainerRequest.class);
-                                                    LogUtils.log("User " + userId + " load chat container "
-                                                            + chatContainerRequest.getSessionId());
-                                                    wsHandler.handleChatContainerRequest(chatContainerRequest, id,
-                                                            userId);
-                                                    break;
-                                                case IWsMessage.TYPE_NOTIFICATION_ADD_FRIEND_REQUEST:
-                                                    ChatContainerRequest chatContainerRequest2 = mapper
-                                                            .readValue(data.toString(), ChatContainerRequest.class);
-                                                    LogUtils.log("User " + userId + " load chat container "
-                                                            + chatContainerRequest2.getSessionId());
-                                                    wsHandler.handleAddFriendRequest(chatContainerRequest2, id, userId);
-                                                    break;
-                                                case IWsMessage.TYPE_ADD_FRIEND_TO_SESSION_REQUEST:
-                                                    AddFriendToSessionRequest chatContainerRequest3 = mapper
-                                                            .readValue(data.toString(), AddFriendToSessionRequest.class);
-                                                    LogUtils.log("User " + userId + " load chat container "
-                                                            + chatContainerRequest3.getSessionId());
-                                                    wsHandler.handleAddFriendToSessionRequest(chatContainerRequest3, id, userId);
-                                                    break;
-                                                case IWsMessage.TYPE_CHAT_MESSAGE_REQUEST:
-                                                    ChatMessageRequest chatMessageRequest = mapper
-                                                            .readValue(data.toString(), ChatMessageRequest.class);
-                                                    if (!"-1".equals(chatMessageRequest.getSessionId()))
-                                                        LogUtils.log("User " + userId + " send a chat message to "
-                                                                + chatMessageRequest.getSessionId());
-                                                    else
-                                                        LogUtils.log("User " + userId + " start a chat message to "
-                                                                + ArrayUtils
-                                                                        .toString(chatMessageRequest.getUsernames()));
-                                                    wsHandler.handleChatMessageRequest(chatMessageRequest, id, userId);
-                                                    break;
-                                            }
-                                        } catch (IOException e) {
-                                            LOGGER.error(data.toString(), e);
-                                        }
-                                    }
-                                });
-                            } else {
-                                LOGGER.info("Authentication Failed for id: " + id);
-                                ws.reject();
-                            }
-                        });
-
-                    } else {
-                        LOGGER.info("Authentication Failed for id: " + id);
-                        ws.reject();
-                    }
                 } else {
-                    LOGGER.info("Authentication Failed for id: " + id);
+                    LOGGER.info("Authentication Failed for id: {}", id);
                     ws.reject();
                 }
-
+            } else {
+                LOGGER.info("Authentication Failed for id: ", id);
+                ws.reject();
             }
+
         }).listen(PropertiesUtils.getInstance().getIntValue("ws.port"));
 
         return future;
@@ -187,35 +181,5 @@ public class WsServer {
                 });
             }
         }
-    }
-
-    private SockJSHandler sockJSHandler(Vertx vertx) {
-        return SockJSHandler.create(vertx).socketHandler(sockJSSocket -> {
-            String authorization = sockJSSocket.headers().get(HttpHeaders.AUTHORIZATION);
-            String userId = "1";
-            final String id = sockJSSocket.writeHandlerID();
-
-            LOGGER.info("registering new connection with id: " + id + " for user: " + userId);
-            userWsChannelManager.registerChannel(userId, id);
-
-            sockJSSocket.endHandler(new Handler<Void>() {
-                @Override
-                public void handle(final Void event) {
-                    LOGGER.info("un-registering connection with id: " + id + " for user: " + userId);
-                    userWsChannelManager.removeChannel(userId, id);
-                }
-            });
-
-            sockJSSocket.handler(new Handler<Buffer>() {
-                @Override
-                public void handle(final Buffer data) {
-                    sockJSSocket.write(data);
-                    // JsonObject json = new JsonObject(data.toString());
-                    // ObjectMapper m = new ObjectMapper();
-                    // sockJSSocket.close();
-                }
-            });
-
-        });
     }
 }
