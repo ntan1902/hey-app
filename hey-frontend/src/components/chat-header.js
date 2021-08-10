@@ -20,6 +20,10 @@ class ChatHeader extends React.Component {
     this.props.paymentActions.changeStateLuckyMoneyPopup(true, isCreate);
   };
 
+  showAddFriendToSessionModal = () => {
+    this.props.paymentActions.changeStateAddFriendPopup(true);
+  };
+
   render() {
     const IconFont = Icon.createFromIconfontCN({
       scriptUrl: "//at.alicdn.com/t/font_8d5l8fzk5b87iudi.js",
@@ -71,7 +75,10 @@ class ChatHeader extends React.Component {
               </Menu.Item>
             </Menu.ItemGroup>
             <Menu.ItemGroup title="Settings">
-              <Menu.Item key="setting:3">
+              <Menu.Item
+                key="setting:3"
+                onClick={() => this.showAddFriendToSessionModal(true)}
+              >
                 {" "}
                 <Icon style={{ fontSize: 20 }} type="plus" />
                 Add More Friend

@@ -8,12 +8,14 @@ import {
   removeUserChatGroup,
   startNewChatGroup,
 } from "../actions/chatAction";
+import AddFriend from "./add-friend-transfer";
 
 class StartChatGroup extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       visible: false,
+      selectedUserId: null,
     };
     this.addMoreUsername = this.addMoreUsername.bind(this);
     this.handleRemoveUsername = this.handleRemoveUsername.bind(this);
@@ -42,7 +44,7 @@ class StartChatGroup extends React.Component {
   addMoreUsername = (e) => {
     var un = $("#add-user-name").val();
     $("#add-user-name").val("");
-    this.props.addNewUserChatGroup(un);
+    this.props.addNewUserChatGroup(this.state.selectedUserId);
   };
 
   handleRemoveUsername = (item) => {
@@ -76,7 +78,7 @@ class StartChatGroup extends React.Component {
           ) : (
             ""
           )}
-          <p className="model-label">Please enter user name:</p>
+          {/* <p className="model-label">Please enter user name:</p>
           <div className="first-line">
             <Input
               ref={(ref) => {
@@ -93,6 +95,24 @@ class StartChatGroup extends React.Component {
               icon="plus"
             />
           </div>
+           */}
+          <div className="first-line">
+            <AddFriend
+              onChange={(value) => {
+                console.log(`selected ${value}`);
+
+                this.setState({ selectedUserId: value });
+              }}
+            ></AddFriend>{" "}
+            <Button
+              onClick={this.addMoreUsername}
+              type="primary"
+              shape="circle"
+              icon="plus"
+              style={{ marginLeft: 10 }}
+            />
+          </div>
+
           {this.props.startChatGroupList.length > 0 ? (
             <p
               className="model-label"

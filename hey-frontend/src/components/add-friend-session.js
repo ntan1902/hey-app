@@ -6,20 +6,23 @@ import {
   removeUserChatGroup,
   startNewChatGroup,
   loadNewAddFriend,
+  addFriendToSession,
 } from "../actions/chatAction";
 import {
   addNewFriend,
-  changeStateAddFriendPopup,
+  // changeStateAddFriendPopup,
 } from "../actions/addressBookAction";
 import { connect } from "react-redux";
 import $ from "jquery";
 import { message } from "antd";
-
+import { changeStateAddFriendPopup } from "../actions/payment";
+import GetFriendList from "./add-friend-transfer";
 class AddFriend extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       visible: false,
+      selectedUserId: null,
     };
     this.handleOk = this.handleOk.bind(this);
     this.handleCancel = this.handleCancel.bind(this);
@@ -35,7 +38,10 @@ class AddFriend extends React.Component {
     var un = $("#add-user-name").val();
     $("#add-user-name").val("");
     // this.props.addNewFriend(un);
-    this.props.loadNewAddFriend(un);
+    this.props.addFriendToSession(
+      this.props.currentSessionId,
+      this.state.selectedUserId
+    );
     this.props.changeStateAddFriendPopup(false);
   };
 
@@ -46,12 +52,6 @@ class AddFriend extends React.Component {
   render() {
     return (
       <div>
-        <div className="new-action-menu" onClick={this.showModal}>
-          <a href="#">
-            <CustomAvatar type="new-avatar" />
-            <div className="new-text">Add New Friend</div>
-          </a>
-        </div>
         <Modal
           width="420px"
           title="Add New Friend"
@@ -61,17 +61,13 @@ class AddFriend extends React.Component {
           okText="Add"
           cancelText="Cancel"
         >
-          {this.props.addFriendError ? (
-            <Alert message={this.props.addFriendErrorMessage} type="error" />
-          ) : (
-            ""
-          )}
-          <p className="model-label">Please enter user name:</p>
-          <Input
-            id="add-user-name"
-            className="add-user-name"
-            onPressEnter={this.handleOk}
-          />
+          <GetFriendList
+            onChange={(value) => {
+              console.log(`selected ${value}`);
+
+              this.setState({ selectedUserId: value });
+            }}
+          ></GetFriendList>
         </Modal>
       </div>
     );
@@ -82,14 +78,15 @@ function mapStateToProps(state) {
   return {
     addFriendError: state.addressBookReducer.addFriendError,
     addFriendErrorMessage: state.addressBookReducer.addFriendErrorMessage,
-    addFriendPopup: state.addressBookReducer.addFriendPopup,
+    addFriendPopup: state.paymentReducer.isAddFriendToSession,
+    currentSessionId: state.chatReducer.currentSessionId,
   };
 }
 
 function mapDispatchToProps(dispatch) {
   return {
-    addNewFriend(username) {
-      dispatch(addNewFriend(username));
+    addFriendToSession(sessionId, userId) {
+      dispatch(addFriendToSession(sessionId, userId));
     },
     loadNewAddFriend(username) {
       dispatch(loadNewAddFriend(username));
