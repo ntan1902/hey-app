@@ -106,7 +106,7 @@ public class WsHandler {
 
                     UserHash me = userHashes.get(0);
                     for (UserFull userFull : userFulls) {
-                        if(userFull.getUserId().equals(userId)) {
+                        if (userFull.getUserId().equals(userId)) {
                             me = new UserHash(userFull.getUserId(), userFull.getFullName());
                         }
                         userHashes.add(new UserHash(userFull.getUserId(), userFull.getFullName()));
@@ -176,7 +176,6 @@ public class WsHandler {
             }));
 
 
-
         }, Future.future().setHandler(handler -> {
             throw new RuntimeException(handler.cause());
         }));
@@ -197,8 +196,7 @@ public class WsHandler {
         }
     }
 
-    private void insertChatMessageOnNewChatSessionId(ChatMessageRequest request, String channelId,
-            List<String> userIds) {
+    private void insertChatMessageOnNewChatSessionId(ChatMessageRequest request, String channelId, List<String> userIds) {
 
         Future<List<UserFull>> getUserFullsFuture = apiService.getUserFulls(userIds);
 
@@ -229,6 +227,16 @@ public class WsHandler {
             chatList.setUserHashes(userHashes);
             chatList.setLastMessage(chatMessage.getMessage());
             chatList.setUpdatedDate(chatMessage.getCreatedDate());
+
+            chatList.setOwner(userIds.get(0)); // First user in session will be owner of session id
+            if (userIds.size() > 2) {
+                chatList.setGroup(true);
+                chatList.setGroupName(request.getGroupName());
+            } else {
+                chatList.setGroup(false);
+                chatList.setGroupName("");
+            }
+
 
             Future<ChatList> insertChatListFuture = dataRepository.insertChatList(chatList);
 
@@ -262,10 +270,18 @@ public class WsHandler {
     }
 
     private void insertChatMessageBetweenTwoOnNewChatSessionId(ChatMessageRequest request, String channelId,
-            String userId) {
+                                                               String userId) {
 
         List<String> userIds = new ArrayList<>();
         userIds.add(userId);
+
+//        Future<UserAuth> getUserAuthFuture = dataRepository.getUserAuth(request.getUsernames().get(0));
+//        getUserAuthFuture.compose(userAuth -> {
+//            userIds.add(userAuth.getUserId());
+//        }, Future.future().setHandler(handler -> {
+//            throw new RuntimeException(handler.cause());
+//        }));
+        // ??? Why add username instead of user id ?
         userIds.add(request.getUsernames().get(0));
 
         insertChatMessageOnNewChatSessionId(request, channelId, userIds);

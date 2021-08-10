@@ -1146,6 +1146,10 @@ public class APIService extends BaseService {
             chatList.setLastMessage(chatMessage.getMessage());
             chatList.setUpdatedDate(chatMessage.getCreatedDate());
 
+            chatList.setOwner(transferMessageRequest.getSourceId());
+            chatList.setGroupName("");
+            chatList.setGroup(false);
+
             Future<ChatList> insertChatListFuture = dataRepository.insertChatList(chatList);
 
             Future<ChatMessage> insertChatMessageFuture = dataRepository.insertChatMessage(chatMessage);
