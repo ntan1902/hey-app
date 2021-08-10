@@ -24,5 +24,5 @@ public interface UserService {
 
     UsernameResponse findUsernameById(String userId) throws UserIdNotFoundException;
 
-    void editUser(EditUserRequest request) throws UsernameEmailExistedException;
+    void editUser(String userId, EditUserRequest request) throws UsernameEmailExistedException, UserIdNotFoundException;
 }

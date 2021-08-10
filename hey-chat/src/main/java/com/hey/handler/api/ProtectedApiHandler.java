@@ -88,6 +88,10 @@ public class ProtectedApiHandler extends BaseHandler {
                             LogUtils.log("User  " + userId + " get profile " + requestObject);
                             getUserProfile(response, requestObject, userId);
                             break;
+                        case "/editprofile":
+                            LogUtils.log("User  " + userId + " edit profile " + requestObject);
+                            editProfile(response, requestObject, userId);
+                            break;
 
                     }
                 } else {
@@ -95,15 +99,17 @@ public class ProtectedApiHandler extends BaseHandler {
                 }
             });
         } catch (HttpStatusException e) {
-           handleUnauthorizedException(e, response);
+            handleUnauthorizedException(e, response);
         }
     }
+
     public void ping(HttpServerResponse response) {
         response
                 .setStatusCode(HttpStatus.OK.code())
                 .putHeader("content-type", "application/json; charset=utf-8")
                 .end(JsonUtils.toSuccessJSON("Pong"));
     }
+
     public void getChatList(HttpServerResponse response, JsonObject requestObject, String userId) {
 
         Future<ChatListResponse> getChatListFuture = apiService.getChatList(userId);
@@ -157,7 +163,7 @@ public class ProtectedApiHandler extends BaseHandler {
     public void deleteWaitingFriend(HttpServerResponse response, JsonObject requestObject, String userId) {
         GetSessionIdRequest getSessionIdRequest = requestObject.mapTo(GetSessionIdRequest.class);
 
-        Future<JsonObject> getAddressBookFuture = apiService.deleteWaitingFriend(getSessionIdRequest,userId);
+        Future<JsonObject> getAddressBookFuture = apiService.deleteWaitingFriend(getSessionIdRequest, userId);
 
         getAddressBookFuture.compose(addressBookResponse -> {
 
@@ -246,13 +252,9 @@ public class ProtectedApiHandler extends BaseHandler {
 
         Future<JsonObject> insertUserStatusFuture = apiService.changeStatus(changeStatusRequest, userId);
 
-        insertUserStatusFuture.compose(jsonObject -> {
-
-            response
-                    .putHeader("content-type", "application/json; charset=utf-8")
-                    .end(JsonUtils.toSuccessJSON(jsonObject));
-
-        }, Future.future().setHandler(handler -> {
+        insertUserStatusFuture.compose(jsonObject -> response
+                .putHeader("content-type", "application/json; charset=utf-8")
+                .end(JsonUtils.toSuccessJSON(jsonObject)), Future.future().setHandler(handler -> {
             handleException(handler.cause(), response);
         }));
 
@@ -262,13 +264,19 @@ public class ProtectedApiHandler extends BaseHandler {
     public void getUserProfile(HttpServerResponse response, JsonObject requestObject, String userId) {
         Future<UserProfileResponse> getUserProfileFuture = apiService.getUserProfile(userId);
 
-        getUserProfileFuture.compose(userProfileResponse -> {
+        getUserProfileFuture.compose(userProfileResponse -> response
+                .putHeader("content-type", "application/json; charset=utf-8")
+                .end(JsonUtils.toSuccessJSON(userProfileResponse)), Future.future().setHandler(handler -> handleException(handler.cause(), response)));
+    }
 
-            response
-                    .putHeader("content-type", "application/json; charset=utf-8")
-                    .end(JsonUtils.toSuccessJSON(userProfileResponse));
 
-        }, Future.future().setHandler(handler -> {
+    private void editProfile(HttpServerResponse response, JsonObject requestObject, String userId) {
+        EditProfileRequest editProfileRequest = requestObject.mapTo(EditProfileRequest.class);
+        Future<JsonObject> editProfileFuture = apiService.editProfile(editProfileRequest, userId);
+
+        editProfileFuture.compose(editProfile -> response
+                .putHeader("content-type", "application/json; charset=utf-8")
+                .end(editProfile.encodePrettily()), Future.future().setHandler(handler -> {
             handleException(handler.cause(), response);
         }));
     }
