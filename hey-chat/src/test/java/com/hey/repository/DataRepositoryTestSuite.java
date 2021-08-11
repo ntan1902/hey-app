@@ -74,7 +74,6 @@ public class DataRepositoryTestSuite extends BaseVerticleTestSuite {
         UserAuth userAuth = new UserAuth();
         userAuth.setUserName("testInsertUserAuth");
         userAuth.setUserId(GenerationUtils.generateId());
-        userAuth.setHashedPassword(BCrypt.hashpw("123", BCrypt.gensalt()));
 
         Future<UserAuth> future = getDataRepository().insertUserAuth(userAuth);
         future.compose(userAuthActual -> {

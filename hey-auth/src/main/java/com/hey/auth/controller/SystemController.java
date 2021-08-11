@@ -117,7 +117,7 @@ public class SystemController {
         userService.editUser(userId, request);
         return ResponseEntity.ok(ApiResponse.builder()
                 .success(true)
-                .code(HttpStatus.CREATED.value())
+                .code(HttpStatus.NO_CONTENT.value())
                 .message("Edit profile successfully")
                 .payload("")
                 .build());

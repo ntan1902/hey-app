@@ -250,7 +250,7 @@ public class ApiServiceTestSuite extends BaseVerticleTestSuite {
         User user = new User();
         user.setUserName(RandomStringUtils.random(10));
         user.setFullName(RandomStringUtils.random(10));
-        user.setPassword("123");
+//        user.setPassword("123");
         Future<User> future = getApiService().registerUser(Json.encodePrettily(user));
         future.compose(response -> {
             context.assertTrue(StringUtils.isNotBlank(response.getUserId()));
@@ -267,7 +267,7 @@ public class ApiServiceTestSuite extends BaseVerticleTestSuite {
         User user = new User();
         user.setUserName(RandomStringUtils.random(10));
         user.setFullName("");
-        user.setPassword("");
+//        user.setPassword("");
         Future<User> future = getApiService().registerUser(Json.encodePrettily(user));
         checkResultValidateFailed(context, async, future);
     }

@@ -56,7 +56,6 @@ public abstract class BaseService {
         user.setUserId(user.getUserId() != null ? user.getUserId() : GenerationUtils.generateId());
         userAuth.setUserName(user.getUserName());
         userAuth.setUserId(user.getUserId());
-        userAuth.setHashedPassword(BCrypt.hashpw(user.getPassword(), BCrypt.gensalt(5)));
 
         UserFull userFull = new UserFull();
         userFull.setUserId(user.getUserId());
@@ -259,48 +258,40 @@ public abstract class BaseService {
         User vcthanh24 = new User();
         vcthanh24.setUserId(GenerationUtils.generateId());
         vcthanh24.setUserName("vcthanh24");
-        vcthanh24.setPassword("123");
         vcthanh24.setFullName("Vo Cong Thanh");
 
         UserAuth userAuthForThanh = new UserAuth();
         userAuthForThanh.setUserId(vcthanh24.getUserId());
-        userAuthForThanh.setHashedPassword(BCrypt.hashpw(vcthanh24.getPassword(), BCrypt.gensalt()));
 
         users.add(vcthanh24);
 
         User lvhung = new User();
         lvhung.setUserId(GenerationUtils.generateId());
         lvhung.setUserName("lvhung");
-        lvhung.setPassword("123");
         lvhung.setFullName("Le Vu Hung");
 
         UserAuth userAuthForHung = new UserAuth();
         userAuthForHung.setUserId(lvhung.getUserId());
-        userAuthForHung.setHashedPassword(BCrypt.hashpw(lvhung.getPassword(), BCrypt.gensalt()));
 
         users.add(lvhung);
 
         User nthnhung = new User();
         nthnhung.setUserId(GenerationUtils.generateId());
         nthnhung.setUserName("nthnhung");
-        nthnhung.setPassword("123");
         nthnhung.setFullName("Nguyen Thi Hong Nhung");
 
         UserAuth userAuthForNhung = new UserAuth();
         userAuthForNhung.setUserId(nthnhung.getUserId());
-        userAuthForNhung.setHashedPassword(BCrypt.hashpw(nthnhung.getPassword(), BCrypt.gensalt()));
 
         users.add(nthnhung);
 
         User forTesting = new User();
         forTesting.setUserId(GenerationUtils.generateId());
         forTesting.setUserName("utest");
-        forTesting.setPassword("123");
         forTesting.setFullName("Unit Test");
 
         UserAuth userAuthForU = new UserAuth();
         userAuthForU.setUserId(forTesting.getUserId());
-        userAuthForU.setHashedPassword(BCrypt.hashpw(forTesting.getPassword(), BCrypt.gensalt()));
 
         users.add(forTesting);
 
@@ -312,12 +303,10 @@ public abstract class BaseService {
             user.setUserId(GenerationUtils.generateId());
             String userName = name.toString().trim().toLowerCase().replace(" ", "_");
             user.setUserName("user" + userName);
-            user.setPassword("123");
             user.setFullName(name.toString());
 
             UserAuth userAuth = new UserAuth();
             userAuth.setUserId(user.getUserId());
-            userAuth.setHashedPassword(BCrypt.hashpw(user.getPassword(), BCrypt.gensalt()));
 
             users.add(user);
         }
@@ -403,7 +392,6 @@ public abstract class BaseService {
         Future<List<ChatList>> future = Future.future();
 
         Calendar cal = Calendar.getInstance();
-        Date today = cal.getTime();
         cal.add(Calendar.YEAR, -1); // to get previous year add -1
         Date previousYear = cal.getTime();
 

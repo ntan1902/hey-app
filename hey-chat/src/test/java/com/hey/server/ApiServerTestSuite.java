@@ -188,7 +188,6 @@ public class ApiServerTestSuite extends BaseVerticleTestSuite {
         final Async async = context.async();
         User user = new User();
         user.setUserName("vcthanh24");
-        user.setPassword("123");
         HttpClientRequest request = generatePostRequest("/signin");
         request.handler(resp -> {
             context.assertEquals(200, resp.statusCode());
@@ -207,7 +206,6 @@ public class ApiServerTestSuite extends BaseVerticleTestSuite {
         final Async async = context.async();
         User user = new User();
         user.setUserName("vcthanh24");
-        user.setPassword("1235");
         HttpClientRequest request = generatePostRequest("/signin");
         request.handler(resp -> {
             context.assertEquals(401, resp.statusCode());
@@ -227,7 +225,6 @@ public class ApiServerTestSuite extends BaseVerticleTestSuite {
         User user = new User();
         user.setUserName(RandomStringUtils.random(10));
         user.setFullName(RandomStringUtils.random(10));
-        user.setPassword("123");
         HttpClientRequest request = generatePostRequest("/api/protected/user");
         request.handler(resp -> {
             context.assertEquals(200, resp.statusCode());

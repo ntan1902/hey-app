@@ -124,12 +124,7 @@ class UserServiceImplTest {
     void register() throws UsernameEmailExistedException {
         // given
         RegisterRequest request = new RegisterRequest("ntan", "123", "ntan@gmail.com", "Trinh An");
-        RegisterRequestToChat requestToChat = new RegisterRequestToChat(
-                "uuid",
-                "ntan",
-                "123",
-                "Trinh An"
-        );
+
         User user = User.builder()
                 .id("uuid")
                 .username("ntan")
