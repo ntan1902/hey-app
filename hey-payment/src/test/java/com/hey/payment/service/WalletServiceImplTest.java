@@ -1,5 +1,6 @@
 package com.hey.payment.service;
 
+import com.hey.payment.api.AuthApi;
 import com.hey.payment.constant.OwnerWalletRefFrom;
 import com.hey.payment.dto.auth_system.GetSystemsResponse;
 import com.hey.payment.dto.system.SystemDTO;
@@ -11,6 +12,8 @@ import com.hey.payment.exception_handler.exception.HaveNoWalletException;
 import com.hey.payment.exception_handler.exception.MaxBalanceException;
 import com.hey.payment.mapper.WalletMapper;
 import com.hey.payment.repository.WalletRepository;
+import com.hey.payment.utils.SystemUtil;
+import com.hey.payment.utils.UserUtil;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -36,10 +39,16 @@ class WalletServiceImplTest {
     private WalletMapper walletMapper;
 
     @Mock
-    private RestTemplate restTemplate;
+    private WalletRepository walletRepository;
 
     @Mock
-    private WalletRepository walletRepository;
+    private AuthApi authApi;
+
+    @Mock
+    private UserUtil userUtil;
+
+    @Mock
+    private SystemUtil systemUtil;
 
     @Test
     void getSystems() {
@@ -52,7 +61,7 @@ class WalletServiceImplTest {
                                 new SystemDTO("uuid", "lucky", 10)
                         )
                 );
-        when(restTemplate.getForObject("/getSystems", GetSystemsResponse.class)).thenReturn(systemsResponse);
+        when(authApi.getSystems()).thenReturn(systemsResponse);
 
         when(walletRepository.countAllByOwnerIdAndRefFrom("uuid", OwnerWalletRefFrom.SYSTEMS)).thenReturn(0L);
 
@@ -90,7 +99,7 @@ class WalletServiceImplTest {
     }
 
     @Test
-    void transferMoneyThrowSourceHaveNoWallet() throws BalanceNotEnoughException, MaxBalanceException, HaveNoWalletException {
+    void transferMoneyThrowSourceHaveNoWallet(){
         when(walletRepository.findAndLockWalletById(1L)).thenReturn(Optional.empty());
 
         // when
@@ -104,7 +113,7 @@ class WalletServiceImplTest {
     }
 
     @Test
-    void transferMoneyThrowTargetHaveNoWallet() throws BalanceNotEnoughException, MaxBalanceException, HaveNoWalletException {
+    void transferMoneyThrowTargetHaveNoWallet() {
         Wallet sourceWallet = Wallet.builder()
                 .id(1L)
                 .ownerId("uuid1")
@@ -126,7 +135,7 @@ class WalletServiceImplTest {
     }
 
     @Test
-    void transferMoneyThrowMaxBalance() throws BalanceNotEnoughException, MaxBalanceException, HaveNoWalletException {
+    void transferMoneyThrowMaxBalance() {
         Wallet sourceWallet = Wallet.builder()
                 .id(1L)
                 .ownerId("uuid1")
@@ -152,7 +161,7 @@ class WalletServiceImplTest {
     }
 
     @Test
-    void transferMoneyThrowBalanceNotEnough() throws BalanceNotEnoughException, MaxBalanceException, HaveNoWalletException {
+    void transferMoneyThrowBalanceNotEnough() {
         Wallet sourceWallet = Wallet.builder()
                 .id(1L)
                 .ownerId("uuid1")
@@ -180,6 +189,12 @@ class WalletServiceImplTest {
     @SneakyThrows
     @Test
     void findWalletOfUser() {
+        User user = User.builder()
+                .id("uuid1")
+                .build();
+
+        when(userUtil.getCurrentUser()).thenReturn(user);
+
         Wallet sourceWallet = Wallet.builder()
                 .id(1L)
                 .ownerId("uuid1")
@@ -187,11 +202,12 @@ class WalletServiceImplTest {
                 .balance(5000L)
                 .build();
 
+
         when(walletRepository.findByOwnerIdAndRefFrom("uuid1", OwnerWalletRefFrom.USERS))
                 .thenReturn(Optional.of(sourceWallet));
 
         // when
-        underTest.findWalletOfUser("uuid1");
+        underTest.findWalletOfUser();
 
         // then
         verify(walletMapper, times(1)).wallet2WalletDTO(sourceWallet);
@@ -201,8 +217,10 @@ class WalletServiceImplTest {
     void findAllWalletsOfSystem() {
         System system = System.builder().id("uuid").build();
 
+        when(systemUtil.getCurrentSystem()).thenReturn(system);
+
         // when
-        underTest.findAllWalletsOfSystem(system);
+        underTest.findAllWalletsOfSystem();
 
         // then
         verify(walletRepository, times(1)).findAllByOwnerIdAndRefFrom(system.getId(), OwnerWalletRefFrom.SYSTEMS);
@@ -213,11 +231,13 @@ class WalletServiceImplTest {
     void createWallet() {
         User user = User.builder().id("uuid").build();
 
+        when(userUtil.getCurrentUser()).thenReturn(user);
+
         when(walletRepository.existsByOwnerIdAndRefFrom(user.getId(), OwnerWalletRefFrom.USERS))
                 .thenReturn(false);
 
         // when
-        underTest.createWallet(user);
+        underTest.createWallet();
 
         // then
         verify(walletRepository, times(1)).save(any(Wallet.class));

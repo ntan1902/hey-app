@@ -5,7 +5,6 @@ import com.hey.payment.dto.system.SystemCreateTransferFromUserResponse;
 import com.hey.payment.dto.system.SystemCreateTransferToUserRequest;
 import com.hey.payment.dto.system.WalletSystemDTO;
 import com.hey.payment.dto.user.ApiResponse;
-import com.hey.payment.entity.System;
 import com.hey.payment.exception_handler.exception.*;
 import com.hey.payment.service.TransferStatementService;
 import com.hey.payment.service.WalletService;
@@ -13,7 +12,6 @@ import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -24,15 +22,16 @@ import java.util.List;
 @Log4j2
 public class SystemController {
 
+    public static final String SYSTEM_TRANSFER_TO_USER_SUCCESSFULLY = "Transfer successfully";
+    public static final String SYSTEM_TRANSFER_FROM_USER_SUCCESSFULLY = "Transfer successfully";
     private final WalletService walletService;
 
     private final TransferStatementService transferStatementService;
 
     @GetMapping("/getAllWallets")
     public ResponseEntity<ApiResponse<Object>> getAllWalletOfSystem() {
-        System system = getCurrentSystem();
-        log.info("System {} getAllWalletOfSystem", system.getId());
-        List<WalletSystemDTO> walletSystemDTOList = walletService.findAllWalletsOfSystem(system);
+        log.info("System getAllWalletOfSystem");
+        List<WalletSystemDTO> walletSystemDTOList = walletService.findAllWalletsOfSystem();
         return ResponseEntity.ok(
                 ApiResponse.builder()
                         .success(true)
@@ -45,14 +44,14 @@ public class SystemController {
 
     @PostMapping("/createTransferToUser")
     public ResponseEntity<ApiResponse<Object>> createTransferToUser(@RequestBody SystemCreateTransferToUserRequest request) throws NegativeAmountException, MaxAmountException, HaveNoWalletException, BalanceNotEnoughException, MaxBalanceException {
-        System system = getCurrentSystem();
-        log.info("System {} createTransferToUser", system.getId());
-        transferStatementService.systemCreateTransferToUser(system, request);
+
+        log.info("System createTransferToUser");
+        transferStatementService.systemCreateTransferToUser(request);
         return ResponseEntity.ok(
                 ApiResponse.builder()
                         .success(true)
                         .code(HttpStatus.OK.value())
-                        .message("Transfer successfully")
+                        .message(SYSTEM_TRANSFER_TO_USER_SUCCESSFULLY)
                         .payload("")
                         .build()
         );
@@ -60,20 +59,16 @@ public class SystemController {
 
     @PostMapping("/createTransferFromUser")
     public ResponseEntity<ApiResponse<Object>> createTransferFromUser(@RequestBody SystemCreateTransferFromUserRequest request) throws NegativeAmountException, MaxAmountException, SoftTokenAuthorizeException, BalanceNotEnoughException, MaxBalanceException, HaveNoWalletException {
-        System system = getCurrentSystem();
-        log.info("System {} createTransferFromUser", system.getId());
-        SystemCreateTransferFromUserResponse payload = transferStatementService.systemCreateTransferFromUser(system, request);
+        log.info("System createTransferFromUser");
+        SystemCreateTransferFromUserResponse payload = transferStatementService.systemCreateTransferFromUser(request);
         return ResponseEntity.ok(
                 ApiResponse.builder()
                         .success(true)
                         .code(HttpStatus.OK.value())
-                        .message("Transfer successfully")
+                        .message(SYSTEM_TRANSFER_FROM_USER_SUCCESSFULLY)
                         .payload(payload)
                         .build()
         );
     }
 
-    private System getCurrentSystem() {
-        return (System) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-    }
 }

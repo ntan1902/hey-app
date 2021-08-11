@@ -1,7 +1,6 @@
 package com.hey.payment.controller;
 
 import com.hey.payment.dto.user.*;
-import com.hey.payment.entity.User;
 import com.hey.payment.exception_handler.exception.*;
 import com.hey.payment.service.TransferStatementService;
 import com.hey.payment.service.WalletService;
@@ -10,7 +9,6 @@ import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,14 +19,16 @@ import java.util.List;
 @AllArgsConstructor
 public class UserController {
 
+    public static final String USER_TRANSFER_SUCCESSFULLY = "Transfer successfully";
+    public static final String TOP_UP_SUCCESSFULLY = "TopUp successfully";
+    public static final String CREATE_WALLET_SUCCESSFULLY = "Create wallet successfully";
     private final WalletService walletService;
 
     private final TransferStatementService transferStatementService;
 
     @GetMapping("/wallet")
     public ResponseEntity<ApiResponse<Object>> getMyWallet() throws HaveNoWalletException {
-        User user = getCurrentUser();
-        WalletDTO walletDTO = walletService.findWalletOfUser(user.getId());
+        WalletDTO walletDTO = walletService.findWalletOfUser();
         return ResponseEntity.ok(
                 ApiResponse.builder()
                         .success(true)
@@ -41,13 +41,12 @@ public class UserController {
 
     @PostMapping("/createTransfer")
     public ResponseEntity<ApiResponse<Object>> createTransfer(@RequestBody CreateTransferRequest createTransferRequest) throws NegativeAmountException, MaxAmountException, HaveNoWalletException, SoftTokenAuthorizeException, SourceAndTargetAreTheSameException, BalanceNotEnoughException, MaxBalanceException {
-        User user = getCurrentUser();
-        transferStatementService.createTransfer(user, createTransferRequest);
+        transferStatementService.createTransfer(createTransferRequest);
         return ResponseEntity.ok(
                 ApiResponse.builder()
                         .success(true)
                         .code(HttpStatus.OK.value())
-                        .message("Transfer successfully")
+                        .message(USER_TRANSFER_SUCCESSFULLY)
                         .payload("")
                         .build()
         );
@@ -55,13 +54,12 @@ public class UserController {
 
     @PostMapping("/topup")
     public ResponseEntity<ApiResponse<Object>> topUp(@RequestBody TopUpRequest topupRequest) throws MaxAmountException, MaxBalanceException, HaveNoWalletException, BankInvalidException {
-        User user = getCurrentUser();
-        transferStatementService.topUp(user, topupRequest);
+        transferStatementService.topUp(topupRequest);
         return ResponseEntity.ok(
                 ApiResponse.builder()
                         .success(true)
                         .code(HttpStatus.OK.value())
-                        .message("TopUp successfully")
+                        .message(TOP_UP_SUCCESSFULLY)
                         .payload("")
                         .build()
         );
@@ -73,9 +71,7 @@ public class UserController {
     public ResponseEntity<ApiResponse<Object>> getTransferStatement(
             @RequestParam(value = "page", defaultValue = "0") int page,
             @RequestParam(value = "size", defaultValue = "10") int size) {
-        User user = getCurrentUser();
-        List<TransferStatementDTO> transferStatementDTOList =
-                transferStatementService.getTransferStatementOfUser(user.getId(), page, size);
+        List<TransferStatementDTO> transferStatementDTOList = transferStatementService.getTransferStatementOfUser(page, size);
         return ResponseEntity.ok(
                 ApiResponse.builder()
                         .success(true)
@@ -87,31 +83,25 @@ public class UserController {
 
     @PostMapping("/createWallet")
     public ResponseEntity<ApiResponse<Object>> createWallet() throws HadWalletException {
-        User user = getCurrentUser();
-        WalletDTO walletDTO = walletService.createWallet(user);
+        WalletDTO walletDTO = walletService.createWallet();
         return ResponseEntity.ok(
                 ApiResponse.builder()
                         .success(true)
                         .code(HttpStatus.OK.value())
-                        .message("Create wallet successfully")
+                        .message(CREATE_WALLET_SUCCESSFULLY)
                         .payload(walletDTO).build()
         );
     }
 
     @GetMapping("/hasWallet")
     public ResponseEntity<ApiResponse<Object>> hasWallet() {
-        User user = getCurrentUser();
-        HasWalletResponse payload = walletService.hasWallet(user);
+        HasWalletResponse payload = walletService.hasWallet();
         return ResponseEntity.ok(ApiResponse.builder()
                 .success(true)
                 .code(HttpStatus.OK.value())
                 .message("")
                 .payload(payload)
                 .build());
-    }
-
-    private User getCurrentUser() {
-        return (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     }
 
 
