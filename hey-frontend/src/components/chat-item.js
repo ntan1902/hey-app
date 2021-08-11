@@ -114,16 +114,18 @@ class ChatItem extends React.Component {
           margin: 0,
           marginLeft: this.props.type == 1 ? 0 : 5,
           marginRight: this.props.type == 1 ? 5 : 0,
-
-          // height: ,
+          maxWidth: 500,
+          height: "auto",
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
         }}
       >
-        {data.type == "transfer"
-          ? "Transfer: " + data.content.amount + "$"
-          : data.content.message}
+        <p style={{ width: "100%" }}>
+          {data.type == "transfer"
+            ? "Transfer: " + data.content.amount + "$"
+            : data.content.message}
+        </p>
       </div>
     );
   };
