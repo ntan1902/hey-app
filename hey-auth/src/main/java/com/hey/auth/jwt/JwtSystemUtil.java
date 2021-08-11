@@ -24,7 +24,7 @@ public class JwtSystemUtil {
             return Jwts.builder()
                     .setSubject(subject)
                     .setIssuedAt(new Date(java.lang.System.currentTimeMillis()))
-                    .setExpiration(new Date(java.lang.System.currentTimeMillis() + jwtProperties.getExpirationMs()))
+//                    .setExpiration(new Date(java.lang.System.currentTimeMillis() + jwtProperties.getExpirationMs()))
                     .signWith(SignatureAlgorithm.HS256, jwtProperties.getSystemSecret())
                     .compact();
         } catch (Exception e) {

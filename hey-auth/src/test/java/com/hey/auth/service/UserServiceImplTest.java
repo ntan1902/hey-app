@@ -175,7 +175,7 @@ class UserServiceImplTest {
     }
 
     @Test
-    void findById() {
+    void findById() throws UserIdNotFoundException {
         // given
         User user = User.builder()
                 .id("uuid")
@@ -187,10 +187,12 @@ class UserServiceImplTest {
                 .build();
 
         UsernamePasswordAuthenticationToken
-                authentication = new UsernamePasswordAuthenticationToken(user,
+                authentication = new UsernamePasswordAuthenticationToken("uuid",
                 null,
                 user.getAuthorities());
         SecurityContextHolder.getContext().setAuthentication(authentication);
+
+        given(userRepository.findById(user.getId())).willReturn(Optional.of(user));
 
         UserDTO expected = UserDTO.builder()
                 .id("uuid")
@@ -258,7 +260,7 @@ class UserServiceImplTest {
     }
 
     @Test
-    void createPin() {
+    void createPin() throws UserIdNotFoundException {
         // given
         PinRequest request = new PinRequest("123456");
         String hashPin = "sfsafsfsf";
@@ -276,10 +278,12 @@ class UserServiceImplTest {
                 .build();
 
         UsernamePasswordAuthenticationToken
-                authentication = new UsernamePasswordAuthenticationToken(user,
+                authentication = new UsernamePasswordAuthenticationToken("uuid",
                 null,
                 user.getAuthorities());
         SecurityContextHolder.getContext().setAuthentication(authentication);
+
+        given(userRepository.findById(user.getId())).willReturn(Optional.of(user));
 
         // when
         underTest.createPin(request);
@@ -289,7 +293,7 @@ class UserServiceImplTest {
     }
 
     @Test
-    void createSoftToken() throws PinNotMatchedException, EmptyPinException {
+    void createSoftToken() throws PinNotMatchedException, EmptyPinException, UserIdNotFoundException {
         // given
         PinAmountRequest request = new PinAmountRequest("123456", 50L);
 
@@ -303,10 +307,12 @@ class UserServiceImplTest {
                 .build();
 
         UsernamePasswordAuthenticationToken
-                authentication = new UsernamePasswordAuthenticationToken(user,
+                authentication = new UsernamePasswordAuthenticationToken("uuid",
                 null,
                 user.getAuthorities());
         SecurityContextHolder.getContext().setAuthentication(authentication);
+
+        given(userRepository.findById(user.getId())).willReturn(Optional.of(user));
 
         given(passwordEncoder.matches(request.getPin(), user.getPin())).willReturn(true);
 
@@ -337,10 +343,12 @@ class UserServiceImplTest {
                 .build();
 
         UsernamePasswordAuthenticationToken
-                authentication = new UsernamePasswordAuthenticationToken(user,
+                authentication = new UsernamePasswordAuthenticationToken("uuid",
                 null,
                 user.getAuthorities());
         SecurityContextHolder.getContext().setAuthentication(authentication);
+
+        given(userRepository.findById(user.getId())).willReturn(Optional.of(user));
 
         // when
 
@@ -365,10 +373,12 @@ class UserServiceImplTest {
                 .build();
 
         UsernamePasswordAuthenticationToken
-                authentication = new UsernamePasswordAuthenticationToken(user,
+                authentication = new UsernamePasswordAuthenticationToken("uuid",
                 null,
                 user.getAuthorities());
         SecurityContextHolder.getContext().setAuthentication(authentication);
+
+        given(userRepository.findById(user.getId())).willReturn(Optional.of(user));
 
         given(passwordEncoder.matches(request.getPin(), user.getPin())).willReturn(false);
 
@@ -381,7 +391,7 @@ class UserServiceImplTest {
     }
 
     @Test
-    void hasPinWillReturnTrue() {
+    void hasPinWillReturnTrue() throws UserIdNotFoundException {
         // given
         User user = User.builder()
                 .id("uuid")
@@ -393,10 +403,12 @@ class UserServiceImplTest {
                 .build();
 
         UsernamePasswordAuthenticationToken
-                authentication = new UsernamePasswordAuthenticationToken(user,
+                authentication = new UsernamePasswordAuthenticationToken("uuid",
                 null,
                 user.getAuthorities());
         SecurityContextHolder.getContext().setAuthentication(authentication);
+
+        given(userRepository.findById(user.getId())).willReturn(Optional.of(user));
 
         HasPinResponse expected = new HasPinResponse(true);
 
@@ -408,7 +420,7 @@ class UserServiceImplTest {
     }
 
     @Test
-    void hasPinWillReturnFalse() {
+    void hasPinWillReturnFalse() throws UserIdNotFoundException {
         // given
         User user = User.builder()
                 .id("uuid")
@@ -420,10 +432,12 @@ class UserServiceImplTest {
                 .build();
 
         UsernamePasswordAuthenticationToken
-                authentication = new UsernamePasswordAuthenticationToken(user,
+                authentication = new UsernamePasswordAuthenticationToken("uuid",
                 null,
                 user.getAuthorities());
         SecurityContextHolder.getContext().setAuthentication(authentication);
+
+        given(userRepository.findById(user.getId())).willReturn(Optional.of(user));
 
         HasPinResponse expected = new HasPinResponse(false);
 

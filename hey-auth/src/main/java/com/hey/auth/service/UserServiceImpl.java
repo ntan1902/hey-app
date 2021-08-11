@@ -2,20 +2,17 @@ package com.hey.auth.service;
 
 import com.hey.auth.api.ChatApi;
 import com.hey.auth.dto.user.*;
-import com.hey.auth.dto.vertx.RegisterRequestToChat;
+import com.hey.auth.entity.BlackList;
 import com.hey.auth.entity.User;
+import com.hey.auth.exception.jwt.InvalidJwtTokenException;
 import com.hey.auth.exception.user.*;
 import com.hey.auth.jwt.JwtSoftTokenUtil;
 import com.hey.auth.jwt.JwtUserUtil;
 import com.hey.auth.mapper.UserMapper;
-import com.hey.auth.properties.ServiceProperties;
+import com.hey.auth.repository.BlackListRepository;
 import com.hey.auth.repository.UserRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.http.MediaType;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -23,7 +20,6 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.client.RestTemplate;
 
 import java.util.UUID;
 
@@ -33,9 +29,15 @@ import java.util.UUID;
 public class UserServiceImpl implements UserDetailsService, UserService {
     private final UserRepository userRepository;
     private final JwtSoftTokenUtil jwtSoftTokenUtil;
+    private final JwtUserUtil jwtUserUtil;
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
     private final ChatApi chatApi;
+    private final BlackListRepository blackListRepository;
+
+    private String getCurrentUserId() {
+        return (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    }
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -83,9 +85,11 @@ public class UserServiceImpl implements UserDetailsService, UserService {
     }
 
     @Override
-    public UserDTO findById() {
+    public UserDTO findById() throws UserIdNotFoundException {
         log.info("Inside findById of UserServiceImpl");
-        User user = getCurrentUser();
+        String userId = getCurrentUserId();
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserIdNotFoundException("User Id " + userId + " not found"));
         return userMapper.user2UserDTO(user);
     }
 
@@ -98,22 +102,23 @@ public class UserServiceImpl implements UserDetailsService, UserService {
     }
 
     @Override
-    public void createPin(PinRequest pinRequest) {
+    public void createPin(PinRequest pinRequest) throws UserIdNotFoundException {
         log.info("Inside createPin of UserServiceImpl: {}", pinRequest);
         String hashPin = passwordEncoder.encode(pinRequest.getPin());
-        User user = getCurrentUser();
+        String userId = getCurrentUserId();
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserIdNotFoundException("User Id " + userId + " not found"));
         user.setPin(hashPin);
         userRepository.save(user);
     }
 
-    private User getCurrentUser() {
-        return (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-    }
 
     @Override
-    public SoftTokenResponse createSoftToken(PinAmountRequest pinAmountRequest) throws EmptyPinException, PinNotMatchedException {
+    public SoftTokenResponse createSoftToken(PinAmountRequest pinAmountRequest) throws EmptyPinException, PinNotMatchedException, UserIdNotFoundException {
         log.info("Inside createSoftToken of UserServiceImpl: {}", pinAmountRequest);
-        User user = getCurrentUser();
+        String userId = getCurrentUserId();
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserIdNotFoundException("User Id " + userId + " not found"));
 
         // Check if user has pin
         if (user.getPin().isEmpty()) {
@@ -129,9 +134,11 @@ public class UserServiceImpl implements UserDetailsService, UserService {
     }
 
     @Override
-    public HasPinResponse hasPin() {
+    public HasPinResponse hasPin() throws UserIdNotFoundException {
         log.info("Inside hasPin of UserServiceImpl");
-        User user = getCurrentUser();
+        String userId = getCurrentUserId();
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserIdNotFoundException("User Id " + userId + " not found"));
         return new HasPinResponse(!user.getPin().isEmpty());
     }
 
@@ -167,19 +174,21 @@ public class UserServiceImpl implements UserDetailsService, UserService {
     }
 
     @Override
-    public void changePassword(ChangePasswordRequest request) throws PasswordNotMatchedException {
+    public void changePassword(ChangePasswordRequest request) throws PasswordNotMatchedException, UserIdNotFoundException {
         log.info("Inside changePassword of UserServiceImpl: {}", request);
-        User user = getCurrentUser();
+        String userId = getCurrentUserId();
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserIdNotFoundException("User Id " + userId + " not found"));
 
         String oldPassword = request.getOldPassword();
         String password = request.getPassword();
         String confirmPassword = request.getConfirmPassword();
 
-        if(!passwordEncoder.matches(oldPassword, user.getPassword())) {
+        if (!passwordEncoder.matches(oldPassword, user.getPassword())) {
             throw new PasswordNotMatchedException("Old password is not matched. Please try again");
         }
 
-        if(!password.equals(confirmPassword)) {
+        if (!password.equals(confirmPassword)) {
             throw new PasswordNotMatchedException("Confirm password is not matched. Please try again");
         }
 
@@ -188,9 +197,11 @@ public class UserServiceImpl implements UserDetailsService, UserService {
     }
 
     @Override
-    public void changePin(ChangePinRequest request) throws EmptyPinException, PinNotMatchedException {
+    public void changePin(ChangePinRequest request) throws EmptyPinException, PinNotMatchedException, UserIdNotFoundException {
         log.info("Inside changePin of UserServiceImpl: {}", request);
-        User user = getCurrentUser();
+        String userId = getCurrentUserId();
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserIdNotFoundException("User Id " + userId + " not found"));
 
         // Check if user has pin
         if (user.getPin().isEmpty()) {
@@ -205,11 +216,23 @@ public class UserServiceImpl implements UserDetailsService, UserService {
             throw new PinNotMatchedException("Old pin: " + oldPin + " not matched");
         }
 
-        if(!pin.equals(confirmPin)) {
+        if (!pin.equals(confirmPin)) {
             throw new PinNotMatchedException("Confirm pin is not matched. Please try again");
         }
         user.setPin(passwordEncoder.encode(pin));
         userRepository.save(user);
+    }
+
+    @Override
+    public void logout(LogOutRequest request) throws InvalidJwtTokenException {
+        log.info("Inside logout of UserServiceImpl: {}", request);
+        String accessToken = request.getAccessToken();
+        if(jwtUserUtil.validateToken(accessToken)) {
+            BlackList blackList = new BlackList(accessToken);
+            blackListRepository.save(blackList);
+        } else {
+            throw new InvalidJwtTokenException("Invalid JWT token");
+        }
     }
 
 }
