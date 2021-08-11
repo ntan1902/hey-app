@@ -2,6 +2,7 @@ package com.hey.auth.controller;
 
 import com.hey.auth.dto.api.*;
 import com.hey.auth.dto.user.*;
+import com.hey.auth.exception.jwt.InvalidJwtTokenException;
 import com.hey.auth.exception.user.*;
 import com.hey.auth.service.UserService;
 import lombok.AllArgsConstructor;
@@ -32,7 +33,7 @@ public class UserController {
     }
 
     @GetMapping("/getInfo")
-    public ResponseEntity<ApiResponse> getInfo() {
+    public ResponseEntity<ApiResponse> getInfo() throws UserIdNotFoundException {
         UserDTO payload = userService.findById();
         return ResponseEntity.ok(ApiResponse.builder()
                 .success(true)
@@ -43,7 +44,7 @@ public class UserController {
     }
 
     @PostMapping("/createPin")
-    public ResponseEntity<ApiResponse> createPin(@RequestBody @Valid PinRequest pinRequest) {
+    public ResponseEntity<ApiResponse> createPin(@RequestBody @Valid PinRequest pinRequest) throws UserIdNotFoundException {
         userService.createPin(pinRequest);
         return ResponseEntity.ok(ApiResponse.builder()
                 .success(true)
@@ -54,7 +55,7 @@ public class UserController {
     }
 
     @GetMapping("/hasPin")
-    public ResponseEntity<ApiResponse> hasPin() {
+    public ResponseEntity<ApiResponse> hasPin() throws UserIdNotFoundException {
         HasPinResponse payload = userService.hasPin();
         return ResponseEntity.ok(ApiResponse.builder()
                 .success(true)
@@ -65,7 +66,7 @@ public class UserController {
     }
 
     @PostMapping("/createSoftTokenByPin")
-    public ResponseEntity<ApiResponse> createSoftToken(@RequestBody @Valid PinAmountRequest pinAmountRequest) throws PinNotMatchedException, EmptyPinException {
+    public ResponseEntity<ApiResponse> createSoftToken(@RequestBody @Valid PinAmountRequest pinAmountRequest) throws PinNotMatchedException, EmptyPinException, UserIdNotFoundException {
         SoftTokenResponse payload = userService.createSoftToken(pinAmountRequest);
         return ResponseEntity.ok(ApiResponse.builder()
                 .success(true)
@@ -87,7 +88,7 @@ public class UserController {
     }
 
     @PatchMapping("/changePassword")
-    public ResponseEntity<ApiResponse> changePassword(@RequestBody @Valid ChangePasswordRequest request) throws PasswordNotMatchedException {
+    public ResponseEntity<ApiResponse> changePassword(@RequestBody @Valid ChangePasswordRequest request) throws PasswordNotMatchedException, UserIdNotFoundException {
         userService.changePassword(request);
         return ResponseEntity.ok(ApiResponse.builder()
                 .success(true)
@@ -98,12 +99,24 @@ public class UserController {
     }
 
     @PatchMapping("/changePin")
-    public ResponseEntity<ApiResponse> changePin(@RequestBody @Valid ChangePinRequest request) throws PinNotMatchedException, EmptyPinException {
+    public ResponseEntity<ApiResponse> changePin(@RequestBody @Valid ChangePinRequest request) throws PinNotMatchedException, EmptyPinException, UserIdNotFoundException {
         userService.changePin(request);
         return ResponseEntity.ok(ApiResponse.builder()
                 .success(true)
                 .code(HttpStatus.NO_CONTENT.value())
-                .message("Change password successfully")
+                .message("Change pin successfully")
+                .payload("")
+                .build());
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<ApiResponse> logout(@RequestBody @Valid LogOutRequest request) throws PinNotMatchedException, EmptyPinException, InvalidJwtTokenException {
+        userService.logout(request);
+
+        return ResponseEntity.ok(ApiResponse.builder()
+                .success(true)
+                .code(HttpStatus.NO_CONTENT.value())
+                .message("Logout successfully")
                 .payload("")
                 .build());
     }

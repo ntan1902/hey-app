@@ -1,17 +1,14 @@
 package com.hey.auth.filter;
 
-import com.hey.auth.entity.System;
-import com.hey.auth.entity.User;
-import com.hey.auth.exception.system.SystemIdNotFoundException;
-import com.hey.auth.exception.user.UserIdNotFoundException;
 import com.hey.auth.jwt.JwtSystemUtil;
 import com.hey.auth.jwt.JwtUserUtil;
-import com.hey.auth.service.SystemService;
-import com.hey.auth.service.UserService;
+import com.hey.auth.repository.BlackListRepository;
+import com.hey.auth.service.BlackListService;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.util.StringUtils;
@@ -22,6 +19,9 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 @Log4j2
 public class CustomAuthorizationFilter extends OncePerRequestFilter {
@@ -32,10 +32,7 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
     private JwtSystemUtil jwtSystemUtil;
 
     @Autowired
-    private UserService userService;
-
-    @Autowired
-    private SystemService systemService;
+    private BlackListService blackListService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
@@ -62,33 +59,34 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
         filterChain.doFilter(request, response);
     }
 
-    private void handleAuthorizationUser(HttpServletRequest request, String jwt) throws UserIdNotFoundException {
-        if (StringUtils.hasText(jwt) && jwtUserUtil.validateToken(jwt)) {
+    private void handleAuthorizationUser(HttpServletRequest request, String jwt) {
+        if (StringUtils.hasText(jwt)
+                && !blackListService.isExistInBlackListToken(jwt)
+                && jwtUserUtil.validateToken(jwt)) {
+
             String userId = jwtUserUtil.getUserIdFromJwt(jwt);
+            List<String> roles = jwtUserUtil.getRolesFromJwt(jwt);
+            Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();
+            roles.forEach(role -> authorities.add(new SimpleGrantedAuthority(role)));
 
-            User user = userService.loadUserById(userId);
-            if (user != null) {
-                UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(user, null,
-                        user.getAuthorities());
-                authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+            UsernamePasswordAuthenticationToken authentication =
+                    new UsernamePasswordAuthenticationToken(userId, null,
+                            authorities);
+            authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
-                SecurityContextHolder.getContext().setAuthentication(authentication);
-            }
+            SecurityContextHolder.getContext().setAuthentication(authentication);
         }
     }
 
-    private void handleAuthorizationSystem(HttpServletRequest request, String jwt) throws SystemIdNotFoundException {
+    private void handleAuthorizationSystem(HttpServletRequest request, String jwt) {
         if (StringUtils.hasText(jwt) && jwtSystemUtil.validateToken(jwt)) {
             String systemId = jwtSystemUtil.getSystemIdFromJwt(jwt);
 
-            System system = systemService.loadSystemById(systemId);
-            if (system != null) {
-                UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(system,
-                        null, null);
-                authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+            UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(systemId,
+                    null, null);
+            authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
-                SecurityContextHolder.getContext().setAuthentication(authentication);
-            }
+            SecurityContextHolder.getContext().setAuthentication(authentication);
         }
     }
 
