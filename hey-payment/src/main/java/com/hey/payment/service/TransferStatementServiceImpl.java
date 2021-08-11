@@ -31,6 +31,8 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -86,6 +88,7 @@ public class TransferStatementServiceImpl implements TransferStatementService {
         // Authorize Soft Token
         VerifySoftTokenResponse apiResponse = authApi.verifySoftToken(softToken);
         if (!Boolean.TRUE.equals(apiResponse.getSuccess())) {
+            log.error("Can't authorize soft token");
             throw new SoftTokenAuthorizeException(apiResponse.getMessage());
         }
 

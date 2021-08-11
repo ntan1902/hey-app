@@ -1,6 +1,7 @@
 package com.hey.auth.service;
 
 import com.hey.auth.dto.system.*;
+import com.hey.auth.entity.SoftToken;
 import com.hey.auth.entity.System;
 import com.hey.auth.entity.User;
 import com.hey.auth.exception.jwt.InvalidJwtTokenException;
@@ -12,10 +13,12 @@ import com.hey.auth.jwt.JwtSoftTokenUtil;
 import com.hey.auth.jwt.JwtSystemUtil;
 import com.hey.auth.jwt.JwtUserUtil;
 import com.hey.auth.mapper.SystemMapper;
+import com.hey.auth.repository.SoftTokenRepository;
 import com.hey.auth.repository.SystemRepository;
 import com.hey.auth.repository.UserRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -34,6 +37,7 @@ public class SystemServiceImpl implements SystemService {
     private final JwtSystemUtil jwtSystemUtil;
     private final JwtSoftTokenUtil jwtSoftTokenUtil;
     private final SystemMapper systemMapper;
+    private final SoftTokenRepository softTokenRepository;
 
 
     @Override
@@ -89,7 +93,7 @@ public class SystemServiceImpl implements SystemService {
             System system = systemRepository.findById(systemId)
                     .orElseThrow(() -> new SystemIdNotFoundException("System Id " + systemId + " not found"));
 
-            return new SystemAuthorizeResponse(systemId,system.getSystemName());
+            return new SystemAuthorizeResponse(systemId, system.getSystemName());
         } else {
             throw new InvalidJwtTokenException("Invalid JWT token");
         }
@@ -100,6 +104,12 @@ public class SystemServiceImpl implements SystemService {
         log.info("Inside authorizeSoftToken of SystemServiceImpl: {}", softTokenRequest);
 
         String softToken = softTokenRequest.getSoftToken();
+        if (!softTokenRepository.existsById(softToken)){
+            throw new InvalidJwtTokenException("Expired JWT soft token");
+        }
+        else {
+            softTokenRepository.deleteById(softToken);
+        }
         if (jwtSoftTokenUtil.validateToken(softToken)) {
             // Parse information from jwt
             String userId = jwtSoftTokenUtil.getUserIdFromJwt(softToken);
@@ -117,7 +127,7 @@ public class SystemServiceImpl implements SystemService {
             }
 
         } else {
-            throw new InvalidJwtTokenException("Invalid JWT token");
+            throw new InvalidJwtTokenException("Invalid JWT soft token");
         }
     }
 
