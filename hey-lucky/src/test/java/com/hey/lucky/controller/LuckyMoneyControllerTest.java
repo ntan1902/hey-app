@@ -36,8 +36,6 @@ class LuckyMoneyControllerTest {
 
     private MockMvc mockMvc;
 
-    private ObjectMapper objectMapper;
-
     @Mock
     private LuckyMoneyService luckyMoneyService;
 
@@ -51,8 +49,6 @@ class LuckyMoneyControllerTest {
     @BeforeEach
     void setUp() {
         JacksonTester.initFields(this, new ObjectMapper());
-
-        objectMapper = new ObjectMapper();
 
         mockMvc = MockMvcBuilders.standaloneSetup(luckyMoneyController)
                 .setControllerAdvice(new MyExceptionHandler())

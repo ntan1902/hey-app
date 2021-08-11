@@ -24,7 +24,7 @@ public class ApiExceptionHandler {
                 .success(false)
                 .code(code.value())
                 .message(message)
-                .payload("")
+                .payload(null)
                 .build();
 
         // 2. Return response entity
@@ -74,10 +74,10 @@ public class ApiExceptionHandler {
     }
 
     @ExceptionHandler(value = {InvalidJwtTokenException.class})
-    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
     public ResponseEntity<Object> handleApiResponseException(InvalidJwtTokenException exception) {
         log.error(exception.getMessage());
-        HttpStatus code = HttpStatus.UNAUTHORIZED;
+        HttpStatus code = HttpStatus.NOT_FOUND;
         return getResponse(code, exception.getMessage());
     }
 

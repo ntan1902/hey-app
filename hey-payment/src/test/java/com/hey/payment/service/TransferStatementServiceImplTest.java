@@ -23,12 +23,15 @@ import com.hey.payment.exception_handler.exception.*;
 import com.hey.payment.mapper.TransferStatementMapper;
 import com.hey.payment.repository.TransferStatementRepository;
 import com.hey.payment.repository.WalletRepository;
+import com.hey.payment.utils.SystemUtil;
+import com.hey.payment.utils.UserUtil;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
@@ -64,6 +67,11 @@ class TransferStatementServiceImplTest {
     @Mock
     private AuthApi authApi;
 
+    @Mock
+    private SystemUtil systemUtil;
+
+    @Mock
+    private UserUtil userUtil;
 
     @Test
     void createTransfer() throws BalanceNotEnoughException, MaxBalanceException, NegativeAmountException, MaxAmountException, SourceAndTargetAreTheSameException, SoftTokenAuthorizeException, HaveNoWalletException {
@@ -71,6 +79,8 @@ class TransferStatementServiceImplTest {
         User user = User.builder()
                 .id("uuid1")
                 .build();
+
+        when(userUtil.getCurrentUser()).thenReturn(user);
 
         CreateTransferRequest request = CreateTransferRequest.builder()
                 .targetId("uuid2")
@@ -107,7 +117,7 @@ class TransferStatementServiceImplTest {
         when(chatApi.createTransferMessage(any(TransferMessageRequest.class))).thenReturn(true);
 
         // when
-        underTest.createTransfer(user, request);
+        underTest.createTransfer(request);
 
         // then
         verify(walletService, times(1)).transferMoney(sourceWallet.getId(), targetWallet.getId(), softTokenEncoded.getAmount());
@@ -122,6 +132,7 @@ class TransferStatementServiceImplTest {
         User user = User.builder()
                 .id("uuid")
                 .build();
+        when(userUtil.getCurrentUser()).thenReturn(user);
 
         CreateTransferRequest request = CreateTransferRequest.builder()
                 .targetId("uuid")
@@ -132,7 +143,7 @@ class TransferStatementServiceImplTest {
         // when
 
         // then
-        assertThatThrownBy(() -> underTest.createTransfer(user, request))
+        assertThatThrownBy(() -> underTest.createTransfer(request))
                 .isInstanceOf(SourceAndTargetAreTheSameException.class)
                 .hasMessageContaining("Can not transfer yourself");
 
@@ -146,6 +157,7 @@ class TransferStatementServiceImplTest {
         User user = User.builder()
                 .id("uuid1")
                 .build();
+        when(userUtil.getCurrentUser()).thenReturn(user);
 
         CreateTransferRequest request = CreateTransferRequest.builder()
                 .targetId("uuid2")
@@ -159,7 +171,7 @@ class TransferStatementServiceImplTest {
         when(authApi.verifySoftToken(request.getSoftToken())).thenReturn(authResponse);
 
         // then
-        assertThatThrownBy(() -> underTest.createTransfer(user, request))
+        assertThatThrownBy(() -> underTest.createTransfer(request))
                 .isInstanceOf(SoftTokenAuthorizeException.class);
 
         verify(chatApi, never()).createTransferMessage(any(TransferMessageRequest.class));
@@ -173,6 +185,7 @@ class TransferStatementServiceImplTest {
         User user = User.builder()
                 .id("uuid1")
                 .build();
+        when(userUtil.getCurrentUser()).thenReturn(user);
 
         CreateTransferRequest request = CreateTransferRequest.builder()
                 .targetId("uuid2")
@@ -186,7 +199,7 @@ class TransferStatementServiceImplTest {
         when(authApi.verifySoftToken(request.getSoftToken())).thenReturn(authResponse);
 
         // then
-        assertThatThrownBy(() -> underTest.createTransfer(user, request))
+        assertThatThrownBy(() -> underTest.createTransfer(request))
                 .isInstanceOf(SoftTokenAuthorizeException.class)
                 .hasMessageContaining("Unauthorized!");
 
@@ -201,7 +214,7 @@ class TransferStatementServiceImplTest {
         User user = User.builder()
                 .id("uuid1")
                 .build();
-
+        when(userUtil.getCurrentUser()).thenReturn(user);
         CreateTransferRequest request = CreateTransferRequest.builder()
                 .targetId("uuid2")
                 .softToken("amountPin")
@@ -214,7 +227,7 @@ class TransferStatementServiceImplTest {
         when(authApi.verifySoftToken(request.getSoftToken())).thenReturn(authResponse);
 
         // then
-        assertThatThrownBy(() -> underTest.createTransfer(user, request))
+        assertThatThrownBy(() -> underTest.createTransfer(request))
                 .isInstanceOf(NegativeAmountException.class)
                 .hasMessageContaining("Negative amount");
 
@@ -230,6 +243,7 @@ class TransferStatementServiceImplTest {
                 .id("uuid1")
                 .build();
 
+        when(userUtil.getCurrentUser()).thenReturn(user);
         CreateTransferRequest request = CreateTransferRequest.builder()
                 .targetId("uuid2")
                 .softToken("amountPin")
@@ -242,7 +256,7 @@ class TransferStatementServiceImplTest {
         when(authApi.verifySoftToken(request.getSoftToken())).thenReturn(authResponse);
 
         // then
-        assertThatThrownBy(() -> underTest.createTransfer(user, request))
+        assertThatThrownBy(() -> underTest.createTransfer(request))
                 .isInstanceOf(MaxAmountException.class)
                 .hasMessageContaining("Transaction limit is " + MoneyConstant.MAX_AMOUNT);
 
@@ -258,6 +272,7 @@ class TransferStatementServiceImplTest {
                 .id("uuid1")
                 .build();
 
+        when(userUtil.getCurrentUser()).thenReturn(user);
         CreateTransferRequest request = CreateTransferRequest.builder()
                 .targetId("uuid2")
                 .softToken("amountPin")
@@ -271,7 +286,7 @@ class TransferStatementServiceImplTest {
         when(walletRepository.findByOwnerIdAndRefFrom(user.getId(), OwnerWalletRefFrom.USERS))
                 .thenReturn(Optional.empty());
         // then
-        assertThatThrownBy(() -> underTest.createTransfer(user, request))
+        assertThatThrownBy(() -> underTest.createTransfer(request))
                 .isInstanceOf(HaveNoWalletException.class)
                 .hasMessageContaining("Source has no wallet");
 
@@ -286,6 +301,7 @@ class TransferStatementServiceImplTest {
                 .id("uuid1")
                 .build();
 
+        when(userUtil.getCurrentUser()).thenReturn(user);
         CreateTransferRequest request = CreateTransferRequest.builder()
                 .targetId("uuid2")
                 .softToken("amountPin")
@@ -310,7 +326,7 @@ class TransferStatementServiceImplTest {
         when(walletRepository.findByOwnerIdAndRefFrom(request.getTargetId(), OwnerWalletRefFrom.USERS))
                 .thenReturn(Optional.empty());
         // then
-        assertThatThrownBy(() -> underTest.createTransfer(user, request))
+        assertThatThrownBy(() -> underTest.createTransfer(request))
                 .isInstanceOf(HaveNoWalletException.class)
                 .hasMessageContaining("Target has no wallet");
 
@@ -324,6 +340,7 @@ class TransferStatementServiceImplTest {
         User user = User.builder()
                 .id("uuid1")
                 .build();
+        when(userUtil.getCurrentUser()).thenReturn(user);
 
         CreateTransferRequest request = CreateTransferRequest.builder()
                 .targetId("uuid2")
@@ -357,7 +374,7 @@ class TransferStatementServiceImplTest {
         doThrow(new BalanceNotEnoughException()).when(walletService).transferMoney(sourceWallet.getId(), targetWallet.getId(), softTokenEncoded.getAmount());
 
         // then
-        assertThatThrownBy(() -> underTest.createTransfer(user, request))
+        assertThatThrownBy(() -> underTest.createTransfer(request))
                 .isInstanceOf(BalanceNotEnoughException.class)
                 .hasMessageContaining("Your balance is not enough");
 
@@ -373,6 +390,7 @@ class TransferStatementServiceImplTest {
                 .id("uuid1")
                 .build();
 
+        when(userUtil.getCurrentUser()).thenReturn(user);
         CreateTransferRequest request = CreateTransferRequest.builder()
                 .targetId("uuid2")
                 .softToken("amountPin")
@@ -405,7 +423,7 @@ class TransferStatementServiceImplTest {
         doThrow(new MaxBalanceException()).when(walletService).transferMoney(sourceWallet.getId(), targetWallet.getId(), softTokenEncoded.getAmount());
 
         // then
-        assertThatThrownBy(() -> underTest.createTransfer(user, request))
+        assertThatThrownBy(() -> underTest.createTransfer(request))
                 .isInstanceOf(MaxBalanceException.class)
                 .hasMessageContaining("Target can't receive more money!");
 
@@ -420,6 +438,7 @@ class TransferStatementServiceImplTest {
         System system = System.builder()
                 .id("uuid2")
                 .build();
+        when(systemUtil.getCurrentSystem()).thenReturn(system);
         SystemCreateTransferToUserRequest request =
                 new SystemCreateTransferToUserRequest(1L, "uuid1", 50000L, "Hello");
 
@@ -442,7 +461,7 @@ class TransferStatementServiceImplTest {
         doNothing().when(walletService).transferMoney(sourceWallet.getId(), targetWallet.getId(), request.getAmount());
 
         // when
-        underTest.systemCreateTransferToUser(system, request);
+        underTest.systemCreateTransferToUser(request);
 
         // then
         verify(walletService, times(1)).transferMoney(sourceWallet.getId(), targetWallet.getId(), request.getAmount());
@@ -455,13 +474,14 @@ class TransferStatementServiceImplTest {
         System system = System.builder()
                 .id("uuid2")
                 .build();
+        when(systemUtil.getCurrentSystem()).thenReturn(system);
         SystemCreateTransferToUserRequest request =
                 new SystemCreateTransferToUserRequest(1L, "uuid1", -50000L, "Hello");
 
         // when
 
         // then
-        assertThatThrownBy(() -> underTest.systemCreateTransferToUser(system, request))
+        assertThatThrownBy(() -> underTest.systemCreateTransferToUser(request))
                 .isInstanceOf(NegativeAmountException.class)
                 .hasMessageContaining("Negative amount");
 
@@ -476,13 +496,14 @@ class TransferStatementServiceImplTest {
         System system = System.builder()
                 .id("uuid2")
                 .build();
+        when(systemUtil.getCurrentSystem()).thenReturn(system);
         SystemCreateTransferToUserRequest request =
                 new SystemCreateTransferToUserRequest(1L, "uuid1", 51_000_000L, "Hello");
 
         // when
 
         // then
-        assertThatThrownBy(() -> underTest.systemCreateTransferToUser(system, request))
+        assertThatThrownBy(() -> underTest.systemCreateTransferToUser(request))
                 .isInstanceOf(MaxAmountException.class)
                 .hasMessageContaining("Transaction limit is " + MoneyConstant.MAX_AMOUNT);
 
@@ -497,6 +518,7 @@ class TransferStatementServiceImplTest {
         System system = System.builder()
                 .id("uuid2")
                 .build();
+        when(systemUtil.getCurrentSystem()).thenReturn(system);
         SystemCreateTransferToUserRequest request =
                 new SystemCreateTransferToUserRequest(1L, "uuid1", 50000L, "Hello");
 
@@ -505,7 +527,7 @@ class TransferStatementServiceImplTest {
         // when
 
         // then
-        assertThatThrownBy(() -> underTest.systemCreateTransferToUser(system, request))
+        assertThatThrownBy(() -> underTest.systemCreateTransferToUser(request))
                 .isInstanceOf(HaveNoWalletException.class)
                 .hasMessageContaining("Source has no wallet");
 
@@ -519,6 +541,7 @@ class TransferStatementServiceImplTest {
         System system = System.builder()
                 .id("uuid2")
                 .build();
+        when(systemUtil.getCurrentSystem()).thenReturn(system);
         SystemCreateTransferToUserRequest request =
                 new SystemCreateTransferToUserRequest(1L, "uuid1", 50000L, "Hello");
 
@@ -537,7 +560,7 @@ class TransferStatementServiceImplTest {
         // when
 
         // then
-        assertThatThrownBy(() -> underTest.systemCreateTransferToUser(system, request))
+        assertThatThrownBy(() -> underTest.systemCreateTransferToUser(request))
                 .isInstanceOf(HaveNoWalletException.class)
                 .hasMessageContaining("Target has no wallet");
 
@@ -551,6 +574,7 @@ class TransferStatementServiceImplTest {
         System system = System.builder()
                 .id("uuid2")
                 .build();
+        when(systemUtil.getCurrentSystem()).thenReturn(system);
         SystemCreateTransferToUserRequest request =
                 new SystemCreateTransferToUserRequest(1L, "uuid1", 50000L, "Hello");
 
@@ -575,7 +599,7 @@ class TransferStatementServiceImplTest {
         // when
 
         // then
-        assertThatThrownBy(() -> underTest.systemCreateTransferToUser(system, request))
+        assertThatThrownBy(() -> underTest.systemCreateTransferToUser(request))
                 .isInstanceOf(BalanceNotEnoughException.class)
                 .hasMessageContaining("Your balance is not enough");
 
@@ -589,6 +613,7 @@ class TransferStatementServiceImplTest {
         System system = System.builder()
                 .id("uuid2")
                 .build();
+        when(systemUtil.getCurrentSystem()).thenReturn(system);
         SystemCreateTransferToUserRequest request =
                 new SystemCreateTransferToUserRequest(1L, "uuid1", 50000L, "Hello");
 
@@ -613,7 +638,7 @@ class TransferStatementServiceImplTest {
         // when
 
         // then
-        assertThatThrownBy(() -> underTest.systemCreateTransferToUser(system, request))
+        assertThatThrownBy(() -> underTest.systemCreateTransferToUser(request))
                 .isInstanceOf(MaxBalanceException.class)
                 .hasMessageContaining("Target can't receive more money!");
 
@@ -627,6 +652,7 @@ class TransferStatementServiceImplTest {
         System system = System.builder()
                 .id("uuid2")
                 .build();
+        when(systemUtil.getCurrentSystem()).thenReturn(system);
         SystemCreateTransferFromUserRequest request = new SystemCreateTransferFromUserRequest(
                 "uuid1",
                 2L,
@@ -662,7 +688,7 @@ class TransferStatementServiceImplTest {
         );
 
         // when
-        SystemCreateTransferFromUserResponse actual = underTest.systemCreateTransferFromUser(system, request);
+        SystemCreateTransferFromUserResponse actual = underTest.systemCreateTransferFromUser(request);
 
         // then
         verify(transferStatementRepository, times(2)).save(any(TransferStatement.class));
@@ -676,6 +702,7 @@ class TransferStatementServiceImplTest {
         System system = System.builder()
                 .id("uuid2")
                 .build();
+        when(systemUtil.getCurrentSystem()).thenReturn(system);
         SystemCreateTransferFromUserRequest request = new SystemCreateTransferFromUserRequest(
                 "uuid1",
                 2L,
@@ -688,7 +715,7 @@ class TransferStatementServiceImplTest {
         when(authApi.verifySoftToken(request.getSoftToken())).thenReturn(authResponse);
 
         // then
-        assertThatThrownBy(() -> underTest.systemCreateTransferFromUser(system, request))
+        assertThatThrownBy(() -> underTest.systemCreateTransferFromUser(request))
                 .isInstanceOf(SoftTokenAuthorizeException.class);
 
         verify(transferStatementRepository, never()).save(any(TransferStatement.class));
@@ -701,6 +728,7 @@ class TransferStatementServiceImplTest {
         System system = System.builder()
                 .id("uuid2")
                 .build();
+        when(systemUtil.getCurrentSystem()).thenReturn(system);
         SystemCreateTransferFromUserRequest request = new SystemCreateTransferFromUserRequest(
                 "uuid1",
                 2L,
@@ -713,7 +741,7 @@ class TransferStatementServiceImplTest {
         when(authApi.verifySoftToken(request.getSoftToken())).thenReturn(authResponse);
 
         // then
-        assertThatThrownBy(() -> underTest.systemCreateTransferFromUser(system, request))
+        assertThatThrownBy(() -> underTest.systemCreateTransferFromUser(request))
                 .isInstanceOf(SoftTokenAuthorizeException.class)
                 .hasMessageContaining("Unauthorized!");
 
@@ -727,6 +755,7 @@ class TransferStatementServiceImplTest {
         System system = System.builder()
                 .id("uuid2")
                 .build();
+        when(systemUtil.getCurrentSystem()).thenReturn(system);
         SystemCreateTransferFromUserRequest request = new SystemCreateTransferFromUserRequest(
                 "uuid1",
                 2L,
@@ -743,7 +772,7 @@ class TransferStatementServiceImplTest {
         // when
 
         // then
-        assertThatThrownBy(() -> underTest.systemCreateTransferFromUser(system, request))
+        assertThatThrownBy(() -> underTest.systemCreateTransferFromUser(request))
                 .isInstanceOf(HaveNoWalletException.class)
                 .hasMessageContaining("Source has no wallet");
 
@@ -759,6 +788,7 @@ class TransferStatementServiceImplTest {
         System system = System.builder()
                 .id("uuid2")
                 .build();
+        when(systemUtil.getCurrentSystem()).thenReturn(system);
         SystemCreateTransferFromUserRequest request = new SystemCreateTransferFromUserRequest(
                 "uuid1",
                 2L,
@@ -785,7 +815,7 @@ class TransferStatementServiceImplTest {
         // when
 
         // then
-        assertThatThrownBy(() -> underTest.systemCreateTransferFromUser(system, request))
+        assertThatThrownBy(() -> underTest.systemCreateTransferFromUser(request))
                 .isInstanceOf(HaveNoWalletException.class)
                 .hasMessageContaining("Target has no wallet");
 
@@ -800,6 +830,7 @@ class TransferStatementServiceImplTest {
         System system = System.builder()
                 .id("uuid2")
                 .build();
+        when(systemUtil.getCurrentSystem()).thenReturn(system);
         SystemCreateTransferFromUserRequest request = new SystemCreateTransferFromUserRequest(
                 "uuid1",
                 2L,
@@ -810,11 +841,11 @@ class TransferStatementServiceImplTest {
         VerifySoftTokenResponse authResponse = new VerifySoftTokenResponse(true, 200, "", softTokenEncoded);
 
         when(authApi.verifySoftToken(request.getSoftToken())).thenReturn(authResponse);
-;
+
         // when
 
         // then
-        assertThatThrownBy(() -> underTest.systemCreateTransferFromUser(system, request))
+        assertThatThrownBy(() -> underTest.systemCreateTransferFromUser(request))
                 .isInstanceOf(NegativeAmountException.class)
                 .hasMessageContaining("Negative amount");
 
@@ -829,6 +860,8 @@ class TransferStatementServiceImplTest {
         System system = System.builder()
                 .id("uuid2")
                 .build();
+        when(systemUtil.getCurrentSystem()).thenReturn(system);
+
         SystemCreateTransferFromUserRequest request = new SystemCreateTransferFromUserRequest(
                 "uuid1",
                 2L,
@@ -839,11 +872,11 @@ class TransferStatementServiceImplTest {
         VerifySoftTokenResponse authResponse = new VerifySoftTokenResponse(true, 200, "", softTokenEncoded);
 
         when(authApi.verifySoftToken(request.getSoftToken())).thenReturn(authResponse);
-        ;
+
         // when
 
         // then
-        assertThatThrownBy(() -> underTest.systemCreateTransferFromUser(system, request))
+        assertThatThrownBy(() -> underTest.systemCreateTransferFromUser(request))
                 .isInstanceOf(MaxAmountException.class)
                 .hasMessageContaining("Transaction limit is " + MoneyConstant.MAX_AMOUNT);
 
@@ -858,6 +891,8 @@ class TransferStatementServiceImplTest {
         System system = System.builder()
                 .id("uuid2")
                 .build();
+        when(systemUtil.getCurrentSystem()).thenReturn(system);
+
         SystemCreateTransferFromUserRequest request = new SystemCreateTransferFromUserRequest(
                 "uuid1",
                 2L,
@@ -895,7 +930,7 @@ class TransferStatementServiceImplTest {
         // when
 
         // then
-        assertThatThrownBy(() -> underTest.systemCreateTransferFromUser(system, request))
+        assertThatThrownBy(() -> underTest.systemCreateTransferFromUser(request))
                 .isInstanceOf(BalanceNotEnoughException.class)
                 .hasMessageContaining("Your balance is not enough");
 
@@ -908,6 +943,8 @@ class TransferStatementServiceImplTest {
         System system = System.builder()
                 .id("uuid2")
                 .build();
+        when(systemUtil.getCurrentSystem()).thenReturn(system);
+
         SystemCreateTransferFromUserRequest request = new SystemCreateTransferFromUserRequest(
                 "uuid1",
                 2L,
@@ -945,7 +982,7 @@ class TransferStatementServiceImplTest {
         // when
 
         // then
-        assertThatThrownBy(() -> underTest.systemCreateTransferFromUser(system, request))
+        assertThatThrownBy(() -> underTest.systemCreateTransferFromUser(request))
                 .isInstanceOf(MaxBalanceException.class)
                 .hasMessageContaining("Target can't receive more money!");
 
@@ -958,6 +995,7 @@ class TransferStatementServiceImplTest {
         User user = User.builder()
                 .id("uuid")
                 .build();
+        when(userUtil.getCurrentUser()).thenReturn(user);
         TopUpRequest request = new TopUpRequest(50000L, "bankId");
 
         Wallet bankWallet = Wallet.builder()
@@ -979,7 +1017,7 @@ class TransferStatementServiceImplTest {
                 .thenReturn(Optional.of(userWallet));
 
         // when
-        underTest.topUp(user, request);
+        underTest.topUp(request);
 
         // then
         verify(transferStatementRepository, times(1)).save(any(TransferStatement.class));
@@ -992,12 +1030,14 @@ class TransferStatementServiceImplTest {
         User user = User.builder()
                 .id("uuid")
                 .build();
+        when(userUtil.getCurrentUser()).thenReturn(user);
+
         TopUpRequest request = new TopUpRequest(51_000_000L, "bankId");
 
         // when
 
         // then
-        assertThatThrownBy(() -> underTest.topUp(user, request))
+        assertThatThrownBy(() -> underTest.topUp(request))
                 .isInstanceOf(MaxAmountException.class)
                 .hasMessageContaining("Transaction limit is " + MoneyConstant.MAX_AMOUNT);
         verify(transferStatementRepository, never()).save(any(TransferStatement.class));
@@ -1010,6 +1050,8 @@ class TransferStatementServiceImplTest {
         User user = User.builder()
                 .id("uuid")
                 .build();
+        when(userUtil.getCurrentUser()).thenReturn(user);
+
         TopUpRequest request = new TopUpRequest(50_000L, "bankId");
 
         Wallet bankWallet = Wallet.builder()
@@ -1033,7 +1075,7 @@ class TransferStatementServiceImplTest {
         // when
 
         // then
-        assertThatThrownBy(() -> underTest.topUp(user, request))
+        assertThatThrownBy(() -> underTest.topUp(request))
                 .isInstanceOf(MaxBalanceException.class)
                 .hasMessageContaining("Target can't receive more money!");
         verify(transferStatementRepository, never()).save(any(TransferStatement.class));
@@ -1042,6 +1084,11 @@ class TransferStatementServiceImplTest {
 
     @Test
     void getTransferStatementOfUser() throws DatabaseHasErr, HaveNoWalletException, ApiErrException {
+        User user = User.builder()
+                .id("uuid1")
+                .build();
+        when(userUtil.getCurrentUser()).thenReturn(user);
+
         Wallet sourceWallet = Wallet.builder()
                 .id(1L)
                 .ownerId("uuid1")
@@ -1102,8 +1149,8 @@ class TransferStatementServiceImplTest {
                 .build();
         List<TransferStatementDTO> transferStatementDTOs = Collections.singletonList(transferStatementDTO);
 
-        when(walletRepository.findByOwnerIdAndRefFrom("uuid1", OwnerWalletRefFrom.USERS)).thenReturn(Optional.of(sourceWallet));
-        when(transferStatementRepository.findAllBySourceIdOrTargetId(sourceWallet.getId(), PageRequest.of(0, 10))).thenReturn(transferStatements);
+        when(walletRepository.findByOwnerIdAndRefFrom(user.getId(), OwnerWalletRefFrom.USERS)).thenReturn(Optional.of(sourceWallet));
+        when(transferStatementRepository.findAllBySourceIdOrTargetId(sourceWallet.getId(), PageRequest.of(0, 10, Sort.by("createdAt").descending()))).thenReturn(transferStatements);
 
         when(transferStatementMapper.ts2TsDTO(transferStatement)).thenReturn(transferStatementDTO);
 
@@ -1114,7 +1161,7 @@ class TransferStatementServiceImplTest {
         when(authApi.getUserInfo(targetWallet.getOwnerId())).thenReturn(targetResponse);
 
         // when
-        List<TransferStatementDTO> actual = underTest.getTransferStatementOfUser("uuid1", 0, 10);
+        List<TransferStatementDTO> actual = underTest.getTransferStatementOfUser(0, 10);
 
         // then
         assertThat(actual).isEqualTo(transferStatementDTOs);
@@ -1122,6 +1169,11 @@ class TransferStatementServiceImplTest {
 
     @Test
     void getTransferStatementOfUserThrowApiErrException() {
+        User user = User.builder()
+                .id("uuid1")
+                .build();
+        when(userUtil.getCurrentUser()).thenReturn(user);
+
         Wallet sourceWallet = Wallet.builder()
                 .id(1L)
                 .ownerId("uuid1")
@@ -1169,8 +1221,8 @@ class TransferStatementServiceImplTest {
                 .target(target)
                 .build();
 
-        when(walletRepository.findByOwnerIdAndRefFrom("uuid1", OwnerWalletRefFrom.USERS)).thenReturn(Optional.of(sourceWallet));
-        when(transferStatementRepository.findAllBySourceIdOrTargetId(sourceWallet.getId(), PageRequest.of(0, 10))).thenReturn(transferStatements);
+        when(walletRepository.findByOwnerIdAndRefFrom(user.getId(), OwnerWalletRefFrom.USERS)).thenReturn(Optional.of(sourceWallet));
+        when(transferStatementRepository.findAllBySourceIdOrTargetId(sourceWallet.getId(), PageRequest.of(0, 10, Sort.by("createdAt").descending()))).thenReturn(transferStatements);
 
         when(transferStatementMapper.ts2TsDTO(transferStatement)).thenReturn(transferStatementDTO);
 
@@ -1181,12 +1233,17 @@ class TransferStatementServiceImplTest {
         // when
 
         // then
-        assertThatThrownBy(() -> underTest.getTransferStatementOfUser("uuid1", 0, 10))
+        assertThatThrownBy(() -> underTest.getTransferStatementOfUser(0, 10))
                 .isInstanceOf(ApiErrException.class);
     }
 
     @Test
     void getTransferStatementOfUserWithSystemThrowApiErrException() {
+        User user = User.builder()
+                .id("uuid")
+                .build();
+        when(userUtil.getCurrentUser()).thenReturn(user);
+
         Wallet sourceWallet = Wallet.builder()
                 .id(1L)
                 .ownerId("uuid1")
@@ -1245,8 +1302,8 @@ class TransferStatementServiceImplTest {
                 .target(target)
                 .build();
 
-        when(walletRepository.findByOwnerIdAndRefFrom("uuid1", OwnerWalletRefFrom.USERS)).thenReturn(Optional.of(sourceWallet));
-        when(transferStatementRepository.findAllBySourceIdOrTargetId(sourceWallet.getId(), PageRequest.of(0, 10))).thenReturn(transferStatements);
+        when(walletRepository.findByOwnerIdAndRefFrom(user.getId(), OwnerWalletRefFrom.USERS)).thenReturn(Optional.of(sourceWallet));
+        when(transferStatementRepository.findAllBySourceIdOrTargetId(sourceWallet.getId(), PageRequest.of(0, 10, Sort.by("createdAt").descending()))).thenReturn(transferStatements);
 
         when(transferStatementMapper.ts2TsDTO(transferStatement)).thenReturn(transferStatementDTO);
 
@@ -1259,12 +1316,17 @@ class TransferStatementServiceImplTest {
         // when
 
         // then
-        assertThatThrownBy(() -> underTest.getTransferStatementOfUser("uuid1", 0, 10))
+        assertThatThrownBy(() -> underTest.getTransferStatementOfUser(0, 10))
                 .isInstanceOf(ApiErrException.class);
     }
 
     @Test
     void getTransferStatementOfUserWithSystem() throws DatabaseHasErr, HaveNoWalletException, ApiErrException {
+        User user = User.builder()
+                .id("uuid")
+                .build();
+        when(userUtil.getCurrentUser()).thenReturn(user);
+
         Wallet sourceWallet = Wallet.builder()
                 .id(1L)
                 .ownerId("uuid1")
@@ -1324,8 +1386,8 @@ class TransferStatementServiceImplTest {
                 .build();
         List<TransferStatementDTO> transferStatementDTOs = Collections.singletonList(transferStatementDTO);
 
-        when(walletRepository.findByOwnerIdAndRefFrom("uuid1", OwnerWalletRefFrom.USERS)).thenReturn(Optional.of(sourceWallet));
-        when(transferStatementRepository.findAllBySourceIdOrTargetId(sourceWallet.getId(), PageRequest.of(0, 10))).thenReturn(transferStatements);
+        when(walletRepository.findByOwnerIdAndRefFrom(user.getId(), OwnerWalletRefFrom.USERS)).thenReturn(Optional.of(sourceWallet));
+        when(transferStatementRepository.findAllBySourceIdOrTargetId(sourceWallet.getId(), PageRequest.of(0, 10, Sort.by("createdAt").descending()))).thenReturn(transferStatements);
 
         when(transferStatementMapper.ts2TsDTO(transferStatement)).thenReturn(transferStatementDTO);
 
@@ -1336,7 +1398,7 @@ class TransferStatementServiceImplTest {
         when(authApi.getSystemInfo(targetWallet.getOwnerId())).thenReturn(targetResponse);
 
         // when
-        List<TransferStatementDTO> actual = underTest.getTransferStatementOfUser("uuid1", 0, 10);
+        List<TransferStatementDTO> actual = underTest.getTransferStatementOfUser(0, 10);
 
         // then
         assertThat(actual).isEqualTo(transferStatementDTOs);

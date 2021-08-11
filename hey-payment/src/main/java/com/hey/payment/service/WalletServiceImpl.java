@@ -14,13 +14,14 @@ import com.hey.payment.entity.Wallet;
 import com.hey.payment.exception_handler.exception.*;
 import com.hey.payment.mapper.WalletMapper;
 import com.hey.payment.repository.WalletRepository;
+import com.hey.payment.utils.SystemUtil;
+import com.hey.payment.utils.UserUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.client.RestTemplate;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -36,6 +37,10 @@ public class WalletServiceImpl implements WalletService {
     private final WalletMapper walletMapper;
 
     private final AuthApi authApi;
+
+    private final SystemUtil systemUtil;
+
+    private final UserUtil userUtil;
 
     @EventListener(ApplicationReadyEvent.class)
     public void getSystems() {
@@ -89,22 +94,25 @@ public class WalletServiceImpl implements WalletService {
 
 
     @Override
-    public WalletDTO findWalletOfUser(String userId) throws HaveNoWalletException {
-        log.info("Inside findWalletOfUser of WalletServiceImpl with id {}", userId);
-        Wallet wallet = walletRepository.findByOwnerIdAndRefFrom(userId, OwnerWalletRefFrom.USERS)
+    public WalletDTO findWalletOfUser() throws HaveNoWalletException {
+        User user = userUtil.getCurrentUser();
+        log.info("Inside findWalletOfUser of WalletServiceImpl with id {}", user.getId());
+        Wallet wallet = walletRepository.findByOwnerIdAndRefFrom(user.getId(), OwnerWalletRefFrom.USERS)
                 .orElseThrow(() -> new HaveNoWalletException("User has no wallet"));
         return walletMapper.wallet2WalletDTO(wallet);
     }
 
     @Override
-    public List<WalletSystemDTO> findAllWalletsOfSystem(System system) {
+    public List<WalletSystemDTO> findAllWalletsOfSystem() {
+        System system = systemUtil.getCurrentSystem();
         log.info("Inside findAllWalletsOfSystem of WalletServiceImpl: {}", system.getId());
         return walletRepository.findAllByOwnerIdAndRefFrom(system.getId(), OwnerWalletRefFrom.SYSTEMS).stream()
                 .map(walletMapper::wallet2WalletSystemDTO).collect(Collectors.toList());
     }
 
     @Override
-    public WalletDTO createWallet(User user) throws HadWalletException {
+    public WalletDTO createWallet() throws HadWalletException {
+        User user = userUtil.getCurrentUser();
         log.info("Inside createWallet of WalletServiceImpl: {}", user);
         if (walletRepository.existsByOwnerIdAndRefFrom(user.getId(), OwnerWalletRefFrom.USERS)) {
             throw new HadWalletException();
@@ -120,7 +128,8 @@ public class WalletServiceImpl implements WalletService {
     }
 
     @Override
-    public HasWalletResponse hasWallet(User user) {
+    public HasWalletResponse hasWallet() {
+        User user = userUtil.getCurrentUser();
         log.info("Inside hasWallet of WalletServiceImpl with user {}", user);
         Wallet wallet = walletRepository.findByOwnerIdAndRefFrom(user.getId(), OwnerWalletRefFrom.USERS)
                 .orElse(null);
