@@ -1532,7 +1532,8 @@ public class APIService extends BaseService {
                             .collect(Collectors.toList());
 
                     chatList.setUserHashes(outGroupUserHashes);
-                    if(!outGroupUserHashes.isEmpty()) {
+                    if(chatList.getOwner().equals(userId)
+                            && !outGroupUserHashes.isEmpty()) {
                         chatList.setOwner(outGroupUserHashes.get(0).getUserId());
                     }
 
