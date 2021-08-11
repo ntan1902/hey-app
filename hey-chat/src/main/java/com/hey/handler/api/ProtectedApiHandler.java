@@ -57,11 +57,11 @@ public class ProtectedApiHandler extends BaseHandler {
                             getAddressBook(response, requestObject, userId);
                             break;
                         case "/waitingfriend":
-                            LogUtils.log("User  " + userId + " request address book");
+                            LogUtils.log("User  " + userId + " is waiting friend");
                             getWaitingFriends(response, requestObject, userId);
                             break;
                         case "/closewaitingfriend":
-                            LogUtils.log("User  " + userId + " request address book");
+                            LogUtils.log("User  " + userId + " closes waiting friend");
                             deleteWaitingFriend(response, requestObject, userId);
                             break;
                         case "/usernameexisted":
@@ -92,7 +92,18 @@ public class ProtectedApiHandler extends BaseHandler {
                             LogUtils.log("User  " + userId + " edit profile " + requestObject);
                             editProfile(response, requestObject, userId);
                             break;
-
+                        case "/editgroupname":
+                            LogUtils.log("User  " + userId + " edit group name " + requestObject);
+                            editGroupName(response, requestObject, userId);
+                            break;
+                        case "/kickmember":
+                            LogUtils.log("User  " + userId + " kick member " + requestObject);
+                            kickMember(response, requestObject, userId);
+                            break;
+                        case "/outgroup":
+                            LogUtils.log("User  " + userId + " out group " + requestObject);
+                            outGroup(response, requestObject, userId);
+                            break;
                     }
                 } else {
                     throw new HttpStatusException(HttpStatus.UNAUTHORIZED.code(), HttpStatus.UNAUTHORIZED.message());
@@ -102,6 +113,7 @@ public class ProtectedApiHandler extends BaseHandler {
             handleUnauthorizedException(e, response);
         }
     }
+
 
     public void ping(HttpServerResponse response) {
         response
@@ -277,6 +289,39 @@ public class ProtectedApiHandler extends BaseHandler {
         editProfileFuture.compose(editProfile -> response
                 .putHeader("content-type", "application/json; charset=utf-8")
                 .end(editProfile.encodePrettily()), Future.future().setHandler(handler -> {
+            handleException(handler.cause(), response);
+        }));
+    }
+
+    private void editGroupName(HttpServerResponse response, JsonObject requestObject, String userId) {
+        EditGroupNameRequest editGroupNameRequest = requestObject.mapTo(EditGroupNameRequest.class);
+        Future<JsonObject> editGroupNameFuture = apiService.editGroupName(editGroupNameRequest, userId);
+
+        editGroupNameFuture.compose(editGroupName -> response
+                .putHeader("content-type", "application/json; charset=utf-8")
+                .end(editGroupName.encodePrettily()), Future.future().setHandler(handler -> {
+            handleException(handler.cause(), response);
+        }));
+    }
+
+    private void kickMember(HttpServerResponse response, JsonObject requestObject, String userId) {
+        KickMemberRequest kickMemberRequest = requestObject.mapTo(KickMemberRequest.class);
+        Future<JsonObject> kickMemberFuture = apiService.kickMember(kickMemberRequest, userId);
+
+        kickMemberFuture.compose(kickMember -> response
+                .putHeader("content-type", "application/json; charset=utf-8")
+                .end(kickMember.encodePrettily()), Future.future().setHandler(handler -> {
+            handleException(handler.cause(), response);
+        }));
+    }
+
+    private void outGroup(HttpServerResponse response, JsonObject requestObject, String userId) {
+        OutGroupRequest outGroupRequest = requestObject.mapTo(OutGroupRequest.class);
+        Future<JsonObject> outGroupFuture = apiService.outGroup(outGroupRequest, userId);
+
+        outGroupFuture.compose(outGroup -> response
+                .putHeader("content-type", "application/json; charset=utf-8")
+                .end(outGroup.encodePrettily()), Future.future().setHandler(handler -> {
             handleException(handler.cause(), response);
         }));
     }

@@ -4,11 +4,8 @@ package com.hey.auth.exception.handler;
 import com.hey.auth.exception.jwt.InvalidJwtTokenException;
 import com.hey.auth.exception.system.SystemIdNotFoundException;
 import com.hey.auth.exception.system.SystemKeyInvalidException;
-import com.hey.auth.exception.user.EmptyPinException;
-import com.hey.auth.exception.user.PinNotMatchedException;
-import com.hey.auth.exception.user.UserIdNotFoundException;
+import com.hey.auth.exception.user.*;
 import com.hey.auth.dto.api.ApiResponse;
-import com.hey.auth.exception.user.UsernameEmailExistedException;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -121,5 +118,13 @@ public class ApiExceptionHandler {
         log.error(errMessage);
 
         return getResponse(code, errMessage);
+    }
+
+    @ExceptionHandler(value = {PasswordNotMatchedException.class})
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseEntity<Object> handleApiResponseException(PasswordNotMatchedException exception) {
+        log.error(exception.getMessage());
+        HttpStatus code = HttpStatus.BAD_REQUEST;
+        return getResponse(code, exception.getMessage());
     }
 }

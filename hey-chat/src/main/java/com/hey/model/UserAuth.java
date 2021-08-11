@@ -4,7 +4,6 @@ public class UserAuth {
 
     private String userName;
     private String userId;
-    private String hashedPassword;
 
     public UserAuth() {
     }
@@ -25,11 +24,4 @@ public class UserAuth {
         this.userId = userId;
     }
 
-    public String getHashedPassword() {
-        return hashedPassword;
-    }
-
-    public void setHashedPassword(String hashedPassword) {
-        this.hashedPassword = hashedPassword;
-    }
 }
