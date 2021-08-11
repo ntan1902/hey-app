@@ -237,7 +237,6 @@ class LuckyMoneyServiceImplTest {
 //        luckyMoneyService.receiveLuckyMoney(request);
         // then
         assertThrows(HadReceivedException.class, () -> luckyMoneyService.receiveLuckyMoney(request));
-
     }
 
     @Test
