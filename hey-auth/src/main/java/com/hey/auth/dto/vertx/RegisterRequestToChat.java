@@ -10,6 +10,5 @@ import lombok.NoArgsConstructor;
 public class RegisterRequestToChat {
     private String userId;
     private String userName;
-    private String password;
     private String fullName;
 }

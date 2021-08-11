@@ -2,28 +2,20 @@ package com.hey.cache.client;
 
 import com.hey.model.*;
 import com.hey.repository.DataRepository;
-import com.hey.util.GenerationUtils;
 import com.hey.util.PropertiesUtils;
-import io.vertx.core.AsyncResult;
-import io.vertx.core.CompositeFuture;
 import io.vertx.core.Future;
-import io.vertx.core.json.Json;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.redis.RedisClient;
-import io.vertx.redis.RedisTransaction;
 import io.vertx.redis.op.ScanOptions;
-import org.ajbrown.namemachine.Gender;
-import org.ajbrown.namemachine.Name;
-import org.ajbrown.namemachine.NameGenerator;
-import org.apache.commons.lang3.RandomUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.mindrot.jbcrypt.BCrypt;
-import se.emirbuc.randomsentence.RandomSentences;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Set;
 
 public class RedisCacheClient implements DataRepository {
 
@@ -40,7 +32,7 @@ public class RedisCacheClient implements DataRepository {
     }
 
     String generateUserAuthKey(String userName) {
-        return "user:" + userName;
+        return "user_auth:" + userName;
     }
 
     String generateUserFullKey(String userId) {
@@ -123,7 +115,6 @@ public class RedisCacheClient implements DataRepository {
 
         JsonObject userAuthJsonObject = new JsonObject();
         userAuthJsonObject.put("user_id", userAuth.getUserId());
-        userAuthJsonObject.put("hashed_password", userAuth.getHashedPassword());
 
         client.hmset(generateUserAuthKey(userAuth.getUserName()), userAuthJsonObject, resInsertUserAuth -> {
             if (resInsertUserAuth.succeeded()) {
@@ -150,7 +141,6 @@ public class RedisCacheClient implements DataRepository {
                     UserAuth userAuth = new UserAuth();
                     userAuth.setUserName(userName);
                     userAuth.setUserId(res.result().getString("user_id"));
-                    userAuth.setHashedPassword(res.result().getString("hashed_password"));
                     future.complete(userAuth);
                 } else {
                     future.complete(null);

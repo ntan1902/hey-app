@@ -169,7 +169,6 @@ public class BaseVerticleTestSuite {
 //                        sessionIdToTest = "test-1234-id";
 //                        User user = new User();
 //                        user.setUserName("vcthanh24");
-//                        user.setPassword("123");
 //                        getWebService().signIn(Json.encodePrettily(user)).setHandler(res2 -> {
 //                            jwtToTest = res2.result().getString("jwt");
 //                            jwtAuthHeader = "Bearer " + jwtToTest;

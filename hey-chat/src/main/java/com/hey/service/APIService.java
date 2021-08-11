@@ -49,12 +49,6 @@ public class APIService extends BaseService {
             return future;
         }
 
-        if (StringUtils.isBlank(user.getPassword())) {
-            future.fail(new HeyHttpStatusException(HttpStatus.BAD_REQUEST.code(),
-                    ErrorCode.REGISTER_PASSWORD_EMPTY.code(), "Password cannot be empty"));
-            return future;
-        }
-
         Future<UserAuth> getUserAuthFuture = dataRepository.getUserAuth(user.getUserName());
 
         getUserAuthFuture.compose(existedUserAuth -> {

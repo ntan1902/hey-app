@@ -30,7 +30,6 @@ public class BaseServiceTestSuite extends BaseVerticleTestSuite {
         user.setUserId(GenerationUtils.generateId());
         user.setUserName("insertTestUser");
         user.setFullName("Insert Test User");
-        user.setPassword("123");
 
         Future<User> future = getApiService().insertUser(user);
         future.compose(userActual -> {

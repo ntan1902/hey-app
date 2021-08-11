@@ -1,12 +1,9 @@
 package com.hey.model;
 
-import java.io.Serializable;
-
 public class User {
     private String userId;
     private String userName;
     private String fullName;
-    private String password;
 
     public String getUserId() {
         return userId;
@@ -32,11 +29,4 @@ public class User {
         this.fullName = fullName;
     }
 
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
 }

@@ -2,10 +2,7 @@ package com.hey.auth.controller;
 
 import com.hey.auth.dto.api.*;
 import com.hey.auth.dto.user.*;
-import com.hey.auth.exception.user.EmptyPinException;
-import com.hey.auth.exception.user.PinNotMatchedException;
-import com.hey.auth.exception.user.UserIdNotFoundException;
-import com.hey.auth.exception.user.UsernameEmailExistedException;
+import com.hey.auth.exception.user.*;
 import com.hey.auth.service.UserService;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -89,4 +86,14 @@ public class UserController {
                 .build());
     }
 
+    @PatchMapping("/changePassword")
+    public ResponseEntity<ApiResponse> changePassword(@RequestBody @Valid ChangePasswordRequest request) throws PasswordNotMatchedException {
+        userService.changePassword(request);
+        return ResponseEntity.ok(ApiResponse.builder()
+                .success(true)
+                .code(HttpStatus.NO_CONTENT.value())
+                .message("Change password successfully")
+                .payload("")
+                .build());
+    }
 }

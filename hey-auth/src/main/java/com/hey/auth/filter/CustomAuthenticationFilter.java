@@ -24,7 +24,7 @@ import java.io.IOException;
 
 
 @Log4j2
-@CrossOrigin("http://localhost:3000")
+//@CrossOrigin("http://localhost:3000")
 public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
     @Autowired
     private JwtUserUtil jwtUserUtil;

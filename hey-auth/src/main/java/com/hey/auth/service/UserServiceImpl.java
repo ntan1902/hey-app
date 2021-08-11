@@ -4,10 +4,7 @@ import com.hey.auth.api.ChatApi;
 import com.hey.auth.dto.user.*;
 import com.hey.auth.dto.vertx.RegisterRequestToChat;
 import com.hey.auth.entity.User;
-import com.hey.auth.exception.user.EmptyPinException;
-import com.hey.auth.exception.user.PinNotMatchedException;
-import com.hey.auth.exception.user.UserIdNotFoundException;
-import com.hey.auth.exception.user.UsernameEmailExistedException;
+import com.hey.auth.exception.user.*;
 import com.hey.auth.jwt.JwtSoftTokenUtil;
 import com.hey.auth.jwt.JwtUserUtil;
 import com.hey.auth.mapper.UserMapper;
@@ -166,6 +163,27 @@ public class UserServiceImpl implements UserDetailsService, UserService {
 
         userRepository.save(user);
 
+    }
+
+    @Override
+    public void changePassword(ChangePasswordRequest request) throws PasswordNotMatchedException {
+        log.info("Inside changePassword of UserServiceImpl: {}", request);
+        User user = getCurrentUser();
+
+        String oldPassword = request.getOldPassword();
+        String password = request.getPassword();
+        String confirmPassword = request.getConfirmPassword();
+
+        if(!passwordEncoder.matches(oldPassword, user.getPassword())) {
+            throw new PasswordNotMatchedException("Old password is not matched. Please try again");
+        }
+
+        if(!password.equals(confirmPassword)) {
+            throw new PasswordNotMatchedException("Confirm password is not matched. Please try again");
+        }
+
+        user.setPassword(passwordEncoder.encode(password));
+        userRepository.save(user);
     }
 
 }
