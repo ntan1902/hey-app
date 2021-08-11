@@ -255,7 +255,7 @@ public class APIService extends BaseService {
     }
 
     public Future<UsernameExistedResponse> checkUsernameExisted(UsernameExistedRequest usernameExistedRequest,
-            String userId) {
+                                                                String userId) {
 
         Future<UsernameExistedResponse> future = Future.future();
 
@@ -336,7 +336,7 @@ public class APIService extends BaseService {
     }
 
     public Future<WaitingChatHeaderResponse> waitingChatHeader(WaitingChatHeaderRequest waitingChatHeaderRequest,
-            String userId) {
+                                                               String userId) {
 
         Future<WaitingChatHeaderResponse> future = Future.future();
 
@@ -749,7 +749,7 @@ public class APIService extends BaseService {
 
             List<Future> getFriendListFutures = new ArrayList<>();
 
-            for(String friendListKey: keys){
+            for (String friendListKey : keys) {
                 getFriendListFutures.add(dataRepository.getWaitingFriendList(friendListKey, userId));
             }
 
@@ -758,8 +758,8 @@ public class APIService extends BaseService {
                 if (ar.succeeded()) {
 
                     List<FriendList> friendLists = new ArrayList<>();
-                    for(int index = 0; index < getFriendListFutures.size(); ++index){
-                        if(cp.resultAt(index) != null) {
+                    for (int index = 0; index < getFriendListFutures.size(); ++index) {
+                        if (cp.resultAt(index) != null) {
                             friendLists.add(cp.resultAt(index));
                         }
                     }
@@ -1352,7 +1352,7 @@ public class APIService extends BaseService {
                 List<UserHash> userHashes = chatList.getUserHashes();
 
                 userHashes.forEach(userHash -> {
-                    if(userHash.getUserId().equals(userId)) {
+                    if (userHash.getUserId().equals(userId)) {
                         userHash.setFullName(editProfileRequest.getFullName());
                     }
                 });
@@ -1365,7 +1365,7 @@ public class APIService extends BaseService {
                 getChatMessagesFuture.compose(chatMessages -> {
                     chatMessages.forEach(chatMessage -> {
                         UserHash userHash = chatMessage.getUserHash();
-                        if(userHash.getUserId().equals(userId)) {
+                        if (userHash.getUserId().equals(userId)) {
                             userHash.setFullName(editProfileRequest.getFullName());
                         }
                         chatMessage.setUserHash(userHash);
@@ -1377,17 +1377,16 @@ public class APIService extends BaseService {
         }, Future.future().setHandler(handler -> future.fail(handler.cause())));
 
 
-
         // FriendList
         Future<List<FriendList>> getFriendListsFuture = getFriendLists(userId);
         getFriendListsFuture.compose(friendLists -> {
             friendLists.forEach(friendList -> {
                 UserHash friendUserHashes = friendList.getFriendUserHashes();
                 UserHash currentUserHashes = friendList.getCurrentUserHashes();
-                if(friendUserHashes.getUserId().equals(userId)) {
+                if (friendUserHashes.getUserId().equals(userId)) {
                     friendUserHashes.setFullName(editProfileRequest.getFullName());
                 }
-                if(currentUserHashes.getUserId().equals(userId)) {
+                if (currentUserHashes.getUserId().equals(userId)) {
                     currentUserHashes.setFullName(editProfileRequest.getFullName());
                 }
 
@@ -1405,6 +1404,168 @@ public class APIService extends BaseService {
                 future.fail(ar.cause());
             }
         });
+        return future;
+    }
+
+    public Future<JsonObject> editGroupName(EditGroupNameRequest editGroupNameRequest, String userId) {
+        Future<JsonObject> future = Future.future();
+
+        String sessionId = editGroupNameRequest.getSessionId();
+        String groupName = editGroupNameRequest.getGroupName();
+
+        // ChatList
+        Future<ChatList> getChatListFuture = getChatListBySessionId(sessionId);
+        getChatListFuture.compose(chatList -> {
+            // Update UserHashes in ChatList
+            List<UserHash> userHashes = chatList.getUserHashes();
+
+            boolean isUserIdInSessionId = userHashes.stream()
+                    .anyMatch(userHash -> userHash.getUserId().equals(userId));
+
+            if (isUserIdInSessionId
+                    && chatList.getGroup()
+                    && chatList.getOwner().equals(userId)) {
+                chatList.setGroupName(groupName);
+
+                Future<ChatList> insertChatListFuture = dataRepository.insertChatList(chatList);
+                insertChatListFuture.compose(res -> {
+                    JsonObject apiResponse = new JsonObject();
+                    apiResponse.put("success", true);
+                    apiResponse.put("message", "Edit group name successfully");
+                    apiResponse.put("code", 201);
+                    apiResponse.put("payload", "");
+                    future.complete(apiResponse);
+
+                }, Future.future().setHandler(handler -> future.fail(handler.cause())));
+            } else {
+                JsonObject apiResponse = new JsonObject();
+                apiResponse.put("success", false);
+                apiResponse.put("message", "Edit group name unsuccessfully");
+                apiResponse.put("code", 400);
+                apiResponse.put("payload", "");
+                future.complete(apiResponse);
+            }
+
+        }, Future.future().setHandler(handler -> future.fail(handler.cause())));
+        return future;
+    }
+
+    public Future<JsonObject> kickMember(KickMemberRequest kickMemberRequest, String userId) {
+        Future<JsonObject> future = Future.future();
+
+        String sessionId = kickMemberRequest.getSessionId();
+        String memberId = kickMemberRequest.getMemberId();
+
+        // ChatList
+        Future<ChatList> getChatListFuture = getChatListBySessionId(sessionId);
+        getChatListFuture.compose(chatList -> {
+            // Update UserHashes in ChatList
+            List<UserHash> userHashes = chatList.getUserHashes();
+
+            boolean isUserIdInSessionId = false;
+            boolean isMemberIdInSessionId = false;
+            for (UserHash userHash : userHashes) {
+                if (userHash.getUserId().equals(userId)) {
+                    isUserIdInSessionId = true;
+                }
+                if (userHash.getUserId().equals(memberId)) {
+                    isMemberIdInSessionId = true;
+                }
+            }
+
+            if (!userId.equals(memberId)
+                    && chatList.getGroup()
+                    && isUserIdInSessionId
+                    && isMemberIdInSessionId
+                    && chatList.getOwner().equals(userId)) {
+
+                Future<Long> deleteSessionFuture = dataRepository.deleteSessionKey(chatList);
+                deleteSessionFuture.compose(res -> {
+                    List<UserHash> kickedUserHashes = userHashes.stream()
+                            .filter(userHash -> !userHash.getUserId().equals(memberId))
+                            .collect(Collectors.toList());
+
+                    chatList.setUserHashes(kickedUserHashes);
+
+                    Future<ChatList> insertChatListFuture = dataRepository.insertChatList(chatList);
+                    insertChatListFuture.compose(res2 -> {
+                        JsonObject apiResponse = new JsonObject();
+                        apiResponse.put("success", true);
+                        apiResponse.put("message", "Kick member successfully");
+                        apiResponse.put("code", 201);
+                        apiResponse.put("payload", "");
+                        future.complete(apiResponse);
+
+                    }, Future.future().setHandler(handler -> future.fail(handler.cause())));
+
+                }, Future.future().setHandler(handler -> future.fail(handler.cause())));
+
+
+            } else {
+                JsonObject apiResponse = new JsonObject();
+                apiResponse.put("success", false);
+                apiResponse.put("message", "Kick member unsuccessfully");
+                apiResponse.put("code", 400);
+                apiResponse.put("payload", "");
+                future.complete(apiResponse);
+            }
+
+        }, Future.future().setHandler(handler -> future.fail(handler.cause())));
+        return future;
+    }
+
+    public Future<JsonObject> outGroup(OutGroupRequest outGroupRequest, String userId) {
+        Future<JsonObject> future = Future.future();
+
+        String sessionId = outGroupRequest.getSessionId();
+
+        // ChatList
+        Future<ChatList> getChatListFuture = getChatListBySessionId(sessionId);
+        getChatListFuture.compose(chatList -> {
+            // Update UserHashes in ChatList
+            List<UserHash> userHashes = chatList.getUserHashes();
+
+            boolean isUserIdInSessionId = userHashes.stream()
+                    .anyMatch(userHash -> userHash.getUserId().equals(userId));
+            if (chatList.getGroup()
+                    && isUserIdInSessionId
+                    && chatList.getOwner().equals(userId)) {
+
+                Future<Long> deleteSessionFuture = dataRepository.deleteSessionKey(chatList);
+                deleteSessionFuture.compose(res -> {
+                    List<UserHash> outGroupUserHashes = userHashes.stream()
+                            .filter(userHash -> !userHash.getUserId().equals(userId))
+                            .collect(Collectors.toList());
+
+                    chatList.setUserHashes(outGroupUserHashes);
+                    if(!outGroupUserHashes.isEmpty()) {
+                        chatList.setOwner(outGroupUserHashes.get(0).getUserId());
+                    }
+
+                    Future<ChatList> insertChatListFuture = dataRepository.insertChatList(chatList);
+                    insertChatListFuture.compose(res2 -> {
+                        JsonObject apiResponse = new JsonObject();
+                        apiResponse.put("success", true);
+                        apiResponse.put("message", "Out group successfully");
+                        apiResponse.put("code", 201);
+                        apiResponse.put("payload", "");
+                        future.complete(apiResponse);
+
+                    }, Future.future().setHandler(handler -> future.fail(handler.cause())));
+
+                }, Future.future().setHandler(handler -> future.fail(handler.cause())));
+
+
+            } else {
+                JsonObject apiResponse = new JsonObject();
+                apiResponse.put("success", false);
+                apiResponse.put("message", "Out group unsuccessfully");
+                apiResponse.put("code", 400);
+                apiResponse.put("payload", "");
+                future.complete(apiResponse);
+            }
+
+        }, Future.future().setHandler(handler -> future.fail(handler.cause())));
         return future;
     }
 }

@@ -9,7 +9,7 @@ public class ChatList implements Serializable {
     private String sessionId;
     private Date updatedDate;
     private String lastMessage;
-    private Boolean isGroup;
+    private boolean isGroup;
     private String groupName;
     private String owner;
 
@@ -46,11 +46,11 @@ public class ChatList implements Serializable {
         this.lastMessage = lastMessage;
     }
 
-    public Boolean getGroup() {
+    public boolean getGroup() {
         return isGroup;
     }
 
-    public void setGroup(Boolean group) {
+    public void setGroup(boolean group) {
         isGroup = group;
     }
 

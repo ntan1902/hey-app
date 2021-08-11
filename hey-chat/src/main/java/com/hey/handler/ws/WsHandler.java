@@ -98,6 +98,7 @@ public class WsHandler {
             deleteSessionFuture.compose(res -> {
                 List<String> userIds = new ArrayList<>();
                 userIds.add(request.getUserId());
+
                 Future<List<UserFull>> getUserFullsFuture = apiService.getUserFulls(userIds);
 
                 getUserFullsFuture.compose(userFulls -> {
@@ -275,12 +276,6 @@ public class WsHandler {
         List<String> userIds = new ArrayList<>();
         userIds.add(userId);
 
-//        Future<UserAuth> getUserAuthFuture = dataRepository.getUserAuth(request.getUsernames().get(0));
-//        getUserAuthFuture.compose(userAuth -> {
-//            userIds.add(userAuth.getUserId());
-//        }, Future.future().setHandler(handler -> {
-//            throw new RuntimeException(handler.cause());
-//        }));
         // ??? Why add username instead of user id ?
         userIds.add(request.getUsernames().get(0));
 
