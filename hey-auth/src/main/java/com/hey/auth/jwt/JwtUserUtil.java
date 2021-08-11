@@ -10,6 +10,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Component
 @Log4j2
@@ -21,15 +22,10 @@ public class JwtUserUtil {
     public String generateToken(User user) {
         Map<String, Object> claims = new HashMap<>();
 
-        Collection<? extends GrantedAuthority> roles = user.getAuthorities();
-
-        if (roles.contains(new SimpleGrantedAuthority("ROLE_ADMIN"))) {
-            claims.put("isAdmin", true);
-        }
-
-        if (roles.contains(new SimpleGrantedAuthority("ROLE_USER"))) {
-            claims.put("isUser", true);
-        }
+        claims.put("roles", user.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .collect(Collectors.toList())
+        );
 
         return doGenerateToken(claims, user.getId());
     }
@@ -58,6 +54,21 @@ public class JwtUserUtil {
         return claims.getSubject();
     }
 
+    public List<String> getRolesFromJwt(String token) {
+        Claims claims = Jwts.parser()
+                .setSigningKey(jwtProperties.getUserSecret())
+                .parseClaimsJws(token)
+                .getBody();
+        return claims.get("roles", List.class);
+    }
+
+    public Date getExpiration(String token) {
+        Claims claims = Jwts.parser()
+                .setSigningKey(jwtProperties.getUserSecret())
+                .parseClaimsJws(token)
+                .getBody();
+        return claims.getExpiration();
+    }
     public boolean validateToken(String authToken) {
         try {
             Jwts.parser().setSigningKey(jwtProperties.getUserSecret()).parseClaimsJws(authToken);

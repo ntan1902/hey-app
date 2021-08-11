@@ -8,9 +8,11 @@ import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.repository.configuration.EnableRedisRepositories;
 
 @Configuration
 @AllArgsConstructor
+@EnableRedisRepositories
 public class RedisConfig {
 
     private final RedisProperties redisProperties;
@@ -27,8 +29,8 @@ public class RedisConfig {
     public RedisTemplate<Object, Object> redisTemplate() {
         RedisTemplate<Object, Object> redisTemplate = new RedisTemplate<>();
         redisTemplate.setConnectionFactory(lettuceConnectionFactory());
-        redisTemplate.setEnableTransactionSupport(true);
-        redisTemplate.afterPropertiesSet();
+//        redisTemplate.setEnableTransactionSupport(true);
+//        redisTemplate.afterPropertiesSet();
         return redisTemplate;
     }
 }
