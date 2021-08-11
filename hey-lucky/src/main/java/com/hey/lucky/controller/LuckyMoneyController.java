@@ -17,6 +17,9 @@ import java.util.List;
 @AllArgsConstructor
 @Log4j2
 public class LuckyMoneyController {
+    public static final String SENT_LUCKY_MONEY = "Sent lucky money";
+    public static final String RECEIVED_LUCKY_MONEY = "Received lucky money";
+
     private final LuckyMoneyService luckyMoneyService;
 
     @PostMapping("/createLuckyMoney")
@@ -25,17 +28,18 @@ public class LuckyMoneyController {
         return ResponseEntity.ok(ApiResponse.builder()
                 .success(true)
                 .code(HttpStatus.OK.value())
-                .message("Sent lucky money")
+                .message(SENT_LUCKY_MONEY)
+                .payload("")
                 .build());
     }
     @PostMapping("/receiveLuckyMoney")
-    public ResponseEntity<ApiResponse<Object>> createLuckyMoney(@RequestBody ReceiveLuckyMoneyRequest request) throws InvalidLuckyMoneyException, UnauthorizeException, ErrCallApiException, LuckyMoneyExpiredException, OutOfBagException, CannotTransferMoneyException, HadReceivedException, ErrCallChatApiException {
+    public ResponseEntity<ApiResponse<Object>> receiveLuckyMoney(@RequestBody ReceiveLuckyMoneyRequest request) throws InvalidLuckyMoneyException, UnauthorizeException, ErrCallApiException, LuckyMoneyExpiredException, OutOfBagException, CannotTransferMoneyException, HadReceivedException, ErrCallChatApiException {
         log.info("Receive lucky money");
         luckyMoneyService.receiveLuckyMoney(request);
         return ResponseEntity.ok(ApiResponse.builder()
                 .success(true)
                 .code(HttpStatus.OK.value())
-                .message("Received lucky money")
+                .message(RECEIVED_LUCKY_MONEY)
                 .payload("")
                 .build());
     }
@@ -47,7 +51,8 @@ public class LuckyMoneyController {
                 .success(true)
                 .code(HttpStatus.OK.value())
                 .message("")
-                .payload(luckyMoneyDTOList).build());
+                .payload(luckyMoneyDTOList)
+                .build());
     }
     @GetMapping("/getDetailsLuckyMoney")
     public ResponseEntity<ApiResponse<Object>> getDetailsLuckyMoney(@RequestParam long luckyMoneyId) throws InvalidLuckyMoneyException, UnauthorizeException, ErrCallApiException, CannotGetUserInfo {
@@ -56,6 +61,7 @@ public class LuckyMoneyController {
                 .success(true)
                 .code(HttpStatus.OK.value())
                 .message("")
-                .payload(luckyMoneyDetails).build());
+                .payload(luckyMoneyDetails)
+                .build());
     }
 }
