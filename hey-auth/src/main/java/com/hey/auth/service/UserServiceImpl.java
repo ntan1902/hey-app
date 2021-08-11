@@ -76,6 +76,7 @@ public class UserServiceImpl implements UserDetailsService, UserService {
         user.setPassword(
                 passwordEncoder.encode(registerRequest.getPassword())
         );
+        user.setPin("");
 
         // Call api register to Vert.x
         chatApi.register(userRepository.save(user));
@@ -183,6 +184,31 @@ public class UserServiceImpl implements UserDetailsService, UserService {
         }
 
         user.setPassword(passwordEncoder.encode(password));
+        userRepository.save(user);
+    }
+
+    @Override
+    public void changePin(ChangePinRequest request) throws EmptyPinException, PinNotMatchedException {
+        log.info("Inside changePin of UserServiceImpl: {}", request);
+        User user = getCurrentUser();
+
+        // Check if user has pin
+        if (user.getPin().isEmpty()) {
+            throw new EmptyPinException("Pin is not created yet!");
+        }
+
+        String oldPin = request.getOldPin();
+        String pin = request.getPin();
+        String confirmPin = request.getConfirmPin();
+
+        if (!passwordEncoder.matches(oldPin, user.getPin())) {
+            throw new PinNotMatchedException("Old pin: " + oldPin + " not matched");
+        }
+
+        if(!pin.equals(confirmPin)) {
+            throw new PinNotMatchedException("Confirm pin is not matched. Please try again");
+        }
+        user.setPin(passwordEncoder.encode(pin));
         userRepository.save(user);
     }
 

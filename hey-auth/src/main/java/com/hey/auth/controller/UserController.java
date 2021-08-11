@@ -96,4 +96,15 @@ public class UserController {
                 .payload("")
                 .build());
     }
+
+    @PatchMapping("/changePin")
+    public ResponseEntity<ApiResponse> changePin(@RequestBody @Valid ChangePinRequest request) throws PinNotMatchedException, EmptyPinException {
+        userService.changePin(request);
+        return ResponseEntity.ok(ApiResponse.builder()
+                .success(true)
+                .code(HttpStatus.NO_CONTENT.value())
+                .message("Change password successfully")
+                .payload("")
+                .build());
+    }
 }

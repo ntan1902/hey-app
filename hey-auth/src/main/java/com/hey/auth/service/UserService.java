@@ -24,4 +24,6 @@ public interface UserService {
     void editUser(String userId, EditUserRequest request) throws UsernameEmailExistedException, UserIdNotFoundException;
 
     void changePassword(ChangePasswordRequest request) throws PasswordNotMatchedException;
+
+    void changePin(ChangePinRequest request) throws EmptyPinException, PinNotMatchedException;
 }
