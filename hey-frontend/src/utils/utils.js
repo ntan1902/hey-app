@@ -12,8 +12,15 @@ export function setJwtToStorage(jwt) {
 }
 
 export function getJwtFromStorage() {
-  var data = sessionStorage.getItem("jwt");
-  return data;
+  return sessionStorage.getItem("jwt");
+}
+
+export function setRefreshTokenToStorage(jwt) {
+  sessionStorage.setItem("refreshToken", jwt);
+}
+
+export function getRefreshTokenFromStorage() {
+  return sessionStorage.getItem("refreshToken");
 }
 
 export function clearStorage() {

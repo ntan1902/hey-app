@@ -26,8 +26,6 @@ import java.io.IOException;
 @Log4j2
 @Component
 public class AuthServiceFilter extends OncePerRequestFilter {
-    private final HttpStatus[] ERR_CODE = {HttpStatus.UNAUTHORIZED, HttpStatus.BAD_REQUEST};
-
     private final RestTemplate restTemplate;
 
     @Autowired
@@ -44,7 +42,9 @@ public class AuthServiceFilter extends OncePerRequestFilter {
                 if (request.getServletPath().contains("/api/v1/me")) {
                     log.info("Authorize user with token {}", token);
                     User user = new User(authorizeUser(token));
-                    authenticationToken = new UsernamePasswordAuthenticationToken(user, null, null);
+                    if (!user.getId().isEmpty()) {
+                        authenticationToken = new UsernamePasswordAuthenticationToken(user, null, null);
+                    }
                 } else if (request.getServletPath().contains("/api/v1/systems")) {
                     log.info("Authorize system with token {}", token);
                     System system = new System(authorizeSystem(token));
@@ -70,7 +70,7 @@ public class AuthServiceFilter extends OncePerRequestFilter {
     private String authorizeUser(String token) {
         HttpEntity<AuthorizeUserRequest> requestEntity = new HttpEntity<>(new AuthorizeUserRequest(token));
         AuthorizeUserResponse authorizeUserResponse = restTemplate.postForObject("/authorizeUser", requestEntity, AuthorizeUserResponse.class);
-        if (authorizeUserResponse != null) {
+        if (authorizeUserResponse != null && authorizeUserResponse.isSuccess()) {
             return authorizeUserResponse.getPayload().getUserId();
         }
         return "";

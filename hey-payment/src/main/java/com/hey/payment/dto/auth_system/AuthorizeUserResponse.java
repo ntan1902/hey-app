@@ -16,7 +16,8 @@ public class AuthorizeUserResponse {
     public class Payload {
         String userId;
     }
-    Boolean success;
+
+    boolean success;
     int code;
     String message;
     Payload payload;

@@ -3,10 +3,7 @@ import { loadChatContainer, startNewChatSingle } from "./chatAction";
 import { api } from "../api/api";
 import { isEmptyString } from "../utils/utils";
 import deepcopy from "deepcopy";
-import { Icon, notification } from "antd";
-import { statusNotification } from "../components/status-notification";
 import { AuthAPI } from "../api";
-import { message } from "antd";
 
 export const ADDRESSBOOK_FETCHED = "addressBook.ADDRESSBOOK_FETCHED";
 export const WAITINGFRIEND_FETCHED = "addressBook.WAITINGFRIEND_FETCHED";

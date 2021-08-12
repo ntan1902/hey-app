@@ -75,6 +75,7 @@ export const authentication = (account) => async (dispatch) => {
       const data = {
         isLogin: res.data.success,
         token: res.data.payload.accessToken,
+        refreshToken: res.data.payload.refreshToken,
         success: true,
       };
       await dispatch(onLogin(data));
