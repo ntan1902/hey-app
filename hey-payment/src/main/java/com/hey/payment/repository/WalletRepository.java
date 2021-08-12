@@ -17,7 +17,7 @@ import java.util.Optional;
 @Repository
 public interface WalletRepository extends JpaRepository<Wallet, Long> {
     @Cacheable(value = "wallets", key = "#id")
-    Optional<Wallet> findById(String id);
+    Optional<Wallet> findById(Long id);
 
     @CachePut(value = "wallets", key = "#p0.id")
     Wallet save(Wallet wallet);
