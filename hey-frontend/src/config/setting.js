@@ -11,10 +11,10 @@ export const SITE_URL = IS_DEV
 
 // export const SITE_URL = 'https://www.bugs.vn/';
 // export const API_URL = 'http://api.dev.oispyouthunion.vn';
-export const API_AUTH = `${SITE_URL}auth`;
-export const API_PAYMENT = `${SITE_URL}payment`;
-export const API_LUCKY = `${SITE_URL}lucky`;
-export const API_CHAT = `${SITE_URL}chat`;
+export const API_AUTH = `auth`;
+export const API_PAYMENT = `payment`;
+export const API_LUCKY = `lucky`;
+export const API_CHAT = `chat`;
 export const API_WS = IS_DEV ? "ws://localhost:8090" : "ws://103.7.41.159:8090";
 
 // export const API_URL = 'http://103.7.41.159:3000/';

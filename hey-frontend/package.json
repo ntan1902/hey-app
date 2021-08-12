@@ -8,6 +8,7 @@
     "deepcopy": "^1.0.0",
     "history": "^4.7.2",
     "jquery": "^3.3.1",
+    "query-string": "^7.0.1",
     "random-words": "^1.1.0",
     "react": "^16.4.1",
     "react-avatar": "^3.1.2",
