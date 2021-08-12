@@ -1,9 +1,8 @@
 import axios from "axios";
-import { message } from "antd";
 import { getJwtFromStorage, isEmptyString } from "../utils/utils";
-import { API_CHAT, API_WS } from "../config/setting";
+import {API_CHAT, API_WS, SITE_URL} from "../config/setting";
 
-export const host = API_CHAT;
+export const host = SITE_URL + API_CHAT;
 export const ws_host = API_WS;
 const auth_type = "Bearer";
 
