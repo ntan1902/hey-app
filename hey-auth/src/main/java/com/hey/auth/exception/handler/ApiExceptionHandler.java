@@ -127,4 +127,5 @@ public class ApiExceptionHandler {
         HttpStatus code = HttpStatus.BAD_REQUEST;
         return getResponse(code, exception.getMessage());
     }
+
 }

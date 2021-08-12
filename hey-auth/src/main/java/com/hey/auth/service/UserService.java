@@ -28,5 +28,5 @@ public interface UserService {
 
     void changePin(ChangePinRequest request) throws EmptyPinException, PinNotMatchedException, UserIdNotFoundException;
 
-    void logout(LogOutRequest request) throws InvalidJwtTokenException;
+    RefreshTokenResponse refreshToken(RefreshTokenRequest request) throws InvalidJwtTokenException, UserIdNotFoundException;
 }

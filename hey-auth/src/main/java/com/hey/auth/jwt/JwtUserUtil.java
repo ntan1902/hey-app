@@ -6,7 +6,6 @@ import io.jsonwebtoken.*;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
@@ -19,7 +18,7 @@ public class JwtUserUtil {
     private final JwtProperties jwtProperties;
 
 
-    public String generateToken(User user) {
+    public String generateAccessToken(User user) {
         Map<String, Object> claims = new HashMap<>();
 
         claims.put("roles", user.getAuthorities().stream()
@@ -27,16 +26,34 @@ public class JwtUserUtil {
                 .collect(Collectors.toList())
         );
 
-        return doGenerateToken(claims, user.getId());
+        return doGenerateAccessToken(claims, user.getId());
     }
 
-    public String doGenerateToken(Map<String, Object> claims, String subject) {
+    public String doGenerateAccessToken(Map<String, Object> claims, String subject) {
         try {
             return Jwts.builder()
                     .setClaims(claims)
                     .setSubject(subject)
                     .setIssuedAt(new Date(System.currentTimeMillis()))
-                    .setExpiration(new Date(System.currentTimeMillis() + jwtProperties.getExpirationMs()))
+                    .setExpiration(new Date(System.currentTimeMillis() + jwtProperties.getAccessTokenExpirationMs()))
+                    .signWith(SignatureAlgorithm.HS256, jwtProperties.getUserSecret())
+                    .compact();
+        } catch (Exception e) {
+            log.error(e);
+            return null;
+        }
+    }
+
+    public String generateRefreshToken(User user) {
+        return doGenerateRefreshToken(user.getId());
+    }
+
+    private String doGenerateRefreshToken(String subject) {
+        try {
+            return Jwts.builder()
+                    .setSubject(subject)
+                    .setIssuedAt(new Date(System.currentTimeMillis()))
+                    .setExpiration(new Date(System.currentTimeMillis() + jwtProperties.getRefreshTokenExpirationMs()))
                     .signWith(SignatureAlgorithm.HS256, jwtProperties.getUserSecret())
                     .compact();
         } catch (Exception e) {
@@ -86,4 +103,6 @@ public class JwtUserUtil {
         }
         return false;
     }
+
+
 }

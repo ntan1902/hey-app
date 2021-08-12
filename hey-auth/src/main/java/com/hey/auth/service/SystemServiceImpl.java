@@ -106,10 +106,10 @@ public class SystemServiceImpl implements SystemService {
         String softToken = softTokenRequest.getSoftToken();
         if (!softTokenRepository.existsById(softToken)){
             throw new InvalidJwtTokenException("Expired JWT soft token");
-        }
-        else {
+        } else {
             softTokenRepository.deleteById(softToken);
         }
+
         if (jwtSoftTokenUtil.validateToken(softToken)) {
             // Parse information from jwt
             String userId = jwtSoftTokenUtil.getUserIdFromJwt(softToken);

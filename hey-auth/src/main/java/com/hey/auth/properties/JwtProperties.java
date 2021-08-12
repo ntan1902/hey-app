@@ -10,7 +10,8 @@ import org.springframework.stereotype.Component;
 public class JwtProperties {
     private String userSecret;
     private String systemSecret;
-    private Long expirationMs;
+    private Long accessTokenExpirationMs;
+    private Long refreshTokenExpirationMs;
 
     private String softTokenSecret;
     private Long softTokenExpirationMs;
