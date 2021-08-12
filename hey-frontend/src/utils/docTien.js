@@ -25,33 +25,33 @@ DocTienBangChu.prototype.docSo3ChuSo = function (baso) {
     tram = parseInt(baso / 100);
     chuc = parseInt((baso % 100) / 10);
     donvi = baso % 10;
-    if (tram === 0 && chuc === 0 && donvi === 0) return "";
-    if (tram !== 0) {
+    if (tram == 0 && chuc == 0 && donvi == 0) return "";
+    if (tram != 0) {
         KetQua += this.ChuSo[tram] + " trăm ";
-        if (chuc === 0 && donvi !== 0) KetQua += " linh ";
+        if (chuc == 0 && donvi != 0) KetQua += " linh ";
     }
-    if (chuc !== 0 && chuc !== 1) {
+    if (chuc != 0 && chuc != 1) {
         KetQua += this.ChuSo[chuc] + " mươi";
-        if (chuc === 0 && donvi !== 0) KetQua = KetQua + " linh ";
+        if (chuc == 0 && donvi != 0) KetQua = KetQua + " linh ";
     }
-    if (chuc === 1) KetQua += " mười ";
+    if (chuc == 1) KetQua += " mười ";
     switch (donvi) {
         case 1:
-            if (chuc !== 0 && chuc !== 1) {
+            if (chuc != 0 && chuc != 1) {
                 KetQua += " mốt ";
             } else {
                 KetQua += this.ChuSo[donvi];
             }
             break;
         case 5:
-            if (chuc === 0) {
+            if (chuc == 0) {
                 KetQua += this.ChuSo[donvi];
             } else {
                 KetQua += " lăm ";
             }
             break;
         default:
-            if (donvi !== 0) {
+            if (donvi != 0) {
                 KetQua += this.ChuSo[donvi];
             }
             break;
@@ -68,7 +68,7 @@ DocTienBangChu.prototype.doc = function (SoTien) {
     var soAm = false;
     var ViTri = new Array();
     if (SoTien < 0) soAm = true; //return "Số tiền âm !";
-    if (SoTien === 0) return "Không đồng"; //"Không đồng !";
+    if (SoTien == 0) return "Không đồng"; //"Không đồng !";
     if (SoTien > 0) {
         so = SoTien;
     } else {
