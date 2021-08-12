@@ -66,12 +66,13 @@ class AddFriend extends React.Component {
           ) : (
             ""
           )}
-          <p className="model-label">Please enter user name:</p>
+          <p className="model-label">Search by name or email</p>
           <Input
             id="add-user-name"
             className="add-user-name"
             onPressEnter={this.handleOk}
           />
+
         </Modal>
       </div>
     );

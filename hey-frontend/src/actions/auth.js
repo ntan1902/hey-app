@@ -157,9 +157,7 @@ const updateProfile = (form) => async (dispatch) => {
   });
 };
 
-export const changePassword = (currentPassword, newPassword) => async (
-  dispatch
-) => {
+export const changePassword = (currentPassword, newPassword) => async (dispatch) => {
   return new Promise(async (resolve, reject) => {
     try {
       console.log("currentPassword: ", currentPassword);

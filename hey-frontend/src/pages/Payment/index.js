@@ -17,7 +17,7 @@ import { isAuthenticated, isEmptyString } from "../../utils/utils";
 import { Redirect } from "react-router-dom";
 import $ from "jquery";
 import Topup from "./topup";
-import Transfer from "./transfer";
+import Transfer from "./transfer/transfer";
 import TransferStatement from "./transfer-statement";
 import Success from "./success";
 import TransferSuccess from "./success_transfer";
@@ -40,7 +40,7 @@ class Chat extends React.Component {
     // this.props.initialWebSocket();
   }
 
-  componentWillUnmount() {}
+  componentWillUnmount() { }
 
   handleMainMenuChange(e) {
     this.setState({ menuaction: e.key });
@@ -95,8 +95,8 @@ class Chat extends React.Component {
             breakpoint="lg"
             collapsedWidth="0"
             theme="light"
-            onBreakpoint={(broken) => {}}
-            onCollapse={(collapsed, type) => {}}
+            onBreakpoint={(broken) => { }}
+            onCollapse={(collapsed, type) => { }}
             width="300"
             id="sub-side-menu"
           >

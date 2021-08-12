@@ -42,30 +42,28 @@ class Main extends React.Component {
     this.handleSendClick = this.handleSendClick.bind(this);
   }
 
-  componentDidMount() {
+  async componentDidMount() {
     this.props.initialWebSocket();
 
-    this.props
-      .actions()
-      .authActions.getProfile()
-      .then((res) => {
-        setUserIdToStorage(res.data.id);
+    let actions = this.props.actions();
 
-        this.props
-          .actions()
-          .paymentActions.checkBalance()
-          .then((res) => {
-            this.props.actions().paymentActions.getBalance();
-          });
-        console.log("Res", res.data);
-      })
-      .catch((err) => {
-        console.log("Err", err);
-        clearStorage();
-      });
+    try {
+      let getProFileResponse = await actions.authActions.getProfile();
+      setUserIdToStorage(getProFileResponse.data.id);
+
+      let checkBalanceResponse = await actions.paymentActions.checkBalance();
+      if (checkBalanceResponse.success) {
+        actions.paymentActions.getBalance();
+      }
+
+    } catch (err) {
+      console.log("Err", err);
+      clearStorage();
+    }
+
   }
 
-  componentWillUnmount() {}
+  componentWillUnmount() { }
 
   handleMainMenuChange(e) {
     this.setState({ menuaction: e.key });
@@ -117,8 +115,8 @@ class Main extends React.Component {
             width
             breakpoint="lg"
             collapsedWidth="0"
-            onBreakpoint={(broken) => {}}
-            onCollapse={(collapsed, type) => {}}
+            onBreakpoint={(broken) => { }}
+            onCollapse={(collapsed, type) => { }}
             width="80"
             id="main-side-menu"
           >

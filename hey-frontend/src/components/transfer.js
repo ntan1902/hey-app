@@ -1,5 +1,5 @@
 import React from "react";
-import { Modal, Input, Alert, Button } from "antd";
+import { Modal, Input, Alert, Button, message } from "antd";
 import CustomAvatar from "../components/custom-avatar";
 import {
   addNewUserChatGroup,
@@ -29,9 +29,6 @@ class VerifyPIN extends React.Component {
     this.timer = 0;
   }
 
-  showPinModal = () => {
-    this.props.paymentActions.onOpenPinPopup();
-  };
 
   handlePinCancel = (e) => {
     this.props.paymentActions.onClosePinPopup();
@@ -64,6 +61,9 @@ class VerifyPIN extends React.Component {
       .then((res) => {
         if (this.props.cb) this.props.cb();
         this.setState({ handleSoftToken: false, softToken: "" });
+      })
+      .catch(err => {
+        message.error(err.error.response.data.message);
       });
   };
 
@@ -75,7 +75,10 @@ class VerifyPIN extends React.Component {
       console.log(res, "Pin");
       this.setState({ handleSoftToken: true, softToken: res.softToken });
       this.startTimer();
-    });
+    })
+      .catch(err => {
+        message.error(err.error.response.data.message)
+      });
   };
 
   secondsToTime = (secs) => {
@@ -125,22 +128,6 @@ class VerifyPIN extends React.Component {
   render() {
     return (
       <div>
-        <div onClick={this.showPinModal}>
-          <Button
-            style={{
-              backgroundColor: "white",
-              borderColor: "black",
-              color: "black",
-              width: 250,
-              height: 50,
-              margin: 0,
-            }}
-            onClick={() => {}}
-            type="primary"
-          >
-            Continue
-          </Button>
-        </div>
         <Modal
           width="420px"
           title="Verify your PIN"

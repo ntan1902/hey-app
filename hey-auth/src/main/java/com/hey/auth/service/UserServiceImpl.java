@@ -22,7 +22,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Log4j2
 @AllArgsConstructor
@@ -241,6 +243,16 @@ public class UserServiceImpl implements UserDetailsService, UserService {
         } else {
             throw new InvalidJwtTokenException("Invalid Refresh Token");
         }
+    }
+
+    @Override
+    public List<UserDTO> searchUser(String key) {
+        List<User> users = userRepository.findAllByFullNameContainsOrEmailContains(key);
+
+        List<UserDTO> userDTOList = users.stream().map(userMapper::user2UserDTO).collect(Collectors.toList());
+
+        return userDTOList;
+
     }
 
 }

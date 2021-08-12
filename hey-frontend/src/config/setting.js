@@ -6,7 +6,7 @@ export const IS_DEV = process.env.REACT_APP_NODE_ENV === "development";
 
 export const SITE_NAME = "Bugs";
 export const SITE_URL = IS_DEV
-  ? "https://localhost:5050/"
+  ? "http://localhost:5050/"
   : "http://103.7.41.159:5050/";
 
 // export const SITE_URL = 'https://www.bugs.vn/';

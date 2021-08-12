@@ -1,0 +1,43 @@
+.money-btn {
+    background-color: white;
+    border-color: black;
+    color: black;
+    width: 30%;
+    height: 50px;
+    margin: 20px;
+}
+
+.wrapper-transfer-form {
+    height: 100%;
+    background-color: white;
+    padding: 30px;
+    display: flex;
+    flex-direction: column;
+    padding-top: 60px;
+    border-radius: 30px;
+    margin: 50px;
+}
+
+.wrapper-money-btns {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+.wrapper-money-btns .row-money-btns {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.continue-btn {
+    background-color: white;
+    border-color: black;
+    color: black;
+    width: 250px;
+    height: 50px;
+    margin: 0px;
+}

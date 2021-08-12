@@ -1,6 +1,6 @@
 import React from "react";
 import { connect } from "react-redux";
-import { Button, Icon, Input } from "antd";
+import { Button, Icon, Input, message } from "antd";
 import NumericInput from "../../components/numberic-input";
 import Transfer from "../../components/transfer";
 import { DocTien } from "../../utils";
@@ -87,6 +87,18 @@ class MessagePanel extends React.Component {
       </div>
     );
   };
+
+  handleTopup = () => {
+    this.props.paymentActions
+      .topup(this.state.amount)
+      .then((res) => {
+        console.log("Topup Success");
+      })
+      .catch(err => {
+        message.error(err.error.response.data.message);
+        console.log(err);
+      });
+  }
 
   render() {
     return (
@@ -240,13 +252,7 @@ class MessagePanel extends React.Component {
                 padding: 0,
               }}
               type="primary"
-              onClick={() => {
-                this.props.paymentActions
-                  .topup(this.state.amount)
-                  .then((res) => {
-                    console.log("Topup Success");
-                  });
-              }}
+              onClick={this.handleTopup}
             >
               <p
                 style={{

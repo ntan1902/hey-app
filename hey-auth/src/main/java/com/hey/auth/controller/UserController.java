@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.List;
 
 @RestController
 @RequestMapping("/auth/api/v1/users")
@@ -118,6 +119,17 @@ public class UserController {
                 .code(HttpStatus.CREATED.value())
                 .message("")
                 .payload(payload)
+                .build());
+    }
+
+    @GetMapping("/searchUser")
+    public ResponseEntity<ApiResponse> searchUser(@RequestParam String key){
+        List<UserDTO> userDTOList = userService.searchUser(key);
+        return ResponseEntity.ok(ApiResponse.builder()
+                .success(true)
+                .code(HttpStatus.OK.value())
+                .message("")
+                .payload(userDTOList)
                 .build());
     }
 }

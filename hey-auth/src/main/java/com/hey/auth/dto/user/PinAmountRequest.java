@@ -11,9 +11,9 @@ import javax.validation.constraints.NotEmpty;
 @AllArgsConstructor
 @NoArgsConstructor
 public class PinAmountRequest {
-    @NotEmpty(message = "pin must not be empty")
+    @NotEmpty(message = "Pin must not be empty")
     private String pin;
 
-    @Min(1000L)
+    @Min(value = 1000L, message = "Min amount is 1000")
     private long amount;
 }

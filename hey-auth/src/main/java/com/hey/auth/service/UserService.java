@@ -5,6 +5,8 @@ import com.hey.auth.entity.User;
 import com.hey.auth.exception.jwt.InvalidJwtTokenException;
 import com.hey.auth.exception.user.*;
 
+import java.util.List;
+
 public interface UserService {
     User loadUserById(String userId) throws UserIdNotFoundException;
 
@@ -29,4 +31,6 @@ public interface UserService {
     void changePin(ChangePinRequest request) throws EmptyPinException, PinNotMatchedException, UserIdNotFoundException;
 
     RefreshTokenResponse refreshToken(RefreshTokenRequest request) throws InvalidJwtTokenException, UserIdNotFoundException;
+
+    List<UserDTO> searchUser(String key);
 }
