@@ -104,15 +104,16 @@ public class SystemServiceImpl implements SystemService {
         log.info("Inside authorizeSoftToken of SystemServiceImpl: {}", softTokenRequest);
         String softToken = softTokenRequest.getSoftToken();
         String lockKey = "soft_token"+softToken;
+
         redisLockService.lock(lockKey);
         if (!softTokenRepository.existsById(softToken)){
             redisLockService.unlock(lockKey);
             throw new InvalidJwtTokenException("Expired JWT soft token");
-        }
-        else {
+        } else {
             softTokenRepository.deleteById(softToken);
         }
         redisLockService.unlock(lockKey);
+
         if (jwtSoftTokenUtil.validateToken(softToken)) {
             // Parse information from jwt
             String userId = jwtSoftTokenUtil.getUserIdFromJwt(softToken);

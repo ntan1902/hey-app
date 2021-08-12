@@ -2,8 +2,6 @@ package com.hey.auth.filter;
 
 import com.hey.auth.jwt.JwtSystemUtil;
 import com.hey.auth.jwt.JwtUserUtil;
-import com.hey.auth.repository.BlackListRepository;
-import com.hey.auth.service.BlackListService;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -30,9 +28,6 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
 
     @Autowired
     private JwtSystemUtil jwtSystemUtil;
-
-    @Autowired
-    private BlackListService blackListService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
@@ -61,7 +56,6 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
 
     private void handleAuthorizationUser(HttpServletRequest request, String jwt) {
         if (StringUtils.hasText(jwt)
-                && !blackListService.isExistInBlackListToken(jwt)
                 && jwtUserUtil.validateToken(jwt)) {
 
             String userId = jwtUserUtil.getUserIdFromJwt(jwt);

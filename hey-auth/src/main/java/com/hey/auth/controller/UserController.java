@@ -109,15 +109,15 @@ public class UserController {
                 .build());
     }
 
-    @PostMapping("/logout")
-    public ResponseEntity<ApiResponse> logout(@RequestBody @Valid LogOutRequest request) throws PinNotMatchedException, EmptyPinException, InvalidJwtTokenException {
-        userService.logout(request);
+    @PostMapping("/refreshToken")
+    public ResponseEntity<ApiResponse> refreshToken(@RequestBody @Valid RefreshTokenRequest request) throws InvalidJwtTokenException, UserIdNotFoundException {
+        RefreshTokenResponse payload = userService.refreshToken(request);
 
         return ResponseEntity.ok(ApiResponse.builder()
                 .success(true)
-                .code(HttpStatus.NO_CONTENT.value())
-                .message("Logout successfully")
-                .payload("")
+                .code(HttpStatus.CREATED.value())
+                .message("")
+                .payload(payload)
                 .build());
     }
 }

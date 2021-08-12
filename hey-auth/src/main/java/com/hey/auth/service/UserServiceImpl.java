@@ -2,8 +2,6 @@ package com.hey.auth.service;
 
 import com.hey.auth.api.ChatApi;
 import com.hey.auth.dto.user.*;
-import com.hey.auth.entity.BlackList;
-import com.hey.auth.dto.vertx.RegisterRequestToChat;
 import com.hey.auth.entity.SoftToken;
 import com.hey.auth.entity.User;
 import com.hey.auth.exception.jwt.InvalidJwtTokenException;
@@ -11,17 +9,11 @@ import com.hey.auth.exception.user.*;
 import com.hey.auth.jwt.JwtSoftTokenUtil;
 import com.hey.auth.jwt.JwtUserUtil;
 import com.hey.auth.mapper.UserMapper;
-import com.hey.auth.repository.BlackListRepository;
-import com.hey.auth.properties.ServiceProperties;
+import com.hey.auth.repository.RefreshTokenRepository;
 import com.hey.auth.repository.SoftTokenRepository;
 import com.hey.auth.repository.UserRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.http.MediaType;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -43,7 +35,7 @@ public class UserServiceImpl implements UserDetailsService, UserService {
     private final PasswordEncoder passwordEncoder;
     private final ChatApi chatApi;
     private final SoftTokenRepository softTokenRepository;
-    private final BlackListRepository blackListRepository;
+    private final RefreshTokenRepository refreshTokenRepository;
 
     private String getCurrentUserId() {
         return (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -234,14 +226,20 @@ public class UserServiceImpl implements UserDetailsService, UserService {
     }
 
     @Override
-    public void logout(LogOutRequest request) throws InvalidJwtTokenException {
-        log.info("Inside logout of UserServiceImpl: {}", request);
-        String accessToken = request.getAccessToken();
-        if(jwtUserUtil.validateToken(accessToken)) {
-            BlackList blackList = new BlackList(accessToken);
-            blackListRepository.save(blackList);
+    public RefreshTokenResponse refreshToken(RefreshTokenRequest request) throws InvalidJwtTokenException, UserIdNotFoundException {
+        log.info("Inside refreshToken of UserServiceImpl: {}", request);
+
+        String refreshToken = request.getRefreshToken();
+        if(refreshTokenRepository.existsById(refreshToken)
+                && jwtUserUtil.validateToken(refreshToken)) {
+            String userId = jwtUserUtil.getUserIdFromJwt(refreshToken);
+            String accessToken = jwtUserUtil.generateRefreshToken(
+                    this.loadUserById(userId)
+            );
+
+            return new RefreshTokenResponse(accessToken, "Bearer");
         } else {
-            throw new InvalidJwtTokenException("Invalid JWT token");
+            throw new InvalidJwtTokenException("Invalid Refresh Token");
         }
     }
 
