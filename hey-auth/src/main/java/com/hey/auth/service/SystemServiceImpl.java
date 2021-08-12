@@ -1,7 +1,6 @@
 package com.hey.auth.service;
 
 import com.hey.auth.dto.system.*;
-import com.hey.auth.entity.SoftToken;
 import com.hey.auth.entity.System;
 import com.hey.auth.entity.User;
 import com.hey.auth.exception.jwt.InvalidJwtTokenException;
@@ -18,12 +17,12 @@ import com.hey.auth.repository.SystemRepository;
 import com.hey.auth.repository.UserRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 @Service
@@ -38,6 +37,7 @@ public class SystemServiceImpl implements SystemService {
     private final JwtSoftTokenUtil jwtSoftTokenUtil;
     private final SystemMapper systemMapper;
     private final SoftTokenRepository softTokenRepository;
+    private final RedisLockService redisLockService;
 
 
     @Override
@@ -102,13 +102,17 @@ public class SystemServiceImpl implements SystemService {
     @Override
     public UserIdAmountResponse authorizeSoftToken(SoftTokenRequest softTokenRequest) throws PinNotMatchedException, InvalidJwtTokenException, UserIdNotFoundException {
         log.info("Inside authorizeSoftToken of SystemServiceImpl: {}", softTokenRequest);
-
         String softToken = softTokenRequest.getSoftToken();
+        String lockKey = "soft_token"+softToken;
+
+        redisLockService.lock(lockKey);
         if (!softTokenRepository.existsById(softToken)){
+            redisLockService.unlock(lockKey);
             throw new InvalidJwtTokenException("Expired JWT soft token");
         } else {
             softTokenRepository.deleteById(softToken);
         }
+        redisLockService.unlock(lockKey);
 
         if (jwtSoftTokenUtil.validateToken(softToken)) {
             // Parse information from jwt
