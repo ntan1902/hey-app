@@ -420,7 +420,7 @@ class Main extends React.Component {
                   message: "The input is not valid E-mail!",
                 },
                 {
-                  required: true,
+                  required: false,
                   message: "Please input your E-mail!",
                 },
               ],
@@ -430,7 +430,7 @@ class Main extends React.Component {
             {getFieldDecorator("full-name", {
               rules: [
                 {
-                  required: true,
+                  required: false,
                   message: "Please input Full Name!",
                 },
               ],
