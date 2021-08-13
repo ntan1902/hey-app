@@ -2,10 +2,11 @@ import axios from "axios";
 import _ from "lodash";
 import queryString from "query-string";
 
-import {isAuthenticated, getJwtFromStorage, getRefreshTokenFromStorage, setJwtToStorage} from "./utils";
+import {isAuthenticated, getJwtFromStorage, getRefreshTokenFromStorage, setJwtToStorage, clearStorage} from "./utils";
 import {API_AUTH, SITE_URL} from "../config/setting";
 
 let callback401 = null;
+
 export function set401Callback(cb) {
     callback401 = cb;
 }
@@ -21,7 +22,6 @@ const axiosInstance = axios.create({
 
 const refresh = () => {
     const _refreshToken = getRefreshTokenFromStorage();
-    console.log(_refreshToken)
     try {
         return axiosInstance.post(`${API_AUTH}/api/v1/users/refreshToken`, {refreshToken: _refreshToken})
     } catch (err) {
@@ -43,17 +43,23 @@ axiosInstance.interceptors.response.use(
     (error) => {
         const {response} = error;
         if (!_.isEmpty(response) && response.status === 401) {
-            return refresh().then(rs => {
-                axiosInstance.setToken(rs.data.payload.accessToken);
+            return refresh()
+                .then(rs => {
+                    axiosInstance.setToken(rs.data.payload.accessToken);
 
-                const config = error.response.config;
-                config.headers = {
-                    'Authorization': `Bearer ${rs.data.payload.accessToken}`,
-                    'Accept': 'application/json'
-                }
+                    const config = error.response.config;
+                    config.headers = {
+                        'Authorization': `Bearer ${rs.data.payload.accessToken}`,
+                        'Accept': 'application/json'
+                    }
 
-                return axiosInstance(config);
-            });
+                    return axiosInstance(config);
+                })
+                .catch(err => {
+                    // Expired soft token
+                    const {status} = err.response;
+                    status === 400 && clearStorage();
+                });
         }
 
         return Promise.reject(error);
@@ -69,7 +75,6 @@ axiosInstance.interceptors.request.use(
                 'Accept': 'application/json'
             }
         }
-
         return config;
     },
     (error) => {

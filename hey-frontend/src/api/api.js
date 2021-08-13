@@ -30,23 +30,14 @@ instance.interceptors.response.use(
     return response;
   },
   function (error) {
-    //ignore ping
-    // if (!error.request.responseURL.endsWith("api/protected/ping")) {
-    //   if (error.response.data.error.message) {
-    //     message.error(error.response.data.error.message);
-    //   } else {
-    //     message.error(
-    //       "Ooops, The server was unable to complete your request. We will be back soon :("
-    //     );
-    //   }
-    // }
+
     return Promise.reject(error);
   }
 );
 
 export const api = {
   get: (url) => {
-    var jwt = getJwtFromStorage();
+    let jwt = getJwtFromStorage();
     if (!isEmptyString(jwt)) {
       jwt = auth_type + " " + jwt;
     } else {
@@ -55,7 +46,7 @@ export const api = {
     return instance.get(`${url}`, { headers: { Authorization: jwt } });
   },
   post: (url, req) => {
-    var jwt = getJwtFromStorage();
+    let jwt = getJwtFromStorage();
     if (!isEmptyString(jwt)) {
       jwt = auth_type + " " + jwt;
     } else {

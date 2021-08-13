@@ -4,6 +4,7 @@ package com.hey.auth.service;
 import com.hey.auth.dto.system.*;
 import com.hey.auth.entity.System;
 import com.hey.auth.exception.jwt.InvalidJwtTokenException;
+import com.hey.auth.exception.system.InvalidSoftTokenException;
 import com.hey.auth.exception.system.SystemIdNotFoundException;
 import com.hey.auth.exception.system.SystemKeyInvalidException;
 import com.hey.auth.exception.user.PinNotMatchedException;
@@ -22,7 +23,7 @@ public interface SystemService {
 
     SystemAuthorizeResponse authorizeSystem(SystemAuthorizeRequest authorizeRequest) throws InvalidJwtTokenException, SystemIdNotFoundException;
 
-    UserIdAmountResponse authorizeSoftToken(SoftTokenRequest softTokenRequest) throws PinNotMatchedException, InvalidJwtTokenException, UserIdNotFoundException;
+    UserIdAmountResponse authorizeSoftToken(SoftTokenRequest softTokenRequest) throws PinNotMatchedException, InvalidJwtTokenException, UserIdNotFoundException, InvalidSoftTokenException;
 
     SystemDTO findById(String systemId) throws SystemIdNotFoundException;
 

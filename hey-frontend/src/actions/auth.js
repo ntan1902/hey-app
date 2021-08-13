@@ -70,6 +70,7 @@ export const authentication = (account) => async (dispatch) => {
   return new Promise(async (resolve, reject) => {
     try {
       console.log(account);
+      console.log(AuthAPI);
       const res = await AuthAPI.login(account);
       console.log(res);
       const data = {

@@ -4,6 +4,7 @@ import com.hey.auth.dto.system.*;
 import com.hey.auth.entity.System;
 import com.hey.auth.entity.User;
 import com.hey.auth.exception.jwt.InvalidJwtTokenException;
+import com.hey.auth.exception.system.InvalidSoftTokenException;
 import com.hey.auth.exception.system.SystemIdNotFoundException;
 import com.hey.auth.exception.system.SystemKeyInvalidException;
 import com.hey.auth.exception.user.PinNotMatchedException;
@@ -100,7 +101,7 @@ public class SystemServiceImpl implements SystemService {
     }
 
     @Override
-    public UserIdAmountResponse authorizeSoftToken(SoftTokenRequest softTokenRequest) throws PinNotMatchedException, InvalidJwtTokenException, UserIdNotFoundException {
+    public UserIdAmountResponse authorizeSoftToken(SoftTokenRequest softTokenRequest) throws PinNotMatchedException, UserIdNotFoundException, InvalidSoftTokenException {
         log.info("Inside authorizeSoftToken of SystemServiceImpl: {}", softTokenRequest);
         String softToken = softTokenRequest.getSoftToken();
         String lockKey = "soft_token"+softToken;
@@ -108,7 +109,7 @@ public class SystemServiceImpl implements SystemService {
         redisLockService.lock(lockKey);
         if (!softTokenRepository.existsById(softToken)){
             redisLockService.unlock(lockKey);
-            throw new InvalidJwtTokenException("Expired JWT soft token");
+            throw new InvalidSoftTokenException("Expired JWT soft token");
         } else {
             softTokenRepository.deleteById(softToken);
         }
@@ -131,7 +132,7 @@ public class SystemServiceImpl implements SystemService {
             }
 
         } else {
-            throw new InvalidJwtTokenException("Invalid JWT soft token");
+            throw new InvalidSoftTokenException("Invalid JWT soft token");
         }
     }
 

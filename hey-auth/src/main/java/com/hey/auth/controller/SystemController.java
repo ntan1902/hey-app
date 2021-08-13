@@ -5,6 +5,7 @@ import com.hey.auth.dto.system.*;
 import com.hey.auth.dto.user.EditUserRequest;
 import com.hey.auth.dto.user.UserDTO;
 import com.hey.auth.exception.jwt.InvalidJwtTokenException;
+import com.hey.auth.exception.system.InvalidSoftTokenException;
 import com.hey.auth.exception.system.SystemIdNotFoundException;
 import com.hey.auth.exception.system.SystemKeyInvalidException;
 import com.hey.auth.exception.user.PinNotMatchedException;
@@ -66,7 +67,7 @@ public class SystemController {
     }
 
     @PostMapping("/authorizeSoftToken")
-    public ResponseEntity<ApiResponse> authorizeSoftToken(@RequestBody @Valid SoftTokenRequest softTokenRequest) throws PinNotMatchedException, InvalidJwtTokenException, UserIdNotFoundException {
+    public ResponseEntity<ApiResponse> authorizeSoftToken(@RequestBody @Valid SoftTokenRequest softTokenRequest) throws PinNotMatchedException, InvalidJwtTokenException, UserIdNotFoundException, InvalidSoftTokenException {
         UserIdAmountResponse payload = systemService.authorizeSoftToken(softTokenRequest);
         return ResponseEntity.ok(ApiResponse.builder()
                 .success(true)

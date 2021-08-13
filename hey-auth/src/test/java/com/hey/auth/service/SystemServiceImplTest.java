@@ -4,6 +4,7 @@ import com.hey.auth.dto.system.*;
 import com.hey.auth.entity.System;
 import com.hey.auth.entity.User;
 import com.hey.auth.exception.jwt.InvalidJwtTokenException;
+import com.hey.auth.exception.system.InvalidSoftTokenException;
 import com.hey.auth.exception.system.SystemIdNotFoundException;
 import com.hey.auth.exception.system.SystemKeyInvalidException;
 import com.hey.auth.exception.user.PinNotMatchedException;
@@ -277,7 +278,7 @@ class SystemServiceImplTest {
     }
 
     @Test
-    void authorizeSoftToken() throws PinNotMatchedException, InvalidJwtTokenException, UserIdNotFoundException {
+    void authorizeSoftToken() throws PinNotMatchedException, UserIdNotFoundException, InvalidSoftTokenException {
         // given
         SoftTokenRequest request = new SoftTokenRequest(
                 "dump"
