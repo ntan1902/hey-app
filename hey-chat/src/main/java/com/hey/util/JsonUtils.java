@@ -28,7 +28,7 @@ public final class JsonUtils {
         return Json.encodePrettily(object);
     }
 
-    public static String encodePrettily(JsonObject error){
+    public static String encodePrettily(Object error){
         return Json.encodePrettily(error);
     }
 

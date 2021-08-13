@@ -1,4 +1,4 @@
-import { bindPaymentActions } from "./payment";
-import { bindAuthActions } from "./auth";
+import { bindPaymentActions } from "./paymentAction";
+import { bindAuthActions } from "./authAction";
 
 export { bindPaymentActions, bindAuthActions };

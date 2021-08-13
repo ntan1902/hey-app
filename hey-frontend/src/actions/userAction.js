@@ -1,6 +1,4 @@
 import { api } from "../api/api";
-import { message } from "antd";
-import { receiveNewUserChatGroup } from "./chatAction";
 
 export const CHANGE_TAB = "portal.CHANGE_TAB";
 export const REGISTER_SUCCEEDED = "user.REGISTER_SUCCEEDED";
@@ -12,36 +10,12 @@ export function changeTab(activeTabKey) {
   return { type: CHANGE_TAB, activeTabKey: activeTabKey };
 }
 
-export function register(user) {
-  return function (dispatch) {
-    return callRegisterApi(user).then((result) => {
-      dispatch(registerSucceeded(result.data));
-    });
-  };
-}
-
 export function logout() {
   return { type: "USER_LOGOUT" };
 }
 
-function callRegisterApi(user) {
-  var promise = new Promise(function (resolve, reject) {
-    api.post(`/api/v1/users/register`, user).then((res) => {
-      resolve(res);
-    });
-  });
-  return promise;
-}
-
-export function registerSucceeded(user) {
-  message.success(
-    "Register successfully. You can proceed to login with your account :)"
-  );
-  return { type: REGISTER_SUCCEEDED, user: user };
-}
-
 export function receivedUserProfile(result) {
-  var status = "You are online";
+  let status = "You are online";
   if (result.data.payload.status != "") {
     status = result.data.payload.status;
   }
