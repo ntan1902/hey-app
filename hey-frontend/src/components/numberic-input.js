@@ -1,27 +1,16 @@
 import { Input, Tooltip } from "antd";
 import React from "react";
-
-function formatNumber(value) {
-  value += "";
-  const list = value.split(".");
-  const prefix = list[0].charAt(0) === "-" ? "-" : "";
-  let num = prefix ? list[0].slice(1) : list[0];
-  let result = "";
-  while (num.length > 3) {
-    result = `,${num.slice(-3)}${result}`;
-    num = num.slice(0, num.length - 3);
-  }
-  if (num) {
-    result = num + result;
-  }
-  return `${prefix}${result}${list[1] ? `.${list[1]}` : ""}`;
-}
+import { currencyToString, DocTien } from "../utils/index";
 
 export default class NumericInput extends React.Component {
   onChange = (e) => {
-    const { value } = e.target;
-    const reg = /^-?[0-9]*(\.[0-9]*)?$/;
-    if ((!isNaN(value) && reg.test(value)) || value === "" || value === "-") {
+    const value = e.target.value;
+    const reg = /^-?([0-9]|,)*(\.[0-9]*)?$/;
+    if (
+      (!isNaN(currencyToString(value)) && reg.test(value)) ||
+      value === "" ||
+      value === "-"
+    ) {
       this.props.onChange(value);
     }
   };
@@ -30,7 +19,7 @@ export default class NumericInput extends React.Component {
   onBlur = () => {
     const { value, onBlur, onChange } = this.props;
     let valueTemp = value;
-    if (value.charAt(value.length - 1) === "." || value === "-") {
+    if (value.charAt(value.length - 1) === "," || value === "-") {
       valueTemp = value.slice(0, -1);
     }
     onChange(valueTemp.replace(/0*(\d+)/, "$1"));
@@ -42,8 +31,8 @@ export default class NumericInput extends React.Component {
   render() {
     const { value } = this.props;
     const title = value ? (
-      <span className="numeric-input-title">
-        {value !== "-" ? formatNumber(value) : "-"}
+      <span>
+        {value !== "-" ? new DocTien().doc(currencyToString(value)) : "-"}
       </span>
     ) : (
       "Input a number"
@@ -61,7 +50,7 @@ export default class NumericInput extends React.Component {
           onChange={this.onChange}
           onBlur={this.onBlur}
           placeholder="Input a number"
-          maxLength={12}
+          maxLength={20}
           //   style={{ width: 150 }}
         />
       </Tooltip>

@@ -4,7 +4,7 @@ import { Button, Icon, Input } from "antd";
 import NumericInput from "../../../components/numberic-input";
 import Transfer from "../../../components/transfer";
 import AddFriendTransfer from "../../../components/add-friend-transfer";
-import { DocTien } from "../../../utils";
+import { DocTien, formatToCurrency, currencyToString } from "../../../utils";
 
 import { channingActions } from "../../../utils";
 import { bindPaymentActions } from "../../../actions";
@@ -23,7 +23,6 @@ class MessagePanel extends React.Component {
     this.errorReceiver = React.createRef();
     this.errorAmount = React.createRef();
   }
-
 
   showPinModal = () => {
     let hasError = false;
@@ -50,7 +49,8 @@ class MessagePanel extends React.Component {
 
   renderButtonMoney = (item) => {
     return (
-      <Button className="money-btn"
+      <Button
+        className="money-btn"
         onClick={() => {
           this.errorAmount.current.innerText = "";
           this.setState({ amount: item.value });
@@ -107,56 +107,48 @@ class MessagePanel extends React.Component {
             ></AddFriendTransfer>
           </div>
           <div className="form-group">
-            <div style={{ fontSize: 20, width: 150, fontWeight: 200 }}>
-            </div>
+            <div style={{ fontSize: 20, width: 150, fontWeight: 200 }}></div>
             <p className="error-small-text" ref={this.errorReceiver}></p>
           </div>
-          <div className="form-group">
-            <div style={{
-              fontSize: 20,
-              fontWeight: 200,
-              width: 150,
-            }}
+          <div className="form-group" style={{ marginTop: 20 }}>
+            <div
+              style={{
+                fontSize: 20,
+                fontWeight: 200,
+                width: 150,
+              }}
             >
               Amount
             </div>
-            <div
-              style={{ display: "flex", flexDirection: "column", flex: 1 }}
-            >
+            <div style={{ display: "flex", flexDirection: "column", flex: 1 }}>
               <NumericInput
                 style={{ width: "50%" }}
-                value={this.state.amount}
+                value={formatToCurrency(this.state.amount)}
                 onChange={(value) => {
-                  this.errorAmount.current.innerText = ""
-                  this.setState({ amount: value });
+                  this.errorAmount.current.innerText = "";
+                  this.setState({ amount: currencyToString(value) });
                 }}
               />
             </div>
           </div>
           <div className="form-group">
-            <div style={{ fontSize: 20, width: 150, fontWeight: 200 }}>
-            </div>
-            <p style={{ marginTop: 5, marginLeft: 10, color: "#ACB1C0" }}>
-              {new DocTien().doc(this.state.amount)}
-            </p>
+            <div style={{ fontSize: 20, width: 150, fontWeight: 200 }}></div>
           </div>
           <div className="form-group">
-            <div style={{ fontSize: 20, width: 150, fontWeight: 200 }}>
-            </div>
+            <div style={{ fontSize: 20, width: 150, fontWeight: 200 }}></div>
             <p className="error-small-text" ref={this.errorAmount}></p>
           </div>
-          <div className="form-group">
-            <div style={{
-              fontSize: 20,
-              fontWeight: 200,
-              width: 150,
-            }}
+          <div className="form-group" style={{ marginTop: 20 }}>
+            <div
+              style={{
+                fontSize: 20,
+                fontWeight: 200,
+                width: 150,
+              }}
             >
               Message
             </div>
-            <div
-              style={{ display: "flex", flexDirection: "column", flex: 1 }}
-            >
+            <div style={{ display: "flex", flexDirection: "column", flex: 1 }}>
               <Input
                 style={{ width: "50%" }}
                 placeholder="Message to your friend"
@@ -180,9 +172,7 @@ class MessagePanel extends React.Component {
         >
           <div style={{ flex: 1 }}></div>
           <div onClick={this.showPinModal}>
-            <Button className="continue-btn"
-              type="primary"
-            >
+            <Button className="continue-btn" type="primary">
               Continue
             </Button>
           </div>

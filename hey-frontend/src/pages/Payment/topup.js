@@ -3,7 +3,7 @@ import { connect } from "react-redux";
 import { Button, Icon, Input, message } from "antd";
 import NumericInput from "../../components/numberic-input";
 import Transfer from "../../components/transfer";
-import { DocTien } from "../../utils";
+import { DocTien, formatToCurrency, currencyToString } from "../../utils";
 import { channingActions } from "../../utils";
 import { bindPaymentActions } from "../../actions";
 import { Result } from "antd";
@@ -94,11 +94,11 @@ class MessagePanel extends React.Component {
       .then((res) => {
         console.log("Topup Success");
       })
-      .catch(err => {
+      .catch((err) => {
         message.error(err.error.response.data.message);
         console.log(err);
       });
-  }
+  };
 
   render() {
     return (
@@ -218,14 +218,11 @@ class MessagePanel extends React.Component {
               >
                 <NumericInput
                   style={{ width: "50%" }}
-                  value={this.state.amount}
+                  value={formatToCurrency(this.state.amount)}
                   onChange={(value) => {
-                    this.setState({ amount: value });
+                    this.setState({ amount: currencyToString(value) });
                   }}
                 />
-                <p style={{ marginTop: 5, marginLeft: 10, color: "#ACB1C0" }}>
-                  {new DocTien().doc(this.state.amount)}
-                </p>
               </div>
             </div>
           </div>

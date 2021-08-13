@@ -1,48 +1,110 @@
-import React from 'react';
-import {Avatar} from 'antd';
-import Gravatar from 'react-gravatar'
-import Ravatar from 'react-avatar';
+import React from "react";
+import Gravatar from "react-gravatar";
+import Ravatar from "react-avatar";
+import { Drawer, List, Avatar, Divider, Col, Row } from "antd";
+
+const pStyle = {
+  fontSize: 16,
+  color: "rgba(0,0,0,0.85)",
+  lineHeight: "24px",
+  display: "block",
+  marginBottom: 16,
+};
+
+const DescriptionItem = ({ title, content }) => (
+  <div
+    style={{
+      fontSize: 14,
+      lineHeight: "22px",
+      marginBottom: 7,
+      color: "rgba(0,0,0,0.65)",
+    }}
+  >
+    <p
+      style={{
+        marginRight: 8,
+        display: "inline-block",
+        color: "rgba(0,0,0,0.85)",
+      }}
+    >
+      {title}:
+    </p>
+    {content}
+  </div>
+);
 
 class CustomAvatar extends React.Component {
+  state = { visible: true };
+
   render() {
     let customClassName = "custom-avatar " + this.props.type;
 
     switch (this.props.type) {
-      case 'main-avatar':
+      case "main-avatar":
         return (
-          <Gravatar email={this.props.avatar +"@gmail.com"} className={customClassName}   default="identicon"/>
+          <Gravatar
+            email={this.props.avatar + "@gmail.com"}
+            className={customClassName}
+            default="identicon"
+          />
         );
-      case 'new-avatar':
+      case "new-avatar":
         return (
-          <Avatar icon="plus" className={customClassName} style={{fontSize: 30}}/>
+          <Avatar
+            icon="plus"
+            className={customClassName}
+            style={{ fontSize: 30 }}
+          />
         );
-      case 'panel-avatar':
-      return (
-        <Ravatar name={this.props.avatar} className={customClassName}  size="50"/>
-      );
-      case 'panel-group-avatar':
+      case "panel-avatar":
         return (
-          <Ravatar name="G" color="#001529" className={customClassName}  size="50"/>
+          <Ravatar
+            name={this.props.avatar}
+            className={customClassName}
+            size="50"
+          />
         );
-      case 'user-avatar':
+      case "panel-group-avatar":
         return (
-          <Ravatar name={this.props.avatar} className={customClassName}  size="60"/>
+          <Ravatar
+            name="G"
+            color="#001529"
+            className={customClassName}
+            size="50"
+          />
+        );
+      case "user-avatar":
+        return (
+          <Ravatar
+            name={this.props.avatar}
+            className={customClassName}
+            size="60"
+          />
           /*<Gravatar email={this.props.username + '@vng.com.vn'} className={customClassName} default="identicon"/>*/
         );
-      case 'group-avatar':
+      case "group-avatar":
         return (
-          <Ravatar name="G" color="#001529" className={customClassName}  size="60"/>
+          <Ravatar
+            name="G"
+            color="#001529"
+            className={customClassName}
+            size="60"
+          />
         );
-      case 'chat-avatar':
+      case "chat-avatar":
         if (this.props.show) {
-          return (<Ravatar name={this.props.avatar} className={customClassName} size="40"/>)
+          return (
+            <Ravatar
+              name={this.props.avatar}
+              className={customClassName}
+              size="40"
+            />
+          );
         } else {
-          return (<div className="mock-small-avatar"/>)
+          return <div className="mock-small-avatar" />;
         }
       default:
-        return (
-          <Avatar className={customClassName}/>
-        );
+        return <Avatar className={customClassName} />;
     }
   }
 }

@@ -11,4 +11,19 @@ export function channingActions(currentActions, dispatch, ...actionGenerators) {
   }, currentActions);
 }
 
-export { axios, DocTien };
+const formatToCurrency = (amount) => {
+  if (amount == "") return "";
+  return parseInt(amount)
+    .toFixed(2)
+    .replace(/\d(?=(\d{3})+\.)/g, "$&,")
+    .split(".")[0];
+};
+
+const currencyToString = (amount) => {
+  if (amount == "") return "";
+  return amount.replace(/,/g, "");
+};
+
+const currency = "vnđ";
+
+export { axios, DocTien, formatToCurrency, currencyToString, currency };
