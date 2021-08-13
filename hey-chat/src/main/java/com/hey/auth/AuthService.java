@@ -6,11 +6,12 @@ import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
 import io.vertx.core.Handler;
 import io.vertx.core.json.JsonObject;
+import io.vertx.ext.auth.AuthProvider;
 import io.vertx.ext.auth.User;
 import io.vertx.ext.auth.jwt.impl.JWTUser;
 import io.vertx.ext.web.client.WebClient;
 
-public class AuthService {
+public class AuthService implements AuthProvider {
     private WebClient webClient;
     private static AuthService instance;
     private String jwt;
@@ -25,6 +26,7 @@ public class AuthService {
         return instance;
     }
 
+    @Override
     public void authenticate(JsonObject authInfo, Handler<AsyncResult<User>> resultHandler) {
         Integer port = PropertiesUtils.getInstance().getIntValue("auth.port");
         String host = PropertiesUtils.getInstance().getValue("auth.host");

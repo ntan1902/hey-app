@@ -23,3 +23,6 @@ export const ADD_FRIEND_TO_SESSION = "payment.ADD_FRIEND_TO_SESSION";
 
 // Lucky Money
 export const LUCKY_MONEY_POPUP = "payment.LUCKY_MONEY_POPUP";
+
+// Members
+export const CHANGE_STATE_MEMBERS_MODAL = "chat.CHANGE_STATE_MEMBERS_MODAL";

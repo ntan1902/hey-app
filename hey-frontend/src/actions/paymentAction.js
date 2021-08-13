@@ -192,6 +192,13 @@ const getAllTransferStatement = (data) => async (dispatch) => {
   });
 };
 
+const changeStateMembersModal = (state) => {
+  return {
+    type: actionTypes.CHANGE_STATE_MEMBERS_MODAL,
+    state
+  }
+}
+
 export const paymentActions = {
   /* Get Event */
   switchMainScreen,
@@ -209,6 +216,7 @@ export const paymentActions = {
   getAllTransferStatement,
   checkBalance,
   changeStateAddFriendPopup,
+  changeStateMembersModal
 };
 
 export function bindPaymentActions(currentActions, dispatch) {

@@ -34,6 +34,7 @@ export default function reduce(state = initialState, action) {
         ...state,
         chatList: action.fetchedChatlist,
         messageHeader: action.messageHeader,
+        currentSessionId: action.currentSessionId
       };
     case CHATLIST_REFETCHED:
       return {

@@ -1,5 +1,5 @@
 import React from "react";
-import {Icon, Input, Layout, Menu } from "antd";
+import { Icon, Input, Layout, Menu, Button } from "antd";
 import CustomAvatar from "../components/custom-avatar";
 import Chat from "./Chat";
 import Friend from "./Friend";
@@ -106,7 +106,7 @@ class Main extends React.Component {
     }
   }
 
-  componentWillUnmount() {}
+  componentWillUnmount() { }
 
   handleMainMenuChange(e) {
     this.setState({ menuaction: e.key });
@@ -223,8 +223,8 @@ class Main extends React.Component {
           </Form.Item>
           <Form.Item
             label="Confirm Password"
-            // hasFeedback
-            // validateStatus="error"
+          // hasFeedback
+          // validateStatus="error"
           >
             {getFieldDecorator("confirm-password", {
               rules: [
@@ -548,8 +548,8 @@ class Main extends React.Component {
             width
             breakpoint="lg"
             collapsedWidth="0"
-            onBreakpoint={(broken) => {}}
-            onCollapse={(collapsed, type) => {}}
+            onBreakpoint={(broken) => { }}
+            onCollapse={(collapsed, type) => { }}
             width="80"
             id="main-side-menu"
           >
