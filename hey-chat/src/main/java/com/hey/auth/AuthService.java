@@ -67,6 +67,17 @@ public class AuthService {
         String url = baseURL + "/editProfile/" + userId;
 
         webClient.patch(port, host, url).putHeader("Authorization", jwt).sendJson(editProfileRequest,
-                httpResponseAsyncResult -> resultHandler.handle(Future.succeededFuture(httpResponseAsyncResult.result().bodyAsJsonObject())));
+                httpResponseAsyncResult -> {
+                    if (httpResponseAsyncResult.succeeded()) {
+                        JsonObject result = httpResponseAsyncResult.result().bodyAsJsonObject();
+                        if (result.getInteger("code") == 400) {
+                            resultHandler.handle(Future.failedFuture(result.getString("message")));
+                        } else {
+                            resultHandler.handle(Future.succeededFuture(result));
+                        }
+                    } else {
+                        resultHandler.handle(Future.failedFuture("BAD REQUEST"));
+                    }
+                });
     }
 }

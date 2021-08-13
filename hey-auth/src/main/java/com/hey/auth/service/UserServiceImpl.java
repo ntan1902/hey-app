@@ -158,20 +158,22 @@ public class UserServiceImpl implements UserDetailsService, UserService {
     @Override
     public void editUser(String userId, EditUserRequest request) throws UsernameEmailExistedException, UserIdNotFoundException {
         log.info("Inside editUser of UserServiceImpl: {}", request);
-
-        boolean emailPresent =
-                userRepository
-                        .findByEmail(request.getEmail())
-                        .isPresent();
-        if (emailPresent) {
-            throw new UsernameEmailExistedException("Email already exists. Please choose another");
-        }
-
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserIdNotFoundException("User Id " + userId + " not found"));
 
-        user.setEmail(request.getEmail());
-        user.setFullName(request.getFullName());
+        String email = request.getEmail();
+        String fullName = request.getFullName();
+
+        boolean emailPresent = userRepository
+                .findByEmail(email)
+                .isPresent();
+
+        if (emailPresent && !user.getEmail().equals(email)) {
+            throw new UsernameEmailExistedException("Email already exists. Please choose another");
+        }
+
+        user.setEmail(email);
+        user.setFullName(fullName);
 
         userRepository.save(user);
 
@@ -232,7 +234,7 @@ public class UserServiceImpl implements UserDetailsService, UserService {
         log.info("Inside refreshToken of UserServiceImpl: {}", request);
 
         String refreshToken = request.getRefreshToken();
-        if(refreshTokenRepository.existsById(refreshToken)
+        if (refreshTokenRepository.existsById(refreshToken)
                 && jwtUserUtil.validateToken(refreshToken)) {
             String userId = jwtUserUtil.getUserIdFromJwt(refreshToken);
             String accessToken = jwtUserUtil.generateAccessToken(
@@ -259,12 +261,12 @@ public class UserServiceImpl implements UserDetailsService, UserService {
     public void logout(LogOutRequest request) throws InvalidJwtTokenException {
         log.info("Inside logout of UserServiceImpl: {}", request);
         String refreshToken = request.getRefreshToken();
-        if(refreshTokenRepository.existsById(refreshToken)
+        if (refreshTokenRepository.existsById(refreshToken)
                 && jwtUserUtil.validateToken(refreshToken)) {
             String userId = jwtUserUtil.getUserIdFromJwt(refreshToken);
             String currentUserId = getCurrentUserId();
 
-            if(userId.equals(currentUserId)) {
+            if (userId.equals(currentUserId)) {
                 refreshTokenRepository.deleteById(refreshToken);
             }
 
