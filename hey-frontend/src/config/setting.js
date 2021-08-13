@@ -7,7 +7,7 @@ export const IS_DEV = process.env.REACT_APP_NODE_ENV === "development";
 export const SITE_NAME = "Bugs";
 export const SITE_URL = IS_DEV
   ? "http://localhost:5050/"
-  : "http://103.7.41.159:5050/";
+  : "http://45.117.169.232:5050/";
 
 // export const SITE_URL = 'https://www.bugs.vn/';
 // export const API_URL = 'http://api.dev.oispyouthunion.vn';
@@ -15,7 +15,9 @@ export const API_AUTH = `auth`;
 export const API_PAYMENT = `payment`;
 export const API_LUCKY = `lucky`;
 export const API_CHAT = `chat`;
-export const API_WS = IS_DEV ? "ws://localhost:8090" : "ws://103.7.41.159:8090";
+export const API_WS = IS_DEV
+  ? "ws://localhost:8090"
+  : "ws://45.117.169.232:8090";
 
 // export const API_URL = 'http://103.7.41.159:3000/';
 // export const AUTH_URL_USER = `${API_URL}api/login/user`;
