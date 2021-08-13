@@ -37,19 +37,20 @@ public class AuthService {
                 httpResponseAsyncResult -> {
                     if (httpResponseAsyncResult.succeeded()) {
                         JsonObject result = httpResponseAsyncResult.result().bodyAsJsonObject();
-                        if (result.getInteger("code") == 401) {
+                        if (result.getInteger("code") == 400) {
                             resultHandler.handle(Future.failedFuture("Unauthorized"));
-                        }
-                        JsonObject payload = result.getJsonObject("payload");
+                        } else {
+                            JsonObject payload = result.getJsonObject("payload");
 
-                        if (payload.containsKey("userId")) {
-                            JsonObject user = new JsonObject();
-                            user.put("userId", payload.getString("userId"));
-                            resultHandler.handle(Future.succeededFuture(new JWTUser(user, "permissions")));
-                        } else if (payload.containsKey("systemName")) {
-                            JsonObject system = new JsonObject();
-                            system.put("systemName", payload.getString("systemName"));
-                            resultHandler.handle(Future.succeededFuture(new JWTUser(system, "permissions")));
+                            if (payload.containsKey("userId")) {
+                                JsonObject user = new JsonObject();
+                                user.put("userId", payload.getString("userId"));
+                                resultHandler.handle(Future.succeededFuture(new JWTUser(user, "permissions")));
+                            } else if (payload.containsKey("systemName")) {
+                                JsonObject system = new JsonObject();
+                                system.put("systemName", payload.getString("systemName"));
+                                resultHandler.handle(Future.succeededFuture(new JWTUser(system, "permissions")));
+                            }
                         }
                     } else {
                         resultHandler.handle(Future.failedFuture("Can't auth!!!"));
@@ -66,6 +67,17 @@ public class AuthService {
         String url = baseURL + "/editProfile/" + userId;
 
         webClient.patch(port, host, url).putHeader("Authorization", jwt).sendJson(editProfileRequest,
-                httpResponseAsyncResult -> resultHandler.handle(Future.succeededFuture(httpResponseAsyncResult.result().bodyAsJsonObject())));
+                httpResponseAsyncResult -> {
+                    if (httpResponseAsyncResult.succeeded()) {
+                        JsonObject result = httpResponseAsyncResult.result().bodyAsJsonObject();
+                        if (result.getInteger("code") == 400) {
+                            resultHandler.handle(Future.failedFuture(result.getString("message")));
+                        } else {
+                            resultHandler.handle(Future.succeededFuture(result));
+                        }
+                    } else {
+                        resultHandler.handle(Future.failedFuture("BAD REQUEST"));
+                    }
+                });
     }
 }

@@ -1,11 +1,6 @@
 import React from "react";
-import { Button, Icon, Input, Layout, Menu } from "antd";
+import {Icon, Input, Layout, Menu } from "antd";
 import CustomAvatar from "../components/custom-avatar";
-import ChatList from "../components/chat-list";
-import AddressBook from "../components/address-book";
-import ChatHeader from "../components/chat-header";
-import Profile from "../components/profile";
-import MessagePanel from "../components/message-panel";
 import Chat from "./Chat";
 import Friend from "./Friend";
 import Payment from "./Payment";

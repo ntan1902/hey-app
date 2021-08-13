@@ -1,7 +1,6 @@
 import * as actionTypes from "./actionTypes";
 import { bindActionCreators } from "redux";
 import { AuthAPI } from "../api";
-// import AsyncStorage from "@react-native-community/async-storage";
 
 const onLogin = (data) => {
   return {
@@ -23,31 +22,10 @@ const onGetProfile = (data) => {
   };
 };
 
-let account = {
-  id: "",
-  password: "",
-};
-
-export const setToken = async (token) => {
-  try {
-    console.log(token);
-    // const deviceTokenId = JSON.parse(
-    //   await AsyncStorage.getItem("DEVICE_TOKEN_ID")
-    // );
-    // console.log("Token ID");
-    // console.log("Test", await AuthAPI.registerUserToDeviceToken(deviceTokenId));
-    // await AsyncStorage.setItem("TOKEN", JSON.stringify(token));
-    // console.log("Store token", token);
-  } catch (error) {
-    // Error saving data
-  }
-};
 export const resetToken = async (token) => {
   try {
     console.log(token);
 
-    // await AsyncStorage.removeItem('TOKEN');
-    // await AsyncStorage.clear();
   } catch (error) {
     // Error saving data
   }

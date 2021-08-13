@@ -1,12 +1,9 @@
 package com.hey.handler.api;
 
-import com.hey.repository.DataRepository;
 import com.hey.service.APIService;
-import com.hey.util.ErrorCode;
 import com.hey.util.HeyHttpStatusException;
 import com.hey.util.HttpStatus;
 import com.hey.util.JsonUtils;
-import io.vertx.core.http.HttpServerRequest;
 import io.vertx.core.http.HttpServerResponse;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.handler.impl.HttpStatusException;
@@ -36,7 +33,7 @@ public abstract class BaseHandler {
             JsonObject obj = new JsonObject();
             obj.put("success", false);
             obj.put("code", e.getCode());
-            obj.put("message", e.getPayload());
+            obj.put("message", e.getMessage());
             obj.put("payload", "");
             response.setStatusCode(e.getStatusCode())
                     .putHeader("content-type", "application/json; charset=utf-8")
@@ -54,7 +51,7 @@ public abstract class BaseHandler {
     public void handleUnauthorizedException(HttpStatusException e, HttpServerResponse response) {
         JsonObject obj = new JsonObject();
         obj.put("success", false);
-        obj.put("code", ErrorCode.AUTHORIZED_FAILED.code());
+        obj.put("code", 401);
         obj.put("message", e.getPayload());
         obj.put("payload", "");
         response.setStatusCode(e.getStatusCode())

@@ -31,87 +31,84 @@ public class ProtectedApiHandler extends BaseHandler {
         HttpServerResponse response = rc.response();
         String requestPath = request.path();
         String path = StringUtils.substringAfter(requestPath, "/chat/api/protected");
-        try {
-            String jwt = jwtManager.getTokenFromRequest(request);
 
-            JsonObject authObj = new JsonObject().put("jwtUser", jwt);
-            jwtManager.authenticate(authObj, event -> {
-                if (event.succeeded()) {
-                    String userId = event.result().principal().getString("userId");
+        String jwt = jwtManager.getTokenFromRequest(request);
 
-                    JsonObject requestObject = null;
-                    if (rc.getBody() != null && rc.getBody().length() > 0) {
-                        requestObject = rc.getBodyAsJson();
-                    }
+        JsonObject authObj = new JsonObject().put("jwtUser", jwt);
+        jwtManager.authenticate(authObj, event -> {
+            if (event.succeeded()) {
+                String userId = event.result().principal().getString("userId");
 
-                    switch (path) {
-                        case "/ping":
-                            ping(response);
-                            break;
-                        case "/chatlist":
-                            LogUtils.log("User  " + userId + " request chat list");
-                            getChatList(response, requestObject, userId);
-                            break;
-                        case "/addressbook":
-                            LogUtils.log("User  " + userId + " request address book");
-                            getAddressBook(response, requestObject, userId);
-                            break;
-                        case "/waitingfriend":
-                            LogUtils.log("User  " + userId + " is waiting friend");
-                            getWaitingFriends(response, requestObject, userId);
-                            break;
-                        case "/closewaitingfriend":
-                            LogUtils.log("User  " + userId + " closes waiting friend");
-                            deleteWaitingFriend(response, requestObject, userId);
-                            break;
-                        case "/usernameexisted":
-                            LogUtils.log("User  " + userId + " check username " + requestObject);
-                            checkUsernameExisted(response, requestObject, userId);
-                            break;
-                        case "/sessionidbyuserid":
-                            LogUtils.log("User  " + userId + " get session id " + requestObject);
-                            getSessionIdByUserId(response, requestObject, userId);
-                            break;
-                        case "/waitingchatheader":
-                            LogUtils.log("User  " + userId + " get temporarily chat header " + requestObject);
-                            waitingChatHeader(response, requestObject, userId);
-                            break;
-                        case "/addfriend":
-                            LogUtils.log("User  " + userId + " add new friend " + requestObject);
-                            addFriend(response, requestObject, userId);
-                            break;
-                        case "/status":
-                            LogUtils.log("User  " + userId + " change status " + requestObject);
-                            changeStatus(response, requestObject, userId);
-                            break;
-                        case "/user":
-                            LogUtils.log("User  " + userId + " get profile " + requestObject);
-                            getUserProfile(response, requestObject, userId);
-                            break;
-                        case "/editprofile":
-                            LogUtils.log("User  " + userId + " edit profile " + requestObject);
-                            editProfile(response, requestObject, userId);
-                            break;
-                        case "/editgroupname":
-                            LogUtils.log("User  " + userId + " edit group name " + requestObject);
-                            editGroupName(response, requestObject, userId);
-                            break;
-                        case "/kickmember":
-                            LogUtils.log("User  " + userId + " kick member " + requestObject);
-                            kickMember(response, requestObject, userId);
-                            break;
-                        case "/outgroup":
-                            LogUtils.log("User  " + userId + " out group " + requestObject);
-                            outGroup(response, requestObject, userId);
-                            break;
-                    }
-                } else {
-                    throw new HttpStatusException(HttpStatus.UNAUTHORIZED.code(), HttpStatus.UNAUTHORIZED.message());
+                JsonObject requestObject = null;
+                if (rc.getBody() != null && rc.getBody().length() > 0) {
+                    requestObject = rc.getBodyAsJson();
                 }
-            });
-        } catch (HttpStatusException e) {
-            handleUnauthorizedException(e, response);
-        }
+
+                switch (path) {
+                    case "/ping":
+                        ping(response);
+                        break;
+                    case "/chatlist":
+                        LogUtils.log("User  " + userId + " request chat list");
+                        getChatList(response, requestObject, userId);
+                        break;
+                    case "/addressbook":
+                        LogUtils.log("User  " + userId + " request address book");
+                        getAddressBook(response, requestObject, userId);
+                        break;
+                    case "/waitingfriend":
+                        LogUtils.log("User  " + userId + " is waiting friend");
+                        getWaitingFriends(response, requestObject, userId);
+                        break;
+                    case "/closewaitingfriend":
+                        LogUtils.log("User  " + userId + " closes waiting friend");
+                        deleteWaitingFriend(response, requestObject, userId);
+                        break;
+                    case "/usernameexisted":
+                        LogUtils.log("User  " + userId + " check username " + requestObject);
+                        checkUsernameExisted(response, requestObject, userId);
+                        break;
+                    case "/sessionidbyuserid":
+                        LogUtils.log("User  " + userId + " get session id " + requestObject);
+                        getSessionIdByUserId(response, requestObject, userId);
+                        break;
+                    case "/waitingchatheader":
+                        LogUtils.log("User  " + userId + " get temporarily chat header " + requestObject);
+                        waitingChatHeader(response, requestObject, userId);
+                        break;
+                    case "/addfriend":
+                        LogUtils.log("User  " + userId + " add new friend " + requestObject);
+                        addFriend(response, requestObject, userId);
+                        break;
+                    case "/status":
+                        LogUtils.log("User  " + userId + " change status " + requestObject);
+                        changeStatus(response, requestObject, userId);
+                        break;
+                    case "/user":
+                        LogUtils.log("User  " + userId + " get profile " + requestObject);
+                        getUserProfile(response, requestObject, userId);
+                        break;
+                    case "/editprofile":
+                        LogUtils.log("User  " + userId + " edit profile " + requestObject);
+                        editProfile(response, requestObject, userId);
+                        break;
+                    case "/editgroupname":
+                        LogUtils.log("User  " + userId + " edit group name " + requestObject);
+                        editGroupName(response, requestObject, userId);
+                        break;
+                    case "/kickmember":
+                        LogUtils.log("User  " + userId + " kick member " + requestObject);
+                        kickMember(response, requestObject, userId);
+                        break;
+                    case "/outgroup":
+                        LogUtils.log("User  " + userId + " out group " + requestObject);
+                        outGroup(response, requestObject, userId);
+                        break;
+                }
+            } else {
+                handleUnauthorizedException(new HttpStatusException(HttpStatus.UNAUTHORIZED.code(), HttpStatus.UNAUTHORIZED.message()), response);
+            }
+        });
     }
 
 

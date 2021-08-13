@@ -84,8 +84,8 @@ class Chat extends React.Component {
             <ChatList />
           </Sider>
           <div className="chat-container" style={{ padding: 0 }}>
-            <LuckyMoney></LuckyMoney>
-            <AddFriendSession></AddFriendSession>
+            <LuckyMoney/>
+            <AddFriendSession/>
             <ChatHeader />
             <MessagePanel />
             <div className="chat-footer">
