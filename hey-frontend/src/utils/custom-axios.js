@@ -2,8 +2,8 @@ import axios from "axios";
 import _ from "lodash";
 import queryString from "query-string";
 
-import {isAuthenticated, getJwtFromStorage, getRefreshTokenFromStorage, setJwtToStorage, clearStorage} from "./utils";
-import {API_AUTH, SITE_URL} from "../config/setting";
+import { isAuthenticated, getJwtFromStorage, getRefreshTokenFromStorage, setJwtToStorage, clearStorage } from "./utils";
+import { API_AUTH, SITE_URL } from "../config/setting";
 
 let callback401 = null;
 
@@ -23,7 +23,7 @@ const axiosInstance = axios.create({
 const refresh = () => {
     const _refreshToken = getRefreshTokenFromStorage();
     try {
-        return axiosInstance.post(`${API_AUTH}/api/v1/users/refreshToken`, {refreshToken: _refreshToken})
+        return axiosInstance.post(`${API_AUTH}/api/v1/users/refreshToken`, { refreshToken: _refreshToken })
     } catch (err) {
         console.log(err)
     }
@@ -41,7 +41,7 @@ axiosInstance.setToken = (token) => {
 axiosInstance.interceptors.response.use(
     (response) => response,
     (error) => {
-        const {response} = error;
+        const { response } = error;
         if (!_.isEmpty(response) && response.status === 401) {
             return refresh()
                 .then(rs => {
@@ -57,8 +57,11 @@ axiosInstance.interceptors.response.use(
                 })
                 .catch(err => {
                     // Expired soft token
-                    const {status} = err.response;
+                    console.log(err.response);
+                    const { status } = err.response;
                     status === 400 && clearStorage();
+                    window.location.replace("http://localhost:3000");
+                    // return Promise.reject(err)
                 });
         }
 
@@ -83,4 +86,4 @@ axiosInstance.interceptors.request.use(
     }
 );
 
-export {axiosInstance as axios};
+export { axiosInstance as axios };
