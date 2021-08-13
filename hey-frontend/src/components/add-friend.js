@@ -54,8 +54,7 @@ class AddFriend extends React.Component {
             users: res.data.payload
           })
         })
-    }
-    else {
+    } else {
       this.setState({
         ...this.state,
         users: []
