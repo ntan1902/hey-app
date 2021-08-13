@@ -2,6 +2,7 @@ package com.hey.auth.exception.handler;
 
 
 import com.hey.auth.exception.jwt.InvalidJwtTokenException;
+import com.hey.auth.exception.system.InvalidSoftTokenException;
 import com.hey.auth.exception.system.SystemIdNotFoundException;
 import com.hey.auth.exception.system.SystemKeyInvalidException;
 import com.hey.auth.exception.user.*;
@@ -74,10 +75,10 @@ public class ApiExceptionHandler {
     }
 
     @ExceptionHandler(value = {InvalidJwtTokenException.class})
-    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseEntity<Object> handleApiResponseException(InvalidJwtTokenException exception) {
         log.error(exception.getMessage());
-        HttpStatus code = HttpStatus.NOT_FOUND;
+        HttpStatus code = HttpStatus.BAD_REQUEST;
         return getResponse(code, exception.getMessage());
     }
 
@@ -125,6 +126,14 @@ public class ApiExceptionHandler {
     public ResponseEntity<Object> handleApiResponseException(PasswordNotMatchedException exception) {
         log.error(exception.getMessage());
         HttpStatus code = HttpStatus.BAD_REQUEST;
+        return getResponse(code, exception.getMessage());
+    }
+
+    @ExceptionHandler(value = {InvalidSoftTokenException.class})
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ResponseEntity<Object> handleApiResponseException(InvalidSoftTokenException exception) {
+        log.error(exception.getMessage());
+        HttpStatus code = HttpStatus.NOT_FOUND;
         return getResponse(code, exception.getMessage());
     }
 

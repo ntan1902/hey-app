@@ -8,8 +8,6 @@ import { BrowserRouter as Router, Route } from "react-router-dom";
 import Portal from "./pages/portal";
 import Main from "./pages/main";
 import { Provider } from "react-redux";
-import { api } from "./api/api";
-import { clearStorage } from "./utils/utils";
 
 import { store } from "./store";
 

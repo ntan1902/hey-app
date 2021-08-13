@@ -235,7 +235,7 @@ public class UserServiceImpl implements UserDetailsService, UserService {
         if(refreshTokenRepository.existsById(refreshToken)
                 && jwtUserUtil.validateToken(refreshToken)) {
             String userId = jwtUserUtil.getUserIdFromJwt(refreshToken);
-            String accessToken = jwtUserUtil.generateRefreshToken(
+            String accessToken = jwtUserUtil.generateAccessToken(
                     this.loadUserById(userId)
             );
 
@@ -247,11 +247,10 @@ public class UserServiceImpl implements UserDetailsService, UserService {
 
     @Override
     public List<UserDTO> searchUser(String key) {
-        List<User> users = userRepository.findAllByFullNameContainsOrEmailContains(key);
-
-        List<UserDTO> userDTOList = users.stream().map(userMapper::user2UserDTO).collect(Collectors.toList());
-
-        return userDTOList;
+        return userRepository.findAllByFullNameContainsOrEmailContains(key)
+                .stream()
+                .map(userMapper::user2UserDTO)
+                .collect(Collectors.toList());
 
     }
 

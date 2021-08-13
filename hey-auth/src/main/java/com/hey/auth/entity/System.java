@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.io.Serializable;
 
 @Data
 @Entity
@@ -18,7 +19,10 @@ import javax.persistence.*;
                 @Index(name = "uq_system_name", unique = true, columnList = "system_name")
         }
 )
-public class System {
+public class System implements Serializable {
+
+    private static final long serialVersionUID = 1L;
+
     @Id
     private String id;
 

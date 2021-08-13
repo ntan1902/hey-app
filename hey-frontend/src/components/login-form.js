@@ -1,8 +1,7 @@
 import React from "react";
 import { Button, Form, Icon, Input } from "antd";
 import { withRouter } from "react-router-dom";
-import { AuthAPI } from "../api";
-import {setJwtToStorage, setRefreshTokenToStorage, setUserIdToStorage} from "../utils/utils";
+import {setJwtToStorage, setRefreshTokenToStorage} from "../utils/utils";
 
 import { connect } from "react-redux";
 import { channingActions } from "../utils";
@@ -35,9 +34,6 @@ class NormalLoginForm extends React.Component {
           setRefreshTokenToStorage(res.data.refreshToken);
           this.props.history.push("/");
         });
-        // api.post(`/api/v1/users/login`, values).then((res) => {
-        //   setUserIdToStorage(res.data.data.userId);
-        // });
       }
     });
   };
