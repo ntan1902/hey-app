@@ -36,45 +36,43 @@ public class SystemApiHandler extends BaseHandler {
         HttpServerResponse response = rc.response();
         String requestPath = request.path();
         String path = StringUtils.substringAfter(requestPath, "/chat/api/v1/systems");
-        try {
-            String jwt = jwtManager.getTokenFromRequest(request);
 
-            JsonObject authObj = new JsonObject().put("jwtSystem", jwt);
-            jwtManager.authenticate(authObj, event -> {
-                if (event.succeeded()) {
-                    String systemName = event.result().principal().getString("systemName");
+        String jwt = jwtManager.getTokenFromRequest(request);
 
-                    JsonObject requestObject = null;
-                    if (rc.getBody() != null && rc.getBody().length() > 0) {
-                        requestObject = rc.getBodyAsJson();
-                    }
+        JsonObject authObj = new JsonObject().put("jwtSystem", jwt);
+        jwtManager.authenticate(authObj, event -> {
+            if (event.succeeded()) {
+                String systemName = event.result().principal().getString("systemName");
 
-                    switch (path) {
-                        case "/createTransferMessage":
-                            LogUtils.log("System  " + systemName + " request create transfer message");
-                            createTransferMessage(response, requestObject);
-                            break;
-                        case "/createLuckyMoneyMessage":
-                            LogUtils.log("System  " + systemName + " request create lucky money message");
-                            createLuckyMoneyMessage(response, requestObject);
-                            break;
-                        case "/isUserExistInSession":
-                            LogUtils.log("System  " + systemName + " request check whether user in session");
-                            checkUserIdExistInSessionId(response, requestObject);
-                            break;
-                        case "/receiveLuckyMoneyMessage":
-                            LogUtils.log("System  " + systemName + " request receive lucky money");
-                            receiveLuckyMoneyMessage(response, requestObject);
-                            break;
-
-                    }
-                } else {
-                    throw new HttpStatusException(HttpStatus.UNAUTHORIZED.code(), HttpStatus.UNAUTHORIZED.message());
+                JsonObject requestObject = null;
+                if (rc.getBody() != null && rc.getBody().length() > 0) {
+                    requestObject = rc.getBodyAsJson();
                 }
-            });
-        } catch (HttpStatusException e) {
-            handleUnauthorizedException(e, response);
-        }
+
+                switch (path) {
+                    case "/createTransferMessage":
+                        LogUtils.log("System  " + systemName + " request create transfer message");
+                        createTransferMessage(response, requestObject);
+                        break;
+                    case "/createLuckyMoneyMessage":
+                        LogUtils.log("System  " + systemName + " request create lucky money message");
+                        createLuckyMoneyMessage(response, requestObject);
+                        break;
+                    case "/isUserExistInSession":
+                        LogUtils.log("System  " + systemName + " request check whether user in session");
+                        checkUserIdExistInSessionId(response, requestObject);
+                        break;
+                    case "/receiveLuckyMoneyMessage":
+                        LogUtils.log("System  " + systemName + " request receive lucky money");
+                        receiveLuckyMoneyMessage(response, requestObject);
+                        break;
+
+                }
+            } else {
+                handleUnauthorizedException(new HttpStatusException(HttpStatus.UNAUTHORIZED.code(), HttpStatus.UNAUTHORIZED.message()), response);
+            }
+        });
+
     }
 
     private void createLuckyMoneyMessage(HttpServerResponse response, JsonObject requestObject) {

@@ -54,7 +54,7 @@ public abstract class BaseHandler {
     public void handleUnauthorizedException(HttpStatusException e, HttpServerResponse response) {
         JsonObject obj = new JsonObject();
         obj.put("success", false);
-        obj.put("code", ErrorCode.AUTHORIZED_FAILED.code());
+        obj.put("code", 401);
         obj.put("message", e.getPayload());
         obj.put("payload", "");
         response.setStatusCode(e.getStatusCode())

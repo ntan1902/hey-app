@@ -1,8 +1,7 @@
 import React from "react";
 import { Button, Form, Icon, Input } from "antd";
 import { connect } from "react-redux";
-import { register } from "../actions/userAction";
-import { setJwtToStorage, setUserIdToStorage } from "../utils/utils";
+import { setJwtToStorage} from "../utils/utils";
 import { withRouter } from "react-router-dom";
 
 import { channingActions } from "../utils";

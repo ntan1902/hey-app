@@ -15,7 +15,7 @@ import {
 import { connect } from "react-redux";
 import $ from "jquery";
 import { message } from "antd";
-import { changeStateAddFriendPopup } from "../actions/payment";
+import { changeStateAddFriendPopup } from "../actions/paymentAction";
 import GetFriendList from "./add-friend-transfer";
 class AddFriend extends React.Component {
   constructor(props) {
