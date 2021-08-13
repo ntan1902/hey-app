@@ -1393,7 +1393,14 @@ public class APIService extends BaseService {
         CompositeFuture cp = CompositeFuture.all(futures);
         cp.setHandler(ar -> {
             if (ar.succeeded()) {
-                authService.editProfile(editProfileRequest, userId, event -> future.complete(event.result()));
+                authService.editProfile(editProfileRequest, userId, event -> {
+                    if (event.succeeded()) {
+                        future.complete(event.result());
+                    } else {
+                        future.fail(new HeyHttpStatusException(HttpStatus.BAD_REQUEST.code(),
+                                "400", event.cause().getMessage()));
+                    }
+                });
             } else {
                 future.fail(ar.cause());
             }
@@ -1432,12 +1439,8 @@ public class APIService extends BaseService {
 
                 }, Future.future().setHandler(handler -> future.fail(handler.cause())));
             } else {
-                JsonObject apiResponse = new JsonObject();
-                apiResponse.put("success", false);
-                apiResponse.put("message", "Edit group name unsuccessfully");
-                apiResponse.put("code", 400);
-                apiResponse.put("payload", "");
-                future.complete(apiResponse);
+                future.fail(new HeyHttpStatusException(HttpStatus.BAD_REQUEST.code(),
+                        "400", "Edit group name unsuccessfully"));
             }
 
         }, Future.future().setHandler(handler -> future.fail(handler.cause())));
@@ -1496,12 +1499,8 @@ public class APIService extends BaseService {
 
 
             } else {
-                JsonObject apiResponse = new JsonObject();
-                apiResponse.put("success", false);
-                apiResponse.put("message", "Kick member unsuccessfully");
-                apiResponse.put("code", 400);
-                apiResponse.put("payload", "");
-                future.complete(apiResponse);
+                future.fail(new HeyHttpStatusException(HttpStatus.BAD_REQUEST.code(),
+                        "400", "Kick member unsuccessfully"));
             }
 
         }, Future.future().setHandler(handler -> future.fail(handler.cause())));
@@ -1532,7 +1531,7 @@ public class APIService extends BaseService {
                             .collect(Collectors.toList());
 
                     chatList.setUserHashes(outGroupUserHashes);
-                    if(chatList.getOwner().equals(userId)
+                    if (chatList.getOwner().equals(userId)
                             && !outGroupUserHashes.isEmpty()) {
                         chatList.setOwner(outGroupUserHashes.get(0).getUserId());
                     }
@@ -1552,12 +1551,8 @@ public class APIService extends BaseService {
 
 
             } else {
-                JsonObject apiResponse = new JsonObject();
-                apiResponse.put("success", false);
-                apiResponse.put("message", "Out group unsuccessfully");
-                apiResponse.put("code", 400);
-                apiResponse.put("payload", "");
-                future.complete(apiResponse);
+                future.fail(new HeyHttpStatusException(HttpStatus.BAD_REQUEST.code(),
+                        "400", "Out group unsuccessfully"));
             }
 
         }, Future.future().setHandler(handler -> future.fail(handler.cause())));

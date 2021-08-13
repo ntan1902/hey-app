@@ -5,13 +5,13 @@ import io.netty.handler.codec.http.HttpResponseStatus;
 public class HeyHttpStatusException extends RuntimeException {
     private final int statusCode;
     private final String code;
-    private final String payload;
+    private final String message;
 
     public HeyHttpStatusException(int statusCode, String code, String payload) {
         super(HttpResponseStatus.valueOf(statusCode).reasonPhrase(), null, false, false);
         this.statusCode = statusCode;
         this.code = code;
-        this.payload = payload;
+        this.message = payload;
     }
 
     public int getStatusCode() {
@@ -22,7 +22,7 @@ public class HeyHttpStatusException extends RuntimeException {
         return code;
     }
 
-    public String getPayload() {
-        return payload;
+    public String getMessage() {
+        return message;
     }
 }
