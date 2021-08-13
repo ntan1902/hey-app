@@ -2,25 +2,27 @@ import React from "react";
 import { Modal, Input, Alert } from "antd";
 import CustomAvatar from "../components/custom-avatar";
 import {
-  addNewUserChatGroup,
-  removeUserChatGroup,
-  startNewChatGroup,
-  loadNewAddFriend,
-} from "../actions/chatAction";
-import {
-  addNewFriend,
   changeStateAddFriendPopup,
 } from "../actions/addressBookAction";
 import { connect } from "react-redux";
 import $ from "jquery";
 import { message } from "antd";
+import ListUser from "./ListUser/ListUser";
+import { AuthAPI } from "../api";
 
 class AddFriend extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       visible: false,
+      users: [],
+      keyword: ""
     };
+
+    this.inputTimeout = null;
+
+    this.inputSearch = React.createRef();
+
     this.handleOk = this.handleOk.bind(this);
     this.handleCancel = this.handleCancel.bind(this);
     this.showModal = this.showModal.bind(this);
@@ -42,7 +44,34 @@ class AddFriend extends React.Component {
   handleCancel = (e) => {
     this.props.changeStateAddFriendPopup(false);
   };
-
+  search = () => {
+    if (this.state.keyword) {
+      AuthAPI.searchUser(this.state.keyword)
+        .then(res => {
+          console.log(res.data.payload)
+          this.setState({
+            ...this.state,
+            users: res.data.payload
+          })
+        })
+    }
+    else {
+      this.setState({
+        ...this.state,
+        users: []
+      })
+    }
+  }
+  handleChange = (event) => {
+    this.setState({
+      ...this.state,
+      keyword: event.currentTarget.value
+    })
+    if (this.inputTimeout) {
+      clearTimeout(this.inputTimeout);
+    }
+    this.inputTimeout = setTimeout(this.search, 300);
+  }
   render() {
     return (
       <div>
@@ -70,9 +99,10 @@ class AddFriend extends React.Component {
           <Input
             id="add-user-name"
             className="add-user-name"
-            onPressEnter={this.handleOk}
+            onChange={this.handleChange}
+            ref={this.inputSearch}
           />
-
+          <ListUser users={this.state.users} />
         </Modal>
       </div>
     );
@@ -89,16 +119,11 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
   return {
-    addNewFriend(username) {
-      dispatch(addNewFriend(username));
-    },
-    loadNewAddFriend(username) {
-      dispatch(loadNewAddFriend(username));
-    },
     changeStateAddFriendPopup(state) {
       dispatch(changeStateAddFriendPopup(state));
     },
   };
 }
+
 
 export default connect(mapStateToProps, mapDispatchToProps)(AddFriend);
