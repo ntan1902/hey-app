@@ -33,4 +33,6 @@ public interface UserService {
     RefreshTokenResponse refreshToken(RefreshTokenRequest request) throws InvalidJwtTokenException, UserIdNotFoundException;
 
     List<UserDTO> searchUser(String key);
+
+    void logout(LogOutRequest request) throws InvalidJwtTokenException;
 }

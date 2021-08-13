@@ -122,6 +122,18 @@ public class UserController {
                 .build());
     }
 
+    @PostMapping("/logout")
+    public ResponseEntity<ApiResponse> logout(@RequestBody @Valid LogOutRequest request) throws InvalidJwtTokenException, UserIdNotFoundException {
+        userService.logout(request);
+
+        return ResponseEntity.ok(ApiResponse.builder()
+                .success(true)
+                .code(HttpStatus.NO_CONTENT.value())
+                .message("Logout successfully")
+                .payload("")
+                .build());
+    }
+
     @GetMapping("/searchUser")
     public ResponseEntity<ApiResponse> searchUser(@RequestParam String key){
         List<UserDTO> userDTOList = userService.searchUser(key);

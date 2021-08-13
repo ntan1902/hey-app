@@ -247,11 +247,30 @@ public class UserServiceImpl implements UserDetailsService, UserService {
 
     @Override
     public List<UserDTO> searchUser(String key) {
+        log.info("Inside searchUser of UserServiceImpl: {}", key);
         return userRepository.findAllByFullNameContainsOrEmailContains(key)
                 .stream()
                 .map(userMapper::user2UserDTO)
                 .collect(Collectors.toList());
 
+    }
+
+    @Override
+    public void logout(LogOutRequest request) throws InvalidJwtTokenException {
+        log.info("Inside logout of UserServiceImpl: {}", request);
+        String refreshToken = request.getRefreshToken();
+        if(refreshTokenRepository.existsById(refreshToken)
+                && jwtUserUtil.validateToken(refreshToken)) {
+            String userId = jwtUserUtil.getUserIdFromJwt(refreshToken);
+            String currentUserId = getCurrentUserId();
+
+            if(userId.equals(currentUserId)) {
+                refreshTokenRepository.deleteById(refreshToken);
+            }
+
+        } else {
+            throw new InvalidJwtTokenException("Invalid Refresh Token");
+        }
     }
 
 }
