@@ -17,6 +17,7 @@
     "react-gravatar": "^2.6.3",
     "react-inline-edit": "^3.0.0",
     "react-inline-editing": "^1.0.10",
+    "react-lottie": "^1.2.3",
     "react-notify": "^3.0.0",
     "react-redux": "^5.0.7",
     "react-router-dom": "^4.3.1",

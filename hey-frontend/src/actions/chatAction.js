@@ -37,8 +37,8 @@ export function initialWebSocket() {
   const jwt = getJwtFromStorage();
   const webSocket = new Sockette(ws_host + "?jwt=" + jwt, {
     timeout: 5e3,
-    maxAttempts: 10,
-    onopen: (e) => { },
+    maxAttempts: 100,
+    onopen: (e) => {},
     onmessage: (e) => {
       var data = JSON.parse(e.data);
       console.log("New Socket");
@@ -170,7 +170,8 @@ export function receivedChatlist(chatlist) {
     type: CHATLIST_FETCHED,
     fetchedChatlist: fetchedChatlist,
     messageHeader: header,
-    currentSessionId: fetchedChatlist.length > 0 ? fetchedChatlist[0].sessionId : null
+    currentSessionId:
+      fetchedChatlist.length > 0 ? fetchedChatlist[0].sessionId : null,
   };
 }
 
