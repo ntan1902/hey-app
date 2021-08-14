@@ -18,6 +18,7 @@ import { Redirect } from "react-router-dom";
 import $ from "jquery";
 import LuckyMoney from "../../components/lucky-money";
 import AddFriendSession from "../../components/add-friend-session";
+import MembersModal from "../../components/MembersModal/MembersModal";
 
 const { Header, Content, Footer, Sider } = Layout;
 const { TextArea } = Input;
@@ -37,7 +38,7 @@ class Chat extends React.Component {
     // this.props.initialWebSocket();
   }
 
-  componentWillUnmount() {}
+  componentWillUnmount() { }
 
   handleMainMenuChange(e) {
     this.setState({ menuaction: e.key });
@@ -74,8 +75,8 @@ class Chat extends React.Component {
             breakpoint="lg"
             collapsedWidth="0"
             theme="light"
-            onBreakpoint={(broken) => {}}
-            onCollapse={(collapsed, type) => {}}
+            onBreakpoint={(broken) => { }}
+            onCollapse={(collapsed, type) => { }}
             width="300"
             id="sub-side-menu"
           >
@@ -84,8 +85,9 @@ class Chat extends React.Component {
             <ChatList />
           </Sider>
           <div className="chat-container" style={{ padding: 0 }}>
-            <LuckyMoney/>
+            <LuckyMoney></LuckyMoney>
             <AddFriendSession/>
+            <MembersModal />
             <ChatHeader />
             <MessagePanel />
             <div className="chat-footer">

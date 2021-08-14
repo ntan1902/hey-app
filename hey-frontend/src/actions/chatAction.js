@@ -166,6 +166,8 @@ export function receivedChatlist(chatlist) {
     type: CHATLIST_FETCHED,
     fetchedChatlist: fetchedChatlist,
     messageHeader: header,
+    currentSessionId:
+      fetchedChatlist.length > 0 ? fetchedChatlist[0].sessionId : null,
   };
 }
 

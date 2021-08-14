@@ -2,6 +2,8 @@ package com.hey.handler.api;
 
 import com.hey.manager.JwtManager;
 import com.hey.model.*;
+import com.hey.model.lucky.UserIdSessionIdRequest;
+import com.hey.model.lucky.UserIdSessionIdResponse;
 import com.hey.service.APIService;
 import com.hey.util.ErrorCode;
 import com.hey.util.HttpStatus;
@@ -104,12 +106,17 @@ public class ProtectedApiHandler extends BaseHandler {
                         LogUtils.log("User  " + userId + " out group " + requestObject);
                         outGroup(response, requestObject, userId);
                         break;
+                    case "/getUserOfSessionChat":
+                        LogUtils.log("User "+userId+ " get members of session " + requestObject);
+                        getUserOfSessionChat(response,requestObject,userId);
+                        break;
                 }
             } else {
                 handleUnauthorizedException(new HttpStatusException(HttpStatus.UNAUTHORIZED.code(), HttpStatus.UNAUTHORIZED.message()), response);
             }
         });
     }
+
 
 
     public void ping(HttpServerResponse response) {
@@ -321,5 +328,16 @@ public class ProtectedApiHandler extends BaseHandler {
                 .end(outGroup.encodePrettily()), Future.future().setHandler(handler -> {
             handleException(handler.cause(), response);
         }));
+    }
+
+
+    private void getUserOfSessionChat(HttpServerResponse response, JsonObject requestObject, String userId) {
+        GetMembersOfSessionRequest getMembersOfSessionRequest = requestObject.mapTo(GetMembersOfSessionRequest.class);
+        Future<JsonObject> getMembersOfSessionFuture = apiService.getMembersOfSessionChat(userId, getMembersOfSessionRequest.getSessionId());
+
+        getMembersOfSessionFuture.compose(members->{
+            response.putHeader("content-type", "application/json; charset=utf-8")
+                    .end(members.encodePrettily());
+        }, Future.future().setHandler(handler -> handleException(handler.cause(),response)));
     }
 }
