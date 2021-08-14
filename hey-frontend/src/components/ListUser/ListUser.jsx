@@ -2,9 +2,6 @@ import React from 'react';
 import { Menu, message } from 'antd';
 import CustomAvatar from "../../components/custom-avatar";
 import { connect } from 'react-redux';
-import { changeStateAddFriendPopup } from '../../actions/addressBookAction';
-import { loadNewAddFriend } from '../../actions/chatAction';
-
 
 class ListUser extends React.Component {
   constructor(props) {
@@ -13,10 +10,9 @@ class ListUser extends React.Component {
       current: 0
     };
   }
-  sendFriendRequest = (event) => {
+  onSelect = (event) => {
     console.log(event.key);
-    this.props.loadNewAddFriend(event.key);
-    this.props.changeStateAddFriendPopup(false);
+    this.props.onClickUser(event.key);
   }
   render() {
     return (
@@ -27,7 +23,7 @@ class ListUser extends React.Component {
           defaultSelectedKeys={[]}
           selectedKeys={this.state.current}
           className="address-book"
-          onSelect={this.sendFriendRequest}
+          onSelect={this.props.onClickUser}
           style={{ overflowY: "scroll", height: 400, overflowX: "hidden" }}
         >
           {this.props.users.map(item => (
@@ -48,12 +44,6 @@ class ListUser extends React.Component {
 
 function mapDispatchToProps(dispatch) {
   return {
-    loadNewAddFriend(username) {
-      dispatch(loadNewAddFriend(username));
-    },
-    changeStateAddFriendPopup(state) {
-      dispatch(changeStateAddFriendPopup(state));
-    },
   };
 }
 export default connect(null, mapDispatchToProps)(ListUser);

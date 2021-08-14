@@ -9,6 +9,8 @@ import $ from "jquery";
 import { message } from "antd";
 import ListUser from "./ListUser/ListUser";
 import { AuthAPI } from "../api";
+import { loadNewAddFriend } from '../actions/chatAction';
+
 
 class AddFriend extends React.Component {
   constructor(props) {
@@ -71,6 +73,12 @@ class AddFriend extends React.Component {
     }
     this.inputTimeout = setTimeout(this.search, 300);
   }
+
+  sendFriendRequest = (username) => {
+    this.props.loadNewAddFriend(username);
+    this.props.changeStateAddFriendPopup(false);
+  }
+
   render() {
     return (
       <div>
@@ -101,7 +109,7 @@ class AddFriend extends React.Component {
             onChange={this.handleChange}
             ref={this.inputSearch}
           />
-          <ListUser users={this.state.users} />
+          <ListUser users={this.state.users} onClickUser={this.sendFriendRequest} />
         </Modal>
       </div>
     );
@@ -118,6 +126,12 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
   return {
+    changeStateAddFriendPopup(state) {
+      dispatch(changeStateAddFriendPopup(state));
+    },
+    loadNewAddFriend(username) {
+      dispatch(loadNewAddFriend(username));
+    },
     changeStateAddFriendPopup(state) {
       dispatch(changeStateAddFriendPopup(state));
     },

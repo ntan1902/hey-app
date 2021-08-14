@@ -10,6 +10,7 @@ const initialState = {
   balance: "0",
   mainScreenData: null,
   isAddFriendToSession: false,
+  membersModal: false
 };
 
 export default (state = initialState, action = {}) => {
@@ -63,6 +64,12 @@ export default (state = initialState, action = {}) => {
       };
     case actionTypes.HIDE_LOADING:
       return { ...state };
+
+    case actionTypes.CHANGE_STATE_MEMBERS_MODAL:
+      return {
+        ...state,
+        membersModal: action.state
+      }
     default:
       return { ...state };
   }

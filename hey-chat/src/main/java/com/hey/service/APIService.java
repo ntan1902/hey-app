@@ -1558,4 +1558,31 @@ public class APIService extends BaseService {
         }, Future.future().setHandler(handler -> future.fail(handler.cause())));
         return future;
     }
+
+    public Future<JsonObject> getMembersOfSessionChat(String userId, String sessionId) {
+        Future<JsonObject> future = Future.future();
+
+        UserIdSessionIdRequest userIdSessionIdRequest = new UserIdSessionIdRequest();
+        userIdSessionIdRequest.setSessionId(sessionId);
+        userIdSessionIdRequest.setUserId(userId);
+
+        Future<UserIdSessionIdResponse> checkUserInSessionFuture = checkUserExistInSession(userIdSessionIdRequest);
+
+        checkUserInSessionFuture.compose(userIdSessionIdResponse -> {
+            if (userIdSessionIdResponse.getExisted()){
+                Future<ChatList> getChatListFuture = getChatListBySessionId(sessionId);
+                getChatListFuture.compose(chatList -> {
+                    JsonObject apiResponse = new JsonObject();
+                    apiResponse.put("success", true);
+                    apiResponse.put("message", "");
+                    apiResponse.put("code", 200);
+                    apiResponse.put("payload", chatList.getUserHashes());
+                    future.complete(apiResponse);
+                }, Future.future().setHandler(handler-> future.fail(handler.cause())));
+            } else {
+                future.fail(new HeyHttpStatusException(HttpStatus.BAD_REQUEST.code(), "400", "You aren't in that group!"));
+            }
+        }, Future.future().setHandler(handler->future.fail(handler.cause())));
+        return future;
+    }
 }
