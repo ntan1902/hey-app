@@ -23,7 +23,7 @@ class ListUser extends React.Component {
           defaultSelectedKeys={[]}
           selectedKeys={this.state.current}
           className="address-book"
-          onSelect={this.props.onClickUser}
+          onSelect={this.onSelect}
           style={{ overflowY: "scroll", height: 400, overflowX: "hidden" }}
         >
           {this.props.users.map(item => (

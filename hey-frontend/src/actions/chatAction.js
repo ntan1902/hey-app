@@ -12,6 +12,10 @@ import { changeUserOnlineStatus } from "./addressBookAction";
 import { statusNotification } from "../components/status-notification";
 import { loadWaitingFriendList } from "./addressBookAction";
 import { AuthAPI } from "../api";
+import { ChatAPI } from "../api/chat";
+import { bindActionCreators } from "redux";
+import * as actionTypes from "./actionTypes";
+
 
 export const EMPTY = "chatlist.EMPTY";
 export const CHATLIST_FETCHED = "chatlist.CHATLIST_FETCHED";
@@ -523,4 +527,35 @@ function createWaitingChatHeaderRequest(usernames) {
     usernames: usernames,
   };
   return req;
+}
+
+
+
+
+const kickMembers = (sessionId, userId) => async dispatch => {
+  try {
+    let kickMemberRes = await ChatAPI.kickMember(sessionId, userId);
+    if (kickMemberRes.data.success) {
+      let fetchChatListRes = await ChatAPI.fetchChatList(sessionId);
+      dispatch({
+        type: actionTypes.REFETCH_CHATLIST_ITEM,
+        sessionId,
+        chatListItem: fetchChatListRes.data.payload
+      })
+    }
+    return Promise.resolve(kickMemberRes);
+  } catch (error) {
+    return Promise.reject({ error, success: false })
+  }
+}
+
+export const chatActions = {
+  kickMembers,
+}
+
+export function bindChatActions(currentActions, dispatch) {
+  return {
+    ...currentActions,
+    chatActions: bindActionCreators(chatActions, dispatch),
+  };
 }

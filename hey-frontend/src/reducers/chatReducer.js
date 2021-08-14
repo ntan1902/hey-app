@@ -13,6 +13,7 @@ import {
   USER_SELECTED,
   WEBSOCKET_FETCHED,
 } from "../actions/chatAction";
+import * as actionTypes from "../actions/actionTypes";
 
 const initialState = {
   chatList: [],
@@ -104,6 +105,11 @@ export default function reduce(state = initialState, action) {
         ...state,
         webSocket: action.webSocket,
       };
+    case actionTypes.REFETCH_CHATLIST_ITEM:
+      return {
+        ...state,
+        chatList: state.chatList.map(item => item.sessionId == action.sessionId ? action.chatListItem : item)
+      }
     default:
       return state;
   }

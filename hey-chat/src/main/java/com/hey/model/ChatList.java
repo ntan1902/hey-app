@@ -46,7 +46,7 @@ public class ChatList implements Serializable {
         this.lastMessage = lastMessage;
     }
 
-    public boolean getGroup() {
+    public boolean isGroup() {
         return isGroup;
     }
 
