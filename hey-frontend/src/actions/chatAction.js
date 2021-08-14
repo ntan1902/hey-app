@@ -33,7 +33,7 @@ export function initialWebSocket() {
   const jwt = getJwtFromStorage();
   const webSocket = new Sockette(ws_host + "?jwt=" + jwt, {
     timeout: 5e3,
-    maxAttempts: 10,
+    maxAttempts: 100,
     onopen: (e) => {},
     onmessage: (e) => {
       var data = JSON.parse(e.data);

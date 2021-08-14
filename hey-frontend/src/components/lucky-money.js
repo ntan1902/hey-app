@@ -17,7 +17,12 @@ import { Scrollbars } from "react-custom-scrollbars";
 import NumericInput from "./numberic-input";
 import Transfer from "./transfer";
 
-import { channingActions } from "../utils";
+import {
+  channingActions,
+  currencyToString,
+  formatToCurrency,
+  currency,
+} from "../utils";
 import { bindPaymentActions } from "../actions";
 
 import { Row, Col } from "antd";
@@ -274,9 +279,9 @@ class AddFriend extends React.Component {
               </div>
               <NumericInput
                 style={{ width: "50%" }}
-                value={this.state.moneyEachBag}
+                value={formatToCurrency(this.state.moneyEachBag)}
                 onChange={(value) => {
-                  this.setState({ moneyEachBag: value });
+                  this.setState({ moneyEachBag: currencyToString(value) });
                 }}
               />
             </div>
@@ -511,7 +516,9 @@ class AddFriend extends React.Component {
               avatar={
                 <Avatar src="https://thietbiketnoi.com/wp-content/uploads/2020/12/phong-nen-hinh-nen-background-dep-cho-tet-chuc-mung-nam-moi-36.jpg" />
               }
-              description={"Received " + e.receivedMoney + "vnđ"}
+              description={
+                "Received " + formatToCurrency(e.receivedMoney) + currency
+              }
               title={e.wishMessage}
             />
           </Card>

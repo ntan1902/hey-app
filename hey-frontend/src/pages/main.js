@@ -1,5 +1,5 @@
 import React from "react";
-import {Icon, Input, Layout, Menu } from "antd";
+import { Icon, Input, Layout, Menu } from "antd";
 import CustomAvatar from "../components/custom-avatar";
 import Chat from "./Chat";
 import Friend from "./Friend";
@@ -16,6 +16,7 @@ import {
   Form,
   Modal,
   message,
+  Button,
 } from "antd";
 
 import {

@@ -4,7 +4,7 @@ import { Popover } from "antd";
 import { SlideDown } from "react-slidedown";
 
 import { Card, Icon, Avatar } from "antd";
-
+import { currencyToString, formatToCurrency, currency } from "../utils";
 const { Meta } = Card;
 
 class ChatItem extends React.Component {
@@ -59,7 +59,9 @@ class ChatItem extends React.Component {
               avatar={
                 <Avatar src="https://thietbiketnoi.com/wp-content/uploads/2020/12/phong-nen-hinh-nen-background-dep-cho-tet-chuc-mung-nam-moi-36.jpg" />
               }
-              title={"Received " + data.content.amount + "vnđ"}
+              title={
+                "Received " + formatToCurrency(data.content.amount) + currency
+              }
               description={
                 "Lucky Money With the best wishes: " + data.content.message
               }
@@ -98,7 +100,7 @@ class ChatItem extends React.Component {
             // avatar={
             //   <Avatar src="https://thietbiketnoi.com/wp-content/uploads/2020/12/phong-nen-hinh-nen-background-dep-cho-tet-chuc-mung-nam-moi-36.jpg" />
             // }
-            title={"Send " + data.content.amount + "vnđ"}
+            title={"Send " + formatToCurrency(data.content.amount) + currency}
             description={data.content.message}
           />
         </Card>
@@ -123,7 +125,7 @@ class ChatItem extends React.Component {
       >
         <p style={{ width: "100%" }}>
           {data.type == "transfer"
-            ? "Transfer: " + data.content.amount + "$"
+            ? "Transfer: " + formatToCurrency(data.content.amount) + currency
             : data.content.message}
         </p>
       </div>
