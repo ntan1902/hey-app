@@ -1,7 +1,6 @@
 import * as actionTypes from "./actionTypes";
 import { bindActionCreators } from "redux";
 import { PaymentAPI, AuthAPI } from "../api";
-
 /* Get */
 
 const onShow = (screenName, data) => {
@@ -199,6 +198,8 @@ const changeStateMembersModal = (state) => {
   }
 }
 
+
+
 export const paymentActions = {
   /* Get Event */
   switchMainScreen,
@@ -216,7 +217,7 @@ export const paymentActions = {
   getAllTransferStatement,
   checkBalance,
   changeStateAddFriendPopup,
-  changeStateMembersModal
+  changeStateMembersModal,
 };
 
 export function bindPaymentActions(currentActions, dispatch) {

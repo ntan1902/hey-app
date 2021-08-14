@@ -98,23 +98,9 @@ public class APIService extends BaseService {
                         Long unSeenCount = cp.resultAt(index);
                         ChatList chatList = chatLists.get(index);
 
-                        ChatListItem chatListItem = new ChatListItem();
+                        ChatListItem chatListItem = getChatListItem(userId, chatList);
 
-                        List<String> listFullNameExcludedCurrentUser = getListFullNameExcludedCurrentUser(userId,
-                                chatList.getUserHashes());
-                        if (listFullNameExcludedCurrentUser.size() > 1) {
-                            String groupName = listFullNameExcludedCurrentUser.stream()
-                                    .map(fullName -> fullName.split(" ")[0]).collect(Collectors.joining(", "));
-                            chatListItem.setName(groupName);
-                            chatListItem.setGroupChat(true);
-                        } else {
-                            chatListItem.setName(listFullNameExcludedCurrentUser.get(0));
-                        }
-                        chatListItem.setSessionId(chatList.getSessionId());
                         chatListItem.setUnread(unSeenCount.intValue());
-                        chatListItem.setLastMessage(chatList.getLastMessage());
-                        chatListItem.setUpdatedDate(chatList.getUpdatedDate());
-
                         chatListItems.add(chatListItem);
                     }
 
@@ -132,6 +118,25 @@ public class APIService extends BaseService {
         }));
 
         return future;
+    }
+
+    private ChatListItem getChatListItem(String userId, ChatList chatList) {
+        ChatListItem chatListItem = new ChatListItem();
+
+        List<String> listFullNameExcludedCurrentUser = getListFullNameExcludedCurrentUser(userId,
+                chatList.getUserHashes());
+        if (listFullNameExcludedCurrentUser.size() > 1) {
+            String groupName = listFullNameExcludedCurrentUser.stream()
+                    .map(fullName -> fullName.split(" ")[0]).collect(Collectors.joining(", "));
+            chatListItem.setName(groupName);
+            chatListItem.setGroupChat(true);
+        } else {
+            chatListItem.setName(listFullNameExcludedCurrentUser.get(0));
+        }
+        chatListItem.setSessionId(chatList.getSessionId());
+        chatListItem.setLastMessage(chatList.getLastMessage());
+        chatListItem.setUpdatedDate(chatList.getUpdatedDate());
+        return chatListItem;
     }
 
     public Future<AddressBookResponse> getAddressBook(String userId) {
@@ -1424,7 +1429,7 @@ public class APIService extends BaseService {
                     .anyMatch(userHash -> userHash.getUserId().equals(userId));
 
             if (isUserIdInSessionId
-                    && chatList.getGroup()
+                    && chatList.isGroup()
                     && chatList.getOwner().equals(userId)) {
                 chatList.setGroupName(groupName);
 
@@ -1471,7 +1476,7 @@ public class APIService extends BaseService {
             }
 
             if (!userId.equals(memberId)
-                    && chatList.getGroup()
+                    && chatList.isGroup()
                     && isUserIdInSessionId
                     && isMemberIdInSessionId
                     && chatList.getOwner().equals(userId)) {
@@ -1486,11 +1491,21 @@ public class APIService extends BaseService {
 
                     Future<ChatList> insertChatListFuture = dataRepository.insertChatList(chatList);
                     insertChatListFuture.compose(res2 -> {
+
+//                        NewChatSessionResponse newChatSessionResponse = new NewChatSessionResponse();
+//                        newChatSessionResponse.setType(IWsMessage.TYPE_CHAT_NEW_SESSION_RESPONSE);
+//                        newChatSessionResponse.setSessionId();
+//                        for (UserHash userhash : chatList.getUserHashes()) {
+//                            userWsChannelManager.sendMessage(newChatSessionResponse, userhash.getUserId());
+//                        }
+
                         JsonObject apiResponse = new JsonObject();
                         apiResponse.put("success", true);
                         apiResponse.put("message", "Kick member successfully");
                         apiResponse.put("code", 201);
                         apiResponse.put("payload", "");
+
+
                         future.complete(apiResponse);
 
                     }, Future.future().setHandler(handler -> future.fail(handler.cause())));
@@ -1520,7 +1535,7 @@ public class APIService extends BaseService {
 
             boolean isUserIdInSessionId = userHashes.stream()
                     .anyMatch(userHash -> userHash.getUserId().equals(userId));
-            if (chatList.getGroup()
+            if (chatList.isGroup()
                     && isUserIdInSessionId
                     && chatList.getOwner().equals(userId)) {
 
@@ -1572,17 +1587,46 @@ public class APIService extends BaseService {
             if (userIdSessionIdResponse.getExisted()){
                 Future<ChatList> getChatListFuture = getChatListBySessionId(sessionId);
                 getChatListFuture.compose(chatList -> {
+                    JsonObject payload = new JsonObject();
+                    payload.put("isOwner",userId.equals(chatList.getOwner()));
+                    payload.put("members",chatList.getUserHashes());
                     JsonObject apiResponse = new JsonObject();
                     apiResponse.put("success", true);
                     apiResponse.put("message", "");
                     apiResponse.put("code", 200);
-                    apiResponse.put("payload", chatList.getUserHashes());
+                    apiResponse.put("payload", payload);
                     future.complete(apiResponse);
                 }, Future.future().setHandler(handler-> future.fail(handler.cause())));
             } else {
                 future.fail(new HeyHttpStatusException(HttpStatus.BAD_REQUEST.code(), "400", "You aren't in that group!"));
             }
         }, Future.future().setHandler(handler->future.fail(handler.cause())));
+        return future;
+    }
+
+    public Future<JsonObject> refetchChatList(GetChatListItemRequest request, String userId) {
+        Future<JsonObject> future = Future.future();
+        Future<ChatList> chatListFuture = getChatListBySessionId(request.getSessionId());
+
+        Future<Long> unseenCountFuture = dataRepository.getUnseenCount(userId,request.getSessionId());
+
+        CompositeFuture getChatListItem = CompositeFuture.all(chatListFuture,unseenCountFuture);
+
+        getChatListItem.compose(res -> {
+            ChatListItem chatListItem = getChatListItem(userId,res.resultAt(0));
+            Long count = res.resultAt(1);
+            chatListItem.setUnread(count.intValue());
+
+            JsonObject payload = JsonObject.mapFrom(chatListItem);
+            JsonObject apiResponse = new JsonObject();
+            apiResponse.put("success", true);
+            apiResponse.put("message", "");
+            apiResponse.put("code", 200);
+            apiResponse.put("payload", payload);
+            future.complete(apiResponse);
+        }, Future.future().setHandler(handler -> {
+            future.fail(handler.cause());
+        }));
         return future;
     }
 }

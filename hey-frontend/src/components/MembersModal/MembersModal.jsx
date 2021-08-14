@@ -1,8 +1,8 @@
 import React from 'react';
-import { message, Modal, Menu } from 'antd';
+import { message, Modal, Menu, Icon, Button } from 'antd';
 import { connect } from 'react-redux';
 import CustomAvatar from "../../components/custom-avatar";
-import { bindPaymentActions } from '../../actions';
+import { bindPaymentActions, bindChatActions } from '../../actions';
 import { channingActions } from '../../utils';
 import { ChatAPI } from '../../api/chat';
 
@@ -10,16 +10,18 @@ class MembersModal extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            users: []
+            isOwner: "",
+            members: []
         }
     }
 
     componentDidUpdate() {
-        if (this.props.currentSessionId) {
+        if (this.props.currentSessionId && this.props.currentSessionId !== "-1") {
             ChatAPI.getMembersOfSessionChat(this.props.currentSessionId)
                 .then(res => {
                     this.setState({
-                        users: res.data.payload
+                        isOwner: res.data.payload.isOwner,
+                        members: res.data.payload.members
                     })
                 })
                 .catch(err => {
@@ -27,20 +29,29 @@ class MembersModal extends React.Component {
                 })
         }
     }
+    shouldComponentUpdate(nextProps, nextState) {
+        return nextProps.currentSessionId != this.props.currentSessionId || nextProps.membersModal != this.props.membersModal;
+    }
 
     handleCancel = () => {
         this.props.paymentActions.changeStateMembersModal(false);
     }
 
     kickUser = (userId) => {
-        this.props.paymentActions.kickMembers(userId)
+        this.props.chatActions.kickMembers(this.props.currentSessionId, userId)
+            .then(res => {
+                console.log("Kick user successfully", res);
+            })
+            .catch(err => {
+                console.log(err);
+            })
     }
 
     render() {
         console.log("Day ne:" + this.props.currentSessionId);
         return (
             <Modal
-                width="500px"
+                width="700px"
                 height="80%"
                 title="Members"
                 visible={this.props.membersModal}
@@ -51,12 +62,10 @@ class MembersModal extends React.Component {
                     theme="light"
                     mode="inline"
                     defaultSelectedKeys={[]}
-                    selectedKeys={this.state.current}
                     className="address-book"
-                    onSelect={this.onClickUser}
                     style={{ overflowY: "scroll", maxHeight: 500, overflowX: "hidden" }}
                 >
-                    {this.state.users.map(item => (
+                    {this.state.members.map(item => (
                         <Menu.Item key={item.username} style={{ display: "flex", alignItems: "center", height: 90 }}>
                             <div>
                                 <CustomAvatar type="user-avatar" />
@@ -64,10 +73,15 @@ class MembersModal extends React.Component {
                             <div style={{ overflow: "hidden", paddingTop: 5 }}>
                                 <div className="user-name">{item.fullName}</div>
                             </div>
+                            {this.state.isOwner &&
+                                < div style={{ position: "absolute", right: 10 }}>
+                                    <Icon type="export" onClick={() => this.kickUser(item.userId)} />
+                                </div>
+                            }
                         </Menu.Item>
                     ))}
                 </Menu>
-            </Modal>
+            </Modal >
         );
     }
 }
@@ -82,5 +96,5 @@ function mapStateToProps(state) {
 
 export default connect(
     mapStateToProps,
-    (dispatch) => channingActions({}, dispatch, bindPaymentActions)
+    (dispatch) => channingActions({}, dispatch, bindPaymentActions, bindChatActions)
 )(MembersModal);

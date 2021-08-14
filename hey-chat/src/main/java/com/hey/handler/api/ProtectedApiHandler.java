@@ -110,6 +110,9 @@ public class ProtectedApiHandler extends BaseHandler {
                         LogUtils.log("User "+userId+ " get members of session " + requestObject);
                         getUserOfSessionChat(response,requestObject,userId);
                         break;
+                    case "/fetchChatListBySessionId":
+                        LogUtils.log("User " + userId + " fetch chat list by " + requestObject);
+                        fetchChatListBySessionId(response, requestObject, userId);
                 }
             } else {
                 handleUnauthorizedException(new HttpStatusException(HttpStatus.UNAUTHORIZED.code(), HttpStatus.UNAUTHORIZED.message()), response);
@@ -117,6 +120,16 @@ public class ProtectedApiHandler extends BaseHandler {
         });
     }
 
+    private void fetchChatListBySessionId(HttpServerResponse response, JsonObject requestObject, String userId) {
+        GetChatListItemRequest request = requestObject.mapTo(GetChatListItemRequest.class);
+        Future<JsonObject> refetchChatListFuture = apiService.refetchChatList(request, userId);
+        refetchChatListFuture.compose(apiResponse->{
+            response.putHeader("content-type", "application/json; charset=utf-8")
+                    .end(apiResponse.encodePrettily());
+        }, Future.future().setHandler(handler->{
+            handleException(handler.cause(),response);
+        }));
+    }
 
 
     public void ping(HttpServerResponse response) {
