@@ -35,4 +35,6 @@ public interface UserService {
     List<UserDTO> searchUser(String key);
 
     void logout(LogOutRequest request) throws InvalidJwtTokenException;
+
+    void updateAvatar(UpdateAvatarRequest request) throws UserIdNotFoundException;
 }

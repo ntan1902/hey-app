@@ -22,6 +22,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -163,6 +164,8 @@ public class UserServiceImpl implements UserDetailsService, UserService {
 
         String email = request.getEmail();
         String fullName = request.getFullName();
+        String dateOfBirth = request.getDateOfBirth();
+        String phoneNumber = request.getPhoneNumber();
 
         boolean emailPresent = userRepository
                 .findByEmail(email)
@@ -174,6 +177,8 @@ public class UserServiceImpl implements UserDetailsService, UserService {
 
         user.setEmail(email);
         user.setFullName(fullName);
+        user.setDateOfBirth(LocalDateTime.parse(dateOfBirth));
+        user.setPhoneNumber(phoneNumber);
 
         userRepository.save(user);
 
@@ -273,6 +278,17 @@ public class UserServiceImpl implements UserDetailsService, UserService {
         } else {
             throw new InvalidJwtTokenException("Invalid Refresh Token");
         }
+    }
+
+    @Override
+    public void updateAvatar(UpdateAvatarRequest request) throws UserIdNotFoundException {
+        String userId = getCurrentUserId();
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserIdNotFoundException("User Id " + userId + " not found"));
+        log.info("User " + userId + " update avatar");
+        user.setAvatar(request.getUri());
+        user.setMiniAvatar(request.getMiniUri());
+        userRepository.save(user);
     }
 
 }

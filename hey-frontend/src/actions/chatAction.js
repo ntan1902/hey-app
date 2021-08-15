@@ -295,6 +295,7 @@ export function addNewUserChatGroup(userId) {
     return async function (dispatch) {
       const res = await AuthAPI.getUsername(userId);
       const userName = res.data.payload.username;
+      console.log("Username nef:" + userName);
       return api
         .post(
           `/api/protected/usernameexisted`,
@@ -302,7 +303,8 @@ export function addNewUserChatGroup(userId) {
         )
         .then((result) => {
           dispatch(receiveNewUserChatGroup(result));
-        });
+        })
+        .catch(err => console.log(err.response));
     };
   }
 }

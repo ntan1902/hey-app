@@ -23,6 +23,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -48,7 +49,7 @@ public class LuckyMoneyServiceImpl implements LuckyMoneyService {
 
     @Override
     @Transactional(noRollbackFor = ErrCallApiException.class)
-    public void createLuckyMoney(CreateLuckyMoneyRequest request) throws UnauthorizeException, ErrCallApiException, CannotTransferMoneyException, ErrCallChatApiException {
+    public void createLuckyMoney(CreateLuckyMoneyRequest request) throws ErrCallApiException, CannotTransferMoneyException, ErrCallChatApiException, UserNotInSessionChatException {
         long walletId = walletsInfo.getCurrentWallet();
         User user = luckyMoneyServiceUtil.getCurrentUser();
 
@@ -56,7 +57,7 @@ public class LuckyMoneyServiceImpl implements LuckyMoneyService {
 
         if (!luckyMoneyServiceUtil.isUserInSession(user.getId(), request.getSessionChatId())) {
             log.info("User {} isn't in group chat {}", user.getId(), request.getSessionChatId());
-            throw new UnauthorizeException("You aren't in that group chat");
+            throw new UserNotInSessionChatException("You aren't in that group chat");
         }
 
         long amount = luckyMoneyServiceUtil.transferMoneyFromUser(
@@ -101,7 +102,7 @@ public class LuckyMoneyServiceImpl implements LuckyMoneyService {
 
     @Override
     @Transactional(noRollbackFor = ErrCallApiException.class)
-    public void receiveLuckyMoney(ReceiveLuckyMoneyRequest request) throws InvalidLuckyMoneyException, UnauthorizeException, ErrCallApiException, LuckyMoneyExpiredException, CannotTransferMoneyException, OutOfBagException, HadReceivedException, ErrCallChatApiException {
+    public void receiveLuckyMoney(ReceiveLuckyMoneyRequest request) throws InvalidLuckyMoneyException, ErrCallApiException, LuckyMoneyExpiredException, CannotTransferMoneyException, OutOfBagException, HadReceivedException, ErrCallChatApiException, UserNotInSessionChatException {
         User user = luckyMoneyServiceUtil.getCurrentUser();
         LocalDateTime now = LocalDateTime.now();
         LuckyMoney luckyMoney = luckyMoneyRepository.getLuckyMoneyById(request.getLuckyMoneyId())
@@ -110,7 +111,7 @@ public class LuckyMoneyServiceImpl implements LuckyMoneyService {
 
         if (!luckyMoneyServiceUtil.isUserInSession(user.getId(), luckyMoney.getSessionChatId())) {
             log.info("User {} isn't in group chat {}", user.getId(), luckyMoney.getSessionChatId());
-            throw new UnauthorizeException("You aren't in that group chat");
+            throw new UserNotInSessionChatException("You aren't in that group chat");
         }
 
         if (luckyMoney.isExpired(now)) {
@@ -170,13 +171,15 @@ public class LuckyMoneyServiceImpl implements LuckyMoneyService {
     }
 
     @Override
-    public List<LuckyMoneyDTO> getAllLuckyMoneyOfSession(String sessionId) throws UnauthorizeException, ErrCallApiException, CannotGetUserInfo {
+    public List<LuckyMoneyDTO> getAllLuckyMoneyOfSession(String sessionId) throws  ErrCallApiException, CannotGetUserInfo, UserNotInSessionChatException {
         User user = luckyMoneyServiceUtil.getCurrentUser();
         log.info("User {} get all lucky money of chat group {}", user.getId(), sessionId);
-
+        if ("-1".equals(sessionId)){
+            return new ArrayList<>();
+        }
         if (!luckyMoneyServiceUtil.isUserInSession(user.getId(), sessionId)) {
             log.info("User {} isn't in group chat {}", user.getId(), sessionId);
-            throw new UnauthorizeException("You aren't in that group chat");
+            throw new UserNotInSessionChatException("You aren't in that group chat");
         }
 
         List<LuckyMoney> luckyMoneyList = luckyMoneyRepository.findAllBySessionChatId(sessionId);
@@ -186,7 +189,7 @@ public class LuckyMoneyServiceImpl implements LuckyMoneyService {
     }
 
     @Override
-    public LuckyMoneyDetails getLuckyMoneyDetails(long luckyMoneyId) throws InvalidLuckyMoneyException, CannotGetUserInfo, UnauthorizeException, ErrCallApiException {
+    public LuckyMoneyDetails getLuckyMoneyDetails(long luckyMoneyId) throws InvalidLuckyMoneyException, CannotGetUserInfo, ErrCallApiException, UserNotInSessionChatException {
         log.info("Get details of lucky money {}", luckyMoneyId);
         User user = luckyMoneyServiceUtil.getCurrentUser();
         LuckyMoney luckyMoney = luckyMoneyRepository.findLuckyMoneyById(luckyMoneyId)
@@ -197,7 +200,7 @@ public class LuckyMoneyServiceImpl implements LuckyMoneyService {
 
         if (!luckyMoneyServiceUtil.isUserInSession(user.getId(), luckyMoney.getSessionChatId())) {
             log.info("User {} isn't in group chat {}", user.getId(), luckyMoney.getSessionChatId());
-            throw new UnauthorizeException("You aren't in that group chat");
+            throw new UserNotInSessionChatException("You aren't in that group chat");
         }
 
         LuckyMoneyDetails luckyMoneyDetails = luckyMoneyMapper.luckyMoney2LuckyMoneyDetails(luckyMoney);
