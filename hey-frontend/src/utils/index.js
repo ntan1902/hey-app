@@ -12,7 +12,7 @@ export function channingActions(currentActions, dispatch, ...actionGenerators) {
 }
 
 const formatToCurrency = (amount) => {
-  if (amount == "") return "";
+  if (amount == "") return "0";
   return parseInt(amount)
     .toFixed(2)
     .replace(/\d(?=(\d{3})+\.)/g, "$&,")

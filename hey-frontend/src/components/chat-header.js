@@ -4,7 +4,7 @@ import CustomAvatar from "./custom-avatar";
 import { Menu, Icon } from "antd";
 
 import { channingActions } from "../utils";
-import { bindPaymentActions } from "../actions";
+import { bindChatActions, bindPaymentActions } from "../actions";
 import { ChatAPI } from "../api/chat";
 
 const { SubMenu } = Menu;
@@ -25,16 +25,19 @@ class ChatHeader extends React.Component {
     this.props.paymentActions.changeStateAddFriendPopup(true);
   };
   showMembersModal = () => {
+    this.props.chatActions.fetchMember(this.props.currentSessionId);
     this.props.paymentActions.changeStateMembersModal(true);
-  }
+  };
   leaveGroup = () => {
-    ChatAPI.leaveGroup(this.props.currentSessionId)
-      .then(res => console.log(res));
-  }
+    ChatAPI.leaveGroup(this.props.currentSessionId).then((res) =>
+      console.log(res)
+    );
+  };
   render() {
     const IconFont = Icon.createFromIconfontCN({
       scriptUrl: "//at.alicdn.com/t/font_8d5l8fzk5b87iudi.js",
     });
+    console.log("Header", this.props.header);
     return (
       <div className="chat-header">
         <div style={{ width: 50 }}>
@@ -110,7 +113,8 @@ export default connect(
   (state) => ({
     header: state.chatReducer.messageHeader,
     luckyMoneyPopup: state.paymentReducer.luckyMoneyPopup,
-    currentSessionId: state.chatReducer.currentSessionId
+    currentSessionId: state.chatReducer.currentSessionId,
   }),
-  (dispatch) => channingActions({}, dispatch, bindPaymentActions)
+  (dispatch) =>
+    channingActions({}, dispatch, bindPaymentActions, bindChatActions)
 )(ChatHeader);

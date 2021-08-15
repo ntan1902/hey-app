@@ -26,6 +26,8 @@ const initialState = {
   startChatGroupErrorMessage: "",
   waitingGroupUsernames: [],
   userSelectedKeys: [],
+  members: [],
+  isOwner: false
 };
 
 export default function reduce(state = initialState, action) {
@@ -105,10 +107,11 @@ export default function reduce(state = initialState, action) {
         ...state,
         webSocket: action.webSocket,
       };
-    case actionTypes.REFETCH_CHATLIST_ITEM:
+    case actionTypes.FETCH_MEMBERS:
       return {
         ...state,
-        chatList: state.chatList.map(item => item.sessionId == action.sessionId ? action.chatListItem : item)
+        members: action.members,
+        isOwner: action.isOwner
       }
     default:
       return state;

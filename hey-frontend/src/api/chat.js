@@ -8,9 +8,6 @@ export const ChatAPI = {
     kickMember: (sessionId, userId) => {
         return axios.post(`${API_CHAT}/api/protected/kickmember`, { sessionId, memberId: userId })
     },
-    fetchChatList: (sessionId) => {
-        return axios.post(`${API_CHAT}/api/protected/fetchChatListBySessionId`, { sessionId })
-    },
     leaveGroup: (sessionId) => {
         return axios.post(`${API_CHAT}/api/protected/outgroup`, { sessionId })
     }

@@ -155,6 +155,8 @@ const createLuckymoney = (data) => async (dispatch) => {
 const getListLuckymoney = (sessionId) => async (dispatch) => {
   return new Promise(async (resolve, reject) => {
     try {
+      if (sessionId == -1) return;
+
       const res = await PaymentAPI.getListLuckymoney(sessionId);
       await dispatch(getBalance());
       // await dispatch(switchMainScreen("TransferSuccess"));
@@ -194,11 +196,9 @@ const getAllTransferStatement = (data) => async (dispatch) => {
 const changeStateMembersModal = (state) => {
   return {
     type: actionTypes.CHANGE_STATE_MEMBERS_MODAL,
-    state
-  }
-}
-
-
+    state,
+  };
+};
 
 export const paymentActions = {
   /* Get Event */

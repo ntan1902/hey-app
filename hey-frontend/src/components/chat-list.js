@@ -39,6 +39,7 @@ class ChatList extends React.Component {
   }
 
   render() {
+    console.log("Chat Lissst", this.props.chatList);
     if (this.props.chatList) {
       return (
         <div className="d-flex flex-column full-height">
