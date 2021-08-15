@@ -535,32 +535,28 @@ function createWaitingChatHeaderRequest(usernames) {
 const kickMembers = (sessionId, userId) => async dispatch => {
   try {
     let kickMemberRes = await ChatAPI.kickMember(sessionId, userId);
-    // if (kickMemberRes.data.success) {
-    //   let fetchChatListRes = await ChatAPI.fetchChatList(sessionId);
-    //   dispatch({
-    //     type: actionTypes.REFETCH_CHATLIST_ITEM,
-    //     sessionId,
-    //     chatListItem: fetchChatListRes.data.payload
-    //   })
-    // }
     return Promise.resolve(kickMemberRes);
   } catch (error) {
     return Promise.reject({ error, success: false })
   }
 }
 
-// const leaveGroup = sessionId => async dispatch => {
-//   try {
-//     let leaveGroupRes = await ChatAPI.leaveGroup(sessionId);
-//     return Promise.resolve({ success: true });
-//   } catch (error) {
-//     return Promise.reject({ success: false, error })
-//   }
-// }
+const fetchMember = (sessionId) => async dispatch => {
+  try {
+    let fetchMemberRes = await ChatAPI.getMembersOfSessionChat(sessionId);
+    dispatch({
+      type: actionTypes.FETCH_MEMBERS,
+      members: fetchMemberRes.data.payload.members,
+      isOwner: fetchMemberRes.data.payload.isOwner
+    })
+  } catch (err) {
+    message.error(err.error.response.data.message);
+  }
+}
 
 export const chatActions = {
   kickMembers,
-  // leaveGroup
+  fetchMember
 }
 
 export function bindChatActions(currentActions, dispatch) {

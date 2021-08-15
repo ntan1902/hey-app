@@ -9,30 +9,7 @@ import { ChatAPI } from '../../api/chat';
 class MembersModal extends React.Component {
     constructor(props) {
         super(props);
-        this.state = {
-            isOwner: "",
-            members: []
-        }
     }
-
-    componentDidUpdate() {
-        if (this.props.currentSessionId && this.props.currentSessionId !== "-1") {
-            ChatAPI.getMembersOfSessionChat(this.props.currentSessionId)
-                .then(res => {
-                    this.setState({
-                        isOwner: res.data.payload.isOwner,
-                        members: res.data.payload.members
-                    })
-                })
-                .catch(err => {
-                    message.error(err.error.response.data.message);
-                })
-        }
-    }
-    shouldComponentUpdate(nextProps, nextState) {
-        return nextProps.currentSessionId != this.props.currentSessionId || nextProps.membersModal != this.props.membersModal;
-    }
-
     handleCancel = () => {
         this.props.paymentActions.changeStateMembersModal(false);
     }
@@ -65,7 +42,7 @@ class MembersModal extends React.Component {
                     className="address-book"
                     style={{ overflowY: "scroll", maxHeight: 500, overflowX: "hidden" }}
                 >
-                    {this.state.members.map(item => (
+                    {this.props.members.map(item => (
                         <Menu.Item key={item.username} style={{ display: "flex", alignItems: "center", height: 90 }}>
                             <div>
                                 <CustomAvatar type="user-avatar" />
@@ -73,7 +50,7 @@ class MembersModal extends React.Component {
                             <div style={{ overflow: "hidden", paddingTop: 5 }}>
                                 <div className="user-name">{item.fullName}</div>
                             </div>
-                            {this.state.isOwner &&
+                            {this.props.isOwner &&
                                 < div style={{ position: "absolute", right: 10 }}>
                                     <Icon type="export" onClick={() => this.kickUser(item.userId)} />
                                 </div>
@@ -89,7 +66,9 @@ class MembersModal extends React.Component {
 function mapStateToProps(state) {
     return {
         membersModal: state.paymentReducer.membersModal,
-        currentSessionId: state.chatReducer.currentSessionId
+        currentSessionId: state.chatReducer.currentSessionId,
+        members: state.chatReducer.members,
+        isOwner: state.chatReducer.isOwner
     }
 }
 
