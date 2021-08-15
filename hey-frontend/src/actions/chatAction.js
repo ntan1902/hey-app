@@ -525,6 +525,7 @@ function createCheckUsernameExistedRequest(username) {
 function createWaitingChatHeaderRequest(usernames) {
   const req = {
     usernames: usernames,
+    groupName: ""
   };
   return req;
 }

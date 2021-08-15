@@ -1,13 +1,13 @@
 package com.hey.model.lucky;
 
 public class UserIdSessionIdResponse {
-    private Boolean isExisted;
+    private boolean isExisted;
 
-    public Boolean getExisted() {
+    public boolean getExisted() {
         return isExisted;
     }
 
-    public void setExisted(Boolean existed) {
+    public void setExisted(boolean existed) {
         isExisted = existed;
     }
 }
