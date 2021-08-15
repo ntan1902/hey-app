@@ -20,4 +20,8 @@ public class AuthorizeUserResponse {
     int code;
     String message;
     Payload payload;
+
+    public boolean isSuccess(){
+        return success;
+    }
 }

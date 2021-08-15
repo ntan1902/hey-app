@@ -86,4 +86,11 @@ public class MyExceptionHandler {
         return getResponse(code, exception.getMessage());
     }
 
+    @ExceptionHandler(value = {UserNotInSessionChatException.class})
+    public ResponseEntity<ApiResponse> handleUserNotInSessionChatException(Exception exception) {
+        log.error(exception.getMessage());
+        HttpStatus code = HttpStatus.BAD_REQUEST;
+        return getResponse(code, exception.getMessage());
+    }
+
 }

@@ -4,13 +4,13 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.Type;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Collections;
 
@@ -38,9 +38,23 @@ public class User implements Serializable, UserDetails {
 
     private String password;
 
+    @Column(name = "full_name")
     private String fullName;
 
     private String pin;
+
+    @Column(name = "date_of_birth")
+    private LocalDateTime dateOfBirth;
+
+    @Column(name="phone_number")
+    private String phoneNumber;
+
+    @Column(name="avatar")
+    private String avatar;
+
+    @Column(name="mini_avatar")
+    private String miniAvatar;
+
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

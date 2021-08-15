@@ -1,17 +1,21 @@
 package com.hey.auth.controller;
 
-import com.hey.auth.dto.api.*;
+import com.hey.auth.dto.api.ApiResponse;
 import com.hey.auth.dto.user.*;
 import com.hey.auth.exception.jwt.InvalidJwtTokenException;
 import com.hey.auth.exception.user.*;
 import com.hey.auth.service.UserService;
+import com.hey.auth.utils.FileUploadUtil;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -21,6 +25,8 @@ import java.util.List;
 @CrossOrigin("http://localhost:3000")
 public class UserController {
     private final UserService userService;
+
+    private final FileUploadUtil fileUploadUtil;
 
     @PostMapping("/register")
     public ResponseEntity<ApiResponse> register(@RequestBody @Valid RegisterRequest registerRequest) throws UsernameEmailExistedException {
@@ -123,7 +129,7 @@ public class UserController {
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<ApiResponse> logout(@RequestBody @Valid LogOutRequest request) throws InvalidJwtTokenException, UserIdNotFoundException {
+    public ResponseEntity<ApiResponse> logout(@RequestBody @Valid LogOutRequest request) throws InvalidJwtTokenException {
         userService.logout(request);
 
         return ResponseEntity.ok(ApiResponse.builder()
@@ -144,4 +150,37 @@ public class UserController {
                 .payload(userDTOList)
                 .build());
     }
+
+    @PostMapping("updateAvatar")
+    public ResponseEntity<ApiResponse> updateAvatar(@RequestBody @Valid UpdateAvatarRequest request) throws UserIdNotFoundException {
+        userService.updateAvatar(request);
+        return ResponseEntity.ok(ApiResponse.builder()
+                .success(true)
+                .code(HttpStatus.OK.value())
+                .message("Update avatar successfully")
+                .payload(null)
+                .build());
+    }
+
+
+    @PostMapping("/uploadImage")
+    public ResponseEntity<ApiResponse> uploadImage(@RequestParam("file") MultipartFile multipartFile) throws IOException {
+        log.info("User upload image");
+        UriImageDTO uriImageDTO = fileUploadUtil.uploadFile(multipartFile, "/auth/api/v1/users/images/");
+        return ResponseEntity.ok(ApiResponse.builder()
+                .success(true)
+                .code(HttpStatus.OK.value())
+                .message("Upload successfully")
+                .payload(uriImageDTO)
+                .build());
+    }
+
+    @GetMapping(
+            value = "/images/{imageName}",
+            produces = {MediaType.IMAGE_JPEG_VALUE, MediaType.IMAGE_GIF_VALUE, MediaType.IMAGE_PNG_VALUE}
+    )
+    public byte[] getImageWithMediaType(@PathVariable(name = "imageName") String fileName) {
+        return fileUploadUtil.load(fileName);
+    }
+
 }

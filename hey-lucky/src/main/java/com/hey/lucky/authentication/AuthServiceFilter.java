@@ -6,7 +6,6 @@ import com.hey.lucky.entity.User;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
@@ -37,10 +36,12 @@ public class AuthServiceFilter extends OncePerRequestFilter {
         try {
             String token = getTokenFromRequest(request);
             if (StringUtils.hasText(token)) {
-                UsernamePasswordAuthenticationToken authenticationToken;
+                UsernamePasswordAuthenticationToken authenticationToken = null;
                 log.info("Authorize user with token {}", token);
                 User user = new User(authorizeUser(token));
-                authenticationToken = new UsernamePasswordAuthenticationToken(user, null, new ArrayList<>());
+                if (!user.getId().isEmpty()) {
+                    authenticationToken = new UsernamePasswordAuthenticationToken(user, null, null);
+                }
                 SecurityContextHolder.getContext().setAuthentication(authenticationToken);
             }
         } catch (Exception e) {
@@ -53,8 +54,12 @@ public class AuthServiceFilter extends OncePerRequestFilter {
     private String authorizeUser(String token) {
         HttpEntity<AuthorizeUserRequest> requestEntity = new HttpEntity<>(new AuthorizeUserRequest(token));
         AuthorizeUserResponse authorizeUserResponse = restTemplate.postForObject("/authorizeUser", requestEntity, AuthorizeUserResponse.class);
-        return authorizeUserResponse.getPayload().getUserId();
+        if (authorizeUserResponse != null && authorizeUserResponse.isSuccess()) {
+            return authorizeUserResponse.getPayload().getUserId();
+        }
+        return "";
     }
+
 
     private String getTokenFromRequest(HttpServletRequest request) {
         String bearerToken = request.getHeader("Authorization");
