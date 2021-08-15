@@ -9,6 +9,7 @@ import {
   startNewChatGroup,
 } from "../actions/chatAction";
 import AddFriend from "./add-friend-transfer";
+const { Search } = Input;
 
 class StartChatGroup extends React.Component {
   constructor(props) {
@@ -16,6 +17,7 @@ class StartChatGroup extends React.Component {
     this.state = {
       visible: false,
       selectedUserId: null,
+      groupName: "",
     };
     this.addMoreUsername = this.addMoreUsername.bind(this);
     this.handleRemoveUsername = this.handleRemoveUsername.bind(this);
@@ -32,7 +34,8 @@ class StartChatGroup extends React.Component {
     this.setState({
       visible: false,
     });
-    this.props.startNewChatGroup();
+    console.log(this.state.groupName)
+    this.props.startNewChatGroup(this.state.groupName);
   };
 
   handleCancel = (e) => {
@@ -96,6 +99,14 @@ class StartChatGroup extends React.Component {
             />
           </div>
            */}
+          <Input
+            placeholder="Group Name"
+            // enterButton="Search"
+            // size="large"
+            style={{ marginBottom: 10, width: 200 }}
+            onChange={(e) => this.setState({ groupName: e.target.value })}
+          />
+
           <div className="first-line">
             <AddFriend
               onChange={(value) => {
@@ -158,8 +169,8 @@ function mapDispatchToProps(dispatch) {
     removeUserChatGroup(username) {
       dispatch(removeUserChatGroup(username));
     },
-    startNewChatGroup() {
-      dispatch(startNewChatGroup());
+    startNewChatGroup(groupName) {
+      dispatch(startNewChatGroup(groupName));
     },
   };
 }

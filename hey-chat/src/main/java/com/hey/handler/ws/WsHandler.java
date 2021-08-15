@@ -194,6 +194,7 @@ public class WsHandler {
             userIdSessionIdRequest.setUserId(userId);
             userIdSessionIdRequest.setSessionId(request.getSessionId());
             Future<UserIdSessionIdResponse> checkUserExistInSessionFuture = apiService.checkUserExistInSession(userIdSessionIdRequest);
+
             checkUserExistInSessionFuture.compose(userIdSessionIdResponse -> {
                 if (userIdSessionIdResponse.getExisted()) {
                     insertChatMessageOnExistedChatSessionId(request, channelId, userId);

@@ -484,10 +484,7 @@ class Main extends React.Component {
         </Row>
         <Row>
           <Col span={24}>
-            <DescriptionItem
-              title="Status"
-              content="Make things as simple as possible but no simpler."
-            />
+            <DescriptionItem title="Status" content={this.props.userStatus} />
           </Col>
         </Row>
         <Divider />
@@ -593,6 +590,7 @@ class Main extends React.Component {
 function mapStateToProps(state) {
   return {
     userName: state.userReducer.userName,
+    userStatus: state.userReducer.userStatus,
     balance: state.paymentReducer.balance,
   };
 }

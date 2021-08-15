@@ -126,13 +126,16 @@ public class APIService extends BaseService {
         List<String> listFullNameExcludedCurrentUser = getListFullNameExcludedCurrentUser(userId,
                 chatList.getUserHashes());
         if (listFullNameExcludedCurrentUser.size() > 1) {
-            String groupName = listFullNameExcludedCurrentUser.stream()
+            String name = listFullNameExcludedCurrentUser.stream()
                     .map(fullName -> fullName.split(" ")[0]).collect(Collectors.joining(", "));
-            chatListItem.setName(groupName);
-            chatListItem.setGroupChat(true);
+            chatListItem.setName(name);
         } else {
             chatListItem.setName(listFullNameExcludedCurrentUser.get(0));
         }
+
+        chatListItem.setGroupName(chatList.getGroupName());
+        chatListItem.setGroup(chatList.isGroup());
+
         chatListItem.setSessionId(chatList.getSessionId());
         chatListItem.setLastMessage(chatList.getLastMessage());
         chatListItem.setUpdatedDate(chatList.getUpdatedDate());
@@ -340,7 +343,8 @@ public class APIService extends BaseService {
         Future<WaitingChatHeaderResponse> future = Future.future();
 
         Future<List<UserAuth>> getUserAuthsFuture = getUserAuths(
-                Arrays.asList(waitingChatHeaderRequest.getUsernames()));
+                Arrays.asList(waitingChatHeaderRequest.getUsernames())
+        );
 
         getUserAuthsFuture.compose(userAuths -> {
 
@@ -359,7 +363,12 @@ public class APIService extends BaseService {
                 }
 
                 WaitingChatHeaderResponse waitingChatHeaderResponse = new WaitingChatHeaderResponse();
-                waitingChatHeaderResponse.setTitle(String.join(", ", firstNames));
+
+                if (waitingChatHeaderRequest.getGroupName().equals("")) {
+                    waitingChatHeaderResponse.setTitle(String.join(", ", firstNames));
+                } else {
+                    waitingChatHeaderResponse.setTitle(waitingChatHeaderRequest.getGroupName());
+                }
 
                 future.complete(waitingChatHeaderResponse);
 
@@ -609,9 +618,7 @@ public class APIService extends BaseService {
     private List<String> getListFullNameExcludedCurrentUser(String currentUserId, List<UserHash> userHashes) {
         List<String> listFullNameExcludedCurrentUser = new ArrayList<>();
         for (UserHash userHash : userHashes) {
-            if (!currentUserId.equals(userHash.getUserId())) {
-                listFullNameExcludedCurrentUser.add(userHash.getFullName());
-            }
+            listFullNameExcludedCurrentUser.add(userHash.getFullName());
         }
 
         return listFullNameExcludedCurrentUser;
@@ -1236,13 +1243,11 @@ public class APIService extends BaseService {
     public Future<List<String>> getSessionIdOfUser(String userId) {
         Future<List<String>> future = Future.future();
 
-        String chatListKey = "chat:list:*:" + userId + ":*";
-        String chatListKeyReverse = "chat:list:*:" + "*:" + userId;
+        String chatListKey = "chat:list:*:*" + userId + "*";
 
         List<Future> getKeysByPatternFutures = new ArrayList<>();
 
         getKeysByPatternFutures.add(dataRepository.getKeysByPattern(chatListKey));
-        getKeysByPatternFutures.add(dataRepository.getKeysByPattern(chatListKeyReverse));
 
         CompositeFuture cp = CompositeFuture.all(getKeysByPatternFutures);
         cp.setHandler(ar -> {
@@ -1493,7 +1498,7 @@ public class APIService extends BaseService {
                     Future<ChatList> insertChatListFuture = dataRepository.insertChatList(chatList);
                     insertChatListFuture.compose(res2 -> {
 
-                        insertNewChatOnExistedSessionId(kickMemberRequest,userId,userHashes);
+                        insertNewChatOnExistedSessionId(kickMemberRequest, userId, userHashes);
 
                         JsonObject apiResponse = new JsonObject();
                         apiResponse.put("success", true);
@@ -1524,12 +1529,14 @@ public class APIService extends BaseService {
 
         Future<UserFull> getMemberFuture = dataRepository.getUserFull(kickMemberRequest.getMemberId());
 
-        CompositeFuture cp = CompositeFuture.all(getUserFullFuture,getMemberFuture);
+        CompositeFuture cp = CompositeFuture.all(getUserFullFuture, getMemberFuture);
         cp.compose(res -> {
             UserFull user = res.resultAt(0);
             UserFull member = res.resultAt(1);
+
             JsonObject content = new JsonObject();
             content.put("message", user.getFullName() + " kick " + member.getFullName());
+
             JsonObject messageKickMember = new JsonObject();
             messageKickMember.put("type", "message");
             messageKickMember.put("content", content);
@@ -1543,18 +1550,18 @@ public class APIService extends BaseService {
             Future<ChatMessage> insertChatMessagesAndUpdateChatListAndUpdateUnseenCountFuture = insertChatMessagesAndUpdateChatListAndUpdateUnseenCount(chatMessage);
 
             insertChatMessagesAndUpdateChatListAndUpdateUnseenCountFuture.compose(resChatMessge -> {
-                    ChatMessageResponse response = new ChatMessageResponse();
-                    response.setType(IWsMessage.TYPE_CHAT_MESSAGE_RESPONSE);
-                    response.setCreatedDate(chatMessage.getCreatedDate());
-                    response.setName(user.getFullName());
-                    response.setMessage(chatMessage.getMessage());
-                    response.setSessionId(chatMessage.getSessionId());
-                    response.setUserId(chatMessage.getUserHash().getUserId());
-                    for (UserHash userhash : userHashes) {
-                        userWsChannelManager.sendMessage(response, userhash.getUserId());
-                    }
+                ChatMessageResponse response = new ChatMessageResponse();
+                response.setType(IWsMessage.TYPE_CHAT_MESSAGE_RESPONSE);
+                response.setCreatedDate(chatMessage.getCreatedDate());
+                response.setName(user.getFullName());
+                response.setMessage(chatMessage.getMessage());
+                response.setSessionId(chatMessage.getSessionId());
+                response.setUserId(chatMessage.getUserHash().getUserId());
+                for (UserHash userhash : userHashes) {
+                    userWsChannelManager.sendMessage(response, userhash.getUserId());
+                }
 
-            }, Future.future().setHandler(handler->{
+            }, Future.future().setHandler(handler -> {
                 throw new RuntimeException(handler.cause());
             }));
 
@@ -1594,7 +1601,7 @@ public class APIService extends BaseService {
                     Future<ChatList> insertChatListFuture = dataRepository.insertChatList(chatList);
                     insertChatListFuture.compose(res2 -> {
 
-                        insertNewChatOnExistedSessionId(outGroupRequest,userId,userHashes);
+                        insertNewChatOnExistedSessionId(outGroupRequest, userId, userHashes);
 
                         JsonObject apiResponse = new JsonObject();
                         apiResponse.put("success", true);
@@ -1616,6 +1623,7 @@ public class APIService extends BaseService {
         }, Future.future().setHandler(handler -> future.fail(handler.cause())));
         return future;
     }
+
     private void insertNewChatOnExistedSessionId(OutGroupRequest outGroupRequest, String userId, List<UserHash> userHashes) {
         Future<UserFull> getUserFullFuture = dataRepository.getUserFull(userId);
         getUserFullFuture.compose(userFull -> {
@@ -1623,7 +1631,7 @@ public class APIService extends BaseService {
             content.put("message", userFull.getFullName() + " leave group");
 
             JsonObject receiveLuckyReponse = new JsonObject();
-            receiveLuckyReponse.put("type", "receiveLuckyMoney");
+            receiveLuckyReponse.put("type", "message");
             receiveLuckyReponse.put("content", content);
 
             ChatMessage chatMessage = new ChatMessage();
@@ -1647,7 +1655,7 @@ public class APIService extends BaseService {
                     userWsChannelManager.sendMessage(response, userhash.getUserId());
                 }
 
-            }, Future.future().setHandler(handler->{
+            }, Future.future().setHandler(handler -> {
                 throw new RuntimeException(handler.cause());
             }));
 
@@ -1667,49 +1675,24 @@ public class APIService extends BaseService {
         Future<UserIdSessionIdResponse> checkUserInSessionFuture = checkUserExistInSession(userIdSessionIdRequest);
 
         checkUserInSessionFuture.compose(userIdSessionIdResponse -> {
-            if (userIdSessionIdResponse.getExisted()){
+            if (userIdSessionIdResponse.getExisted()) {
                 Future<ChatList> getChatListFuture = getChatListBySessionId(sessionId);
                 getChatListFuture.compose(chatList -> {
                     JsonObject payload = new JsonObject();
-                    payload.put("isOwner",userId.equals(chatList.getOwner()));
-                    payload.put("members",chatList.getUserHashes());
+                    payload.put("isOwner", userId.equals(chatList.getOwner()));
+                    payload.put("members", chatList.getUserHashes());
                     JsonObject apiResponse = new JsonObject();
                     apiResponse.put("success", true);
                     apiResponse.put("message", "");
                     apiResponse.put("code", 200);
                     apiResponse.put("payload", payload);
                     future.complete(apiResponse);
-                }, Future.future().setHandler(handler-> future.fail(handler.cause())));
+                }, Future.future().setHandler(handler -> future.fail(handler.cause())));
             } else {
                 future.fail(new HeyHttpStatusException(HttpStatus.BAD_REQUEST.code(), "400", "You aren't in that group!"));
             }
-        }, Future.future().setHandler(handler->future.fail(handler.cause())));
+        }, Future.future().setHandler(handler -> future.fail(handler.cause())));
         return future;
     }
 
-    public Future<JsonObject> refetchChatList(GetChatListItemRequest request, String userId) {
-        Future<JsonObject> future = Future.future();
-        Future<ChatList> chatListFuture = getChatListBySessionId(request.getSessionId());
-
-        Future<Long> unseenCountFuture = dataRepository.getUnseenCount(userId,request.getSessionId());
-
-        CompositeFuture getChatListItem = CompositeFuture.all(chatListFuture,unseenCountFuture);
-
-        getChatListItem.compose(res -> {
-            ChatListItem chatListItem = getChatListItem(userId,res.resultAt(0));
-            Long count = res.resultAt(1);
-            chatListItem.setUnread(count.intValue());
-
-            JsonObject payload = JsonObject.mapFrom(chatListItem);
-            JsonObject apiResponse = new JsonObject();
-            apiResponse.put("success", true);
-            apiResponse.put("message", "");
-            apiResponse.put("code", 200);
-            apiResponse.put("payload", payload);
-            future.complete(apiResponse);
-        }, Future.future().setHandler(handler -> {
-            future.fail(handler.cause());
-        }));
-        return future;
-    }
 }

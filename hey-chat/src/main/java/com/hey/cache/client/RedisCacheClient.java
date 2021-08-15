@@ -374,8 +374,8 @@ public class RedisCacheClient implements DataRepository {
 
         chatListJsonObject.put("last_message", StringUtils.isEmpty(chatList.getLastMessage()) ? "no message" : chatList.getLastMessage());
         chatListJsonObject.put("owner", chatList.getOwner());
-        chatListJsonObject.put("group_name",chatList.getGroupName());
-        chatListJsonObject.put("is_group",chatList.isGroup());
+        chatListJsonObject.put("group_name", chatList.getGroupName());
+        chatListJsonObject.put("is_group", chatList.isGroup());
 
         client.hmset(generateChatListKey(chatList.getSessionId(), userIds), chatListJsonObject, res -> {
             if (res.succeeded()) {
@@ -396,11 +396,8 @@ public class RedisCacheClient implements DataRepository {
         client.hgetall(chatListKey, res -> {
             if (res.succeeded()) {
                 ChatList chatList = convertJsonObjectToChatList(res.result(), chatListKey);
-                if (chatList.getUserHashes().size() >= 2) {
-                    future.complete(chatList);
-                } else {
-                    future.complete(null);
-                }
+                future.complete(chatList);
+
             } else {
                 future.fail(res.cause());
             }
@@ -605,7 +602,7 @@ public class RedisCacheClient implements DataRepository {
         chatList.setGroupName(jsonObject.getString("group_name"));
         chatList.setGroup(jsonObject.getString("is_group").equals("true"));
 
-        for(int i = 3; i < componentKey.length; i++) {
+        for (int i = 3; i < componentKey.length; i++) {
             UserHash userHash = new UserHash(componentKey[i], jsonObject.getString(componentKey[i]));
             userHashes.add(userHash);
         }
