@@ -85,6 +85,10 @@ class AddFriend extends React.Component {
       });
   };
 
+  showPinModal = () => {
+    this.props.paymentActions.onOpenPinPopup();
+  };
+
   showModal = () => {
     this.props.paymentActions.changeStateLuckyMoneyPopup(true);
   };
@@ -324,6 +328,11 @@ class AddFriend extends React.Component {
               alignItems: "flex-end",
             }}
           >
+            <div onClick={this.showPinModal}>
+              <Button className="continue-btn" type="primary">
+                Continue
+              </Button>
+            </div>
             <Transfer
               amount={
                 this.state.topupType == 1
