@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Type;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -37,11 +38,9 @@ public class User implements Serializable, UserDetails {
 
     private String password;
 
-    @Column(name = "full_name")
     private String fullName;
 
     private String pin;
-
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

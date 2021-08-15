@@ -34,7 +34,6 @@ export const resetToken = async (token) => {
 export const register = (account) => async (dispatch) => {
   return new Promise(async (resolve, reject) => {
     try {
-      console.log("Current Account: ", account);
       await AuthAPI.register(account);
       resolve({ success: true });
     } catch (err) {
@@ -47,8 +46,6 @@ export const register = (account) => async (dispatch) => {
 export const authentication = (account) => async (dispatch) => {
   return new Promise(async (resolve, reject) => {
     try {
-      console.log(account);
-      console.log(AuthAPI);
       const res = await AuthAPI.login(account);
       console.log(res);
       const data = {

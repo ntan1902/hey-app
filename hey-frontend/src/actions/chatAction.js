@@ -529,7 +529,7 @@ function createCheckUsernameExistedRequest(username) {
 function createWaitingChatHeaderRequest(usernames, groupName) {
   const req = {
     usernames: usernames,
-    groupName: groupName,
+    groupName: groupName
   };
   return req;
 }
