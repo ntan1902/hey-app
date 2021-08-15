@@ -364,7 +364,7 @@ public class APIService extends BaseService {
 
                 WaitingChatHeaderResponse waitingChatHeaderResponse = new WaitingChatHeaderResponse();
 
-                if (waitingChatHeaderRequest.getGroupName().equals("")){
+                if (waitingChatHeaderRequest.getGroupName().equals("")) {
                     waitingChatHeaderResponse.setTitle(String.join(", ", firstNames));
                 } else {
                     waitingChatHeaderResponse.setTitle(waitingChatHeaderRequest.getGroupName());
@@ -618,9 +618,7 @@ public class APIService extends BaseService {
     private List<String> getListFullNameExcludedCurrentUser(String currentUserId, List<UserHash> userHashes) {
         List<String> listFullNameExcludedCurrentUser = new ArrayList<>();
         for (UserHash userHash : userHashes) {
-            if (!currentUserId.equals(userHash.getUserId())) {
-                listFullNameExcludedCurrentUser.add(userHash.getFullName());
-            }
+            listFullNameExcludedCurrentUser.add(userHash.getFullName());
         }
 
         return listFullNameExcludedCurrentUser;
@@ -1245,13 +1243,11 @@ public class APIService extends BaseService {
     public Future<List<String>> getSessionIdOfUser(String userId) {
         Future<List<String>> future = Future.future();
 
-        String chatListKey = "chat:list:*:" + userId + ":*";
-        String chatListKeyReverse = "chat:list:*:" + "*:" + userId;
+        String chatListKey = "chat:list:*:*" + userId + "*";
 
         List<Future> getKeysByPatternFutures = new ArrayList<>();
 
         getKeysByPatternFutures.add(dataRepository.getKeysByPattern(chatListKey));
-        getKeysByPatternFutures.add(dataRepository.getKeysByPattern(chatListKeyReverse));
 
         CompositeFuture cp = CompositeFuture.all(getKeysByPatternFutures);
         cp.setHandler(ar -> {
