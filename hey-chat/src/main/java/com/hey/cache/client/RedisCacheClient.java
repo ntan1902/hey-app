@@ -396,13 +396,11 @@ public class RedisCacheClient implements DataRepository {
         client.hgetall(chatListKey, res -> {
             if (res.succeeded()) {
                 ChatList chatList = convertJsonObjectToChatList(res.result(), chatListKey);
-
                 if (chatList.getUserHashes().size() >= 2) {
                     future.complete(chatList);
                 } else {
                     future.complete(null);
                 }
-
             } else {
                 future.fail(res.cause());
             }

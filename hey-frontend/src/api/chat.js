@@ -10,5 +10,8 @@ export const ChatAPI = {
     },
     fetchChatList: (sessionId) => {
         return axios.post(`${API_CHAT}/api/protected/fetchChatListBySessionId`, { sessionId })
+    },
+    leaveGroup: (sessionId) => {
+        return axios.post(`${API_CHAT}/api/protected/outgroup`, { sessionId })
     }
 };

@@ -1483,6 +1483,7 @@ public class APIService extends BaseService {
 
                 Future<Long> deleteSessionFuture = dataRepository.deleteSessionKey(chatList);
                 deleteSessionFuture.compose(res -> {
+
                     List<UserHash> kickedUserHashes = userHashes.stream()
                             .filter(userHash -> !userHash.getUserId().equals(memberId))
                             .collect(Collectors.toList());
@@ -1492,12 +1493,7 @@ public class APIService extends BaseService {
                     Future<ChatList> insertChatListFuture = dataRepository.insertChatList(chatList);
                     insertChatListFuture.compose(res2 -> {
 
-//                        NewChatSessionResponse newChatSessionResponse = new NewChatSessionResponse();
-//                        newChatSessionResponse.setType(IWsMessage.TYPE_CHAT_NEW_SESSION_RESPONSE);
-//                        newChatSessionResponse.setSessionId();
-//                        for (UserHash userhash : chatList.getUserHashes()) {
-//                            userWsChannelManager.sendMessage(newChatSessionResponse, userhash.getUserId());
-//                        }
+                        insertNewChatOnExistedSessionId(kickMemberRequest,userId,userHashes);
 
                         JsonObject apiResponse = new JsonObject();
                         apiResponse.put("success", true);
@@ -1522,6 +1518,51 @@ public class APIService extends BaseService {
         return future;
     }
 
+    private void insertNewChatOnExistedSessionId(KickMemberRequest kickMemberRequest, String userId, List<UserHash> userHashes) {
+        Future<UserFull> getUserFullFuture = dataRepository
+                .getUserFull(userId);
+
+        Future<UserFull> getMemberFuture = dataRepository.getUserFull(kickMemberRequest.getMemberId());
+
+        CompositeFuture cp = CompositeFuture.all(getUserFullFuture,getMemberFuture);
+        cp.compose(res -> {
+            UserFull user = res.resultAt(0);
+            UserFull member = res.resultAt(1);
+            JsonObject content = new JsonObject();
+            content.put("message", user.getFullName() + " kick " + member.getFullName());
+            JsonObject messageKickMember = new JsonObject();
+            messageKickMember.put("type", "message");
+            messageKickMember.put("content", content);
+
+            ChatMessage chatMessage = new ChatMessage();
+            chatMessage.setUserHash(new UserHash(user.getUserId(), user.getFullName()));
+            chatMessage.setSessionId(kickMemberRequest.getSessionId());
+            chatMessage.setMessage(messageKickMember.encode());
+            chatMessage.setCreatedDate(new Date());
+
+            Future<ChatMessage> insertChatMessagesAndUpdateChatListAndUpdateUnseenCountFuture = insertChatMessagesAndUpdateChatListAndUpdateUnseenCount(chatMessage);
+
+            insertChatMessagesAndUpdateChatListAndUpdateUnseenCountFuture.compose(resChatMessge -> {
+                    ChatMessageResponse response = new ChatMessageResponse();
+                    response.setType(IWsMessage.TYPE_CHAT_MESSAGE_RESPONSE);
+                    response.setCreatedDate(chatMessage.getCreatedDate());
+                    response.setName(user.getFullName());
+                    response.setMessage(chatMessage.getMessage());
+                    response.setSessionId(chatMessage.getSessionId());
+                    response.setUserId(chatMessage.getUserHash().getUserId());
+                    for (UserHash userhash : userHashes) {
+                        userWsChannelManager.sendMessage(response, userhash.getUserId());
+                    }
+
+            }, Future.future().setHandler(handler->{
+                throw new RuntimeException(handler.cause());
+            }));
+
+        }, Future.future().setHandler(handler -> {
+            throw new RuntimeException(handler.cause());
+        }));
+    }
+
     public Future<JsonObject> outGroup(OutGroupRequest outGroupRequest, String userId) {
         Future<JsonObject> future = Future.future();
 
@@ -1536,8 +1577,7 @@ public class APIService extends BaseService {
             boolean isUserIdInSessionId = userHashes.stream()
                     .anyMatch(userHash -> userHash.getUserId().equals(userId));
             if (chatList.isGroup()
-                    && isUserIdInSessionId
-                    && chatList.getOwner().equals(userId)) {
+                    && isUserIdInSessionId) {
 
                 Future<Long> deleteSessionFuture = dataRepository.deleteSessionKey(chatList);
                 deleteSessionFuture.compose(res -> {
@@ -1553,6 +1593,9 @@ public class APIService extends BaseService {
 
                     Future<ChatList> insertChatListFuture = dataRepository.insertChatList(chatList);
                     insertChatListFuture.compose(res2 -> {
+
+                        insertNewChatOnExistedSessionId(outGroupRequest,userId,userHashes);
+
                         JsonObject apiResponse = new JsonObject();
                         apiResponse.put("success", true);
                         apiResponse.put("message", "Out group successfully");
@@ -1573,6 +1616,46 @@ public class APIService extends BaseService {
         }, Future.future().setHandler(handler -> future.fail(handler.cause())));
         return future;
     }
+    private void insertNewChatOnExistedSessionId(OutGroupRequest outGroupRequest, String userId, List<UserHash> userHashes) {
+        Future<UserFull> getUserFullFuture = dataRepository.getUserFull(userId);
+        getUserFullFuture.compose(userFull -> {
+            JsonObject content = new JsonObject();
+            content.put("message", userFull.getFullName() + " leave group");
+
+            JsonObject receiveLuckyReponse = new JsonObject();
+            receiveLuckyReponse.put("type", "receiveLuckyMoney");
+            receiveLuckyReponse.put("content", content);
+
+            ChatMessage chatMessage = new ChatMessage();
+            chatMessage.setUserHash(new UserHash(userFull.getUserId(), userFull.getFullName()));
+            chatMessage.setSessionId(outGroupRequest.getSessionId());
+            chatMessage.setMessage(receiveLuckyReponse.encode());
+            chatMessage.setCreatedDate(new Date());
+
+            Future<ChatMessage> insertChatMessagesAndUpdateChatListAndUpdateUnseenCountFuture = insertChatMessagesAndUpdateChatListAndUpdateUnseenCount(
+                    chatMessage);
+
+            insertChatMessagesAndUpdateChatListAndUpdateUnseenCountFuture.compose(resChatMessge -> {
+                ChatMessageResponse response = new ChatMessageResponse();
+                response.setType(IWsMessage.TYPE_CHAT_MESSAGE_RESPONSE);
+                response.setCreatedDate(chatMessage.getCreatedDate());
+                response.setName(userFull.getFullName());
+                response.setMessage(chatMessage.getMessage());
+                response.setSessionId(chatMessage.getSessionId());
+                response.setUserId(chatMessage.getUserHash().getUserId());
+                for (UserHash userhash : userHashes) {
+                    userWsChannelManager.sendMessage(response, userhash.getUserId());
+                }
+
+            }, Future.future().setHandler(handler->{
+                throw new RuntimeException(handler.cause());
+            }));
+
+        }, Future.future().setHandler(handler -> {
+            throw new RuntimeException(handler.cause());
+        }));
+    }
+
 
     public Future<JsonObject> getMembersOfSessionChat(String userId, String sessionId) {
         Future<JsonObject> future = Future.future();
