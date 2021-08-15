@@ -337,7 +337,7 @@ export function receiveNewUserChatGroup(result) {
   }
 }
 
-export function startNewChatGroup() {
+export function startNewChatGroup(groupName) {
   if (store.getState().chatReducer.startChatGroupList.length > 1) {
     let messageItems = [];
     let waitingGroupUsernames = store.getState().chatReducer.startChatGroupList;
@@ -346,7 +346,7 @@ export function startNewChatGroup() {
     api
       .post(
         `/api/protected/waitingchatheader`,
-        createWaitingChatHeaderRequest(waitingGroupUsernames)
+        createWaitingChatHeaderRequest(waitingGroupUsernames, groupName)
       )
       .then((res) => {
         console.log("start new chat", res);
@@ -526,9 +526,10 @@ function createCheckUsernameExistedRequest(username) {
   return req;
 }
 
-function createWaitingChatHeaderRequest(usernames) {
+function createWaitingChatHeaderRequest(usernames, groupName) {
   const req = {
     usernames: usernames,
+    groupName: groupName,
   };
   return req;
 }
