@@ -4,7 +4,7 @@ import CustomAvatar from "./custom-avatar";
 import { Menu, Icon } from "antd";
 
 import { channingActions } from "../utils";
-import { bindPaymentActions } from "../actions";
+import { bindChatActions, bindPaymentActions } from "../actions";
 import { ChatAPI } from "../api/chat";
 
 const { SubMenu } = Menu;
@@ -25,6 +25,7 @@ class ChatHeader extends React.Component {
     this.props.paymentActions.changeStateAddFriendPopup(true);
   };
   showMembersModal = () => {
+    this.props.chatActions.fetchMember(this.props.currentSessionId);
     this.props.paymentActions.changeStateMembersModal(true);
   }
   leaveGroup = () => {
@@ -112,5 +113,5 @@ export default connect(
     luckyMoneyPopup: state.paymentReducer.luckyMoneyPopup,
     currentSessionId: state.chatReducer.currentSessionId
   }),
-  (dispatch) => channingActions({}, dispatch, bindPaymentActions)
+  (dispatch) => channingActions({}, dispatch, bindPaymentActions, bindChatActions)
 )(ChatHeader);
