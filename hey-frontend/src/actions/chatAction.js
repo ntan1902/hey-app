@@ -38,7 +38,7 @@ export function initialWebSocket() {
   const webSocket = new Sockette(ws_host + "?jwt=" + jwt, {
     timeout: 5e3,
     maxAttempts: 100,
-    onopen: (e) => {},
+    onopen: (e) => { },
     onmessage: (e) => {
       var data = JSON.parse(e.data);
       console.log("New Socket");
@@ -535,22 +535,32 @@ function createWaitingChatHeaderRequest(usernames) {
 const kickMembers = (sessionId, userId) => async dispatch => {
   try {
     let kickMemberRes = await ChatAPI.kickMember(sessionId, userId);
-    if (kickMemberRes.data.success) {
-      let fetchChatListRes = await ChatAPI.fetchChatList(sessionId);
-      dispatch({
-        type: actionTypes.REFETCH_CHATLIST_ITEM,
-        sessionId,
-        chatListItem: fetchChatListRes.data.payload
-      })
-    }
+    // if (kickMemberRes.data.success) {
+    //   let fetchChatListRes = await ChatAPI.fetchChatList(sessionId);
+    //   dispatch({
+    //     type: actionTypes.REFETCH_CHATLIST_ITEM,
+    //     sessionId,
+    //     chatListItem: fetchChatListRes.data.payload
+    //   })
+    // }
     return Promise.resolve(kickMemberRes);
   } catch (error) {
     return Promise.reject({ error, success: false })
   }
 }
 
+// const leaveGroup = sessionId => async dispatch => {
+//   try {
+//     let leaveGroupRes = await ChatAPI.leaveGroup(sessionId);
+//     return Promise.resolve({ success: true });
+//   } catch (error) {
+//     return Promise.reject({ success: false, error })
+//   }
+// }
+
 export const chatActions = {
   kickMembers,
+  // leaveGroup
 }
 
 export function bindChatActions(currentActions, dispatch) {

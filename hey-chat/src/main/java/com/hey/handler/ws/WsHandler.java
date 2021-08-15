@@ -1,13 +1,12 @@
 package com.hey.handler.ws;
 
-import com.hey.handler.api.BaseHandler;
 import com.hey.manager.UserWsChannelManager;
 import com.hey.model.*;
+import com.hey.model.lucky.UserIdSessionIdRequest;
+import com.hey.model.lucky.UserIdSessionIdResponse;
 import com.hey.repository.DataRepository;
 import com.hey.service.APIService;
 import com.hey.util.GenerationUtils;
-import com.hey.util.HttpStatus;
-import com.hey.util.JsonUtils;
 import io.vertx.core.CompositeFuture;
 import io.vertx.core.Future;
 import io.vertx.core.json.JsonObject;
@@ -183,7 +182,6 @@ public class WsHandler {
     }
 
     public void handleChatMessageRequest(ChatMessageRequest request, String channelId, String userId) {
-
         if ("-1".equals(request.getSessionId())) {
             if (request.getUsernames().size() == 1) {
                 insertChatMessageBetweenTwoOnNewChatSessionId(request, channelId, userId);
@@ -192,8 +190,18 @@ public class WsHandler {
                 insertChatMessageGroupOnNewChatSessionId(request, channelId, userId);
             }
         } else {
+            UserIdSessionIdRequest userIdSessionIdRequest = new UserIdSessionIdRequest();
+            userIdSessionIdRequest.setUserId(userId);
+            userIdSessionIdRequest.setSessionId(request.getSessionId());
+            Future<UserIdSessionIdResponse> checkUserExistInSessionFuture = apiService.checkUserExistInSession(userIdSessionIdRequest);
+            checkUserExistInSessionFuture.compose(userIdSessionIdResponse -> {
+                if (userIdSessionIdResponse.getExisted()) {
+                    insertChatMessageOnExistedChatSessionId(request, channelId, userId);
+                }
+            }, Future.future().setHandler(handler -> {
+                throw new RuntimeException(handler.cause());
+            }));
 
-            insertChatMessageOnExistedChatSessionId(request, channelId, userId);
         }
     }
 

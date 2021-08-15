@@ -1,24 +1,25 @@
 import React from "react";
-import {connect} from "react-redux";
+import { connect } from "react-redux";
 import CustomAvatar from "./custom-avatar";
-import {Menu, Icon} from "antd";
+import { Menu, Icon } from "antd";
 
-import {channingActions} from "../utils";
-import {bindPaymentActions} from "../actions";
+import { channingActions } from "../utils";
+import { bindPaymentActions } from "../actions";
+import { ChatAPI } from "../api/chat";
 
-const {SubMenu} = Menu;
+const { SubMenu } = Menu;
 
 class ChatHeader extends React.Component {
-    handleClick = (e) => {
-        console.log("click ", e);
-        this.setState({
-            current: e.key,
-        });
-    };
+  handleClick = (e) => {
+    console.log("click ", e);
+    this.setState({
+      current: e.key,
+    });
+  };
 
-    showLuckyMoneyModal = (isCreate) => {
-        this.props.paymentActions.changeStateLuckyMoneyPopup(true, isCreate);
-    };
+  showLuckyMoneyModal = (isCreate) => {
+    this.props.paymentActions.changeStateLuckyMoneyPopup(true, isCreate);
+  };
 
   showAddFriendToSessionModal = () => {
     this.props.paymentActions.changeStateAddFriendPopup(true);
@@ -26,7 +27,10 @@ class ChatHeader extends React.Component {
   showMembersModal = () => {
     this.props.paymentActions.changeStateMembersModal(true);
   }
-
+  leaveGroup = () => {
+    ChatAPI.leaveGroup(this.props.currentSessionId)
+      .then(res => console.log(res));
+  }
   render() {
     const IconFont = Icon.createFromIconfontCN({
       scriptUrl: "//at.alicdn.com/t/font_8d5l8fzk5b87iudi.js",
@@ -90,7 +94,7 @@ class ChatHeader extends React.Component {
                 <Icon style={{ fontSize: 20 }} type="plus" />
                 Add More Friend
               </Menu.Item>
-              <Menu.Item key="setting:5">
+              <Menu.Item key="setting:5" onClick={() => this.leaveGroup()}>
                 <IconFont style={{ fontSize: 20 }} type="icon-tuichu" />
                 Leave
               </Menu.Item>
@@ -106,6 +110,7 @@ export default connect(
   (state) => ({
     header: state.chatReducer.messageHeader,
     luckyMoneyPopup: state.paymentReducer.luckyMoneyPopup,
+    currentSessionId: state.chatReducer.currentSessionId
   }),
   (dispatch) => channingActions({}, dispatch, bindPaymentActions)
 )(ChatHeader);
