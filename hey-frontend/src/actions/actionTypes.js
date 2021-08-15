@@ -26,4 +26,4 @@ export const LUCKY_MONEY_POPUP = "payment.LUCKY_MONEY_POPUP";
 
 // Members
 export const CHANGE_STATE_MEMBERS_MODAL = "chat.CHANGE_STATE_MEMBERS_MODAL";
-export const REFETCH_CHATLIST_ITEM = "chat.REFETCH_CHATLIST_ITEM";
+export const FETCH_MEMBERS = "chat.FETCH_MEMBER";
