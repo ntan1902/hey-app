@@ -34,6 +34,7 @@ class StartChatGroup extends React.Component {
     this.setState({
       visible: false,
     });
+    console.log(this.state.groupName)
     this.props.startNewChatGroup(this.state.groupName);
   };
 
@@ -103,7 +104,7 @@ class StartChatGroup extends React.Component {
             // enterButton="Search"
             // size="large"
             style={{ marginBottom: 10, width: 200 }}
-            onSearch={(value) => this.setState({ groupName: value })}
+            onChange={(e) => this.setState({ groupName: e.target.value })}
           />
 
           <div className="first-line">
@@ -168,8 +169,8 @@ function mapDispatchToProps(dispatch) {
     removeUserChatGroup(username) {
       dispatch(removeUserChatGroup(username));
     },
-    startNewChatGroup() {
-      dispatch(startNewChatGroup());
+    startNewChatGroup(groupName) {
+      dispatch(startNewChatGroup(groupName));
     },
   };
 }
