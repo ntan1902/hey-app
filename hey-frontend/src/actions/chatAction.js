@@ -16,7 +16,6 @@ import { ChatAPI } from "../api/chat";
 import { bindActionCreators } from "redux";
 import * as actionTypes from "./actionTypes";
 
-
 export const EMPTY = "chatlist.EMPTY";
 export const CHATLIST_FETCHED = "chatlist.CHATLIST_FETCHED";
 export const CHATLIST_REFETCHED = "chatlist.CHATLIST_REFETCHED";
@@ -38,7 +37,7 @@ export function initialWebSocket() {
   const webSocket = new Sockette(ws_host + "?jwt=" + jwt, {
     timeout: 5e3,
     maxAttempts: 100,
-    onopen: (e) => { },
+    onopen: (e) => {},
     onmessage: (e) => {
       var data = JSON.parse(e.data);
       console.log("New Socket");
@@ -446,29 +445,34 @@ function getMessageItems(chatItems) {
 
 function getChatList() {
   var promise = new Promise(function (resolve, reject) {
-    api.get(`/api/protected/chatlist`).then((res) => {
-      console.log(res);
-      var items = res.data.payload.items;
-      var results = [];
-      for (var index = 0; index < items.length; ++index) {
-        var chatItem = {
-          name: items[index].name,
-          sessionId: items[index].sessionId,
-          avatar: processUsernameForAvatar(items[index].name),
-          lastMessage: items[index].lastMessage,
-          unread: items[index].unread,
-          groupchat: items[index].groupChat,
-          updatedDate: items[index].updatedDate,
-        };
-        results.push(chatItem);
-      }
-      results.sort(function (a, b) {
-        if (a.updatedDate < b.updatedDate) return 1;
-        if (a.updatedDate > b.updatedDate) return -1;
-        return 0;
+    api
+      .get(`/api/protected/chatlist`)
+      .then((res) => {
+        console.log(res);
+        var items = res.data.payload.items;
+        var results = [];
+        for (var index = 0; index < items.length; ++index) {
+          var chatItem = {
+            name: items[index].name,
+            sessionId: items[index].sessionId,
+            avatar: processUsernameForAvatar(items[index].name),
+            lastMessage: items[index].lastMessage,
+            unread: items[index].unread,
+            groupchat: items[index].groupChat,
+            updatedDate: items[index].updatedDate,
+          };
+          results.push(chatItem);
+        }
+        results.sort(function (a, b) {
+          if (a.updatedDate < b.updatedDate) return 1;
+          if (a.updatedDate > b.updatedDate) return -1;
+          return 0;
+        });
+        resolve(results);
+      })
+      .catch((err) => {
+        console.log(err.response);
       });
-      resolve(results);
-    });
   });
   return promise;
 }
@@ -529,35 +533,32 @@ function createWaitingChatHeaderRequest(usernames) {
   return req;
 }
 
-
-
-
-const kickMembers = (sessionId, userId) => async dispatch => {
+const kickMembers = (sessionId, userId) => async (dispatch) => {
   try {
     let kickMemberRes = await ChatAPI.kickMember(sessionId, userId);
     return Promise.resolve(kickMemberRes);
   } catch (error) {
-    return Promise.reject({ error, success: false })
+    return Promise.reject({ error, success: false });
   }
-}
+};
 
-const fetchMember = (sessionId) => async dispatch => {
+const fetchMember = (sessionId) => async (dispatch) => {
   try {
     let fetchMemberRes = await ChatAPI.getMembersOfSessionChat(sessionId);
     dispatch({
       type: actionTypes.FETCH_MEMBERS,
       members: fetchMemberRes.data.payload.members,
-      isOwner: fetchMemberRes.data.payload.isOwner
-    })
+      isOwner: fetchMemberRes.data.payload.isOwner,
+    });
   } catch (err) {
     message.error(err.error.response.data.message);
   }
-}
+};
 
 export const chatActions = {
   kickMembers,
-  fetchMember
-}
+  fetchMember,
+};
 
 export function bindChatActions(currentActions, dispatch) {
   return {
