@@ -1,7 +1,6 @@
 package com.hey.auth.utils;
 
 
-import com.ctc.wstx.shaded.msv_core.util.Uri;
 import com.hey.auth.dto.user.UriImageDTO;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.io.FilenameUtils;
@@ -26,10 +25,10 @@ import java.nio.file.StandardCopyOption;
 @Log4j2
 public class FileUploadUtil {
     private static final int IMAGE_SIZE = 400;
-    private Path originalUploadPath = Paths.get("./src/main/resources/static/images/");
+    private final Path originalUploadPath = Paths.get("./src/main/resources/static/images/");
 
     public UriImageDTO uploadFile(MultipartFile multipartFile,
-                          String apiPath) throws IOException {
+                                  String apiPath) throws IOException {
         log.info("Inside uploadFile of FileUploadUtil {}", multipartFile);
         Path uploadPath = originalUploadPath.resolve("");
 
@@ -48,8 +47,8 @@ public class FileUploadUtil {
                     .path(apiPath)
                     .path(filename)
                     .toUriString();
-            String miniFileName = resizeImage(filePath);
 
+            String miniFileName = resizeImage(filePath);
             String miniUri = ServletUriComponentsBuilder.fromCurrentContextPath()
                     .path(apiPath)
                     .path(miniFileName)
@@ -81,10 +80,12 @@ public class FileUploadUtil {
             File sourceFile = imagePath.toFile();
             BufferedImage bufferedImage = ImageIO.read(sourceFile);
             BufferedImage outputImage = Scalr.resize(bufferedImage, IMAGE_SIZE);
+
             String newFileName = FilenameUtils.getBaseName(sourceFile.getName())
                     + "_" + IMAGE_SIZE + "."
                     + FilenameUtils.getExtension(sourceFile.getName());
-            Path path = Paths.get(String.valueOf(originalUploadPath),newFileName);
+            Path path = Paths.get(String.valueOf(originalUploadPath), newFileName);
+
             File newImageFile = path.toFile();
             ImageIO.write(outputImage, FilenameUtils.getExtension(sourceFile.getName()), newImageFile);
             outputImage.flush();

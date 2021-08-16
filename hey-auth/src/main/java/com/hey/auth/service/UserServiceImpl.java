@@ -177,7 +177,7 @@ public class UserServiceImpl implements UserDetailsService, UserService {
 
         user.setEmail(email);
         user.setFullName(fullName);
-        user.setDateOfBirth(LocalDateTime.parse(dateOfBirth));
+        user.setDob(LocalDateTime.parse(dateOfBirth));
         user.setPhoneNumber(phoneNumber);
 
         userRepository.save(user);

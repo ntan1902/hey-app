@@ -13,17 +13,6 @@ import { store } from "./store";
 
 window.store = store;
 
-// api.post(`/api/protected/ping`).then(
-//   (data) => {
-//     console.log("pong");
-//     console.log(data);
-//   },
-//   (data) => {
-//     console.log("not-ping");
-//     clearStorage();
-//   }
-// );
-
 ReactDOM.render(
   <Provider store={store}>
     <Router>

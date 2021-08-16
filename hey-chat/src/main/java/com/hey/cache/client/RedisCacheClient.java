@@ -454,11 +454,6 @@ public class RedisCacheClient implements DataRepository {
                         }
                     }
 
-                    String[] componentKey = chatMessageKey.split(":");
-                    if (componentKey.length > 3) {
-                        chatMessage.setSessionId(componentKey[2]);
-                    }
-
                     future.complete(chatMessage);
                 } else {
                     future.complete(null);

@@ -1,8 +1,6 @@
 import React from "react";
-import { Button, Icon, Input, Layout, Menu } from "antd";
-// import CustomAvatar from "../components/custom-avatar";
+import { Button, Input, Layout} from "antd";
 import ChatList from "../../components/chat-list";
-import AddressBook from "../../components/address-book";
 import ChatHeader from "../../components/chat-header";
 import Profile from "../../components/profile";
 import MessagePanel from "../../components/message-panel";
@@ -13,14 +11,13 @@ import {
   submitChatMessage,
 } from "../../actions/chatAction";
 import { connect } from "react-redux";
-import { isAuthenticated, isEmptyString } from "../../utils/utils";
-import { Redirect } from "react-router-dom";
+import { isEmptyString } from "../../utils/utils";
 import $ from "jquery";
 import LuckyMoney from "../../components/lucky-money";
 import AddFriendSession from "../../components/add-friend-session";
 import MembersModal from "../../components/MembersModal/MembersModal";
 
-const { Header, Content, Footer, Sider } = Layout;
+const { Sider } = Layout;
 const { TextArea } = Input;
 
 class Chat extends React.Component {
@@ -45,7 +42,6 @@ class Chat extends React.Component {
   }
 
   handleMessageEnter(e) {
-    let charCode = e.keyCode || e.which;
     if (!e.shiftKey) {
       e.preventDefault();
       let message = e.target.value;
@@ -65,9 +61,6 @@ class Chat extends React.Component {
   }
 
   render() {
-    // if (isAuthenticated()) {
-    //   return <Redirect to="/login" />;
-    // }
     return (
       <div style={{ height: 100 + "vh", width: "100%" }}>
         <Layout>
@@ -85,7 +78,7 @@ class Chat extends React.Component {
             <ChatList />
           </Sider>
           <div className="chat-container" style={{ padding: 0 }}>
-            <LuckyMoney></LuckyMoney>
+            <LuckyMoney/>
             <AddFriendSession/>
             <MembersModal />
             <ChatHeader />

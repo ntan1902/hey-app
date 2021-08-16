@@ -43,8 +43,7 @@ public class User implements Serializable, UserDetails {
 
     private String pin;
 
-    @Column(name = "date_of_birth")
-    private LocalDateTime dateOfBirth;
+    private LocalDateTime dob;
 
     @Column(name="phone_number")
     private String phoneNumber;

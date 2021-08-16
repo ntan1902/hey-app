@@ -107,8 +107,16 @@ public class ProtectedApiHandler extends BaseHandler {
                         outGroup(response, requestObject, userId);
                         break;
                     case "/getUserOfSessionChat":
-                        LogUtils.log("User "+userId+ " get members of session " + requestObject);
-                        getUserOfSessionChat(response,requestObject,userId);
+                        LogUtils.log("User " + userId + " get members of session " + requestObject);
+                        getUserOfSessionChat(response, requestObject, userId);
+                        break;
+                    case "/addfriendrequest":
+                        LogUtils.log("User " + userId + " send add friend request to " + requestObject);
+                        addFriendRequest(response, requestObject, userId);
+                        break;
+                    case "/addfriendtosession":
+                        LogUtils.log("User " + userId + " add friend to session " + requestObject);
+                        addFriendToSession(response, requestObject, userId);
                         break;
                 }
             } else {
@@ -333,9 +341,34 @@ public class ProtectedApiHandler extends BaseHandler {
         GetMembersOfSessionRequest getMembersOfSessionRequest = requestObject.mapTo(GetMembersOfSessionRequest.class);
         Future<JsonObject> getMembersOfSessionFuture = apiService.getMembersOfSessionChat(userId, getMembersOfSessionRequest.getSessionId());
 
-        getMembersOfSessionFuture.compose(members->{
+        getMembersOfSessionFuture.compose(members -> {
             response.putHeader("content-type", "application/json; charset=utf-8")
                     .end(members.encodePrettily());
-        }, Future.future().setHandler(handler -> handleException(handler.cause(),response)));
+        }, Future.future().setHandler(handler -> handleException(handler.cause(), response)));
     }
+
+
+    private void addFriendRequest(HttpServerResponse response, JsonObject requestObject, String userId) {
+        AddFriendRequest request = requestObject.mapTo(AddFriendRequest.class);
+
+        Future<AddFriendResponse> addWaitingFriendFuture = apiService.addWaitingFriend(request, userId);
+
+        addWaitingFriendFuture.compose(addWaitingFriendResponse -> {
+            response.putHeader("content-type", "application/json; charset=utf-8")
+                    .end(JsonUtils.toSuccessJSON(addWaitingFriendResponse));
+        }, Future.future().setHandler(handler -> handleException(handler.cause(), response)));
+    }
+
+
+    private void addFriendToSession(HttpServerResponse response, JsonObject requestObject, String userId) {
+        AddFriendToSessionRequest request = requestObject.mapTo(AddFriendToSessionRequest.class);
+
+        Future<Boolean> addFriendToSessionFuture = apiService.addFriendToSessionRequest(request, userId);
+
+        addFriendToSessionFuture.compose(res -> {
+            response.putHeader("content-type", "application/json; charset=utf-8")
+                    .end(JsonUtils.toSuccessJSON(res.toString()));
+        }, Future.future().setHandler(handler -> handleException(handler.cause(), response)));
+    }
+
 }

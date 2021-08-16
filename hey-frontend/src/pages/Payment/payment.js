@@ -1,16 +1,11 @@
 import React from "react";
 import { Menu } from "antd";
 import CustomAvatar from "../../components/custom-avatar";
-import AddFriend from "../../components/add-friend";
 import Topup from "./top-up";
 
 import { connect } from "react-redux";
-import {
-  handleChangeAddressBook,
-  loadAddressBookList,
-} from "../../actions/addressBookAction";
+
 import { Scrollbars } from "react-custom-scrollbars";
-import { changeMessageHeader } from "../../actions/chatAction";
 
 import { channingActions } from "../../utils";
 import { bindPaymentActions } from "../../actions";
