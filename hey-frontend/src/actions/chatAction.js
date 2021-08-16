@@ -70,7 +70,7 @@ export function initialWebSocket() {
           const key = `open${Date.now()}`;
           let btn = (
             <div style={{ display: "flex" }}>
-              <Button type="danger" onClick={() => {
+              <Button type="danger" style={{ marginRight: 10 }} onClick={() => {
                 notification.close(key);
                 videoCallUtils.rejectCall(data.sessionId);
               }}>Reject</Button>
@@ -169,7 +169,8 @@ export function submitChatMessage(message) {
   let sessionId = store.getState().chatReducer.currentSessionId;
   let waitingGroupUsernames = store.getState().chatReducer
     .waitingGroupUsernames;
-  store
+  let groupName = store.getState().chatReducer.
+    store
     .getState()
     .chatReducer.webSocket.json(
       createChatMessageRequest(sessionId, message, waitingGroupUsernames)
