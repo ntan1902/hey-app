@@ -81,22 +81,6 @@ public class WsServer {
                                                     userId);
                                             break;
 
-                                        case IWsMessage.TYPE_NOTIFICATION_ADD_FRIEND_REQUEST:
-                                            ChatContainerRequest chatContainerRequest2 = mapper
-                                                    .readValue(data.toString(), ChatContainerRequest.class);
-                                            LogUtils.log("User " + userId + " add friend request "
-                                                    + chatContainerRequest2.getSessionId());
-                                            wsHandler.handleAddFriendRequest(chatContainerRequest2, id, userId);
-                                            break;
-
-                                        case IWsMessage.TYPE_ADD_FRIEND_TO_SESSION_REQUEST:
-                                            AddFriendToSessionRequest chatContainerRequest3 = mapper
-                                                    .readValue(data.toString(), AddFriendToSessionRequest.class);
-                                            LogUtils.log("User " + userId + " add friend to group "
-                                                    + chatContainerRequest3.getSessionId());
-                                            wsHandler.handleAddFriendToSessionRequest(chatContainerRequest3, id, userId);
-                                            break;
-
                                         case IWsMessage.TYPE_CHAT_MESSAGE_REQUEST:
                                             ChatMessageRequest chatMessageRequest = mapper
                                                     .readValue(data.toString(), ChatMessageRequest.class);

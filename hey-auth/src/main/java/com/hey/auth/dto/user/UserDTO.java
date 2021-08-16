@@ -5,6 +5,9 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.persistence.Column;
+import java.time.LocalDateTime;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -17,4 +20,12 @@ public class UserDTO {
     private String email;
 
     private String fullName;
+
+    private String dob;
+
+    private String phoneNumber;
+
+    private String avatar;
+
+    private String miniAvatar;
 }

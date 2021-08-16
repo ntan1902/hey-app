@@ -4,7 +4,6 @@ import { connect } from 'react-redux';
 import CustomAvatar from "../../components/custom-avatar";
 import { bindPaymentActions, bindChatActions } from '../../actions';
 import { channingActions } from '../../utils';
-import { ChatAPI } from '../../api/chat';
 
 class MembersModal extends React.Component {
     constructor(props) {

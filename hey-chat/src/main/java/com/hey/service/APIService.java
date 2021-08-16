@@ -446,6 +446,12 @@ public class APIService extends BaseService {
                                         addressBookItem.setStatus(friendUserStatus.getStatus());
                                         addressBookItem.setOnline(isUserOnline);
 
+                                        // WebSocket sends message
+                                        NewChatSessionResponse newChatSessionResponse = new NewChatSessionResponse();
+                                        newChatSessionResponse.setType(IWsMessage.TYPE_NOTIFICATION_ACCEPT_FRIEND_RESPONSE);
+                                        newChatSessionResponse.setSessionId(userId);
+                                        userWsChannelManager.sendMessage(newChatSessionResponse, addressBookItem.getUserId());
+
                                         AddFriendResponse addFriendResponse = new AddFriendResponse();
                                         addFriendResponse.setItem(addressBookItem);
 
@@ -541,6 +547,12 @@ public class APIService extends BaseService {
                                         addressBookItem.setName(friendUserFull.getFullName());
                                         addressBookItem.setStatus(friendUserStatus.getStatus());
                                         addressBookItem.setOnline(isUserOnline);
+
+                                        // WebSocket sends message
+                                        NewChatSessionResponse newChatSessionResponse = new NewChatSessionResponse();
+                                        newChatSessionResponse.setType(IWsMessage.TYPE_NOTIFICATION_ADD_FRIEND_RESPONSE);
+                                        newChatSessionResponse.setSessionId(userId);
+                                        userWsChannelManager.sendMessage(newChatSessionResponse, addressBookItem.getUserId());
 
                                         AddFriendResponse addFriendResponse = new AddFriendResponse();
                                         addFriendResponse.setItem(addressBookItem);
@@ -1695,4 +1707,105 @@ public class APIService extends BaseService {
         return future;
     }
 
+    public Future<Boolean> addFriendToSessionRequest(AddFriendToSessionRequest request, String userId) {
+        Future<Boolean> future = Future.future();
+
+        String sessionId = request.getSessionId();
+
+        Future<ChatList> getChatListBySessionIdFuture = getChatListBySessionId(sessionId);
+
+        getChatListBySessionIdFuture.compose(chatList -> {
+
+            Future<Long> deleteSessionFuture = dataRepository
+                    .deleteSessionKey(chatList);
+
+            deleteSessionFuture.compose(res -> {
+                List<String> userIds = new ArrayList<>();
+                userIds.add(request.getUserId());
+
+                Future<List<UserFull>> getUserFullsFuture = getUserFulls(userIds);
+
+                getUserFullsFuture.compose(userFulls -> {
+
+                    List<UserHash> userHashes = chatList.getUserHashes();
+
+                    UserHash me = userHashes.get(0);
+                    for (UserFull userFull : userFulls) {
+                        if (userFull.getUserId().equals(userId)) {
+                            me = new UserHash(userFull.getUserId(), userFull.getFullName());
+                        }
+                        userHashes.add(new UserHash(userFull.getUserId(), userFull.getFullName()));
+                    }
+
+                    JsonObject content = new JsonObject();
+                    content.put("message", me.getFullName() + " add " + userFulls.get(0).getFullName() + " to group");
+
+                    JsonObject messageRequest = new JsonObject();
+                    messageRequest.put("type", "message");
+                    messageRequest.put("content", content);
+
+
+                    ChatMessage chatMessage = new ChatMessage();
+                    chatMessage.setUserHash(me);
+                    chatMessage.setSessionId(sessionId);
+                    chatMessage.setMessage(messageRequest.encode());
+                    chatMessage.setCreatedDate(new Date());
+
+                    chatList.setSessionId(sessionId);
+                    chatList.setUpdatedDate(new Date());
+                    chatList.setUserHashes(userHashes);
+                    chatList.setLastMessage(chatMessage.getMessage());
+                    chatList.setUpdatedDate(chatMessage.getCreatedDate());
+
+                    Future<ChatList> insertChatListFuture = dataRepository.insertChatList(chatList);
+
+                    Future<ChatMessage> insertChatMessageFuture = dataRepository.insertChatMessage(chatMessage);
+
+                    List<String> userFriendIds = userIds.subList(1, userIds.size());
+                    Future<HashMap<String, Long>> increaseUnseenCountFuture = increaseUnseenCount(userFriendIds,
+                            chatList.getSessionId());
+
+                    CompositeFuture cp = CompositeFuture.all(insertChatMessageFuture, insertChatListFuture,
+                            increaseUnseenCountFuture);
+
+                    UserHash finalMe = me;
+                    cp.setHandler(ar -> {
+                        if (ar.succeeded()) {
+                            NewChatSessionResponse newChatSessionResponse = new NewChatSessionResponse();
+                            newChatSessionResponse.setType(IWsMessage.TYPE_CHAT_NEW_SESSION_RESPONSE);
+                            newChatSessionResponse.setSessionId(chatMessage.getSessionId());
+                            userWsChannelManager.sendMessage(newChatSessionResponse, request.getUserId());
+
+                            ChatMessageResponse newMessageResponse = new ChatMessageResponse();
+                            newMessageResponse.setMessage(chatMessage.getMessage());
+                            newMessageResponse.setSessionId(chatMessage.getSessionId());
+                            newMessageResponse.setName(finalMe.getFullName());
+                            newMessageResponse.setUserId(chatMessage.getUserHash().getUserId());
+                            newMessageResponse.setCreatedDate(chatMessage.getCreatedDate());
+                            newMessageResponse.setType(IWsMessage.TYPE_CHAT_MESSAGE_RESPONSE);
+
+                            for (UserHash userhash : chatList.getUserHashes()) {
+                                userWsChannelManager.sendMessage(newMessageResponse, userhash.getUserId());
+                            }
+
+                            future.complete(true);
+                        } else {
+                            throw new RuntimeException(ar.cause());
+                        }
+                    });
+
+                }, Future.future().setHandler(handler -> {
+                    throw new RuntimeException(handler.cause());
+                }));
+            }, Future.future().setHandler(handler -> {
+                throw new RuntimeException(handler.cause());
+            }));
+
+
+        }, Future.future().setHandler(handler -> {
+            throw new RuntimeException(handler.cause());
+        }));
+
+        return future;
+    }
 }

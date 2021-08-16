@@ -10,5 +10,11 @@ export const ChatAPI = {
     },
     leaveGroup: (sessionId) => {
         return axios.post(`${API_CHAT}/api/protected/outgroup`, { sessionId })
+    },
+    addFriendRequest: (username) => {
+        return axios.post(`${API_CHAT}/api/protected/addfriendrequest`, {username})
+    },
+    addFriendToSession: (sessionId, userId) => {
+        return axios.post(`${API_CHAT}/api/protected/addfriendtosession`, {sessionId, userId})
     }
 };
