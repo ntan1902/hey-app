@@ -7,12 +7,9 @@ import Payment from "./Payment";
 import ProfileScreen from "./profile";
 import {
     Drawer,
-    List,
-    Avatar,
     Divider,
     Col,
     Row,
-    Radio,
     Form,
     Modal,
     message,
@@ -78,6 +75,7 @@ class Main extends React.Component {
             visible: false,
             changePasswordVisible: false,
             changeProfileVisible: false,
+            changePinVisible: false,
             profile: null,
             error: false,
             hasPin: false,
@@ -94,7 +92,12 @@ class Main extends React.Component {
 
         try {
             let getProFileResponse = await actions.authActions.getProfile();
-            this.setState({profile: getProFileResponse.data});
+            let res = await AuthAPI.hasPin();
+
+            this.setState({
+                profile: getProFileResponse.data,
+                hasPin: res.data.payload.hasPin
+            });
             setUserIdToStorage(getProFileResponse.data.id);
 
             let checkBalanceResponse = await actions.paymentActions.checkBalance();
@@ -252,12 +255,13 @@ class Main extends React.Component {
     onChangePin = async () => {
         if (!this.state.hasPin) {
             try {
-                let res = await AuthAPI.createPin({
+                await AuthAPI.createPin({
                     pin: $("#pin").val(),
                 });
 
                 this.setState({
                     changePinVisible: false,
+                    hasPin: true
                 });
                 message.success("Change pin success !!!");
             } catch (err) {
@@ -276,7 +280,7 @@ class Main extends React.Component {
         $("#new-pin").val("");
         $("#confirm-pin").val("");
         try {
-            let res = await AuthAPI.changePin(data);
+            await AuthAPI.changePin(data);
 
             this.setState({
                 changePinVisible: false,
@@ -486,6 +490,7 @@ class Main extends React.Component {
                     </Col>
                 </Row>
                 <Divider/>
+
                 <p style={pStyle}>Settings</p>
                 <Row>
                     <Col span={8}>
@@ -502,16 +507,14 @@ class Main extends React.Component {
                     <Col span={8}>
                         <Button
                             style={{width: 150}}
-                            onClick={async () => {
-                                let res = await AuthAPI.hasPin();
+                            onClick={() => {
                                 this.setState({
                                     changePinVisible: true,
-                                    hasPin: res.data.payload.hasPin,
                                 });
                             }}
                             type="primary"
                         >
-                            Edit Pin
+                            {this.state.hasPin ? "Edit Pin" : "Create Pin"}
                         </Button>{" "}
                     </Col>
                     <Col span={8}>
@@ -541,7 +544,6 @@ class Main extends React.Component {
             <div style={{height: 100 + "vh"}}>
                 <Layout>
                     <Sider
-                        width
                         breakpoint="lg"
                         collapsedWidth="0"
                         onBreakpoint={(broken) => {
@@ -555,10 +557,13 @@ class Main extends React.Component {
                             onClick={() => {
                                 this.showDrawer();
                             }}
+                            style={{cursor: "pointer"}}
                         >
                             <CustomAvatar type="main-avatar" avatar={this.props.userName}/>
                         </div>
+
                         {this.renderModal()}
+
                         <div className="menu-separation"/>
                         <Menu
                             theme="dark"
@@ -575,9 +580,7 @@ class Main extends React.Component {
                             <Menu.Item key="3">
                                 <Icon type="pay-circle" style={{fontSize: 30}}/>
                             </Menu.Item>
-                            {/* <Menu.Item key="4">
-                <Icon type="user" style={{ fontSize: 30 }} />
-              </Menu.Item> */}
+
                         </Menu>
                     </Sider>
                     {this.renderMainSlide()}

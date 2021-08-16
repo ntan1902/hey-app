@@ -59,7 +59,7 @@ class Profile extends React.Component {
   }
 
   openStatusBoxStateStatus() {
-    if (this.props.userStatus == "You are online") {
+    if (this.props.userStatus === "You are online") {
       this.state.status_text = "";
     } else {
       this.state.status_text = this.props.userStatus;

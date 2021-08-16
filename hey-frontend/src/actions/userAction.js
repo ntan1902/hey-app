@@ -1,4 +1,4 @@
-import { api } from "../api/api";
+import {api} from "../api/api";
 
 export const CHANGE_TAB = "portal.CHANGE_TAB";
 export const REGISTER_SUCCEEDED = "user.REGISTER_SUCCEEDED";
@@ -16,7 +16,7 @@ export function logout() {
 
 export function receivedUserProfile(result) {
   let status = "You are online";
-  if (result.data.payload.status != "") {
+  if (result.data.payload.status !== "") {
     status = result.data.payload.status;
   }
   return {
@@ -37,7 +37,7 @@ export function getProfile() {
 
 export function changeUserStatus(status) {
   let userStatus = "You are online";
-  if (status != "") {
+  if (status !== "") {
     userStatus = status;
   }
   api.post(`/api/protected/status`, createChangeStatusRequest(status));
@@ -45,8 +45,7 @@ export function changeUserStatus(status) {
 }
 
 function createChangeStatusRequest(status) {
-  const req = {
+  return {
     status: status,
   };
-  return req;
 }
