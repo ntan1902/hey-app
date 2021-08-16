@@ -41,7 +41,7 @@ class ChatHeader extends React.Component {
     return (
       <div className="chat-header">
         <div style={{ width: 50 }}>
-          {this.props.header.groupchat ? (
+          {this.props.header.group ? (
             <CustomAvatar type="panel-group-avatar" />
           ) : (
             <CustomAvatar
@@ -53,7 +53,7 @@ class ChatHeader extends React.Component {
         <div style={{ overflow: "hidden", paddingTop: 5 }}>
           <div className="panel-message">{this.props.header.title}</div>
         </div>
-        <div style={{ flex: 1 }}></div>
+        <div style={{flex: 1}}/>
         <Menu
           onClick={this.handleClick}
           // selectedKeys={[this.state.current]}

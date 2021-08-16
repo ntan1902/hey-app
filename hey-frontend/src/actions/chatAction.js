@@ -11,21 +11,21 @@ import {ChatAPI} from "../api/chat";
 import {bindActionCreators} from "redux";
 import * as actionTypes from "./actionTypes";
 
-export const EMPTY = "chatlist.EMPTY";
-export const CHATLIST_FETCHED = "chatlist.CHATLIST_FETCHED";
-export const CHATLIST_REFETCHED = "chatlist.CHATLIST_REFETCHED";
-export const MESSAGE_HEADER_FETCHED = "chatlist.MESSAGE_HEADER_FETCHED";
-export const MESSAGE_PANEL_FETCHED = "chatlist.MESSAGE_PANEL_FETCHED";
+export const EMPTY = "chatList.EMPTY";
+export const CHATLIST_FETCHED = "chatList.CHATLIST_FETCHED";
+export const CHATLIST_REFETCHED = "chatList.CHATLIST_REFETCHED";
+export const MESSAGE_HEADER_FETCHED = "chatList.MESSAGE_HEADER_FETCHED";
+export const MESSAGE_PANEL_FETCHED = "chatList.MESSAGE_PANEL_FETCHED";
 export const NEW_MESSAGE_IN_PANEL_FETCHED =
-    "chatlist.NEW_MESSAGE_IN_PANEL_FETCHED";
-export const ADD_NEW_START_CHAT_GROUP = "chatlist.ADD_NEW_START_CHAT_GROUP";
-export const REMOVE_START_CHAT_GROUP = "chatlist.REMOVE_START_CHAT_GROUP";
-export const START_CHAT_GROUP = "chatlist.START_CHAT_GROUP";
-export const START_CHAT_SINGLE = "chatlist.START_CHAT_SINGLE";
+    "chatList.NEW_MESSAGE_IN_PANEL_FETCHED";
+export const ADD_NEW_START_CHAT_GROUP = "chatList.ADD_NEW_START_CHAT_GROUP";
+export const REMOVE_START_CHAT_GROUP = "chatList.REMOVE_START_CHAT_GROUP";
+export const START_CHAT_GROUP = "chatList.START_CHAT_GROUP";
+export const START_CHAT_SINGLE = "chatList.START_CHAT_SINGLE";
 export const ADD_NEW_START_CHAT_GROUP_FAIL =
-    "chatlist.ADD_NEW_START_CHAT_GROUP_FAIL";
-export const USER_SELECTED = "chatlist.USER_SELECTED";
-export const WEBSOCKET_FETCHED = "chatlist.WEBSOCKET_FETCHED";
+    "chatList.ADD_NEW_START_CHAT_GROUP_FAIL";
+export const USER_SELECTED = "chatList.USER_SELECTED";
+export const WEBSOCKET_FETCHED = "chatList.WEBSOCKET_FETCHED";
 
 export function initialWebSocket() {
     const jwt = getJwtFromStorage();
@@ -78,7 +78,7 @@ export function closeWebSocket() {
 export function loadChatList() {
     return function (dispatch) {
         return getChatList().then((result) => {
-            dispatch(receivedChatlist(result));
+            dispatch(receivedChatList(result));
         });
     };
 }
@@ -86,7 +86,7 @@ export function loadChatList() {
 export function reloadChatList() {
     return function (dispatch) {
         return getChatList().then((result) => {
-            dispatch(receivedReloadChatlist(result));
+            dispatch(receivedReloadChatList(result));
         });
     };
 }
@@ -138,38 +138,40 @@ export function submitChatMessage(message) {
     let sessionId = store.getState().chatReducer.currentSessionId;
     let waitingGroupUsernames = store.getState().chatReducer
         .waitingGroupUsernames;
+
+    let groupName = store.getState().chatReducer.messageHeader.title;
     store
         .getState()
         .chatReducer.webSocket.json(
-        createChatMessageRequest(sessionId, message, waitingGroupUsernames)
+        createChatMessageRequest(sessionId, message, waitingGroupUsernames, groupName)
     );
     return {type: EMPTY};
 }
 
-export function receivedChatlist(chatlist) {
-    const fetchedChatlist = chatlist;
+export function receivedChatList(chatList) {
+    const fetchedChatList = chatList;
     let header = {};
-    if (fetchedChatlist.length > 0) {
+    if (fetchedChatList.length > 0) {
         header = {
-            title: fetchedChatlist[0].name,
-            avatar: fetchedChatlist[0].avatar,
-            groupchat: fetchedChatlist[0].groupchat,
+            title: fetchedChatList[0].groupName === "" ? fetchedChatList[0].name : fetchedChatList[0].groupName,
+            avatar: fetchedChatList[0].avatar,
+            group: fetchedChatList[0].group
         };
-        store.dispatch(specialLoadChatContainer(fetchedChatlist[0].sessionId));
+        store.dispatch(specialLoadChatContainer(fetchedChatList[0].sessionId));
     }
 
     return {
         type: CHATLIST_FETCHED,
-        fetchedChatlist: fetchedChatlist,
+        fetchedChatList: fetchedChatList,
         messageHeader: header,
         currentSessionId:
-            fetchedChatlist.length > 0 ? fetchedChatlist[0].sessionId : null,
+            fetchedChatList.length > 0 ? fetchedChatList[0].sessionId : null,
     };
 }
 
-export function receivedReloadChatlist(chatlist) {
-    const fetchedChatlist = chatlist;
-    return {type: CHATLIST_REFETCHED, fetchedChatlist: fetchedChatlist};
+export function receivedReloadChatList(chatList) {
+    const fetchedChatList = chatList;
+    return {type: CHATLIST_REFETCHED, fetchedChatList: fetchedChatList};
 }
 
 export function receivedNewMessage(message) {
@@ -270,11 +272,11 @@ export function changeMessageItems(chatItems, sessionId) {
     };
 }
 
-export function changeMessageHeader(title, avatar, groupchat) {
+export function changeMessageHeader(title, avatar, group) {
     const header = {
         title: title,
         avatar: avatar,
-        groupchat: groupchat,
+        group: group,
     };
     return {type: MESSAGE_HEADER_FETCHED, messageHeader: header};
 }
@@ -336,14 +338,12 @@ export function startNewChatGroup(groupName) {
         let messageItems = [];
         let waitingGroupUsernames = store.getState().chatReducer.startChatGroupList;
         let currentSessionId = "-1";
-        console.log("start new chat group");
         api
             .post(
                 `/api/protected/waitingchatheader`,
                 createWaitingChatHeaderRequest(waitingGroupUsernames, groupName)
             )
             .then((res) => {
-                console.log("start new chat", res);
                 store.dispatch(changeMessageHeader(res.data.payload.title, "", true));
             })
             .catch((err) => {
@@ -369,7 +369,6 @@ export function startNewChatSingle(userId) {
     let messageItems = [];
     let waitingGroupUsernames = [userId];
     let currentSessionId = "-1";
-    console.log(userId);
     return {
         type: START_CHAT_SINGLE,
         messageItems: messageItems,
@@ -399,7 +398,6 @@ export function receivedUserOffline(res) {
 }
 
 export function userSelected(sessionId) {
-    console.log(sessionId);
     var userSelectedKeys = [sessionId];
     return {
         type: USER_SELECTED,
@@ -442,7 +440,6 @@ function getChatList() {
         api
             .get(`/api/protected/chatlist`)
             .then((res) => {
-                console.log(res);
                 const items = res.data.payload.items;
                 const results = [];
                 for (var index = 0; index < items.length; ++index) {
@@ -452,7 +449,8 @@ function getChatList() {
                         avatar: processUsernameForAvatar(items[index].name),
                         lastMessage: items[index].lastMessage,
                         unread: items[index].unread,
-                        groupchat: items[index].groupChat,
+                        groupName: items[index].groupName,
+                        group: items[index].group,
                         updatedDate: items[index].updatedDate,
                     };
                     results.push(chatItem);
@@ -471,8 +469,8 @@ function getChatList() {
 }
 
 function processUsernameForAvatar(username) {
-    var x1 = username.charAt(0);
-    var x2 = username.charAt(1);
+    const x1 = username.charAt(0);
+    const x2 = username.charAt(1);
     return x1 + " " + x2;
 }
 
@@ -483,20 +481,13 @@ function createLoadChatContainerRequest(sessionId) {
     };
 }
 
-function createAddFriendToSession(sessionId, userId) {
-    return {
-        type: "ADD_FRIEND_TO_SESSION_REQUEST",
-        sessionId: sessionId,
-        userId: userId,
-    };
-}
-
-function createChatMessageRequest(sessionId, message, waitingGroupUsernames) {
+function createChatMessageRequest(sessionId, message, waitingGroupUsernames, groupName) {
     return {
         type: "CHAT_MESSAGE_REQUEST",
         sessionId: sessionId,
         message: message,
         usernames: waitingGroupUsernames,
+        groupName: groupName,
         groupChat: sessionId == "-1",
     };
 }

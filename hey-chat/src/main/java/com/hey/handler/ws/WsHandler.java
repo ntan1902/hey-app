@@ -258,7 +258,6 @@ public class WsHandler {
                 chatItem.setName(chatMessage.getUserHash().getFullName());
                 chatItem.setMessage(chatMessage.getMessage());
                 chatItem.setCreatedDate(chatMessage.getCreatedDate());
-
                 chatItems.add(chatItem);
             }
 

@@ -42,7 +42,6 @@ class Chat extends React.Component {
   }
 
   handleMessageEnter(e) {
-    let charCode = e.keyCode || e.which;
     if (!e.shiftKey) {
       e.preventDefault();
       let message = e.target.value;
@@ -62,9 +61,6 @@ class Chat extends React.Component {
   }
 
   render() {
-    // if (isAuthenticated()) {
-    //   return <Redirect to="/login" />;
-    // }
     return (
       <div style={{ height: 100 + "vh", width: "100%" }}>
         <Layout>
