@@ -76,7 +76,7 @@ class ChatHeader extends React.Component {
         <div style={{ overflow: "hidden", paddingTop: 5 }}>
           <div className="panel-message">{this.props.header.title}</div>
         </div>
-        <div style={{ flex: 1, display: "flex", justifyContent: "flex-end" }}>
+        <div style={{ flex: 1, display: "flex", justifyContent: "flex-end", alignItems: "center" }}>
           <div>
             <Button type="primary" onClick={this.makeVideoCall}>Video Call</Button>
           </div>

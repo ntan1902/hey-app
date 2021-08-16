@@ -1748,14 +1748,25 @@ public class APIService extends BaseService {
 
     public Future<JsonObject> getICEServer() {
         Future<JsonObject> future = Future.future();
-        JsonObject payload = new JsonObject("{\n\"username\": \"zl-6sE0Kj1-yKydc6Cpt8MLqEu9jlQVNs9OobmmNN49ROz5jAwpzZ1jg8uxfoXdmAAAAAGEZ7UtuZ29jdHJvbmcxMDI=\",\"urls\": [\"stun:hk-turn1.xirsys.com\",\"turn:hk-turn1.xirsys.com:80?transport=udp\",\"turn:hk-turn1.xirsys.com:3478?transport=udp\",\"turn:hk-turn1.xirsys.com:80?transport=tcp\",\"turn:hk-turn1.xirsys.com:3478?transport=tcp\",\"turns:hk-turn1.xirsys.com:443?transport=tcp\",\"turns:hk-turn1.xirsys.com:5349?transport=tcp\"],\"credential\": \"b66737e0-fe4c-11eb-9065-0242ac120004\" }");
+        JsonObject request = new JsonObject();
+        request.put("format","urls");
+        webClient.putAbs("https://global.xirsys.net/_turn/hey-app")
+                .putHeader("Authorization","Basic bmdvY3Ryb25nMTAyOjBjZjRhZDMyLTk1ZTItMTFlYi05YzJkLTAyNDJhYzE1MDAwMg==")
+                .putHeader("Content-Type", "application/json")
+                .putHeader("Content-Length","17")
+                .sendJsonObject(request,httpResponseAsyncResult -> {
+                    if (httpResponseAsyncResult.succeeded()){
+                        JsonObject payload = httpResponseAsyncResult.result().bodyAsJsonObject().getJsonObject("v").getJsonObject("iceServers");
+                        JsonObject apiResponse = new JsonObject();
+                        apiResponse.put("success", true);
+                        apiResponse.put("code", 200);
+                        apiResponse.put("message","");
+                        apiResponse.put("payload",payload);
+                        future.complete(apiResponse);
+                    }
+                });
 
-        JsonObject apiResponse = new JsonObject();
-        apiResponse.put("success", true);
-        apiResponse.put("code", 200);
-        apiResponse.put("message","");
-        apiResponse.put("payload",payload);
-        future.complete(apiResponse);
+
         return future;
     }
 }
