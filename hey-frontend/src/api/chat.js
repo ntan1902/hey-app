@@ -10,5 +10,14 @@ export const ChatAPI = {
     },
     leaveGroup: (sessionId) => {
         return axios.post(`${API_CHAT}/api/protected/outgroup`, { sessionId })
+    },
+    makeCall: (sessionId, isVideoCall) => {
+        return axios.post(`${API_CHAT}/api/protected/makeCall`, { sessionId, isVideoCall })
+    },
+    joinCall: (sessionId, peerId) => {
+        return axios.post(`${API_CHAT}/api/protected/joinCall`, { sessionId, peerId })
+    },
+    getICEServer: () => {
+        return axios.post(`${API_CHAT}/api/protected/getICEServer`)
     }
 };

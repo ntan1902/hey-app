@@ -1,3 +1,4 @@
+import React from "react";
 import { store } from "../store";
 import { api, ws_host } from "../api/api";
 import Sockette from "sockette";
@@ -7,7 +8,7 @@ import {
   isEmptyString,
 } from "../utils/utils";
 import deepcopy from "deepcopy";
-import { message } from "antd/lib/index";
+import { Button, message, notification } from "antd/lib/index";
 import { changeUserOnlineStatus } from "./addressBookAction";
 import { statusNotification } from "../components/status-notification";
 import { loadWaitingFriendList } from "./addressBookAction";
@@ -15,6 +16,7 @@ import { AuthAPI } from "../api";
 import { ChatAPI } from "../api/chat";
 import { bindActionCreators } from "redux";
 import * as actionTypes from "./actionTypes";
+import videoCallUtils from "../utils/videoCallUtils";
 
 export const EMPTY = "chatlist.EMPTY";
 export const CHATLIST_FETCHED = "chatlist.CHATLIST_FETCHED";
@@ -37,7 +39,7 @@ export function initialWebSocket() {
   const webSocket = new Sockette(ws_host + "?jwt=" + jwt, {
     timeout: 5e3,
     maxAttempts: 100,
-    onopen: (e) => {},
+    onopen: (e) => { },
     onmessage: (e) => {
       var data = JSON.parse(e.data);
       console.log("New Socket");
@@ -62,6 +64,28 @@ export function initialWebSocket() {
           message.success("New Friend Request !!!");
           store.dispatch(loadWaitingFriendList());
           break;
+        case "HAVE_CALL":
+          let type = data.videoCall ? "video call" : "all";
+          let description = `You have a ${type} from ${data.groupName}`;
+          const key = `open${Date.now()}`;
+          let btn = (
+            <div style={{ display: "flex" }}>
+              <Button type="danger" onClick={() => {
+                notification.close(key);
+                videoCallUtils.rejectCall(data.sessionId);
+              }}>Reject</Button>
+              <Button type="primary" onClick={() => {
+                notification.close(key);
+                videoCallUtils.acceptCall(data.sessionId, data.videoCall);
+              }}>Join</Button>
+            </div >
+          );
+          notification.open({
+            message: data.videoCall ? "Video Call" : "Call",
+            description,
+            btn,
+            key
+          })
       }
     },
     onreconnect: (e) => console.log("Reconnecting...", e),

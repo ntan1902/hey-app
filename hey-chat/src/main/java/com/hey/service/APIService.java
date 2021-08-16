@@ -16,6 +16,7 @@ import io.vertx.core.CompositeFuture;
 import io.vertx.core.Future;
 import io.vertx.core.json.Json;
 import io.vertx.core.json.JsonObject;
+import io.vertx.ext.web.client.WebClient;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.*;
@@ -1695,4 +1696,66 @@ public class APIService extends BaseService {
         return future;
     }
 
+    public Future<JsonObject> makeCall(MakeCallRequest makeCallRequest, String userId) {
+        Future<JsonObject> future = Future.future();
+        Future<ChatList> getChatListBySessionIdFuture = getChatListBySessionId(makeCallRequest.getSessionId());
+        getChatListBySessionIdFuture.compose(chatList -> {
+            HaveCallDTO haveCallDTO = new HaveCallDTO();
+            haveCallDTO.setType(IWsMessage.HAVE_CALL);
+            haveCallDTO.setGroupName(chatList.getGroupName().equals("") ? chatList.getSessionId() : chatList.getGroupName());
+            haveCallDTO.setSessionId(chatList.getSessionId());
+            haveCallDTO.setVideoCall(makeCallRequest.getIsVideoCall());
+            for (UserHash userhash : chatList.getUserHashes()) {
+                if (!userhash.getUserId().equals(userId)) {
+                    userWsChannelManager.sendMessage(haveCallDTO, userhash.getUserId());
+                }
+            }
+
+            JsonObject apiResponse = new JsonObject();
+            apiResponse.put("success", true);
+            apiResponse.put("code", 200);
+            apiResponse.put("message","Make call successfully");
+            apiResponse.put("payload","");
+            future.complete(apiResponse);
+
+        }, Future.future().setHandler(handler -> future.fail(handler.cause())));
+        return future;
+    }
+
+    public Future<JsonObject> joinCall(JoinCallRequest joinCallRequest, String userId) {
+        Future<JsonObject> future = Future.future();
+        Future<ChatList> getChatListBySessionIdFuture = getChatListBySessionId(joinCallRequest.getSessionId());
+        getChatListBySessionIdFuture.compose(chatList -> {
+            JoinCallDTO joinCallDTO = new JoinCallDTO();
+            joinCallDTO.setType(IWsMessage.JOIN_CALL);
+            joinCallDTO.setPeerId(joinCallRequest.getPeerId());
+            for (UserHash userhash : chatList.getUserHashes()) {
+                if (!userhash.getUserId().equals(userId)) {
+                    userWsChannelManager.sendMessage(joinCallDTO, userhash.getUserId());
+                }
+            }
+
+            JsonObject apiResponse = new JsonObject();
+            apiResponse.put("success", true);
+            apiResponse.put("code", 200);
+            apiResponse.put("message","Join call successfully");
+            apiResponse.put("payload","");
+            future.complete(apiResponse);
+
+        }, Future.future().setHandler(handler -> future.fail(handler.cause())));
+        return future;
+    }
+
+    public Future<JsonObject> getICEServer() {
+        Future<JsonObject> future = Future.future();
+        JsonObject payload = new JsonObject("{\n\"username\": \"zl-6sE0Kj1-yKydc6Cpt8MLqEu9jlQVNs9OobmmNN49ROz5jAwpzZ1jg8uxfoXdmAAAAAGEZ7UtuZ29jdHJvbmcxMDI=\",\"urls\": [\"stun:hk-turn1.xirsys.com\",\"turn:hk-turn1.xirsys.com:80?transport=udp\",\"turn:hk-turn1.xirsys.com:3478?transport=udp\",\"turn:hk-turn1.xirsys.com:80?transport=tcp\",\"turn:hk-turn1.xirsys.com:3478?transport=tcp\",\"turns:hk-turn1.xirsys.com:443?transport=tcp\",\"turns:hk-turn1.xirsys.com:5349?transport=tcp\"],\"credential\": \"b66737e0-fe4c-11eb-9065-0242ac120004\" }");
+
+        JsonObject apiResponse = new JsonObject();
+        apiResponse.put("success", true);
+        apiResponse.put("code", 200);
+        apiResponse.put("message","");
+        apiResponse.put("payload",payload);
+        future.complete(apiResponse);
+        return future;
+    }
 }
