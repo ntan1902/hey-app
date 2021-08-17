@@ -13,7 +13,6 @@ const onShow = (screenName, data) => {
 };
 
 const updateBalance = (balance) => {
-  console.log("ON balance", balance);
   return {
     type: actionTypes.ON_UPDATE_BALANCE,
     balance: balance,
