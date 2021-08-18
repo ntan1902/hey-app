@@ -17,18 +17,42 @@ class AddressBook extends React.Component {
       current: [],
       newselect: [],
       data: [],
+      page: 0,
+      size: 10,
+      isAll: false,
     };
+    this.divLoadMore = React.createRef();
     this.handleCurrentChange = this.handleCurrentChange.bind(this);
     this.handleNewChange = this.handleNewChange.bind(this);
   }
 
   componentDidMount() {
-    // this.props.loadAddressBookList();
-    console.log("Did Mount");
-    this.props.paymentActions.getAllTransferStatement().then((res) => {
-      this.setState({ data: res.data });
-      console.log("res");
+    this.props.paymentActions
+      .getTransferStatement(this.state.page, this.state.size)
+      .then((res) => {
+        this.setState({ data: res.data, isAll: res.data.length < 10 });
+      });
+
+    this.observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        this.setState((preState) => ({
+          page: preState.page + 1,
+        }));
+        this.props.paymentActions
+          .getTransferStatement(this.state.page, this.state.size)
+          .then((res) => {
+            this.setState((preState) => ({
+              data: [...preState.data, ...res.data],
+              isAll: res.data.length < 10,
+            }));
+          });
+      });
     });
+  }
+  componentDidUpdate() {
+    if (this.divLoadMore.current) {
+      this.observer.observe(this.divLoadMore.current);
+    }
   }
 
   handleCurrentChange(event) {
@@ -42,14 +66,6 @@ class AddressBook extends React.Component {
       .then((res) => {
         console.log("res");
       });
-    // this.props.handleChangeAddressBook(
-    //   this.props.addressBookList[event.key].userId
-    // );
-    // this.props.changeMessageHeader(
-    //   this.props.addressBookList[event.key].name,
-    //   this.props.addressBookList[event.key].avatar,
-    //   false
-    // );
   }
 
   handleNewChange(event) {
@@ -63,23 +79,36 @@ class AddressBook extends React.Component {
       .then((res) => {
         console.log("res");
       });
-    // console.log(event.key);
-    // this.props.handleChangeAddressBook(
-    //   this.props.newAddressBookList[event.key].userId
-    // );
-    // this.props.changeMessageHeader(
-    //   this.props.newAddressBookList[event.key].name,
-    //   this.props.newAddressBookList[event.key].avatar,
-    //   false
-    // );
   }
+
+  handleScroll = (event) => {
+    let { scrollHeight, clientHeight, scrollTop } = event.currentTarget;
+    if (!this.state.isAll && scrollHeight === clientHeight + scrollTop + 1) {
+      this.setState((preState) => ({
+        page: preState.page + 1,
+      }));
+      this.props.paymentActions
+        .getTransferStatement(this.state.page, this.state.size)
+        .then((res) => {
+          this.setState((preState) => ({
+            data: [...preState.data, ...res.data],
+            isAll: res.data.length < 10,
+          }));
+        });
+    }
+  };
 
   render() {
     if (this.state.data == []) return;
     return (
       <div className="d-flex flex-column full-height address-book-menu">
         <Topup />
-        <Scrollbars autoHide autoHideTimeout={500} autoHideDuration={200}>
+        <Scrollbars
+          autoHide
+          autoHideTimeout={500}
+          autoHideDuration={200}
+          // onScroll={this.handleScroll}
+        >
           <hr className="hr-sub-menu-title" />
           <div className="sub-menu-title">
             Transfer Statements ({this.state.data.length})
@@ -122,6 +151,13 @@ class AddressBook extends React.Component {
               </Menu.Item>
             ))}
           </Menu>
+          {this.state.data.length !== 0 && !this.state.isAll && (
+            <div
+              ref={this.divLoadMore}
+              id="load_more"
+              style={{ height: 5, backgroundColor: "red" }}
+            ></div>
+          )}
         </Scrollbars>
       </div>
     );
