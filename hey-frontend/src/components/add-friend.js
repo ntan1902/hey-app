@@ -3,22 +3,19 @@ import { Modal, Input, Alert } from "antd";
 import CustomAvatar from "../components/custom-avatar";
 import {
   changeStateAddFriendPopup,
+  addNewFriendRequest,
 } from "../actions/addressBookAction";
 import { connect } from "react-redux";
 import $ from "jquery";
-import { message } from "antd";
 import ListUser from "./ListUser/ListUser";
 import { AuthAPI } from "../api";
-import { loadNewAddFriend } from '../actions/chatAction';
-
-
 class AddFriend extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       visible: false,
       users: [],
-      keyword: ""
+      keyword: "",
     };
 
     this.inputTimeout = null;
@@ -48,36 +45,36 @@ class AddFriend extends React.Component {
   };
   search = () => {
     if (this.state.keyword) {
-      AuthAPI.searchUser(this.state.keyword)
-        .then(res => {
-          console.log(res.data.payload)
-          this.setState({
-            ...this.state,
-            users: res.data.payload
-          })
-        })
+      AuthAPI.searchUser(this.state.keyword).then((res) => {
+        console.log(res.data.payload);
+        this.setState({
+          ...this.state,
+          users: res.data.payload,
+        });
+      });
     } else {
       this.setState({
         ...this.state,
-        users: []
-      })
+        users: [],
+      });
     }
-  }
+  };
   handleChange = (event) => {
     this.setState({
       ...this.state,
-      keyword: event.currentTarget.value
-    })
+      keyword: event.currentTarget.value,
+    });
     if (this.inputTimeout) {
       clearTimeout(this.inputTimeout);
     }
     this.inputTimeout = setTimeout(this.search, 300);
-  }
+  };
 
   sendFriendRequest = (username) => {
-    this.props.loadNewAddFriend(username);
+    $("add-user-name").val("");
+    this.props.addNewFriendRequest(username);
     this.props.changeStateAddFriendPopup(false);
-  }
+  };
 
   render() {
     return (
@@ -85,9 +82,9 @@ class AddFriend extends React.Component {
         <div className="new-action-menu" onClick={this.showModal}>
           <a href="#">
             <CustomAvatar type="new-avatar" />
-            <div className="new-text">Add New Friend</div>
-          </a>
-        </div>
+            <div className="new-text"> Add New Friend </div>{" "}
+          </a>{" "}
+        </div>{" "}
         <Modal
           width="420px"
           title="Add New Friend"
@@ -101,16 +98,19 @@ class AddFriend extends React.Component {
             <Alert message={this.props.addFriendErrorMessage} type="error" />
           ) : (
             ""
-          )}
-          <p className="model-label">Search by name or email</p>
+          )}{" "}
+          <p className="model-label"> Search by name or email </p>{" "}
           <Input
             id="add-user-name"
             className="add-user-name"
             onChange={this.handleChange}
             ref={this.inputSearch}
-          />
-          <ListUser users={this.state.users} onClickUser={this.sendFriendRequest} />
-        </Modal>
+          />{" "}
+          <ListUser
+            users={this.state.users}
+            onClickUser={this.sendFriendRequest}
+          />{" "}
+        </Modal>{" "}
       </div>
     );
   }
@@ -129,14 +129,10 @@ function mapDispatchToProps(dispatch) {
     changeStateAddFriendPopup(state) {
       dispatch(changeStateAddFriendPopup(state));
     },
-    loadNewAddFriend(username) {
-      dispatch(loadNewAddFriend(username));
-    },
-    changeStateAddFriendPopup(state) {
-      dispatch(changeStateAddFriendPopup(state));
+    addNewFriendRequest(username) {
+      dispatch(addNewFriendRequest(username));
     },
   };
 }
-
 
 export default connect(mapStateToProps, mapDispatchToProps)(AddFriend);
