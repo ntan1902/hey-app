@@ -5,6 +5,7 @@ import {
     addNewFriendRequest,
     changeStateAddFriendPopup,
 } from "../actions/addressBookAction";
+import $ from "jquery";
 import {connect} from "react-redux";
 import ListUser from "./ListUser/ListUser";
 import {AuthAPI} from "../api";
@@ -59,6 +60,7 @@ class AddFriend extends React.Component {
     }
 
     sendFriendRequest = (username) => {
+        $('add-user-name').val("");
         this.props.addNewFriendRequest(username);
         this.props.changeStateAddFriendPopup(false);
     }

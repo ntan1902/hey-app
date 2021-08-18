@@ -50,8 +50,8 @@ class MembersModal extends React.Component {
                                 <div className="user-name">{item.fullName}</div>
                             </div>
                             {this.props.isOwner &&
-                                < div style={{ position: "absolute", right: 10 }}>
-                                    <Icon type="export" onClick={() => this.kickUser(item.userId)} />
+                                < div style={{ position: "absolute", right: 10}}>
+                                    <Icon type="export" onClick={() => this.kickUser(item.userId)} theme={"outlined"} style={{fontSize: 25, color: "red"}} />
                                 </div>
                             }
                         </Menu.Item>

@@ -67,7 +67,6 @@ axiosInstance.interceptors.response.use(
           console.log(err.response);
           const { status } = err.response;
           status === 400 && clearStorage();
-          // window.location.replace("http://localhost:3000");
           return Promise.reject(err);
         });
     }
@@ -89,7 +88,7 @@ axiosInstance.interceptors.request.use(
   },
   (error) => {
     console.log("Error in axios");
-    Promise.reject(error);
+    return Promise.reject(error);
   }
 );
 

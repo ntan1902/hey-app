@@ -18,8 +18,8 @@ public class EditUserRequest {
     @NotEmpty(message = "fullName must not be empty")
     private String fullName;
 
-    @NotEmpty(message = "dateOfBirth must not be empty")
-    private String dateOfBirth;
+    @NotEmpty(message = "dob must not be empty")
+    private String dob;
 
     @NotEmpty(message = "phoneNumber must not be empty")
     private String phoneNumber;
