@@ -164,7 +164,7 @@ public class UserServiceImpl implements UserDetailsService, UserService {
 
         String email = request.getEmail();
         String fullName = request.getFullName();
-        String dateOfBirth = request.getDateOfBirth();
+        String dob = request.getDob();
         String phoneNumber = request.getPhoneNumber();
 
         boolean emailPresent = userRepository
@@ -177,7 +177,7 @@ public class UserServiceImpl implements UserDetailsService, UserService {
 
         user.setEmail(email);
         user.setFullName(fullName);
-        user.setDob(LocalDateTime.parse(dateOfBirth));
+        user.setDob(LocalDateTime.parse(dob));
         user.setPhoneNumber(phoneNumber);
 
         userRepository.save(user);

@@ -53,7 +53,7 @@ class ChatHeader extends React.Component {
         <div style={{ overflow: "hidden", paddingTop: 5 }}>
           <div className="panel-message">{this.props.header.title}</div>
         </div>
-        <div style={{flex: 1}}/>
+        <div style={{ flex: 1 }} />
         <Menu
           onClick={this.handleClick}
           // selectedKeys={[this.state.current]}
@@ -97,7 +97,11 @@ class ChatHeader extends React.Component {
                 <Icon style={{ fontSize: 20 }} type="plus" />
                 Add More Friend
               </Menu.Item>
-              <Menu.Item key="setting:5" onClick={() => this.leaveGroup()}>
+              <Menu.Item
+                key="setting:5"
+                onClick={() => this.leaveGroup()}
+                style={{ color: "red" }}
+              >
                 <IconFont style={{ fontSize: 20 }} type="icon-tuichu" />
                 Leave
               </Menu.Item>

@@ -1,15 +1,5 @@
 import React from "react";
-import { Modal, Input, Alert, Button, Icon } from "antd";
-import CustomAvatar from "../components/custom-avatar";
-import {
-  addNewUserChatGroup,
-  removeUserChatGroup,
-  startNewChatGroup,
-} from "../actions/chatAction";
-import {
-  addNewFriend,
-  changeStateAddFriendPopup,
-} from "../actions/addressBookAction";
+import { Modal, Input, Button, Icon } from "antd";
 import { connect } from "react-redux";
 import $ from "jquery";
 import { Scrollbars } from "react-custom-scrollbars";
@@ -27,10 +17,11 @@ import { bindPaymentActions } from "../actions";
 
 import { Row, Col } from "antd";
 import { Card, Avatar } from "antd";
+import LuckyAnimation from "./LuckyAnimation/LuckyAnimation";
 
 const { Meta } = Card;
 
-class AddFriend extends React.Component {
+class LuckyMoney extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -43,6 +34,7 @@ class AddFriend extends React.Component {
       moneyEachBag: "",
       numberOfBag: "",
       message: "",
+      showAnimation: false,
     };
     this.handleOk = this.handleOk.bind(this);
     this.handleCancel = this.handleCancel.bind(this);
@@ -50,7 +42,6 @@ class AddFriend extends React.Component {
   }
 
   componentWillReceiveProps() {
-    console.log("This mount");
     if (this.props.currentSessionId) {
       this.props.paymentActions
         .getListLuckymoney(this.props.currentSessionId)
@@ -59,7 +50,6 @@ class AddFriend extends React.Component {
             ...res.data.filter((x) => !x.received),
             ...res.data.filter((x) => !!x.received),
           ];
-          console.log("Hi", lm);
 
           this.setState({ data: lm });
         });
@@ -70,17 +60,16 @@ class AddFriend extends React.Component {
     this.props.paymentActions
       .receivedLuckymoney({ luckyMoneyId: id })
       .then((res) => {
-        console.log(res, "Pin");
         this.props.paymentActions
           .getListLuckymoney(this.props.currentSessionId)
-          .then((res) => {
-            console.log("This mount", res);
+          .then((res2) => {
             let lm = [
-              ...res.data.filter((x) => !x.received),
-              ...res.data.filter((x) => !!x.received),
+              ...res2.data.filter((x) => !x.received),
+              ...res2.data.filter((x) => !!x.received),
             ];
-            console.log("Hi", lm);
-            this.setState({ data: lm });
+
+            this.setState({ data: lm, showAnimation: true });
+            setTimeout(() => this.setState({ showAnimation: false }), 2000);
           });
       });
   };
@@ -94,8 +83,6 @@ class AddFriend extends React.Component {
   };
 
   handleOk = (e) => {
-    console.log(e);
-    var un = $("#add-user-name").val();
     $("#add-user-name").val("");
 
     this.setState({
@@ -165,7 +152,6 @@ class AddFriend extends React.Component {
   };
 
   renderCreateLuckyMoney = () => {
-    console.log("current session ID", this.props.currentSessionId);
     return (
       <div
         style={{
@@ -211,7 +197,7 @@ class AddFriend extends React.Component {
                 <Button
                   style={{
                     backgroundColor:
-                      this.state.topupType == 1 ? "blue" : "white",
+                      this.state.topupType === 1 ? "blue" : "white",
                     borderColor: "black",
                     color: "black",
                     borderRadius: 200,
@@ -229,7 +215,7 @@ class AddFriend extends React.Component {
                   <Icon
                     style={{
                       fontSize: 30,
-                      color: this.state.topupType == 2 ? "black" : "white",
+                      color: this.state.topupType === 2 ? "black" : "white",
                     }}
                     type="bank"
                   />
@@ -335,7 +321,7 @@ class AddFriend extends React.Component {
             </div>
             <Transfer
               amount={
-                this.state.topupType == 1
+                this.state.topupType === 1
                   ? this.state.moneyEachBag * this.state.numberOfBag
                   : this.state.moneyEachBag
               }
@@ -343,7 +329,7 @@ class AddFriend extends React.Component {
               data={{
                 message: this.state.message,
                 numberBag: this.state.numberOfBag,
-                type: this.state.topupType == 1 ? "equally" : "random",
+                type: this.state.topupType === 1 ? "equally" : "random",
                 sessionChatId: this.props.currentSessionId,
               }}
               cb={() => {
@@ -354,7 +340,7 @@ class AddFriend extends React.Component {
                   message: "",
                 });
               }}
-            ></Transfer>
+            />
           </div>
         </div>
       </div>
@@ -362,7 +348,6 @@ class AddFriend extends React.Component {
   };
 
   luckyMoneyItem = (e) => {
-    console.log(e);
     return (
       <Col
         style={{
@@ -495,8 +480,6 @@ class AddFriend extends React.Component {
               />
             }
             actions={[
-              // <Icon type="setting" key="setting" />,
-              // <Icon type="edit" key="edit" />,
               <div
                 style={{
                   display: "flex",
@@ -539,7 +522,7 @@ class AddFriend extends React.Component {
 
   renderLuckyMoneyItems = () => {
     return this.state.data.map((e, index) => {
-      if (e.received == true) return this.luckyMoneyReceivedItem(e);
+      if (e.received === true) return this.luckyMoneyReceivedItem(e);
       return this.luckyMoneyItem(e);
     });
   };
@@ -569,11 +552,7 @@ class AddFriend extends React.Component {
           There are some lucky money from your friends
         </p>
         <Scrollbars autoHide autoHideTimeout={500} autoHideDuration={200}>
-          <Row
-            style={{ width: "100%", height: "100%" }}
-            // type="flex"
-            // justify="space-between"
-          >
+          <Row style={{ width: "100%", height: "100%" }}>
             {this.renderLuckyMoneyItems()}
           </Row>
         </Scrollbars>
@@ -600,6 +579,7 @@ class AddFriend extends React.Component {
             type="plus-circle"
           />
         </div>
+        {this.state.showAnimation && <LuckyAnimation />}
       </div>
     );
   };
@@ -621,7 +601,7 @@ class AddFriend extends React.Component {
         >
           {this.state.isCreate || this.props.isCreate
             ? this.renderCreateLuckyMoney()
-            : this.state.data.length == 0
+            : this.state.data.length === 0
             ? this.renderEmptyLuckyMoney()
             : this.renderLuckyMoney()}
         </Modal>
@@ -637,4 +617,4 @@ export default connect(
     currentSessionId: state.chatReducer.currentSessionId,
   }),
   (dispatch) => channingActions({}, dispatch, bindPaymentActions)
-)(AddFriend);
+)(LuckyMoney);
