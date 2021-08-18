@@ -2,7 +2,7 @@ import React from "react";
 
 const InputFile = ({ name, children, onChange }) => {
   return (
-    <div>
+    <div style={{ position: "relative" }}>
       <label htmlFor="input-file">{children}</label>
       <input
         type="file"

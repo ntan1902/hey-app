@@ -1,7 +1,7 @@
 import React from "react";
 import { connect } from "react-redux";
 import lottie from "lottie-web";
-import heart from "../../static/heart.json";
+import heart from "../../static/heart2.json";
 
 class LuckyAnimation extends React.Component {
   constructor(props) {
@@ -18,7 +18,7 @@ class LuckyAnimation extends React.Component {
         loop: true,
         animationData: heart, // the path to the animation json
       })
-      .setSpeed(0.8);
+      .setSpeed(1.5);
   }
 
   render() {

@@ -1,10 +1,18 @@
 import { store } from "../store";
 import { api, ws_host } from "../api/api";
 import Sockette from "sockette";
-import { getJwtFromStorage, getUserIdFromStorage, isEmptyString, } from "../utils/utils";
+import {
+  getJwtFromStorage,
+  getUserIdFromStorage,
+  isEmptyString,
+} from "../utils/utils";
 import deepcopy from "deepcopy";
 import { message } from "antd/lib/index";
-import { changeUserOnlineStatus, loadAddressBookList, loadWaitingFriendList } from "./addressBookAction";
+import {
+  changeUserOnlineStatus,
+  loadAddressBookList,
+  loadWaitingFriendList,
+} from "./addressBookAction";
 import { statusNotification } from "../components/status-notification";
 import { AuthAPI } from "../api";
 import { ChatAPI } from "../api/chat";
@@ -32,7 +40,7 @@ export function initialWebSocket() {
   const webSocket = new Sockette(ws_host + "?jwt=" + jwt, {
     timeout: 5e3,
     maxAttempts: 100,
-    onopen: (e) => { },
+    onopen: (e) => {},
 
     onmessage: (e) => {
       var data = JSON.parse(e.data);
@@ -104,9 +112,9 @@ export function addFriendToSession(sessionId, userId) {
       console.log(res);
       message.success("Add friend to session id");
     })
-    .catch(err => {
-      message.error(err.message)
-    })
+    .catch((err) => {
+      message.error(err.message);
+    });
   return { type: EMPTY };
 }
 
@@ -136,14 +144,19 @@ export function specialLoadChatContainer(sessionId) {
 
 export function submitChatMessage(message) {
   let sessionId = store.getState().chatReducer.currentSessionId;
-  let waitingGroupUsernames = store.getState().chatReducer
-    .waitingGroupUsernames;
+  let waitingGroupUsernames =
+    store.getState().chatReducer.waitingGroupUsernames;
 
   let groupName = store.getState().chatReducer.messageHeader.title;
   store
     .getState()
     .chatReducer.webSocket.json(
-      createChatMessageRequest(sessionId, message, waitingGroupUsernames, groupName)
+      createChatMessageRequest(
+        sessionId,
+        message,
+        waitingGroupUsernames,
+        groupName
+      )
     );
   return { type: EMPTY };
 }
@@ -153,9 +166,12 @@ export function receivedChatList(chatList) {
   let header = {};
   if (fetchedChatList.length > 0) {
     header = {
-      title: fetchedChatList[0].groupName === "" ? fetchedChatList[0].name : fetchedChatList[0].groupName,
+      title:
+        fetchedChatList[0].groupName === ""
+          ? fetchedChatList[0].name
+          : fetchedChatList[0].groupName,
       avatar: fetchedChatList[0].avatar,
-      group: fetchedChatList[0].group
+      group: fetchedChatList[0].group,
     };
     store.dispatch(specialLoadChatContainer(fetchedChatList[0].sessionId));
   }
@@ -289,11 +305,13 @@ export function addNewUserChatGroup(userId) {
     return async function (dispatch) {
       const res = await AuthAPI.getUsername(userId);
       const userName = res.data.payload.username;
-      return ChatAPI.usernameExisted(createCheckUsernameExistedRequest(userName))
+      return ChatAPI.usernameExisted(
+        createCheckUsernameExistedRequest(userName)
+      )
         .then((result) => {
           dispatch(receiveNewUserChatGroup(result));
         })
-        .catch(err => console.log(err.response));
+        .catch((err) => console.log(err.response));
     };
   }
 }
@@ -474,7 +492,12 @@ function createLoadChatContainerRequest(sessionId) {
   };
 }
 
-function createChatMessageRequest(sessionId, message, waitingGroupUsernames, groupName) {
+function createChatMessageRequest(
+  sessionId,
+  message,
+  waitingGroupUsernames,
+  groupName
+) {
   return {
     type: "CHAT_MESSAGE_REQUEST",
     sessionId: sessionId,
@@ -494,7 +517,7 @@ function createCheckUsernameExistedRequest(username) {
 function createWaitingChatHeaderRequest(usernames, groupName) {
   return {
     usernames: usernames,
-    groupName: groupName
+    groupName: groupName,
   };
 }
 

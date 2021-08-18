@@ -43,7 +43,7 @@ class ChatItem extends React.Component {
           cover={
             <img
               alt="example"
-              src="https://inanlvc.com/wp-content/uploads/2018/11/ec060164843433.5adfa04ae146d-1.jpg"
+              src="https://png.pngtree.com/thumb_back/fh260/background/20201230/pngtree-fan-shaped-new-year-red-envelopes-for-2021-image_517238.jpg"
             />
           }
           actions={

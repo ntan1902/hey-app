@@ -11,7 +11,6 @@ const { SubMenu } = Menu;
 
 class ChatHeader extends React.Component {
   handleClick = (e) => {
-    console.log("click ", e);
     this.setState({
       current: e.key,
     });

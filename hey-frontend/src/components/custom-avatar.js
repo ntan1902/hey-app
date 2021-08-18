@@ -1,7 +1,7 @@
 import React from "react";
 import Gravatar from "react-gravatar";
 import Ravatar from "react-avatar";
-import { Drawer, List, Avatar, Divider, Col, Row } from "antd";
+import { Avatar } from "antd";
 
 class CustomAvatar extends React.Component {
   state = { visible: true };
@@ -9,7 +9,14 @@ class CustomAvatar extends React.Component {
   render() {
     let customClassName = "custom-avatar " + this.props.type;
     if (this.props.src) {
-      return <Avatar className={customClassName} src={this.props.src} size={this.props.size}/>;
+      return (
+        <Avatar
+          className={customClassName}
+          src={this.props.src}
+          size={this.props.size}
+          style={{ border: "3px solid gray", cursor: "pointer" }}
+        />
+      );
     }
     switch (this.props.type) {
       case "main-avatar":
@@ -18,6 +25,7 @@ class CustomAvatar extends React.Component {
             email={this.props.avatar + "@gmail.com"}
             className={customClassName}
             default="identicon"
+            style={{ border: "3px solid gray" }}
           />
         );
       case "new-avatar":

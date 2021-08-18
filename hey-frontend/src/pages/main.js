@@ -1,23 +1,11 @@
 import React from "react";
-import { DatePicker, Icon, Input, Layout, Menu } from "antd";
+import { Icon, Layout, Menu } from "antd";
 import CustomAvatar from "../components/custom-avatar";
 import Chat from "./Chat";
 import Friend from "./Friend";
 import Payment from "./Payment";
-import ProfileScreen from "./profile";
-import {
-  Drawer,
-  List,
-  Avatar,
-  Divider,
-  Col,
-  Row,
-  Radio,
-  Form,
-  Modal,
-  message,
-  Button,
-} from "antd";
+import ProfileScreen from "./Profile";
+import { Form } from "antd";
 
 import {
   closeWebSocket,
