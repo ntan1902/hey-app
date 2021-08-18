@@ -10,6 +10,7 @@ public class ChatMessageResponse extends WsMessage implements Serializable {
     private String name;
     private String message;
     private Date createdDate;
+    private boolean isTransferStatement;
 
     public String getSessionId() {
         return sessionId;
@@ -49,5 +50,13 @@ public class ChatMessageResponse extends WsMessage implements Serializable {
 
     public void setCreatedDate(Date createdDate) {
         this.createdDate = createdDate;
+    }
+
+    public boolean isTransferStatement() {
+        return isTransferStatement;
+    }
+
+    public void setTransferStatement(boolean transferStatement) {
+        isTransferStatement = transferStatement;
     }
 }

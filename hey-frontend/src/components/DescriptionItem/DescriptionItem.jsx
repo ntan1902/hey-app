@@ -18,7 +18,7 @@ const DescriptionItem = ({ title, content }) => (
         color: "rgba(0,0,0,0.85)",
       }}
     >
-      {title}:
+      <h3>{title}:</h3>
     </Col>
 
     <Col span={12}>{content}</Col>

@@ -63,13 +63,13 @@ class Profile extends React.Component {
               <CustomAvatar
                 type="main-avatar"
                 src={this.props.profile.miniAvatar}
-                size={100}
+                size={120}
               />
             ) : (
               <CustomAvatar
                 type="main-avatar"
                 avatar={this.props.userName}
-                size={100}
+                size={120}
               />
             )}
             <Icon

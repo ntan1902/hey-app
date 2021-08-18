@@ -55,16 +55,25 @@ export const changeStateAddFriendPopup = (state) => {
   };
 };
 
-const switchMainScreen = (screenName, data = null) => async (dispatch) => {
-  return new Promise(async (resolve, reject) => {
-    try {
-      await dispatch(onShow(screenName, data));
-      resolve({ success: true });
-    } catch (err) {
-      reject({ error: err, success: false });
-    }
-  });
+export const changeTransferStatements = (transferStatements) => {
+  return {
+    type: actionTypes.FETCH_TRANSFER_STATEMENT,
+    transferStatements: transferStatements,
+  };
 };
+
+const switchMainScreen =
+  (screenName, data = null) =>
+  async (dispatch) => {
+    return new Promise(async (resolve, reject) => {
+      try {
+        await dispatch(onShow(screenName, data));
+        resolve({ success: true });
+      } catch (err) {
+        reject({ error: err, success: false });
+      }
+    });
+  };
 
 const verifyPin = (pin, amount) => async (dispatch) => {
   return new Promise(async (resolve, reject) => {
@@ -176,12 +185,13 @@ const receivedLuckymoney = (data) => async (dispatch) => {
   });
 };
 
-const getAllTransferStatement = (data) => async (dispatch) => {
+export const getAllTransferStatement = (data) => async (dispatch) => {
   return new Promise(async (resolve, reject) => {
     try {
       const res = await PaymentAPI.getAllTransferStatement();
       // await dispatch(getBalance());
       // await dispatch(switchMainScreen("TransferSuccess"));
+      await dispatch(changeTransferStatements(res.data.payload));
       resolve({ data: res.data.payload, success: true });
     } catch (err) {
       reject({ error: err, success: false });

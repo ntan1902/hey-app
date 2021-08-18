@@ -49,7 +49,7 @@ public class WsHandler {
                 response.setChatGroup(false);
                 response.setSessionId(sessionId);
                 response.setChatItems(chatItems);
-                response.setType(IWsMessage.TYPE_CHAT_ITEM_RESPONSE);
+                response.setType(IWsMessage.TYPE_CHAT_ITEMS_RESPONSE);
                 userWsChannelManager.selfSendMessage(response, channelId);
 
             }, Future.future().setHandler(handler -> {
@@ -144,6 +144,7 @@ public class WsHandler {
                     NewChatSessionResponse newChatSessionResponse = new NewChatSessionResponse();
                     newChatSessionResponse.setType(IWsMessage.TYPE_CHAT_NEW_SESSION_RESPONSE);
                     newChatSessionResponse.setSessionId(chatMessage.getSessionId());
+                    newChatSessionResponse.setTransferStatement(false);
                     // userWsChannelManager.selfSendMessage(newChatSessionResponse, channelId);
                     for (UserHash userhash : chatList.getUserHashes()) {
                         userWsChannelManager.sendMessage(newChatSessionResponse, userhash.getUserId());
@@ -229,6 +230,7 @@ public class WsHandler {
                     response.setMessage(chatMessage.getMessage());
                     response.setSessionId(chatMessage.getSessionId());
                     response.setUserId(chatMessage.getUserHash().getUserId());
+                    response.setTransferStatement(false);
                     for (UserHash userhash : chatList.getUserHashes()) {
                         userWsChannelManager.sendMessage(response, userhash.getUserId());
                     }
