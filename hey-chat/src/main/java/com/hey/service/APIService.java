@@ -630,7 +630,9 @@ public class APIService extends BaseService {
     private List<String> getListFullNameExcludedCurrentUser(String currentUserId, List<UserHash> userHashes) {
         List<String> listFullNameExcludedCurrentUser = new ArrayList<>();
         for (UserHash userHash : userHashes) {
-            listFullNameExcludedCurrentUser.add(userHash.getFullName());
+            if(!userHash.getUserId().equals(currentUserId)) {
+                listFullNameExcludedCurrentUser.add(userHash.getFullName());
+            }
         }
 
         return listFullNameExcludedCurrentUser;

@@ -29,7 +29,6 @@ class VerifyPIN extends React.Component {
     this.timer = 0;
   }
 
-
   handlePinCancel = (e) => {
     this.props.paymentActions.onClosePinPopup();
   };
@@ -62,7 +61,7 @@ class VerifyPIN extends React.Component {
         if (this.props.cb) this.props.cb();
         this.setState({ handleSoftToken: false, softToken: "" });
       })
-      .catch(err => {
+      .catch((err) => {
         message.error(err.error.response.data.message);
       });
   };
@@ -71,13 +70,15 @@ class VerifyPIN extends React.Component {
     console.log(e);
     var un = $("#add-user-name").val();
     $("#add-user-name").val("");
-    this.props.paymentActions.verifyPin(un, this.props.amount).then((res) => {
-      console.log(res, "Pin");
-      this.setState({ handleSoftToken: true, softToken: res.softToken });
-      this.startTimer();
-    })
-      .catch(err => {
-        message.error(err.error.response.data.message)
+    this.props.paymentActions
+      .verifyPin(un, this.props.amount)
+      .then((res) => {
+        console.log(res, "Pin");
+        this.setState({ handleSoftToken: true, softToken: res.softToken });
+        this.startTimer();
+      })
+      .catch((err) => {
+        message.error(err.error.response.data.message);
       });
   };
 
@@ -168,7 +169,7 @@ class VerifyPIN extends React.Component {
             ""
           )} */}
           <p className="model-label">
-            Your softToken expired in {this.state.time.s}s
+            Your soft token will be expired in {this.state.time.s}s
           </p>
           <p className="model-label" style={{ fontWeight: "bold" }}>
             Amount {this.props.amount}

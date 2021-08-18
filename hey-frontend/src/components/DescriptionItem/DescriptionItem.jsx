@@ -1,25 +1,28 @@
-import React from 'react';
+import { Col, Row } from "antd";
+import React from "react";
 
 const DescriptionItem = ({ title, content }) => (
-    <div
-        style={{
-            fontSize: 14,
-            lineHeight: "22px",
-            marginBottom: 7,
-            color: "rgba(0,0,0,0.65)",
-        }}
+  <Row
+    style={{
+      fontSize: 14,
+      lineHeight: "22px",
+      marginBottom: 7,
+      color: "rgba(0,0,0,0.65)",
+    }}
+  >
+    <Col
+      span={12}
+      style={{
+        // marginRight: 8,
+        display: "inline-block",
+        color: "rgba(0,0,0,0.85)",
+      }}
     >
-        <p
-            style={{
-                marginRight: 8,
-                display: "inline-block",
-                color: "rgba(0,0,0,0.85)",
-            }}
-        >
-            {title}:
-        </p>
-        {content}
-    </div>
+      {title}:
+    </Col>
+
+    <Col span={12}>{content}</Col>
+  </Row>
 );
 
 export default DescriptionItem;

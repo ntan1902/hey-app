@@ -1,6 +1,6 @@
 import React from "react";
 import { connect } from "react-redux";
-import { Col, Button, Row, Drawer, Divider, Upload, message } from "antd";
+import { Col, Button, Row, Drawer, Divider, Upload, message, Icon } from "antd";
 import DescriptionItem from "../DescriptionItem/DescriptionItem";
 import ChangePasswordModal from "../ChangePasswordModal/ChangePasswordModal";
 import ChangePinModal from "../ChangePinModal/ChangePinModal";
@@ -13,7 +13,6 @@ import {
   changeVisibleChangeProfile,
 } from "../../actions/modalAction";
 import InputFile from "../InputFile/InputFile";
-import { AuthAPI } from "../../api";
 import { updateAvatar } from "../../actions/userAction";
 
 const pStyle = {
@@ -34,7 +33,7 @@ class Profile extends React.Component {
   }
 
   onChangeAvatarInput = (event) => {
-    let fileTypes = ["image/png", "image/jpg", "image/jpge"];
+    let fileTypes = ["image/png", "image/jpg", "image/jpeg"];
     let input = event.currentTarget;
     if (input.files && input.files[0]) {
       let file = input.files[0];
@@ -55,7 +54,9 @@ class Profile extends React.Component {
         onClose={() => this.props.changeStateDrawerProfile(HIDE_PROFILE_DRAWER)}
         visible={this.props.visibleProfile}
       >
-        <p style={{ ...pStyle, marginBottom: 24 }}>User Profile</p>
+        <p style={{ ...pStyle, marginBottom: 24 }}>
+          <h2>User Profile</h2>
+        </p>
         <Row style={{ display: "flex", justifyContent: "center" }}>
           <InputFile name="file" onChange={this.onChangeAvatarInput}>
             {this.props.profile.miniAvatar ? (
@@ -71,9 +72,24 @@ class Profile extends React.Component {
                 size={100}
               />
             )}
+            <Icon
+              type="plus-circle"
+              theme={"outlined"}
+              style={{
+                fontSize: 25,
+                position: "absolute",
+                right: 80,
+                bottom: 20,
+                cursor: "pointer",
+              }}
+            />
           </InputFile>
         </Row>
-        <p style={pStyle}>Personal</p>
+
+        <Divider />
+        <p style={pStyle}>
+          <h2>Personal</h2>
+        </p>
         <Row>
           <Col span={12}>
             <DescriptionItem
@@ -118,12 +134,14 @@ class Profile extends React.Component {
           </Col>
         </Row>
         <Row>
-          <Col span={24}>
+          <Col span={12}>
             <DescriptionItem title="Status" content={this.props.userStatus} />
           </Col>
         </Row>
         <Divider />
-        <p style={pStyle}>Settings</p>
+        <p style={pStyle}>
+          <h2>Settings</h2>
+        </p>
         <Row style={{ display: "flex", justifyContent: "space-around" }}>
           <Button
             style={{ width: 150 }}
