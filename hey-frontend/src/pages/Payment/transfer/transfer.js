@@ -100,7 +100,6 @@ class MessagePanel extends React.Component {
             </div>
             <AddFriendTransfer
               onChange={(value) => {
-                console.log(`selected ${value}`);
                 this.errorReceiver.current.innerText = "";
                 this.setState({ selectedUserId: value });
               }}

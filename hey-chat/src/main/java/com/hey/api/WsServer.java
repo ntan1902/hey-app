@@ -9,13 +9,8 @@ import com.hey.util.LogUtils;
 import com.hey.util.PropertiesUtils;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
-import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
-import io.vertx.core.buffer.Buffer;
-import io.vertx.core.http.HttpHeaders;
-import io.vertx.core.http.ServerWebSocket;
 import io.vertx.core.json.JsonObject;
-import io.vertx.ext.web.handler.sockjs.SockJSHandler;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -72,7 +67,7 @@ public class WsServer {
                                     String type = json.getString("type");
                                     ObjectMapper mapper = new ObjectMapper();
                                     switch (type) {
-                                        case IWsMessage.TYPE_CHAT_ITEM_REQUEST:
+                                        case IWsMessage.TYPE_CHAT_ITEMS_REQUEST:
                                             ChatContainerRequest chatContainerRequest = mapper
                                                     .readValue(data.toString(), ChatContainerRequest.class);
                                             LogUtils.log("User " + userId + " load chat container "

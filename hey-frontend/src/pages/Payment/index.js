@@ -1,11 +1,8 @@
 import React from "react";
-import { Button, Icon, Input, Layout, Menu } from "antd";
+import { Input, Layout } from "antd";
 // import CustomAvatar from "../components/custom-avatar";
-import ChatList from "../../components/chat-list";
 import Payment from "./payment";
-import ChatHeader from "../../components/chat-header";
 import Profile from "../../components/profile";
-import MessagePanel from "../../components/message-panel";
 import {
   closeWebSocket,
   initialWebSocket,
@@ -13,8 +10,7 @@ import {
   submitChatMessage,
 } from "../../actions/chatAction";
 import { connect } from "react-redux";
-import { isAuthenticated, isEmptyString } from "../../utils/utils";
-import { Redirect } from "react-router-dom";
+import { isEmptyString } from "../../utils/utils";
 import $ from "jquery";
 import Topup from "./topup";
 import Transfer from "./transfer/transfer";
@@ -40,7 +36,7 @@ class Chat extends React.Component {
     // this.props.initialWebSocket();
   }
 
-  componentWillUnmount() { }
+  componentWillUnmount() {}
 
   handleMainMenuChange(e) {
     this.setState({ menuaction: e.key });
@@ -95,8 +91,8 @@ class Chat extends React.Component {
             breakpoint="lg"
             collapsedWidth="0"
             theme="light"
-            onBreakpoint={(broken) => { }}
-            onCollapse={(collapsed, type) => { }}
+            onBreakpoint={(broken) => {}}
+            onCollapse={(collapsed, type) => {}}
             width="300"
             id="sub-side-menu"
           >

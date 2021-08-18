@@ -1,15 +1,5 @@
 import React from "react";
-import { Modal, Input, Alert, Button, Icon } from "antd";
-import CustomAvatar from "../../components/custom-avatar";
-import {
-  addNewUserChatGroup,
-  removeUserChatGroup,
-  startNewChatGroup,
-} from "../../actions/chatAction";
-import {
-  addNewFriend,
-  changeStateTopup,
-} from "../../actions/addressBookAction";
+import { Button, Icon } from "antd";
 import { connect } from "react-redux";
 import $ from "jquery";
 

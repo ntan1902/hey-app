@@ -10,7 +10,8 @@ const initialState = {
   balance: "0",
   mainScreenData: null,
   isAddFriendToSession: false,
-  membersModal: false
+  membersModal: false,
+  transferStatements: [],
 };
 
 export default (state = initialState, action = {}) => {
@@ -68,8 +69,14 @@ export default (state = initialState, action = {}) => {
     case actionTypes.CHANGE_STATE_MEMBERS_MODAL:
       return {
         ...state,
-        membersModal: action.state
-      }
+        membersModal: action.state,
+      };
+
+    case actionTypes.FETCH_TRANSFER_STATEMENT:
+      return {
+        ...state,
+        transferStatements: action.transferStatements,
+      };
     default:
       return { ...state };
   }
