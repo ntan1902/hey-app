@@ -1,5 +1,5 @@
-import {axios} from "../utils/custom-axios";
-import {API_AUTH} from "../config/setting";
+import { axios } from "../utils/custom-axios";
+import { API_AUTH } from "../config/setting";
 
 export const AuthAPI = {
     /* Get Event */
@@ -22,4 +22,10 @@ export const AuthAPI = {
     searchUser: (keyword) => {
         return axios.get(`${API_AUTH}/api/v1/users/searchUser?key=${keyword}`);
     },
+    uploadImage: (formdata) => {
+        return axios.post(`${API_AUTH}/api/v1/users/uploadImage`, formdata)
+    },
+    updateAvatar: (uri, miniUri) => {
+        return axios.post(`${API_AUTH}/api/v1/users/updateAvatar`, { uri, miniUri })
+    }
 };

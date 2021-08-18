@@ -27,7 +27,7 @@ const initialState = {
   waitingGroupUsernames: [],
   userSelectedKeys: [],
   members: [],
-  isOwner: false
+  isOwner: false,
 };
 
 export default function reduce(state = initialState, action) {

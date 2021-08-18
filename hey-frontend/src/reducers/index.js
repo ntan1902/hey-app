@@ -3,12 +3,14 @@ import chatReducer from "./chatReducer";
 import addressBookReducer from "./addressBookReducer";
 import userReducer from "./userReducer";
 import paymentReducer from "./paymentReducer";
+import modalReducer from "./modalReducer";
 
 const appReducer = combineReducers({
   chatReducer,
   addressBookReducer,
   userReducer,
   paymentReducer,
+  modalReducer
 });
 
 const rootReducer = (state, action) => {

@@ -1,7 +1,7 @@
 import React from 'react';
 import {Menu} from 'antd';
 import CustomAvatar from "../../components/custom-avatar";
-import {connect} from 'react-redux';
+import { connect } from 'react-redux';
 
 class ListUser extends React.Component {
     constructor(props) {
@@ -46,5 +46,4 @@ class ListUser extends React.Component {
 function mapDispatchToProps(dispatch) {
     return {};
 }
-
 export default connect(null, mapDispatchToProps)(ListUser);

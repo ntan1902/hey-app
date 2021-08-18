@@ -105,7 +105,7 @@ class MessagePanel extends React.Component {
       >
         <Result
           status="success"
-          title="Successfully Topup to your account"
+          title="Transfer successfully"
           subTitle="Order number: 2017182818828182881. It may take 1-5 minutes, please wait."
           extra={[
             <Button
