@@ -81,7 +81,7 @@ class LuckyMoneyServiceImplTest {
     }
 
     @Test
-    void createLuckyMoney() throws ErrCallApiException, CannotTransferMoneyException, ErrCallChatApiException, UnauthorizeException {
+    void createLuckyMoney() throws ErrCallApiException, CannotTransferMoneyException, ErrCallChatApiException, UnauthorizeException, UserNotInSessionChatException {
         // given
         CreateLuckyMoneyRequest request = CreateLuckyMoneyRequest.builder()
                 .sessionChatId("abc")
@@ -272,7 +272,7 @@ class LuckyMoneyServiceImplTest {
     }
 
     @Test
-    void receiveLuckyMoneySuccessfully() throws InvalidLuckyMoneyException, ErrCallApiException, CannotTransferMoneyException, ErrCallChatApiException, UnauthorizeException, LuckyMoneyExpiredException, OutOfBagException, HadReceivedException {
+    void receiveLuckyMoneySuccessfully() throws InvalidLuckyMoneyException, ErrCallApiException, CannotTransferMoneyException, ErrCallChatApiException, UnauthorizeException, LuckyMoneyExpiredException, OutOfBagException, HadReceivedException, UserNotInSessionChatException {
         // given
         User user = new User("abc");
         ReceiveLuckyMoneyRequest request = ReceiveLuckyMoneyRequest.builder()
@@ -335,7 +335,7 @@ class LuckyMoneyServiceImplTest {
     }
 
     @Test
-    void getAllLuckyMoneyOfSession_successfully() throws ErrCallApiException, UnauthorizeException, CannotGetUserInfo {
+    void getAllLuckyMoneyOfSession_successfully() throws ErrCallApiException, UnauthorizeException, CannotGetUserInfo, UserNotInSessionChatException {
         // given
         User user = new User("abc");
         String sessionId = "123-abc";
@@ -420,7 +420,7 @@ class LuckyMoneyServiceImplTest {
     }
 
     @Test
-    void getDetailsLuckyMoney_Successfully() throws ErrCallApiException, UnauthorizeException, CannotGetUserInfo, InvalidLuckyMoneyException {
+    void getDetailsLuckyMoney_Successfully() throws ErrCallApiException, UnauthorizeException, CannotGetUserInfo, InvalidLuckyMoneyException, UserNotInSessionChatException {
         User user = new User("abc");
         LocalDateTime now = LocalDateTime.now();
         Long luckyMoneyId = 10L;
