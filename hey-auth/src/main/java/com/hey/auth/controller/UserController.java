@@ -22,7 +22,7 @@ import java.util.List;
 @RequestMapping("/auth/api/v1/users")
 @AllArgsConstructor
 @Log4j2
-@CrossOrigin("http://localhost:3000")
+@CrossOrigin({"http://localhost:3000", "http://103.7.41.159/", "https://103.7.41.159/", "http://oispyouthunion.vn", "https://oispyouthunion.vn"})
 public class UserController {
     private final UserService userService;
 
@@ -141,7 +141,7 @@ public class UserController {
     }
 
     @GetMapping("/searchUser")
-    public ResponseEntity<ApiResponse> searchUser(@RequestParam String key){
+    public ResponseEntity<ApiResponse> searchUser(@RequestParam String key) {
         List<UserDTO> userDTOList = userService.searchUser(key);
         return ResponseEntity.ok(ApiResponse.builder()
                 .success(true)
