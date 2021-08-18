@@ -1,5 +1,5 @@
 import React from 'react';
-import { Menu, message } from 'antd';
+import { Menu } from 'antd';
 import CustomAvatar from "../../components/custom-avatar";
 import { connect } from 'react-redux';
 

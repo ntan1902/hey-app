@@ -1,5 +1,5 @@
 import React from 'react';
-import { message, Modal, Menu, Icon, Button } from 'antd';
+import { Modal, Menu, Icon } from 'antd';
 import { connect } from 'react-redux';
 import CustomAvatar from "../../components/custom-avatar";
 import { bindPaymentActions, bindChatActions } from '../../actions';

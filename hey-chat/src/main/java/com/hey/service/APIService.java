@@ -1358,7 +1358,9 @@ public class APIService extends BaseService {
             userFull.setUserId(userId);
             userFull.setFullName(editProfileRequest.getFullName());
             futures.add(dataRepository.insertUserFull(userFull));
-        }, Future.future().setHandler(handler -> future.fail(handler.cause())));
+        }, Future.future().setHandler(handler -> {
+            future.fail(handler.cause());
+        }));
 
         // ChatList
         Future<List<ChatList>> getChatListsFuture = getChatLists(userId);

@@ -1,15 +1,4 @@
 import React from "react";
-import { Modal, Input, Alert } from "antd";
-import CustomAvatar from "../components/custom-avatar";
-import {
-  addNewUserChatGroup,
-  removeUserChatGroup,
-  startNewChatGroup,
-} from "../actions/chatAction";
-import {
-  addNewFriend,
-  changeStateAddFriendPopup,
-} from "../actions/addressBookAction";
 import { connect } from "react-redux";
 import $ from "jquery";
 
@@ -17,6 +6,7 @@ import { channingActions } from "../utils";
 import { bindPaymentActions } from "../actions";
 import { api } from "../api/api";
 import { Select } from "antd";
+import { ChatAPI } from "../api/chat";
 
 const { Option } = Select;
 
@@ -37,14 +27,12 @@ class AddFriend extends React.Component {
   };
 
   handleOk = (e) => {
-    console.log(e);
-    var un = $("#add-user-name").val();
     $("#add-user-name").val("");
     this.props.paymentActions.changeStateAddFriendTransferPopup(false);
   };
 
   componentDidMount() {
-    api.get("/api/protected/addressbook").then((e) => {
+    ChatAPI.getAddressBook().then((e) => {
       console.log(e);
       this.setState({ friends: e.data.payload.items });
     });
