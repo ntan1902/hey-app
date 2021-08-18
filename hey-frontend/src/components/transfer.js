@@ -1,15 +1,5 @@
 import React from "react";
-import { Modal, Input, Alert, Button, message } from "antd";
-import CustomAvatar from "../components/custom-avatar";
-import {
-  addNewUserChatGroup,
-  removeUserChatGroup,
-  startNewChatGroup,
-} from "../actions/chatAction";
-import {
-  addNewFriend,
-  changeStateAddFriendPopup,
-} from "../actions/addressBookAction";
+import { Modal, Input, message } from "antd";
 import { connect } from "react-redux";
 import $ from "jquery";
 
@@ -67,7 +57,6 @@ class VerifyPIN extends React.Component {
   };
 
   handleOk = (e) => {
-    console.log(e);
     var un = $("#add-user-name").val();
     $("#add-user-name").val("");
     this.props.paymentActions

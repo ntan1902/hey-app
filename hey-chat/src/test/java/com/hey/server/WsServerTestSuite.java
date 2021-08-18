@@ -2,14 +2,10 @@ package com.hey.server;
 
 import com.hey.BaseVerticleTestSuite;
 import com.hey.model.*;
-import io.vertx.core.http.HttpClientRequest;
 import io.vertx.core.json.Json;
-import io.vertx.core.json.JsonObject;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
-import org.apache.commons.lang3.RandomStringUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -28,7 +24,7 @@ public class WsServerTestSuite extends BaseVerticleTestSuite {
                 async.complete();
             });
             ChatContainerRequest chatContainerRequest = new ChatContainerRequest();
-            chatContainerRequest.setType(IWsMessage.TYPE_CHAT_ITEM_REQUEST);
+            chatContainerRequest.setType(IWsMessage.TYPE_CHAT_ITEMS_REQUEST);
             chatContainerRequest.setSessionId(getSessionIdToTest());
             wsConnect.writeTextMessage(Json.encodePrettily(chatContainerRequest));
         });

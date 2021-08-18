@@ -1,9 +1,6 @@
 import React from "react";
 import { connect } from "react-redux";
-import { Button, Icon, Input } from "antd";
-import NumericInput from "../../components/numberic-input";
-import Transfer from "../../components/transfer";
-import AddFriendTransfer from "../../components/add-friend-transfer";
+import { Button } from "antd";
 
 import { channingActions } from "../../utils";
 import { bindPaymentActions } from "../../actions";
@@ -47,7 +44,7 @@ class MessagePanel extends React.Component {
     ];
     const data2 = [
       { title: "500,000", value: "500000" },
-      { title: "1,000,000", value: "10000000" },
+      { title: "1,000,000", value: "1000000" },
       { title: "2,000,000", value: "2000000" },
     ];
 
@@ -90,8 +87,7 @@ class MessagePanel extends React.Component {
   };
 
   render() {
-    if (this.props.mainScreenData == null) return;
-    console.log(this.props.mainScreenData);
+    if (this.props.mainScreenData === null) return;
     const data = this.props.mainScreenData;
     return (
       <div

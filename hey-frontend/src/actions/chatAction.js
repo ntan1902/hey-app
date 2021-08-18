@@ -13,9 +13,12 @@ import {
   loadAddressBookList,
   loadWaitingFriendList,
 } from "./addressBookAction";
+import { changeTransferStatements } from "./paymentAction";
+
 import { statusNotification } from "../components/status-notification";
 import { AuthAPI } from "../api";
 import { ChatAPI } from "../api/chat";
+import { PaymentAPI } from "../api";
 import { bindActionCreators } from "redux";
 import * as actionTypes from "./actionTypes";
 
@@ -251,6 +254,14 @@ export function receivedNewMessage(message) {
       }
     }
   }
+
+  // Realtime get transfer statement
+  if (message.transferStatement) {
+    PaymentAPI.getAllTransferStatement().then((res) => {
+      store.dispatch(changeTransferStatements(res.data.payload));
+    });
+  }
+
   return {
     type: NEW_MESSAGE_IN_PANEL_FETCHED,
     messageItems: messageItems,
@@ -260,11 +271,18 @@ export function receivedNewMessage(message) {
 }
 
 export function receivedNewChatSession(message) {
-  if (store.getState().chatReducer.currentSessionId == "-1") {
+  if (store.getState().chatReducer.currentSessionId === "-1") {
     store.dispatch(loadChatContainer(message.sessionId));
   }
   store.dispatch(reloadChatList());
   store.dispatch(userSelected(message.sessionId));
+
+  // Realtime get transfer statement
+  if (message.transferStatement) {
+    PaymentAPI.getAllTransferStatement().then((res) => {
+      store.dispatch(changeTransferStatements(res.data.payload));
+    });
+  }
   return { type: EMPTY };
 }
 

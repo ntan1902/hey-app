@@ -1057,6 +1057,8 @@ public class APIService extends BaseService {
                     response.setMessage(chatMessage.getMessage());
                     response.setSessionId(chatMessage.getSessionId());
                     response.setUserId(chatMessage.getUserHash().getUserId());
+                    response.setTransferStatement(true);
+
                     for (UserHash userhash : chatList.getUserHashes()) {
                         userWsChannelManager.sendMessage(response, userhash.getUserId());
                     }
@@ -1106,6 +1108,7 @@ public class APIService extends BaseService {
 
                     ChatList chatList = cp.resultAt(1);
 
+                    // WebSocket sends message to chat
                     ChatMessageResponse response = new ChatMessageResponse();
                     response.setType(IWsMessage.TYPE_CHAT_MESSAGE_RESPONSE);
                     response.setCreatedDate(chatMessage.getCreatedDate());
@@ -1113,6 +1116,8 @@ public class APIService extends BaseService {
                     response.setMessage(chatMessage.getMessage());
                     response.setSessionId(chatMessage.getSessionId());
                     response.setUserId(chatMessage.getUserHash().getUserId());
+                    response.setTransferStatement(true);
+
                     for (UserHash userhash : chatList.getUserHashes()) {
                         userWsChannelManager.sendMessage(response, userhash.getUserId());
                     }
@@ -1185,6 +1190,8 @@ public class APIService extends BaseService {
                     NewChatSessionResponse newChatSessionResponse = new NewChatSessionResponse();
                     newChatSessionResponse.setType(IWsMessage.TYPE_CHAT_NEW_SESSION_RESPONSE);
                     newChatSessionResponse.setSessionId(chatMessage.getSessionId());
+                    newChatSessionResponse.setTransferStatement(true);
+
                     for (UserHash userhash : chatList.getUserHashes()) {
                         userWsChannelManager.sendMessage(newChatSessionResponse, userhash.getUserId());
                     }
@@ -1336,6 +1343,8 @@ public class APIService extends BaseService {
                     response.setMessage(chatMessage.getMessage());
                     response.setSessionId(chatMessage.getSessionId());
                     response.setUserId(chatMessage.getUserHash().getUserId());
+                    response.setTransferStatement(true);
+
                     for (UserHash userhash : chatList.getUserHashes()) {
                         userWsChannelManager.sendMessage(response, userhash.getUserId());
                     }

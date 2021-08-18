@@ -16,7 +16,6 @@ class AddressBook extends React.Component {
     this.state = {
       current: [],
       newselect: [],
-      data: [],
       page: 0,
       size: 10,
       isAll: false,
@@ -27,25 +26,21 @@ class AddressBook extends React.Component {
   }
 
   componentDidMount() {
-    this.props.paymentActions
-      .getTransferStatement(this.state.page, this.state.size)
-      .then((res) => {
-        this.setState({ data: res.data, isAll: res.data.length < 10 });
-      });
-
+    // this.props.loadAddressBookList();
+    this.props.paymentActions.getTransferStatement(this.state.page,this.state.size);
     this.observer = new IntersectionObserver((entries) => {
       entries.forEach((entry) => {
         this.setState((preState) => ({
           page: preState.page + 1,
         }));
         this.props.paymentActions
-          .getTransferStatement(this.state.page, this.state.size)
-          .then((res) => {
-            this.setState((preState) => ({
-              data: [...preState.data, ...res.data],
-              isAll: res.data.length < 10,
-            }));
-          });
+            .getTransferStatement(this.state.page, this.state.size)
+            .then((res) => {
+              this.setState((preState) => ({
+                data: [...preState.data, ...res.data],
+                isAll: res.data.length < 10,
+              }));
+            });
       });
     });
   }
@@ -62,7 +57,10 @@ class AddressBook extends React.Component {
       newselect: [],
     });
     this.props.paymentActions
-      .switchMainScreen("transferStatement", this.state.data[event.key])
+      .switchMainScreen(
+        "transferStatement",
+        this.props.transferStatements[event.key]
+      )
       .then((res) => {
         console.log("res");
       });
@@ -79,6 +77,15 @@ class AddressBook extends React.Component {
       .then((res) => {
         console.log("res");
       });
+    // console.log(event.key);
+    // this.props.handleChangeAddressBook(
+    //   this.props.newAddressBookList[event.key].userId
+    // );
+    // this.props.changeMessageHeader(
+    //   this.props.newAddressBookList[event.key].name,
+    //   this.props.newAddressBookList[event.key].avatar,
+    //   false
+    // );
   }
 
   handleScroll = (event) => {
@@ -99,7 +106,7 @@ class AddressBook extends React.Component {
   };
 
   render() {
-    if (this.state.data == []) return;
+    if (this.props.transferStatements == []) return;
     return (
       <div className="d-flex flex-column full-height address-book-menu">
         <Topup />
@@ -111,7 +118,7 @@ class AddressBook extends React.Component {
         >
           <hr className="hr-sub-menu-title" />
           <div className="sub-menu-title">
-            Transfer Statements ({this.state.data.length})
+            Transfer Statements ({this.props.transferStatements.length})
           </div>
           <Menu
             theme="light"
@@ -121,7 +128,7 @@ class AddressBook extends React.Component {
             className="address-book"
             onSelect={this.handleCurrentChange}
           >
-            {this.state.data.map((item, index) => (
+            {this.props.transferStatements.map((item, index) => (
               <Menu.Item key={index}>
                 <div style={{ width: 60 }}>
                   <CustomAvatar type="user-avatar" avatar={item.avatar} />
@@ -169,6 +176,7 @@ export default connect(
     addFriendError: state.addressBookReducer.addFriendError,
     addFriendErrorMessage: state.addressBookReducer.addFriendErrorMessage,
     addFriendPopup: state.addressBookReducer.topup,
+    transferStatements: state.paymentReducer.transferStatements,
   }),
   (dispatch) => channingActions({}, dispatch, bindPaymentActions)
 )(AddressBook);
