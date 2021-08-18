@@ -16,7 +16,6 @@ import io.vertx.core.CompositeFuture;
 import io.vertx.core.Future;
 import io.vertx.core.json.Json;
 import io.vertx.core.json.JsonObject;
-import io.vertx.ext.web.client.WebClient;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.*;

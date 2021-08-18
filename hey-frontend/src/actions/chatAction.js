@@ -9,8 +9,6 @@ import {
 } from "../utils/utils";
 import deepcopy from "deepcopy";
 import { Button, message, notification } from "antd/lib/index";
-import { changeUserOnlineStatus } from "./addressBookAction";
-import { message } from "antd/lib/index";
 import {
   changeUserOnlineStatus,
   loadAddressBookList,
@@ -80,22 +78,35 @@ export function initialWebSocket() {
           const key = `open${Date.now()}`;
           let btn = (
             <div style={{ display: "flex" }}>
-              <Button type="danger" style={{ marginRight: 10 }} onClick={() => {
-                notification.close(key);
-                videoCallUtils.rejectCall(data.sessionId);
-              }}>Reject</Button>
-              <Button type="primary" onClick={() => {
-                notification.close(key);
-                videoCallUtils.acceptCall(data.sessionId, data.videoCall);
-              }}>Join</Button>
-            </div >
+              <Button
+                type="danger"
+                style={{ marginRight: 10 }}
+                onClick={() => {
+                  notification.close(key);
+                  videoCallUtils.rejectCall(data.sessionId);
+                }}
+              >
+                {" "}
+                Reject{" "}
+              </Button>{" "}
+              <Button
+                type="primary"
+                onClick={() => {
+                  notification.close(key);
+                  videoCallUtils.acceptCall(data.sessionId, data.videoCall);
+                }}
+              >
+                {" "}
+                Join{" "}
+              </Button>{" "}
+            </div>
           );
           notification.open({
             message: data.videoCall ? "Video Call" : "Call",
             description,
             btn,
-            key
-          })
+            key,
+          });
       }
     },
     onreconnect: (e) => console.log("Reconnecting...", e),
@@ -110,6 +121,13 @@ export function closeWebSocket() {
   store.getState().chatReducer.webSocket.close();
   return { type: EMPTY };
 }
+function createLoadNewAddFriendRequest(sessionId) {
+  const req = {
+    type: "ADD_FRIEND_REQUEST",
+    sessionId: sessionId,
+  };
+  return req;
+}
 
 export function loadChatList() {
   return function (dispatch) {
@@ -117,6 +135,14 @@ export function loadChatList() {
       dispatch(receivedChatList(result));
     });
   };
+}
+
+export function loadNewAddFriend(sessionId) {
+  store
+    .getState()
+    .chatReducer.webSocket.json(createLoadNewAddFriendRequest(sessionId));
+  message.success("Sending friend request to " + sessionId);
+  return { type: EMPTY };
 }
 
 export function reloadChatList() {
