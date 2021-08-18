@@ -23,6 +23,8 @@ class AddFriend extends React.Component {
 
     this.inputTimeout = null;
 
+    this.inputSearch = React.createRef();
+
     this.handleOk = this.handleOk.bind(this);
     this.handleCancel = this.handleCancel.bind(this);
     this.showModal = this.showModal.bind(this);
@@ -105,6 +107,7 @@ class AddFriend extends React.Component {
             id="add-user-name"
             className="add-user-name"
             onChange={this.handleChange}
+            ref={this.inputSearch}
           />
           <ListUser users={this.state.users} onClickUser={this.sendFriendRequest} />
         </Modal>

@@ -1,16 +1,11 @@
 import React from "react";
 import { Menu } from "antd";
 import CustomAvatar from "../../components/custom-avatar";
-import AddFriend from "../../components/add-friend";
 import Topup from "./top-up";
 
 import { connect } from "react-redux";
-import {
-  handleChangeAddressBook,
-  loadAddressBookList,
-} from "../../actions/addressBookAction";
+
 import { Scrollbars } from "react-custom-scrollbars";
-import { changeMessageHeader } from "../../actions/chatAction";
 
 import { channingActions } from "../../utils";
 import { bindPaymentActions } from "../../actions";
@@ -21,7 +16,6 @@ class AddressBook extends React.Component {
     this.state = {
       current: [],
       newselect: [],
-      data: [],
     };
     this.handleCurrentChange = this.handleCurrentChange.bind(this);
     this.handleNewChange = this.handleNewChange.bind(this);
@@ -29,11 +23,7 @@ class AddressBook extends React.Component {
 
   componentDidMount() {
     // this.props.loadAddressBookList();
-    console.log("Did Mount");
-    this.props.paymentActions.getAllTransferStatement().then((res) => {
-      this.setState({ data: res.data });
-      console.log("res");
-    });
+    this.props.paymentActions.getAllTransferStatement();
   }
 
   handleCurrentChange(event) {
@@ -43,7 +33,10 @@ class AddressBook extends React.Component {
       newselect: [],
     });
     this.props.paymentActions
-      .switchMainScreen("transferStatement", this.state.data[event.key])
+      .switchMainScreen(
+        "transferStatement",
+        this.props.transferStatements[event.key]
+      )
       .then((res) => {
         console.log("res");
       });
@@ -80,14 +73,14 @@ class AddressBook extends React.Component {
   }
 
   render() {
-    if (this.state.data == []) return;
+    if (this.props.transferStatements == []) return;
     return (
       <div className="d-flex flex-column full-height address-book-menu">
         <Topup />
         <Scrollbars autoHide autoHideTimeout={500} autoHideDuration={200}>
           <hr className="hr-sub-menu-title" />
           <div className="sub-menu-title">
-            Transfer Statements ({this.state.data.length})
+            Transfer Statements ({this.props.transferStatements.length})
           </div>
           <Menu
             theme="light"
@@ -97,7 +90,7 @@ class AddressBook extends React.Component {
             className="address-book"
             onSelect={this.handleCurrentChange}
           >
-            {this.state.data.map((item, index) => (
+            {this.props.transferStatements.map((item, index) => (
               <Menu.Item key={index}>
                 <div style={{ width: 60 }}>
                   <CustomAvatar type="user-avatar" avatar={item.avatar} />
@@ -138,6 +131,7 @@ export default connect(
     addFriendError: state.addressBookReducer.addFriendError,
     addFriendErrorMessage: state.addressBookReducer.addFriendErrorMessage,
     addFriendPopup: state.addressBookReducer.topup,
+    transferStatements: state.paymentReducer.transferStatements,
   }),
   (dispatch) => channingActions({}, dispatch, bindPaymentActions)
 )(AddressBook);

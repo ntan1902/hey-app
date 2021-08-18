@@ -27,7 +27,7 @@ const initialState = {
   waitingGroupUsernames: [],
   userSelectedKeys: [],
   members: [],
-  isOwner: false
+  isOwner: false,
 };
 
 export default function reduce(state = initialState, action) {
@@ -35,14 +35,14 @@ export default function reduce(state = initialState, action) {
     case CHATLIST_FETCHED:
       return {
         ...state,
-        chatList: action.fetchedChatlist,
+        chatList: action.fetchedChatList,
         messageHeader: action.messageHeader,
         currentSessionId: action.currentSessionId
       };
     case CHATLIST_REFETCHED:
       return {
         ...state,
-        chatList: action.fetchedChatlist,
+        chatList: action.fetchedChatList,
       };
     case USER_SELECTED:
       return {

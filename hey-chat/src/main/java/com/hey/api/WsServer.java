@@ -9,13 +9,8 @@ import com.hey.util.LogUtils;
 import com.hey.util.PropertiesUtils;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
-import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
-import io.vertx.core.buffer.Buffer;
-import io.vertx.core.http.HttpHeaders;
-import io.vertx.core.http.ServerWebSocket;
 import io.vertx.core.json.JsonObject;
-import io.vertx.ext.web.handler.sockjs.SockJSHandler;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -72,29 +67,13 @@ public class WsServer {
                                     String type = json.getString("type");
                                     ObjectMapper mapper = new ObjectMapper();
                                     switch (type) {
-                                        case IWsMessage.TYPE_CHAT_ITEM_REQUEST:
+                                        case IWsMessage.TYPE_CHAT_ITEMS_REQUEST:
                                             ChatContainerRequest chatContainerRequest = mapper
                                                     .readValue(data.toString(), ChatContainerRequest.class);
                                             LogUtils.log("User " + userId + " load chat container "
                                                     + chatContainerRequest.getSessionId());
                                             wsHandler.handleChatContainerRequest(chatContainerRequest, id,
                                                     userId);
-                                            break;
-
-                                        case IWsMessage.TYPE_NOTIFICATION_ADD_FRIEND_REQUEST:
-                                            ChatContainerRequest chatContainerRequest2 = mapper
-                                                    .readValue(data.toString(), ChatContainerRequest.class);
-                                            LogUtils.log("User " + userId + " add friend request "
-                                                    + chatContainerRequest2.getSessionId());
-                                            wsHandler.handleAddFriendRequest(chatContainerRequest2, id, userId);
-                                            break;
-
-                                        case IWsMessage.TYPE_ADD_FRIEND_TO_SESSION_REQUEST:
-                                            AddFriendToSessionRequest chatContainerRequest3 = mapper
-                                                    .readValue(data.toString(), AddFriendToSessionRequest.class);
-                                            LogUtils.log("User " + userId + " add friend to group "
-                                                    + chatContainerRequest3.getSessionId());
-                                            wsHandler.handleAddFriendToSessionRequest(chatContainerRequest3, id, userId);
                                             break;
 
                                         case IWsMessage.TYPE_CHAT_MESSAGE_REQUEST:

@@ -30,16 +30,17 @@ class ChatList extends React.Component {
     for (var i = 0; i < this.props.chatList.length; i++) {
       if (this.props.chatList[i].sessionId == event.key) {
         this.props.changeMessageHeader(
-          this.props.chatList[i].name,
+          this.props.chatList[i].groupName === ""
+            ? this.props.chatList[i].name
+            : this.props.chatList[i].groupName,
           this.props.chatList[i].avatar,
-          this.props.chatList[i].groupchat
+          this.props.chatList[i].group
         );
       }
     }
   }
 
   render() {
-    console.log("Chat Lissst", this.props.chatList);
     if (this.props.chatList) {
       return (
         <div className="d-flex flex-column full-height">
@@ -55,7 +56,7 @@ class ChatList extends React.Component {
               {this.props.chatList.map((item, index) => (
                 <Menu.Item key={item.sessionId}>
                   <div style={{ width: 60 }}>
-                    {item.groupchat ? (
+                    {item.group ? (
                       <CustomAvatar type="group-avatar" />
                     ) : (
                       <CustomAvatar type="user-avatar" avatar={item.avatar} />
@@ -66,14 +67,18 @@ class ChatList extends React.Component {
                       className="unread-item"
                       style={{ overflow: "hidden", paddingTop: 5 }}
                     >
-                      <div className="user-name">{item.name}</div>
+                      <div className="user-name">
+                        {item.groupName === "" ? item.name : item.groupName}
+                      </div>
                       <div className="history-message">
                         {JSON.parse(item.lastMessage).content.message}
                       </div>
                     </div>
                   ) : (
                     <div style={{ overflow: "hidden", paddingTop: 5 }}>
-                      <div className="user-name">{item.name}</div>
+                      <div className="user-name">
+                        {item.groupName === "" ? item.name : item.groupName}
+                      </div>
                       <div className="history-message">
                         {JSON.parse(item.lastMessage).content.message}
                       </div>

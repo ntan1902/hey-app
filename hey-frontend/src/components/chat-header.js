@@ -13,7 +13,6 @@ const { SubMenu } = Menu;
 
 class ChatHeader extends React.Component {
   handleClick = (e) => {
-    console.log("click ", e);
     this.setState({
       current: e.key,
     });
@@ -65,7 +64,7 @@ class ChatHeader extends React.Component {
     return (
       <div className="chat-header">
         <div style={{ width: 50 }}>
-          {this.props.header.groupchat ? (
+          {this.props.header.group ? (
             <CustomAvatar type="panel-group-avatar" />
           ) : (
             <CustomAvatar
@@ -128,7 +127,11 @@ class ChatHeader extends React.Component {
                 <Icon style={{ fontSize: 20 }} type="plus" />
                 Add More Friend
               </Menu.Item>
-              <Menu.Item key="setting:5" onClick={() => this.leaveGroup()}>
+              <Menu.Item
+                key="setting:5"
+                onClick={() => this.leaveGroup()}
+                style={{ color: "red" }}
+              >
                 <IconFont style={{ fontSize: 20 }} type="icon-tuichu" />
                 Leave
               </Menu.Item>

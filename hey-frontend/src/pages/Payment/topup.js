@@ -1,12 +1,10 @@
 import React from "react";
 import { connect } from "react-redux";
-import { Button, Icon, Input, message } from "antd";
+import { Button, Icon, message } from "antd";
 import NumericInput from "../../components/numberic-input";
-import Transfer from "../../components/transfer";
-import { DocTien, formatToCurrency, currencyToString } from "../../utils";
+import { formatToCurrency, currencyToString } from "../../utils";
 import { channingActions } from "../../utils";
 import { bindPaymentActions } from "../../actions";
-import { Result } from "antd";
 
 class MessagePanel extends React.Component {
   constructor(props) {
@@ -93,6 +91,7 @@ class MessagePanel extends React.Component {
       .topup(this.state.amount)
       .then((res) => {
         console.log("Topup Success");
+        this.props.paymentActions.getAllTransferStatement();
       })
       .catch((err) => {
         message.error(err.error.response.data.message);

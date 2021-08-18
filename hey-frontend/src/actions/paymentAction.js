@@ -13,7 +13,6 @@ const onShow = (screenName, data) => {
 };
 
 const updateBalance = (balance) => {
-  console.log("ON balance", balance);
   return {
     type: actionTypes.ON_UPDATE_BALANCE,
     balance: balance,
@@ -56,22 +55,29 @@ export const changeStateAddFriendPopup = (state) => {
   };
 };
 
-const switchMainScreen = (screenName, data = null) => async (dispatch) => {
-  return new Promise(async (resolve, reject) => {
-    try {
-      console.log(screenName, data);
-      await dispatch(onShow(screenName, data));
-      resolve({ success: true });
-    } catch (err) {
-      reject({ error: err, success: false });
-    }
-  });
+export const changeTransferStatements = (transferStatements) => {
+  return {
+    type: actionTypes.FETCH_TRANSFER_STATEMENT,
+    transferStatements: transferStatements,
+  };
 };
+
+const switchMainScreen =
+  (screenName, data = null) =>
+  async (dispatch) => {
+    return new Promise(async (resolve, reject) => {
+      try {
+        await dispatch(onShow(screenName, data));
+        resolve({ success: true });
+      } catch (err) {
+        reject({ error: err, success: false });
+      }
+    });
+  };
 
 const verifyPin = (pin, amount) => async (dispatch) => {
   return new Promise(async (resolve, reject) => {
     try {
-      console.log(pin);
       const res = await AuthAPI.verifyPin({ pin: pin, amount: amount });
 
       await dispatch(onClosePinPopup());
@@ -98,8 +104,7 @@ const checkBalance = () => async (dispatch) => {
   return new Promise(async (resolve, reject) => {
     try {
       const res = await PaymentAPI.checkBalance();
-      if (res.data.payload.hasWallet == false) {
-        console.log(res, "Chekc Balance");
+      if (res.data.payload.hasWallet === false) {
         await PaymentAPI.createBalance();
       }
       resolve({ success: true });
@@ -113,7 +118,7 @@ const checkBalance = () => async (dispatch) => {
 const topup = (amount) => async (dispatch) => {
   return new Promise(async (resolve, reject) => {
     try {
-      const res = await PaymentAPI.topup({
+      await PaymentAPI.topup({
         amount: amount,
         bankId: "e8984aa8-b1a5-4c65-8c5e-036851ec783c",
       });
@@ -129,7 +134,7 @@ const topup = (amount) => async (dispatch) => {
 const transfer = (data) => async (dispatch) => {
   return new Promise(async (resolve, reject) => {
     try {
-      const res = await PaymentAPI.transfer(data);
+      await PaymentAPI.transfer(data);
       await dispatch(getBalance());
       await dispatch(switchMainScreen("TransferSuccess"));
       resolve({ success: true });
@@ -142,7 +147,7 @@ const transfer = (data) => async (dispatch) => {
 const createLuckymoney = (data) => async (dispatch) => {
   return new Promise(async (resolve, reject) => {
     try {
-      const res = await PaymentAPI.createLuckymoney(data);
+      await PaymentAPI.createLuckymoney(data);
       await dispatch(getBalance());
       await dispatch(changeStateLuckyMoneyPopup(true, false));
       resolve({ success: true });
@@ -180,12 +185,13 @@ const receivedLuckymoney = (data) => async (dispatch) => {
   });
 };
 
-const getAllTransferStatement = (data) => async (dispatch) => {
+export const getAllTransferStatement = (data) => async (dispatch) => {
   return new Promise(async (resolve, reject) => {
     try {
       const res = await PaymentAPI.getAllTransferStatement();
       // await dispatch(getBalance());
       // await dispatch(switchMainScreen("TransferSuccess"));
+      await dispatch(changeTransferStatements(res.data.payload));
       resolve({ data: res.data.payload, success: true });
     } catch (err) {
       reject({ error: err, success: false });

@@ -1,10 +1,9 @@
 import React from 'react';
-import { message, Modal, Menu, Icon, Button } from 'antd';
+import { Modal, Menu, Icon } from 'antd';
 import { connect } from 'react-redux';
 import CustomAvatar from "../../components/custom-avatar";
 import { bindPaymentActions, bindChatActions } from '../../actions';
 import { channingActions } from '../../utils';
-import { ChatAPI } from '../../api/chat';
 
 class MembersModal extends React.Component {
     constructor(props) {
@@ -51,8 +50,8 @@ class MembersModal extends React.Component {
                                 <div className="user-name">{item.fullName}</div>
                             </div>
                             {this.props.isOwner &&
-                                < div style={{ position: "absolute", right: 10 }}>
-                                    <Icon type="export" onClick={() => this.kickUser(item.userId)} />
+                                < div style={{ position: "absolute", right: 10}}>
+                                    <Icon type="export" onClick={() => this.kickUser(item.userId)} theme={"outlined"} style={{fontSize: 25, color: "red"}} />
                                 </div>
                             }
                         </Menu.Item>

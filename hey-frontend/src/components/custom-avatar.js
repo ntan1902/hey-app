@@ -1,44 +1,23 @@
 import React from "react";
 import Gravatar from "react-gravatar";
 import Ravatar from "react-avatar";
-import { Drawer, List, Avatar, Divider, Col, Row } from "antd";
-
-const pStyle = {
-  fontSize: 16,
-  color: "rgba(0,0,0,0.85)",
-  lineHeight: "24px",
-  display: "block",
-  marginBottom: 16,
-};
-
-const DescriptionItem = ({ title, content }) => (
-  <div
-    style={{
-      fontSize: 14,
-      lineHeight: "22px",
-      marginBottom: 7,
-      color: "rgba(0,0,0,0.65)",
-    }}
-  >
-    <p
-      style={{
-        marginRight: 8,
-        display: "inline-block",
-        color: "rgba(0,0,0,0.85)",
-      }}
-    >
-      {title}:
-    </p>
-    {content}
-  </div>
-);
+import { Avatar } from "antd";
 
 class CustomAvatar extends React.Component {
   state = { visible: true };
 
   render() {
     let customClassName = "custom-avatar " + this.props.type;
-
+    if (this.props.src) {
+      return (
+        <Avatar
+          className={customClassName}
+          src={this.props.src}
+          size={this.props.size}
+          style={{ border: "3px solid gray", cursor: "pointer" }}
+        />
+      );
+    }
     switch (this.props.type) {
       case "main-avatar":
         return (
@@ -46,6 +25,7 @@ class CustomAvatar extends React.Component {
             email={this.props.avatar + "@gmail.com"}
             className={customClassName}
             default="identicon"
+            style={{ border: "3px solid gray" }}
           />
         );
       case "new-avatar":

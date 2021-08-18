@@ -1,9 +1,10 @@
 import { store } from "../store";
 import { loadChatContainer, startNewChatSingle } from "./chatAction";
-import { api } from "../api/api";
 import { isEmptyString } from "../utils/utils";
 import deepcopy from "deepcopy";
 import { AuthAPI } from "../api";
+import { message } from "antd";
+import { ChatAPI } from "../api/chat";
 
 export const ADDRESSBOOK_FETCHED = "addressBook.ADDRESSBOOK_FETCHED";
 export const WAITINGFRIEND_FETCHED = "addressBook.WAITINGFRIEND_FETCHED";
@@ -42,21 +43,15 @@ export function receivedAddressBook(addressbook) {
 }
 
 export function receivedWaitingFriend(addressbook) {
-  const waitingFriendList = addressbook;
-
   return {
     type: WAITINGFRIEND_FETCHED,
-    waitingFriendList: waitingFriendList,
+    waitingFriendList: addressbook,
   };
 }
 
 export function handleChangeAddressBook(userId) {
   return function (dispatch) {
-    api
-      .post(
-        `/api/protected/sessionidbyuserid`,
-        createGetSessionIdRequest(userId)
-      )
+    ChatAPI.getSessionIdByUserId(createGetSessionIdRequest(userId))
       .then((result) => {
         dispatch(receivedSessionId(result, userId));
       });
@@ -79,11 +74,7 @@ export function addNewFriend(userId) {
   } else {
     return async function (dispatch) {
       const res = await AuthAPI.getUsername(userId);
-      return api
-        .post(
-          `/api/protected/addfriend`,
-          createAddFriendRequest(res.data.payload.username)
-        )
+      return ChatAPI.addFriend(createAddFriendRequest(res.data.payload.username))
         .then((result) => {
           console.log(result);
           dispatch(rejectWaitingFriend(userId));
@@ -94,22 +85,28 @@ export function addNewFriend(userId) {
   }
 }
 
+export function addNewFriendRequest(username) {
+  ChatAPI.addFriendRequest(username)
+    .then((res) => {
+      console.log(res);
+      message.success("Sending friend request to " + username);
+    })
+    .catch(err => {
+      message.error(err.message)
+    })
+  return { type: EMPTY };
+}
+
 export function rejectWaitingFriend(userName) {
   if (isEmptyString(userName)) {
     let error = "Please input username :(";
     return { type: ADD_FRIEND_FAIL, error: error };
   } else {
     return function (dispatch) {
-      return api
-        .post(
-          `/api/protected/closewaitingfriend`,
-          createGetSessionIdRequest(userName)
-        )
+      return ChatAPI.closeWaitingFriend(createGetSessionIdRequest(userName))
         .then((result) => {
           console.log(result);
           dispatch(loadWaitingFriendList());
-
-          // dispatch(receiveAddFriendResult(result));
         });
     };
   }
@@ -151,19 +148,19 @@ export function changeUserOnlineStatus(userId, status) {
   let fetchedNewAddressBook = deepcopy(
     store.getState().addressBookReducer.newAddressBookList
   );
-  for (var i = 0; i < fetchedAddressBook.length; i++) {
+  for (let i = 0; i < fetchedAddressBook.length; i++) {
     if (fetchedAddressBook[i].userId == userId) {
       fetchedAddressBook[i].isOnline = status;
     }
   }
-  for (var i = 0; i < fetchedNewAddressBook.length; i++) {
+  for (let i = 0; i < fetchedNewAddressBook.length; i++) {
     if (fetchedNewAddressBook[i].userId == userId) {
       fetchedNewAddressBook[i].isOnline = status;
     }
   }
-  var onlineResults = [];
-  var offlineResults = [];
-  for (var index = 0; index < fetchedAddressBook.length; ++index) {
+  let onlineResults = [];
+  let offlineResults = [];
+  for (let index = 0; index < fetchedAddressBook.length; ++index) {
     if (fetchedAddressBook[index].isOnline) {
       onlineResults.push(fetchedAddressBook[index]);
     } else {
@@ -192,22 +189,22 @@ export function changeUserOnlineStatus(userId, status) {
 }
 
 function processUsernameForAvatar(username) {
-  var x1 = username.charAt(0);
-  var x2 = username.charAt(1);
+  let x1 = username.charAt(0);
+  let x2 = username.charAt(1);
   return x1 + " " + x2;
 }
 
 function getAddressBookList() {
-  var promise = new Promise(function (resolve, reject) {
-    api.get(`/api/protected/addressbook`).then((res) => {
-      var items = res.data.payload.items;
+  return new Promise(function (resolve, reject) {
+    ChatAPI.getAddressBook().then((res) => {
+      let items = res.data.payload.items;
       console.log("Friend Result", items);
 
-      var results = [];
-      var onlineResults = [];
-      var offlineResults = [];
-      for (var index = 0; index < items.length; ++index) {
-        var addressbookItem = {
+      let results = [];
+      let onlineResults = [];
+      let offlineResults = [];
+      for (let index = 0; index < items.length; ++index) {
+        let addressbookItem = {
           name: items[index].name,
           userId: items[index].userId,
           avatar: processUsernameForAvatar(items[index].name),
@@ -236,20 +233,19 @@ function getAddressBookList() {
       resolve(results);
     });
   });
-  return promise;
 }
 
 function getWaitingFriendList() {
-  var promise = new Promise(function (resolve, reject) {
-    api.get(`/api/protected/waitingfriend`).then((res) => {
-      var items = res.data.payload.items;
+  return new Promise(function (resolve, reject) {
+    ChatAPI.waittingFriend().then((res) => {
+      let items = res.data.payload.items;
       console.log("Friend Result", items);
 
-      var results = [];
-      var onlineResults = [];
-      var offlineResults = [];
-      for (var index = 0; index < items.length; ++index) {
-        var addressbookItem = {
+      let results = [];
+      let onlineResults = [];
+      let offlineResults = [];
+      for (let index = 0; index < items.length; ++index) {
+        let addressbookItem = {
           name: items[index].name,
           userId: items[index].userId,
           avatar: processUsernameForAvatar(items[index].name),
@@ -278,19 +274,16 @@ function getWaitingFriendList() {
       resolve(results);
     });
   });
-  return promise;
 }
 
 function createAddFriendRequest(username) {
-  const req = {
+  return {
     username: username,
   };
-  return req;
 }
 
 function createGetSessionIdRequest(userId) {
-  const req = {
+  return {
     userId: userId,
   };
-  return req;
 }

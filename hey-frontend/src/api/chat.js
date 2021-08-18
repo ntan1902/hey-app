@@ -19,5 +19,44 @@ export const ChatAPI = {
     },
     getICEServer: () => {
         return axios.post(`${API_CHAT}/api/protected/getICEServer`)
+    },
+    addFriendRequest: (username) => {
+        return axios.post(`${API_CHAT}/api/protected/addfriendrequest`, { username })
+    },
+    addFriendToSession: (sessionId, userId) => {
+        return axios.post(`${API_CHAT}/api/protected/addfriendtosession`, { sessionId, userId })
+    },
+    getAddressBook: () => {
+        return axios.get(`${API_CHAT}/api/protected/addressbook`);
+    },
+    waittingFriend: () => {
+        return axios.get(`${API_CHAT}/api/protected/waitingfriend`);
+    },
+    getUser: () => {
+        return axios.get(`${API_CHAT}/api/protected/user`);
+    },
+    updateStatus: (req) => {
+        return axios.post(`${API_CHAT}/api/protected/status`, req)
+    },
+    editProfile: (data) => {
+        return axios.post(`${API_CHAT}/api/protected/editprofile`, data)
+    },
+    getSessionIdByUserId: (req) => {
+        return axios.post(`${API_CHAT}/api/protected/sessionidbyuserid`, req)
+    },
+    closeWaitingFriend: (req) => {
+        return axios.post(`${API_CHAT}/api/protected/closewaitingfriend`, req)
+    },
+    addFriend: (req) => {
+        return axios.post(`${API_CHAT}/api/protected/addfriend`, req)
+    },
+    usernameExisted: (req) => {
+        return axios.post(`${API_CHAT}/api/protected/usernameexisted`, req)
+    },
+    waitingChatHeader: (req) => {
+        return axios.post(`${API_CHAT}/api/protected/waitingchatheader`, req)
+    },
+    getChatList: () => {
+        return axios.get(`${API_CHAT}/api/protected/chatlist`);
     }
 };

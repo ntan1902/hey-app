@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
 
 @Data
@@ -11,13 +12,14 @@ import javax.validation.constraints.NotEmpty;
 @NoArgsConstructor
 public class EditUserRequest {
     @NotEmpty(message = "email must not be empty")
+    @Email(message = "This is not an email")
     private String email;
 
     @NotEmpty(message = "fullName must not be empty")
     private String fullName;
 
-    @NotEmpty(message = "dateOfBirth must not be empty")
-    private String dateOfBirth;
+    @NotEmpty(message = "dob must not be empty")
+    private String dob;
 
     @NotEmpty(message = "phoneNumber must not be empty")
     private String phoneNumber;

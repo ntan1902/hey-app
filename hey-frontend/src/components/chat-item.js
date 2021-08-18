@@ -1,10 +1,9 @@
 import React from "react";
 import CustomAvatar from "./custom-avatar";
-import { Popover } from "antd";
 import { SlideDown } from "react-slidedown";
 
-import { Card, Icon, Avatar } from "antd";
-import { currencyToString, formatToCurrency, currency } from "../utils";
+import { Card, Avatar } from "antd";
+import { formatToCurrency, currency } from "../utils";
 const { Meta } = Card;
 
 class ChatItem extends React.Component {
@@ -34,7 +33,6 @@ class ChatItem extends React.Component {
         ? "chat-item-content-owner"
         : "chat-item-content-other";
     const data = JSON.parse(this.props.value);
-    console.log(data);
 
     if (data.content.luckyMoneyId) {
       return (
@@ -43,7 +41,7 @@ class ChatItem extends React.Component {
           cover={
             <img
               alt="example"
-              src="https://inanlvc.com/wp-content/uploads/2018/11/ec060164843433.5adfa04ae146d-1.jpg"
+              src="https://png.pngtree.com/thumb_back/fh260/background/20201230/pngtree-fan-shaped-new-year-red-envelopes-for-2021-image_517238.jpg"
             />
           }
           actions={
@@ -78,7 +76,7 @@ class ChatItem extends React.Component {
         </Card>
       );
     }
-    if (data.type == "transfer") {
+    if (data.type === "transfer") {
       return (
         <Card
           style={{ width: 300, borderRadius: 10 }}
@@ -138,7 +136,6 @@ class ChatItem extends React.Component {
       this.props.type == 1
         ? "chat-item-content-owner"
         : "chat-item-content-other";
-    console.log("this");
     return (
       <div
         onClick={this.handleItemClick}
