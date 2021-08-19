@@ -11,12 +11,6 @@ import {
 } from "./utils";
 import { API_AUTH, SITE_URL } from "../config/setting";
 
-let callback401 = null;
-
-export function set401Callback(cb) {
-  callback401 = cb;
-}
-
 const axiosInstance = axios.create({
   baseURL: SITE_URL,
   headers: {

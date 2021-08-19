@@ -1,5 +1,5 @@
 import { store } from "../store";
-import { api, ws_host } from "../api/api";
+import { API_WS } from "../config/setting";
 import Sockette from "sockette";
 import {
     getJwtFromStorage,
@@ -39,11 +39,11 @@ export const USER_SELECTED = "chatList.USER_SELECTED";
 export const WEBSOCKET_FETCHED = "chatList.WEBSOCKET_FETCHED";
 
 export function initialWebSocket() {
-    const jwt = getJwtFromStorage();
-    const webSocket = new Sockette(ws_host + "?jwt=" + jwt, {
-        timeout: 5e3,
-        maxAttempts: 100,
-        onopen: (e) => {},
+  const jwt = getJwtFromStorage();
+  const webSocket = new Sockette(API_WS + "?jwt=" + jwt, {
+    timeout: 5e3,
+    maxAttempts: 100,
+    onopen: (e) => {},
 
         onmessage: (e) => {
             var data = JSON.parse(e.data);

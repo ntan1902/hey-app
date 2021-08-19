@@ -44,7 +44,7 @@ class MessagePanel extends React.Component {
     ];
     const data2 = [
       { title: "500,000", value: "500000" },
-      { title: "1,000,000", value: "10000000" },
+      { title: "1,000,000", value: "1000000" },
       { title: "2,000,000", value: "2000000" },
     ];
 

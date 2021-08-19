@@ -90,7 +90,9 @@ class Profile extends React.Component {
     return (
       <div className="wrapper">
         <div className="profile-left">
-          <div className="box user-name">Hey! - {this.props.userFullName}</div>
+          <div className="box user-name">
+            Hey! - {this.props.profile.fullName}
+          </div>
           <div className="box status">
             Balance - {formatToCurrency(this.props.balance) + currency}
           </div>
@@ -123,8 +125,7 @@ class Profile extends React.Component {
 
 function mapStateToProps(state) {
   return {
-    userFullName: state.userReducer.userFullName,
-    userName: state.userReducer.userName,
+    profile: state.userReducer.profile,
     userStatus: state.userReducer.userStatus,
     balance: state.paymentReducer.balance,
   };

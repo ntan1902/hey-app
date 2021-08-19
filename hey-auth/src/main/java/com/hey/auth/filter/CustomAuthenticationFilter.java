@@ -39,7 +39,7 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
         try {
             LoginRequest loginRequest = new ObjectMapper().readValue(request.getInputStream(), LoginRequest.class);
 
-            log.info("Inside login of UserServiceImpl: {}", loginRequest);
+            log.info("Inside login of CustomAuthenticationFilter: {}", loginRequest);
             UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(
                     loginRequest.getUsername(),
                     loginRequest.getPassword()
