@@ -82,8 +82,6 @@ class NormalLoginForm extends React.Component {
 }
 
 export default connect(
-  (state) => ({
-    verifyPin: state.paymentReducer.verifyPin,
-  }),
+  (state) => ({}),
   (dispatch) => channingActions({}, dispatch, bindAuthActions)
 )(withRouter(Form.create()(NormalLoginForm)));

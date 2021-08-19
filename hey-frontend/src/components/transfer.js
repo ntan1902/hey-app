@@ -2,6 +2,7 @@ import React from "react";
 import { Modal, Input, message } from "antd";
 import { connect } from "react-redux";
 import $ from "jquery";
+import PinInput from "react-pin-input";
 
 import { channingActions } from "../utils";
 import { bindPaymentActions } from "../actions";
@@ -15,6 +16,7 @@ class VerifyPIN extends React.Component {
       softToken: "",
       time: {},
       seconds: 30,
+      pin: "",
     };
     this.timer = 0;
   }
@@ -57,12 +59,9 @@ class VerifyPIN extends React.Component {
   };
 
   handleOk = (e) => {
-    var un = $("#add-user-name").val();
-    $("#add-user-name").val("");
     this.props.paymentActions
-      .verifyPin(un, this.props.amount)
+      .verifyPin(this.state.pin, this.props.amount)
       .then((res) => {
-        console.log(res, "Pin");
         this.setState({ handleSoftToken: true, softToken: res.softToken });
         this.startTimer();
       })
@@ -127,18 +126,18 @@ class VerifyPIN extends React.Component {
           okText="Ok"
           cancelText="Cancel"
         >
-          {/* {this.props.addFriendError ? (
-            <Alert message={this.props.addFriendErrorMessage} type="error" />
-          ) : (
-            ""
-          )} */}
           <p className="model-label">Please Enter PIN:</p>
-
-          <Input.Password
-            id="add-user-name"
-            className="add-user-name"
-            onPressEnter={this.handleOk}
-            placeholder="input pin"
+          <PinInput
+            length={6}
+            secret
+            focus
+            onChange={(value) => this.setState({ pin: value })}
+            type="numeric"
+            inputMode="number"
+            style={{ padding: "10px" }}
+            inputStyle={{ borderColor: "gray" }}
+            inputFocusStyle={{ borderColor: "blue" }}
+            onComplete={this.handleOk}
           />
         </Modal>
         <Modal
@@ -152,11 +151,6 @@ class VerifyPIN extends React.Component {
           okText="Ok"
           cancelText="Cancel"
         >
-          {/* {this.props.addFriendError ? (
-            <Alert message={this.props.addFriendErrorMessage} type="error" />
-          ) : (
-            ""
-          )} */}
           <p className="model-label">
             Your soft token will be expired in {this.state.time.s}s
           </p>

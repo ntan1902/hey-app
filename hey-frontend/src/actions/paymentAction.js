@@ -160,7 +160,7 @@ const createLuckymoney = (data) => async (dispatch) => {
 const getListLuckymoney = (sessionId) => async (dispatch) => {
   return new Promise(async (resolve, reject) => {
     try {
-      if (sessionId == -1) return;
+      if (sessionId === -1) return;
 
       const res = await PaymentAPI.getListLuckymoney(sessionId);
       await dispatch(getBalance());

@@ -25,7 +25,11 @@ class CustomAvatar extends React.Component {
             email={this.props.avatar + "@gmail.com"}
             className={customClassName}
             default="identicon"
-            style={{ border: "3px solid gray" }}
+            style={{
+              border: "3px solid gray",
+
+              cursor: "pointer",
+            }}
           />
         );
       case "new-avatar":

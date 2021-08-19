@@ -7,7 +7,6 @@ import {
   MESSAGE_PANEL_FETCHED,
   NEW_MESSAGE_IN_PANEL_FETCHED,
   REMOVE_START_CHAT_GROUP,
-  RESET_UNSEEN,
   START_CHAT_GROUP,
   START_CHAT_SINGLE,
   USER_SELECTED,
@@ -37,7 +36,7 @@ export default function reduce(state = initialState, action) {
         ...state,
         chatList: action.fetchedChatList,
         messageHeader: action.messageHeader,
-        currentSessionId: action.currentSessionId
+        currentSessionId: action.currentSessionId,
       };
     case CHATLIST_REFETCHED:
       return {
@@ -111,8 +110,8 @@ export default function reduce(state = initialState, action) {
       return {
         ...state,
         members: action.members,
-        isOwner: action.isOwner
-      }
+        isOwner: action.isOwner,
+      };
     default:
       return state;
   }
