@@ -6,7 +6,7 @@ export const IS_DEV = process.env.REACT_APP_NODE_ENV === "development";
 
 export const SITE_URL = IS_DEV
   ? "http://localhost:5050/"
-  : "http://45.117.169.232:5050/";
+  : "https://heyapi.oispyouthunion.vn/";
 
 export const API_AUTH = `auth`;
 export const API_PAYMENT = `payment`;
