@@ -90,7 +90,8 @@ class MessagePanel extends React.Component {
     this.props.paymentActions
       .topup(this.state.amount)
       .then((res) => {
-        this.props.paymentActions.getAllTransferStatement();
+        console.log("Topup Success");
+        this.props.paymentActions.getNewTransferStatement();
       })
       .catch((err) => {
         message.error(err.error.response.data.message);
