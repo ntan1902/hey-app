@@ -17,5 +17,8 @@ export const PaymentAPI = {
     receivedLuckymoney: (data) =>
         axios.post(`${API_LUCKY}/api/v1/receiveLuckyMoney`, data),
     getTransferStatement: (page, size) =>
-        axios.get(`${API_PAYMENT}/api/v1/me/getTransferStatement?page=${page}&size=${size}`, { page, size }),
+        axios.get(`${API_PAYMENT}/api/v1/me/getTransferStatement?page=${page}&size=${size}`),
+    loadMoreTransferStatement: (createdAt) => {
+        return axios.get(`${API_PAYMENT}/api/v1/me/loadMoreTransferStatement?createdAt=${createdAt}`)
+    }
 };

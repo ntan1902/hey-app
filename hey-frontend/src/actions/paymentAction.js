@@ -56,24 +56,31 @@ export const changeStateAddFriendPopup = (state) => {
 };
 
 export const changeTransferStatements = (transferStatements) => {
-  return {
-    type: actionTypes.FETCH_TRANSFER_STATEMENT,
-    transferStatements: transferStatements,
-  };
+    return {
+        type: actionTypes.FETCH_TRANSFER_STATEMENT,
+        transferStatements: transferStatements,
+    };
+};
+
+export const newTransferStatement = (transferStatement) => {
+    return {
+        type: actionTypes.NEW_TRANSFER_STATEMENT,
+        transferStatement: transferStatement,
+    };
 };
 
 const switchMainScreen =
-  (screenName, data = null) =>
-  async (dispatch) => {
-    return new Promise(async (resolve, reject) => {
-      try {
-        await dispatch(onShow(screenName, data));
-        resolve({ success: true });
-      } catch (err) {
-        reject({ error: err, success: false });
-      }
-    });
-  };
+    (screenName, data = null) =>
+    async(dispatch) => {
+        return new Promise(async(resolve, reject) => {
+            try {
+                await dispatch(onShow(screenName, data));
+                resolve({ success: true });
+            } catch (err) {
+                reject({ error: err, success: false });
+            }
+        });
+    };
 
 const verifyPin = (pin, amount) => async(dispatch) => {
     return new Promise(async(resolve, reject) => {
@@ -191,7 +198,33 @@ const getTransferStatement = (page, size) => async(dispatch) => {
             const res = await PaymentAPI.getTransferStatement(page, size);
             // await dispatch(getBalance());
             // await dispatch(switchMainScreen("TransferSuccess"));
-            await dispatch(changeTransferStatements(res.data.payload));
+            dispatch(changeTransferStatements(res.data.payload));
+            resolve({ data: res.data.payload, success: true });
+        } catch (err) {
+            reject({ error: err, success: false });
+        }
+    });
+};
+const loadMoreTransferStatement = (createdAt) => async dispatch => {
+    try {
+        const res = await PaymentAPI.loadMoreTransferStatement(createdAt);
+        // dispatch(loadMoreTransferStatements(res.data.payload));
+        dispatch({
+            type: actionTypes.LOAD_MORE_TRANSFER_STATEMENT,
+            moreTransferStatement: res.data.payload
+        })
+        return Promise.resolve({ data: res.data.payload, success: true });
+    } catch (err) {
+        return Promise.reject({ error: err, success: false });
+    }
+}
+const getNewTransferStatement = () => async(dispatch) => {
+    return new Promise(async(resolve, reject) => {
+        try {
+            const res = await PaymentAPI.getTransferStatement(0, 1);
+            // await dispatch(getBalance());
+            // await dispatch(switchMainScreen("TransferSuccess"));
+            dispatch(newTransferStatement(res.data.payload[0]));
             resolve({ data: res.data.payload, success: true });
         } catch (err) {
             reject({ error: err, success: false });
@@ -224,6 +257,8 @@ export const paymentActions = {
     checkBalance,
     changeStateAddFriendPopup,
     changeStateMembersModal,
+    getNewTransferStatement,
+    loadMoreTransferStatement
 };
 
 export function bindPaymentActions(currentActions, dispatch) {

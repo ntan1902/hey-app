@@ -20,4 +20,6 @@ public interface TransferStatementService {
     void systemCreateTransferToUser(SystemCreateTransferToUserRequest request) throws NegativeAmountException, MaxAmountException,  HaveNoWalletException, BalanceNotEnoughException, MaxBalanceException;
 
     SystemCreateTransferFromUserResponse systemCreateTransferFromUser(SystemCreateTransferFromUserRequest request) throws SoftTokenAuthorizeException, NegativeAmountException,  MaxAmountException,  BalanceNotEnoughException, MaxBalanceException, HaveNoWalletException;
+
+    List<TransferStatementDTO> loadMoreTransferStatementOfUser(String createdAt) throws HaveNoWalletException, DatabaseHasErr, ApiErrException;
 }

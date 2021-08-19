@@ -260,6 +260,20 @@ public class TransferStatementServiceImpl implements TransferStatementService {
     }
 
     @Override
+    public List<TransferStatementDTO> loadMoreTransferStatementOfUser(String createdAt) throws HaveNoWalletException, DatabaseHasErr, ApiErrException {
+        User user = userUtil.getCurrentUser();
+        Wallet wallet = walletRepository.findByOwnerIdAndRefFrom(user.getId(), OwnerWalletRefFrom.USERS)
+                .orElseThrow(() -> new HaveNoWalletException(USER_HAS_NO_WALLET));
+
+        // Pagination and Sort createdAt descending
+        Pageable pageable = PageRequest.of(0, 10, Sort.by("createdAt").descending());
+        LocalDateTime createdAtDT = LocalDateTime.parse(createdAt);
+        List<TransferStatement> transferStatements = transferStatementRepository.findAllBySourceIdOrTargetIdAndCreatedBefore(wallet.getId(),createdAtDT, pageable);
+
+        return listTransferStatement2ListTransferStatementDTO(transferStatements);
+    }
+
+    @Override
     @Transactional
     public void topUp(TopUpRequest topupRequest) throws MaxAmountException, MaxBalanceException, HaveNoWalletException, BankInvalidException {
         User user = userUtil.getCurrentUser();

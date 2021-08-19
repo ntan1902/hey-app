@@ -80,6 +80,19 @@ public class UserController {
                         .payload(transferStatementDTOList).build()
         );
     }
+    @SneakyThrows
+    @GetMapping("/loadMoreTransferStatement")
+    public ResponseEntity<ApiResponse<Object>> loadMoreTransferStatement(
+            @RequestParam(value = "createdAt", defaultValue = "") String createdAt) {
+        List<TransferStatementDTO> transferStatementDTOList = transferStatementService.loadMoreTransferStatementOfUser(createdAt);
+        return ResponseEntity.ok(
+                ApiResponse.builder()
+                        .success(true)
+                        .code(HttpStatus.OK.value())
+                        .message("")
+                        .payload(transferStatementDTOList).build()
+        );
+    }
 
     @PostMapping("/createWallet")
     public ResponseEntity<ApiResponse<Object>> createWallet() throws HadWalletException {

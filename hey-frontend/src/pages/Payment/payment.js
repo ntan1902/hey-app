@@ -1,5 +1,5 @@
 import React from "react";
-import { Menu } from "antd";
+import { Menu, Spin } from "antd";
 import CustomAvatar from "../../components/custom-avatar";
 import Topup from "./top-up";
 
@@ -9,6 +9,7 @@ import { Scrollbars } from "react-custom-scrollbars";
 
 import { channingActions } from "../../utils";
 import { bindPaymentActions } from "../../actions";
+import toIsoString from "../../utils/dateISO";
 
 class AddressBook extends React.Component {
   constructor(props) {
@@ -16,8 +17,6 @@ class AddressBook extends React.Component {
     this.state = {
       current: [],
       newselect: [],
-      page: 0,
-      size: 10,
       isAll: false,
     };
     this.divLoadMore = React.createRef();
@@ -26,28 +25,26 @@ class AddressBook extends React.Component {
   }
 
   componentDidMount() {
-    // this.props.loadAddressBookList();
-    this.props.paymentActions.getTransferStatement(this.state.page,this.state.size);
-    this.observer = new IntersectionObserver((entries) => {
-      entries.forEach((entry) => {
-        this.setState((preState) => ({
-          page: preState.page + 1,
-        }));
-        this.props.paymentActions
-            .getTransferStatement(this.state.page, this.state.size)
+    this.observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          let createdAt = this.props.transferStatements.length
+            ? this.props.transferStatements[
+                this.props.transferStatements.length - 1
+              ].createdAt
+            : toIsoString(new Date());
+          this.props.paymentActions
+            .loadMoreTransferStatement(createdAt)
             .then((res) => {
-              this.setState((preState) => ({
-                data: [...preState.data, ...res.data],
+              this.setState({
                 isAll: res.data.length < 10,
-              }));
+              });
             });
-      });
-    });
-  }
-  componentDidUpdate() {
-    if (this.divLoadMore.current) {
-      this.observer.observe(this.divLoadMore.current);
-    }
+        });
+      },
+      { threshold: 1 }
+    );
+    this.observer.observe(this.divLoadMore.current);
   }
 
   handleCurrentChange(event) {
@@ -88,22 +85,26 @@ class AddressBook extends React.Component {
     // );
   }
 
-  handleScroll = (event) => {
-    let { scrollHeight, clientHeight, scrollTop } = event.currentTarget;
-    if (!this.state.isAll && scrollHeight === clientHeight + scrollTop + 1) {
-      this.setState((preState) => ({
-        page: preState.page + 1,
-      }));
-      this.props.paymentActions
-        .getTransferStatement(this.state.page, this.state.size)
-        .then((res) => {
-          this.setState((preState) => ({
-            data: [...preState.data, ...res.data],
-            isAll: res.data.length < 10,
-          }));
-        });
-    }
-  };
+  // handleScroll = (event) => {
+  //   let { scrollHeight, clientHeight, scrollTop } = event.currentTarget;
+  //   console.log({ scrollHeight, clientHeight, scrollTop });
+  //   if (
+  //     !this.state.isAll &&
+  //     scrollHeight === clientHeight + scrollTop + 1 &&
+  //   ) {
+  //     this.setState((preState) => ({
+  //       page: preState.page + 1,
+  //     }));
+  //     this.props.paymentActions
+  //       .getTransferStatement(this.state.page, this.state.size)
+  //       .then((res) => {
+  //         this.setState((preState) => ({
+  //           data: [...preState.data, ...res.data],
+  //           isAll: res.data.length < 10,
+  //         }));
+  //       });
+  //   }
+  // };
 
   render() {
     if (this.props.transferStatements == []) return;
@@ -158,13 +159,17 @@ class AddressBook extends React.Component {
               </Menu.Item>
             ))}
           </Menu>
-          {this.state.data.length !== 0 && !this.state.isAll && (
+          <div style={{ height: 10 }}></div>
+          {!this.state.isAll && (
             <div
               ref={this.divLoadMore}
               id="load_more"
-              style={{ height: 5, backgroundColor: "red" }}
-            ></div>
+              style={{ display: "flex", justifyContent: "center" }}
+            >
+              <Spin size="large" />
+            </div>
           )}
+          <div style={{ height: 10 }}></div>
         </Scrollbars>
       </div>
     );
