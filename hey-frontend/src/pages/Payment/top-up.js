@@ -16,22 +16,17 @@ class Topup extends React.Component {
   }
 
   showModal = (screenName) => {
-    this.props.paymentActions.switchMainScreen(screenName).then((res) => {
-      console.log("res");
-    });
+    this.props.paymentActions.switchMainScreen(screenName).then((res) => {});
   };
 
   handleOk = (e) => {
-    console.log(e);
     var un = $("#add-user-name").val();
     $("#add-user-name").val("");
     this.props.addNewFriend(un);
   };
 
   handleCancel = (e) => {
-    this.props.paymentActions.switchMainScreen("").then((res) => {
-      console.log("res");
-    });
+    this.props.paymentActions.switchMainScreen("").then((res) => {});
   };
 
   render() {

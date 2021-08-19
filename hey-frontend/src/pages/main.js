@@ -138,7 +138,10 @@ class Main extends React.Component {
                   src={this.props.profile.miniAvatar}
                 />
               ) : (
-                <CustomAvatar type="main-avatar" avatar={this.props.userName} />
+                <CustomAvatar
+                  type="main-avatar"
+                  avatar={this.props.profile.username}
+                />
               )}
             </div>
             <Profile />
@@ -172,7 +175,6 @@ class Main extends React.Component {
 
 function mapStateToProps(state) {
   return {
-    userName: state.userReducer.userName,
     userStatus: state.userReducer.userStatus,
     profile: state.userReducer.profile,
   };

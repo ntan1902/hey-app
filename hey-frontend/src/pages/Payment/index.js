@@ -18,8 +18,7 @@ import TransferStatement from "./transfer-statement";
 import Success from "./success";
 import TransferSuccess from "./success_transfer";
 
-const { Header, Content, Footer, Sider } = Layout;
-const { TextArea } = Input;
+const { Sider } = Layout;
 
 class Chat extends React.Component {
   constructor(props) {
@@ -43,7 +42,6 @@ class Chat extends React.Component {
   }
 
   handleMessageEnter(e) {
-    let charCode = e.keyCode || e.which;
     if (!e.shiftKey) {
       e.preventDefault();
       let message = e.target.value;
@@ -63,7 +61,6 @@ class Chat extends React.Component {
   }
 
   renderMainSide = () => {
-    console.log(this.props.layoutType);
     switch (this.props.layoutType) {
       case "topup":
         return <Topup></Topup>;
@@ -91,8 +88,8 @@ class Chat extends React.Component {
             breakpoint="lg"
             collapsedWidth="0"
             theme="light"
-            onBreakpoint={(broken) => {}}
-            onCollapse={(collapsed, type) => {}}
+            onBreakpoint={() => {}}
+            onCollapse={() => {}}
             width="300"
             id="sub-side-menu"
           >

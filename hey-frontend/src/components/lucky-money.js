@@ -233,7 +233,7 @@ class LuckyMoney extends React.Component {
                 <Button
                   style={{
                     backgroundColor:
-                      this.state.topupType == 2 ? "blue" : "white",
+                      this.state.topupType === 2 ? "blue" : "white",
                     borderColor: "black",
                     color: "black",
                     borderRadius: 200,
@@ -251,7 +251,7 @@ class LuckyMoney extends React.Component {
                   <Icon
                     style={{
                       fontSize: 30,
-                      color: this.state.topupType == 1 ? "black" : "white",
+                      color: this.state.topupType === 1 ? "black" : "white",
                     }}
                     type="credit-card"
                   />
@@ -263,7 +263,7 @@ class LuckyMoney extends React.Component {
               style={{ display: "flex", flexDirection: "row", marginTop: 50 }}
             >
               <div style={{ fontSize: 20, width: 250, fontWeight: 200 }}>
-                {this.state.topupType == 1
+                {this.state.topupType === 1
                   ? "Money of each bags"
                   : "Total money"}
               </div>

@@ -34,7 +34,10 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
         log.info("Inside doFilterInternal of CustomAuthorizationFilter: {}", request.getServletPath());
         String path = request.getServletPath();
-        if (!path.contains("/api/v1/systems/login") && !path.contains("/api/v1/users/login")) {
+        if (!path.contains("/api/v1/systems/login")
+                && !path.contains("/api/v1/users/login")
+                && !path.contains("/api/v1/users/register")
+                && !path.contains("/api/v1/users/refreshToken")) {
             if (path.contains("/api/v1/systems")) {
                 try {
                     String jwt = getJwtFromRequest(request);
