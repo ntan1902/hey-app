@@ -1,5 +1,5 @@
 import React from "react";
-import { Button, Form, Icon, Input } from "antd";
+import { Button, Form, Icon, Input, message } from "antd";
 import { withRouter } from "react-router-dom";
 import { setJwtToStorage, setRefreshTokenToStorage } from "../utils/utils";
 
@@ -27,11 +27,16 @@ class NormalLoginForm extends React.Component {
     e.preventDefault();
     this.props.form.validateFields((error, values) => {
       if (!error) {
-        this.props.authActions.authentication(values).then((res) => {
-          setJwtToStorage(res.data.token);
-          setRefreshTokenToStorage(res.data.refreshToken);
-          this.props.history.push("/");
-        });
+        this.props.authActions
+          .authentication(values)
+          .then((res) => {
+            setJwtToStorage(res.data.token);
+            setRefreshTokenToStorage(res.data.refreshToken);
+            this.props.history.push("/");
+          })
+          .catch((err) => {
+            message.error(err.data);
+          });
       }
     });
   };

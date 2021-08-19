@@ -8,6 +8,7 @@ import {
   getRefreshTokenFromStorage,
   setJwtToStorage,
   clearStorage,
+  isEmptyString,
 } from "./utils";
 import { API_AUTH, SITE_URL } from "../config/setting";
 
@@ -44,25 +45,28 @@ axiosInstance.interceptors.response.use(
   (error) => {
     const { response } = error;
     if (!_.isEmpty(response) && response.status === 401) {
-      return refresh()
-        .then((rs) => {
-          axiosInstance.setToken(rs.data.payload.accessToken);
+      const refreshToken = getRefreshTokenFromStorage();
 
-          const config = error.response.config;
-          config.headers = {
-            Authorization: `Bearer ${rs.data.payload.accessToken}`,
-            Accept: "application/json",
-          };
+      if (!isEmptyString(refreshToken))
+        return refresh()
+          .then((rs) => {
+            axiosInstance.setToken(rs.data.payload.accessToken);
 
-          return axiosInstance(config);
-        })
-        .catch((err) => {
-          // Expired soft token
-          console.log(err.response);
-          const { status } = err.response;
-          status === 400 && clearStorage();
-          return Promise.reject(err);
-        });
+            const config = error.response.config;
+            config.headers = {
+              Authorization: `Bearer ${rs.data.payload.accessToken}`,
+              Accept: "application/json",
+            };
+
+            return axiosInstance(config);
+          })
+          .catch((err) => {
+            // Expired soft token
+            console.log(err.response);
+            const { status } = err.response;
+            status === 400 && clearStorage();
+            return Promise.reject(err);
+          });
     }
 
     return Promise.reject(error);
