@@ -14,4 +14,4 @@ export const API_LUCKY = `lucky`;
 export const API_CHAT = `chat`;
 export const API_WS = IS_DEV
   ? "ws://localhost:8090"
-  : "ws://45.117.169.232:8090";
+  : "wss://heyws.oispyouthunion.vn";
