@@ -1,6 +1,5 @@
 package com.hey.service;
 
-import com.hey.auth.AuthService;
 import com.hey.manager.UserWsChannelManager;
 import com.hey.model.*;
 import com.hey.model.lucky.LuckyMoneyMessageRequest;

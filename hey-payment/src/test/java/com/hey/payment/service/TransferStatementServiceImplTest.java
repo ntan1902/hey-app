@@ -30,8 +30,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
@@ -1150,7 +1148,7 @@ class TransferStatementServiceImplTest {
         List<TransferStatementDTO> transferStatementDTOs = Collections.singletonList(transferStatementDTO);
 
         when(walletRepository.findByOwnerIdAndRefFrom(user.getId(), OwnerWalletRefFrom.USERS)).thenReturn(Optional.of(sourceWallet));
-        when(transferStatementRepository.findAllBySourceIdOrTargetId(sourceWallet.getId(), PageRequest.of(0, 10, Sort.by("createdAt").descending()))).thenReturn(transferStatements);
+        when(transferStatementRepository.findAllBySourceIdOrTargetIdOrderByCreatedAtDesc(sourceWallet.getId(), 0, 10)).thenReturn(transferStatements);
 
         when(transferStatementMapper.ts2TsDTO(transferStatement)).thenReturn(transferStatementDTO);
 
@@ -1161,7 +1159,7 @@ class TransferStatementServiceImplTest {
         when(authApi.getUserInfo(targetWallet.getOwnerId())).thenReturn(targetResponse);
 
         // when
-        List<TransferStatementDTO> actual = underTest.getTransferStatementOfUser(0, 10);
+        List<TransferStatementDTO> actual = underTest.getTransferStatementsOfUser(0, 10);
 
         // then
         assertThat(actual).isEqualTo(transferStatementDTOs);
@@ -1222,7 +1220,7 @@ class TransferStatementServiceImplTest {
                 .build();
 
         when(walletRepository.findByOwnerIdAndRefFrom(user.getId(), OwnerWalletRefFrom.USERS)).thenReturn(Optional.of(sourceWallet));
-        when(transferStatementRepository.findAllBySourceIdOrTargetId(sourceWallet.getId(), PageRequest.of(0, 10, Sort.by("createdAt").descending()))).thenReturn(transferStatements);
+        when(transferStatementRepository.findAllBySourceIdOrTargetIdOrderByCreatedAtDesc(sourceWallet.getId(), 0, 10)).thenReturn(transferStatements);
 
         when(transferStatementMapper.ts2TsDTO(transferStatement)).thenReturn(transferStatementDTO);
 
@@ -1233,7 +1231,7 @@ class TransferStatementServiceImplTest {
         // when
 
         // then
-        assertThatThrownBy(() -> underTest.getTransferStatementOfUser(0, 10))
+        assertThatThrownBy(() -> underTest.getTransferStatementsOfUser(0, 10))
                 .isInstanceOf(ApiErrException.class);
     }
 
@@ -1303,7 +1301,7 @@ class TransferStatementServiceImplTest {
                 .build();
 
         when(walletRepository.findByOwnerIdAndRefFrom(user.getId(), OwnerWalletRefFrom.USERS)).thenReturn(Optional.of(sourceWallet));
-        when(transferStatementRepository.findAllBySourceIdOrTargetId(sourceWallet.getId(), PageRequest.of(0, 10, Sort.by("createdAt").descending()))).thenReturn(transferStatements);
+        when(transferStatementRepository.findAllBySourceIdOrTargetIdOrderByCreatedAtDesc(sourceWallet.getId(), 0, 10)).thenReturn(transferStatements);
 
         when(transferStatementMapper.ts2TsDTO(transferStatement)).thenReturn(transferStatementDTO);
 
@@ -1316,7 +1314,7 @@ class TransferStatementServiceImplTest {
         // when
 
         // then
-        assertThatThrownBy(() -> underTest.getTransferStatementOfUser(0, 10))
+        assertThatThrownBy(() -> underTest.getTransferStatementsOfUser(0, 10))
                 .isInstanceOf(ApiErrException.class);
     }
 
@@ -1387,7 +1385,7 @@ class TransferStatementServiceImplTest {
         List<TransferStatementDTO> transferStatementDTOs = Collections.singletonList(transferStatementDTO);
 
         when(walletRepository.findByOwnerIdAndRefFrom(user.getId(), OwnerWalletRefFrom.USERS)).thenReturn(Optional.of(sourceWallet));
-        when(transferStatementRepository.findAllBySourceIdOrTargetId(sourceWallet.getId(), PageRequest.of(0, 10, Sort.by("createdAt").descending()))).thenReturn(transferStatements);
+        when(transferStatementRepository.findAllBySourceIdOrTargetIdOrderByCreatedAtDesc(sourceWallet.getId(), 0, 10)).thenReturn(transferStatements);
 
         when(transferStatementMapper.ts2TsDTO(transferStatement)).thenReturn(transferStatementDTO);
 
@@ -1398,7 +1396,7 @@ class TransferStatementServiceImplTest {
         when(authApi.getSystemInfo(targetWallet.getOwnerId())).thenReturn(targetResponse);
 
         // when
-        List<TransferStatementDTO> actual = underTest.getTransferStatementOfUser(0, 10);
+        List<TransferStatementDTO> actual = underTest.getTransferStatementsOfUser(0, 10);
 
         // then
         assertThat(actual).isEqualTo(transferStatementDTOs);

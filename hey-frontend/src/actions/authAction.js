@@ -85,7 +85,6 @@ export const changePassword =
   (currentPassword, newPassword) => async (dispatch) => {
     return new Promise(async (resolve, reject) => {
       try {
-        console.log("currentPassword: ", currentPassword);
         await AuthAPI.changePassword(currentPassword, newPassword);
         resolve({ success: true });
       } catch (err) {
