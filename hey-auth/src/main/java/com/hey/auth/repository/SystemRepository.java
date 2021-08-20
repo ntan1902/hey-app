@@ -1,7 +1,6 @@
 package com.hey.auth.repository;
 
 import com.hey.auth.entity.System;
-import com.hey.auth.entity.User;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;

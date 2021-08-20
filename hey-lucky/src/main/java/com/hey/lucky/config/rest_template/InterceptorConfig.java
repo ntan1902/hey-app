@@ -6,9 +6,6 @@ import com.hey.lucky.dto.auth_service.LoginResponse;
 import com.hey.lucky.properties.ServiceProperties;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.boot.context.event.ApplicationStartedEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.http.HttpEntity;
@@ -21,7 +18,6 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.DefaultUriBuilderFactory;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 @Component

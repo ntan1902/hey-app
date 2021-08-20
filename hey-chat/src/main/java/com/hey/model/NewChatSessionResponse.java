@@ -1,7 +1,6 @@
 package com.hey.model;
 
 import java.io.Serializable;
-import java.util.Date;
 
 public class NewChatSessionResponse extends WsMessage implements Serializable {
 

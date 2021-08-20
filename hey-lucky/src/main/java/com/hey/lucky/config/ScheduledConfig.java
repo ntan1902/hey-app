@@ -1,7 +1,5 @@
 package com.hey.lucky.config;
 
-import com.hey.lucky.entity.LuckyMoney;
-import com.hey.lucky.repository.LuckyMoneyRepository;
 import com.hey.lucky.service.LuckyMoneyService;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;

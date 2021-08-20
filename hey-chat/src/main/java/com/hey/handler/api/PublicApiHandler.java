@@ -1,7 +1,6 @@
 package com.hey.handler.api;
 
 import com.hey.model.User;
-import com.hey.service.APIService;
 import com.hey.util.HttpStatus;
 import com.hey.util.JsonUtils;
 import com.hey.util.LogUtils;
@@ -11,8 +10,6 @@ import io.vertx.core.http.HttpServerResponse;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.RoutingContext;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 public class PublicApiHandler extends BaseHandler{
     public void handle(RoutingContext rc) {
