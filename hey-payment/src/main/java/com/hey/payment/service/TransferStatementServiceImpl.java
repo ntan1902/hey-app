@@ -31,8 +31,6 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -260,20 +258,6 @@ public class TransferStatementServiceImpl implements TransferStatementService {
     }
 
     @Override
-    public List<TransferStatementDTO> loadMoreTransferStatementOfUser(String createdAt) throws HaveNoWalletException, DatabaseHasErr, ApiErrException {
-        User user = userUtil.getCurrentUser();
-        Wallet wallet = walletRepository.findByOwnerIdAndRefFrom(user.getId(), OwnerWalletRefFrom.USERS)
-                .orElseThrow(() -> new HaveNoWalletException(USER_HAS_NO_WALLET));
-
-        // Pagination and Sort createdAt descending
-        Pageable pageable = PageRequest.of(0, 10, Sort.by("createdAt").descending());
-        LocalDateTime createdAtDT = LocalDateTime.parse(createdAt);
-        List<TransferStatement> transferStatements = transferStatementRepository.findAllBySourceIdOrTargetIdAndCreatedBefore(wallet.getId(),createdAtDT, pageable);
-
-        return listTransferStatement2ListTransferStatementDTO(transferStatements);
-    }
-
-    @Override
     @Transactional
     public void topUp(TopUpRequest topupRequest) throws MaxAmountException, MaxBalanceException, HaveNoWalletException, BankInvalidException {
         User user = userUtil.getCurrentUser();
@@ -309,14 +293,18 @@ public class TransferStatementServiceImpl implements TransferStatementService {
     }
 
     @Override
-    public List<TransferStatementDTO> getTransferStatementOfUser(int page, int size) throws HaveNoWalletException, DatabaseHasErr, ApiErrException {
+    public List<TransferStatementDTO> getTransferStatementsOfUser(int offset, int limit) throws HaveNoWalletException, DatabaseHasErr, ApiErrException {
+        log.info("Inside getTransferStatementsOfUser of TransferStatementServiceImpl: {}, {}", offset, limit);
         User user = userUtil.getCurrentUser();
         Wallet wallet = walletRepository.findByOwnerIdAndRefFrom(user.getId(), OwnerWalletRefFrom.USERS)
                 .orElseThrow(() -> new HaveNoWalletException(USER_HAS_NO_WALLET));
 
-        // Pagination and Sort createdAt descending
-        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
-        List<TransferStatement> transferStatements = transferStatementRepository.findAllBySourceIdOrTargetId(wallet.getId(), pageable);
+        List<TransferStatement> transferStatements =
+                transferStatementRepository.findAllBySourceIdOrTargetIdOrderByCreatedAtDesc(
+                        wallet.getId(),
+                        offset,
+                        limit
+                );
 
         return listTransferStatement2ListTransferStatementDTO(transferStatements);
     }

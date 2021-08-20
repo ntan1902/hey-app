@@ -9,9 +9,8 @@ import { Scrollbars } from "react-custom-scrollbars";
 
 import { channingActions } from "../../utils";
 import { bindPaymentActions } from "../../actions";
-import toIsoString from "../../utils/dateISO";
 
-class AddressBook extends React.Component {
+class Payment extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -28,13 +27,8 @@ class AddressBook extends React.Component {
     this.observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
-          let createdAt = this.props.transferStatements.length
-            ? this.props.transferStatements[
-                this.props.transferStatements.length - 1
-              ].createdAt
-            : toIsoString(new Date());
           this.props.paymentActions
-            .loadMoreTransferStatement(createdAt)
+            .getTransferStatements(this.props.offset, this.props.limit)
             .then((res) => {
               this.setState({
                 isAll: res.data.length < 10,
@@ -44,6 +38,7 @@ class AddressBook extends React.Component {
       },
       { threshold: 1 }
     );
+
     this.observer.observe(this.divLoadMore.current);
   }
 
@@ -159,7 +154,7 @@ class AddressBook extends React.Component {
               </Menu.Item>
             ))}
           </Menu>
-          <div style={{ height: 10 }}></div>
+          <div style={{ height: 10 }} />
           {!this.state.isAll && (
             <div
               ref={this.divLoadMore}
@@ -169,7 +164,7 @@ class AddressBook extends React.Component {
               <Spin size="large" />
             </div>
           )}
-          <div style={{ height: 10 }}></div>
+          <div style={{ height: 10 }} />
         </Scrollbars>
       </div>
     );
@@ -182,6 +177,8 @@ export default connect(
     addFriendErrorMessage: state.addressBookReducer.addFriendErrorMessage,
     addFriendPopup: state.addressBookReducer.topup,
     transferStatements: state.paymentReducer.transferStatements,
+    offset: state.paymentReducer.offset,
+    limit: state.paymentReducer.limit,
   }),
   (dispatch) => channingActions({}, dispatch, bindPaymentActions)
-)(AddressBook);
+)(Payment);

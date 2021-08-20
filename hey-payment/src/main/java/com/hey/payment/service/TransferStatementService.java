@@ -15,11 +15,10 @@ public interface TransferStatementService {
 
     void topUp(TopUpRequest topupRequest) throws MaxAmountException, MaxBalanceException, HaveNoWalletException, BankInvalidException;
 
-    List<TransferStatementDTO> getTransferStatementOfUser(int page, int size) throws HaveNoWalletException, DatabaseHasErr, ApiErrException;
+    List<TransferStatementDTO> getTransferStatementsOfUser(int offset, int limit) throws HaveNoWalletException, DatabaseHasErr, ApiErrException;
 
     void systemCreateTransferToUser(SystemCreateTransferToUserRequest request) throws NegativeAmountException, MaxAmountException,  HaveNoWalletException, BalanceNotEnoughException, MaxBalanceException;
 
     SystemCreateTransferFromUserResponse systemCreateTransferFromUser(SystemCreateTransferFromUserRequest request) throws SoftTokenAuthorizeException, NegativeAmountException,  MaxAmountException,  BalanceNotEnoughException, MaxBalanceException, HaveNoWalletException;
 
-    List<TransferStatementDTO> loadMoreTransferStatementOfUser(String createdAt) throws HaveNoWalletException, DatabaseHasErr, ApiErrException;
 }

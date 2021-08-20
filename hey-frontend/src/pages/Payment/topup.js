@@ -91,7 +91,7 @@ class MessagePanel extends React.Component {
       .topup(this.state.amount)
       .then((res) => {
         console.log("Topup Success");
-        this.props.paymentActions.getNewTransferStatement();
+        this.props.paymentActions.getNewTransferStatement(this.props.offset);
       })
       .catch((err) => {
         message.error(err.error.response.data.message);
@@ -272,6 +272,7 @@ class MessagePanel extends React.Component {
 export default connect(
   (state) => ({
     messageItems: state.chatReducer.messageItems,
+    offset: state.paymentReducer.offset,
   }),
   (dispatch) => channingActions({}, dispatch, bindPaymentActions)
 )(MessagePanel);
