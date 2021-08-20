@@ -1,14 +1,13 @@
 import React from "react";
-import { Button, Input, Layout} from "antd";
+import { Button, Input, Layout } from "antd";
 import ChatList from "../../components/chat-list";
-import ChatHeader from "../../components/chat-header";
+import ChatHeader from "../../components/ChatHeader/chat-header";
 import Profile from "../../components/profile";
 import MessagePanel from "../../components/message-panel";
 import {
   closeWebSocket,
   initialWebSocket,
   loadChatContainer,
-  submitChatMessage,
 } from "../../actions/chatAction";
 import { connect } from "react-redux";
 import { isEmptyString } from "../../utils/utils";
@@ -16,6 +15,7 @@ import $ from "jquery";
 import LuckyMoney from "../../components/lucky-money";
 import AddFriendSession from "../../components/add-friend-session";
 import MembersModal from "../../components/MembersModal/MembersModal";
+import FormConversation from "../../components/FormConversation/FormConversation";
 
 const { Sider } = Layout;
 const { TextArea } = Input;
@@ -27,37 +27,16 @@ class Chat extends React.Component {
       menuaction: 1,
     };
     this.handleMainMenuChange = this.handleMainMenuChange.bind(this);
-    this.handleMessageEnter = this.handleMessageEnter.bind(this);
-    this.handleSendClick = this.handleSendClick.bind(this);
   }
 
   componentDidMount() {
     // this.props.initialWebSocket();
   }
 
-  componentWillUnmount() { }
+  componentWillUnmount() {}
 
   handleMainMenuChange(e) {
     this.setState({ menuaction: e.key });
-  }
-
-  handleMessageEnter(e) {
-    if (!e.shiftKey) {
-      e.preventDefault();
-      let message = e.target.value;
-      if (!isEmptyString(message)) {
-        this.props.submitChatMessage(message);
-      }
-      e.target.value = "";
-    }
-  }
-
-  handleSendClick(e) {
-    let message = $("#messageTextArea").val();
-    if (!isEmptyString(message)) {
-      this.props.submitChatMessage(message);
-    }
-    $("#messageTextArea").val("");
   }
 
   render() {
@@ -68,8 +47,8 @@ class Chat extends React.Component {
             breakpoint="lg"
             collapsedWidth="0"
             theme="light"
-            onBreakpoint={(broken) => { }}
-            onCollapse={(collapsed, type) => { }}
+            onBreakpoint={(broken) => {}}
+            onCollapse={(collapsed, type) => {}}
             width="300"
             id="sub-side-menu"
           >
@@ -78,12 +57,12 @@ class Chat extends React.Component {
             <ChatList />
           </Sider>
           <div className="chat-container" style={{ padding: 0 }}>
-            <LuckyMoney/>
-            <AddFriendSession/>
+            <LuckyMoney />
+            <AddFriendSession />
             <MembersModal />
             <ChatHeader />
             <MessagePanel />
-            <div className="chat-footer">
+            {/* <div className="chat-footer">
               <TextArea
                 id="messageTextArea"
                 onPressEnter={this.handleMessageEnter}
@@ -94,7 +73,8 @@ class Chat extends React.Component {
               <Button type="primary" onClick={this.handleSendClick}>
                 Send
               </Button>
-            </div>
+            </div> */}
+            <FormConversation />
           </div>
         </Layout>
       </div>
@@ -118,9 +98,6 @@ function mapDispatchToProps(dispatch) {
     },
     loadChatContainer(sessionId) {
       dispatch(loadChatContainer(sessionId));
-    },
-    submitChatMessage(message) {
-      dispatch(submitChatMessage(message));
     },
   };
 }

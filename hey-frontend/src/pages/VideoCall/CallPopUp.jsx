@@ -1,8 +1,8 @@
 import React, { useEffect, useRef, useState } from "react";
 import { getJwtFromStorage } from "../../utils/utils";
-import { ws_host } from "../../api/api";
 import Sockette from "sockette";
 import Peer from "peerjs";
+import { API_WS } from "../../config/setting";
 
 import "./CallPopUp.css";
 import RemoteVideo from "../../components/RemoteVideo/RemoteVideo";
@@ -39,7 +39,7 @@ const CallPopUp = () => {
 
   useEffect(() => {
     (async () => {
-      socket = new Sockette(ws_host + "?jwt=" + jwt, {
+      socket = new Sockette(API_WS + "?jwt=" + jwt, {
         timeout: 5e3,
         maxAttempts: 100,
         onopen: (e) => {},

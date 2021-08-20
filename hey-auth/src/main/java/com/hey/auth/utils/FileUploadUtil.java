@@ -6,6 +6,7 @@ import lombok.extern.log4j.Log4j2;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.imgscalr.Scalr;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -20,12 +21,17 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.List;
 
 @Component
 @Log4j2
 public class FileUploadUtil {
     private static final int IMAGE_SIZE = 400;
     private final Path originalUploadPath = Paths.get("./src/main/resources/static/images/");
+
+    private String getCurrentUserId() {
+        return (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    }
 
     public UriImageDTO uploadFile(MultipartFile multipartFile,
                                   String apiPath) throws IOException {
@@ -37,25 +43,17 @@ public class FileUploadUtil {
         }
 
         try (InputStream inputStream = multipartFile.getInputStream()) {
-            String filename = System.currentTimeMillis() + "_" + multipartFile.getOriginalFilename();
+
+            String filename = getCurrentUserId() + "." + "png";
 
             Path filePath = uploadPath.resolve(filename);
 
             Files.copy(inputStream, filePath, StandardCopyOption.REPLACE_EXISTING);
 
-            String uri = ServletUriComponentsBuilder.fromCurrentContextPath()
-                    .path(apiPath)
-                    .path(filename)
-                    .toUriString();
-
             String miniFileName = resizeImage(filePath);
-            String miniUri = ServletUriComponentsBuilder.fromCurrentContextPath()
-                    .path(apiPath)
-                    .path(miniFileName)
-                    .toUriString();
             return UriImageDTO.builder()
-                    .uri(uri)
-                    .miniUri(miniUri)
+                    .uri(filename)
+                    .miniUri(miniFileName)
                     .build();
 
         } catch (IOException e) {
