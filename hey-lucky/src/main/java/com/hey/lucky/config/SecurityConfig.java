@@ -23,26 +23,26 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private final AuthenticateFilterExceptionHandler filterExceptionHandler;
 
     @Autowired
-    public SecurityConfig(AuthServiceFilter authServiceFilter, AuthenticateFilterExceptionHandler filterExceptionHandler) {
+    public SecurityConfig(AuthServiceFilter authServiceFilter,
+            AuthenticateFilterExceptionHandler filterExceptionHandler) {
         this.authServiceFilter = authServiceFilter;
         this.filterExceptionHandler = filterExceptionHandler;
     }
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.cors().and().csrf().disable().authorizeRequests()
-                .anyRequest().authenticated()
-                .and()
-                .exceptionHandling().authenticationEntryPoint(filterExceptionHandler).and()
-                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
-                .antMatcher("/**").addFilterBefore(authServiceFilter, UsernamePasswordAuthenticationFilter.class);
+        http.cors().and().csrf().disable().authorizeRequests().anyRequest().authenticated().and().exceptionHandling()
+                .authenticationEntryPoint(filterExceptionHandler).and().sessionManagement()
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS).and().antMatcher("/**")
+                .addFilterBefore(authServiceFilter, UsernamePasswordAuthenticationFilter.class);
     }
 
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000", "http://103.7.41.159/", "https://103.7.41.159/", "http://oispyouthunion.vn", "https://oispyouthunion.vn"));
-        configuration.setAllowedMethods(Arrays.asList("GET","POST"));
+        configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000", "http://web.oispyouthunion.vn",
+                "https://web.oispyouthunion.vn"));
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST"));
         configuration.setAllowCredentials(true);
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration.applyPermitDefaultValues());
