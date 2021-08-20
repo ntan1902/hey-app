@@ -3,8 +3,6 @@ package com.hey.util;
 import io.vertx.core.json.Json;
 import io.vertx.core.json.JsonObject;
 
-import java.util.List;
-
 public final class JsonUtils {
     private JsonUtils() {
     }

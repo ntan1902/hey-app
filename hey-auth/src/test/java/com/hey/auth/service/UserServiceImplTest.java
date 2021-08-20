@@ -3,6 +3,7 @@ package com.hey.auth.service;
 import com.hey.auth.api.ChatApi;
 import com.hey.auth.dto.user.*;
 import com.hey.auth.dto.vertx.RegisterRequestToChat;
+import com.hey.auth.entity.SoftToken;
 import com.hey.auth.entity.User;
 import com.hey.auth.exception.user.EmptyPinException;
 import com.hey.auth.exception.user.PinNotMatchedException;
@@ -11,6 +12,7 @@ import com.hey.auth.exception.user.UsernameEmailExistedException;
 import com.hey.auth.jwt.JwtSoftTokenUtil;
 import com.hey.auth.mapper.UserMapper;
 import com.hey.auth.properties.ServiceProperties;
+import com.hey.auth.repository.SoftTokenRepository;
 import com.hey.auth.repository.UserRepository;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
@@ -52,6 +54,9 @@ class UserServiceImplTest {
 
     @Mock
     private ChatApi chatApi;
+
+    @Mock
+    private SoftTokenRepository softTokenRepository;
 
     @Test
     void loadUserByUsername() {
@@ -325,6 +330,7 @@ class UserServiceImplTest {
         SoftTokenResponse actual = underTest.createSoftToken(request);
 
         // then
+        verify(softTokenRepository, times(1)).save(new SoftToken(softToken));
         assertThat(actual).isEqualTo(expected);
     }
 

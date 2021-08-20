@@ -13,6 +13,7 @@ import com.hey.auth.jwt.JwtSoftTokenUtil;
 import com.hey.auth.jwt.JwtSystemUtil;
 import com.hey.auth.jwt.JwtUserUtil;
 import com.hey.auth.mapper.SystemMapper;
+import com.hey.auth.repository.SoftTokenRepository;
 import com.hey.auth.repository.SystemRepository;
 import com.hey.auth.repository.UserRepository;
 import org.junit.jupiter.api.Test;
@@ -57,6 +58,12 @@ class SystemServiceImplTest {
 
     @Mock
     private SystemMapper systemMapper;
+
+    @Mock
+    private RedisLockService redisLockService;
+
+    @Mock
+    private SoftTokenRepository softTokenRepository;
 
     @Test
     void loadSystemBySystemName() {
@@ -296,6 +303,7 @@ class SystemServiceImplTest {
                 50000L
         );
 
+        given(softTokenRepository.existsById(request.getSoftToken())).willReturn(true);
         given(jwtSoftTokenUtil.validateToken(request.getSoftToken())).willReturn(true);
         given(jwtSoftTokenUtil.getUserIdFromJwt(request.getSoftToken())).willReturn(userId);
         given(jwtSoftTokenUtil.getPinFromJwt(request.getSoftToken())).willReturn("123456");
@@ -319,6 +327,7 @@ class SystemServiceImplTest {
         );
         String expected = "uuid";
 
+        given(softTokenRepository.existsById(request.getSoftToken())).willReturn(true);
         given(jwtSoftTokenUtil.validateToken(request.getSoftToken())).willReturn(true);
         given(jwtSoftTokenUtil.getUserIdFromJwt(request.getSoftToken())).willReturn(expected);
         given(jwtSoftTokenUtil.getPinFromJwt(request.getSoftToken())).willReturn("123456");
@@ -340,14 +349,16 @@ class SystemServiceImplTest {
         SoftTokenRequest request = new SoftTokenRequest(
                 "dump"
         );
+
+        given(softTokenRepository.existsById(request.getSoftToken())).willReturn(true);
         given(jwtSoftTokenUtil.validateToken(request.getSoftToken())).willReturn(false);
 
         // when
 
         // then
         assertThatThrownBy(() -> underTest.authorizeSoftToken(request))
-                .isInstanceOf(InvalidJwtTokenException.class)
-                .hasMessageContaining("Invalid JWT token");
+                .isInstanceOf(InvalidSoftTokenException.class)
+                .hasMessageContaining("Invalid JWT soft token");
 
     }
 
@@ -365,6 +376,8 @@ class SystemServiceImplTest {
                 .username("ntan")
                 .pin("$2a$10$atTTVVOQoQMksMstiYp3/u6tQaYRG/6S5IrMJmEkw8Yw70kKI9LW2")
                 .build();
+
+        given(softTokenRepository.existsById(request.getSoftToken())).willReturn(true);
         given(jwtSoftTokenUtil.validateToken(request.getSoftToken())).willReturn(true);
         given(jwtSoftTokenUtil.getUserIdFromJwt(request.getSoftToken())).willReturn(expected);
         given(jwtSoftTokenUtil.getPinFromJwt(request.getSoftToken())).willReturn("123456");
@@ -445,6 +458,7 @@ class SystemServiceImplTest {
                 0
         );
         given(systemRepository.findAll()).willReturn(Collections.singletonList(system));
+        given(systemMapper.system2systemDTO(system)).willReturn(expected);
 
         // when
         List<SystemDTO> actual = underTest.getSystems();

@@ -14,7 +14,6 @@ import com.hey.auth.exception.user.UsernameEmailExistedException;
 import com.hey.auth.service.SystemService;
 import com.hey.auth.service.UserService;
 import lombok.AllArgsConstructor;
-import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
