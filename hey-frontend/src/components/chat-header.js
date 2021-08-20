@@ -39,22 +39,22 @@ class ChatHeader extends React.Component {
     var newWindow = popupWindow(`/call`, "Video call", 600, 800);
     // if (newWindow) newWindow.makeCall(user, conversation, true);
     if (newWindow) {
-      newWindow.addEventListener('load', async () => {
+      newWindow.addEventListener("load", async () => {
         var ICEServer = await ChatAPI.getICEServer()
-          .then(res => {
+          .then((res) => {
             console.log("data nef" + res.data);
-            return res.data.payload
+            return res.data.payload;
           })
-          .catch(err => {
+          .catch((err) => {
             console.error("loi iceServer" + err.response);
           });
         // var ICEServer = "key iceServer";
         console.log(ICEServer);
         newWindow.init(ICEServer);
         newWindow.makeCall(this.props.currentSessionId, isVideoCall);
-      })
+      });
     }
-  }
+  };
 
   render() {
     const IconFont = Icon.createFromIconfontCN({
@@ -76,12 +76,23 @@ class ChatHeader extends React.Component {
         <div style={{ overflow: "hidden", paddingTop: 5 }}>
           <div className="panel-message">{this.props.header.title}</div>
         </div>
-        <div style={{ flex: 1, display: "flex", justifyContent: "flex-end", alignItems: "center" }}>
+        <div
+          style={{
+            flex: 1,
+            display: "flex",
+            justifyContent: "flex-end",
+            alignItems: "center",
+          }}
+        >
           <div style={{ marginRight: 10 }}>
-            <Button type="ghost" onClick={() => this.makeCall(false)}>Voice Call</Button>
+            <Button type="ghost" onClick={() => this.makeCall(false)}>
+              Voice Call
+            </Button>
           </div>
           <div>
-            <Button type="primary" onClick={() => this.makeCall(true)}>Video Call</Button>
+            <Button type="primary" onClick={() => this.makeCall(true)}>
+              Video Call
+            </Button>
           </div>
         </div>
         <Menu

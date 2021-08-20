@@ -630,7 +630,7 @@ public class APIService extends BaseService {
     private List<String> getListFullNameExcludedCurrentUser(String currentUserId, List<UserHash> userHashes) {
         List<String> listFullNameExcludedCurrentUser = new ArrayList<>();
         for (UserHash userHash : userHashes) {
-            if(!userHash.getUserId().equals(currentUserId)) {
+            if (!userHash.getUserId().equals(currentUserId)) {
                 listFullNameExcludedCurrentUser.add(userHash.getFullName());
             }
         }
@@ -1738,8 +1738,8 @@ public class APIService extends BaseService {
             JsonObject apiResponse = new JsonObject();
             apiResponse.put("success", true);
             apiResponse.put("code", 200);
-            apiResponse.put("message","Make call successfully");
-            apiResponse.put("payload","");
+            apiResponse.put("message", "Make call successfully");
+            apiResponse.put("payload", "");
             future.complete(apiResponse);
 
         }, Future.future().setHandler(handler -> future.fail(handler.cause())));
@@ -1762,8 +1762,8 @@ public class APIService extends BaseService {
             JsonObject apiResponse = new JsonObject();
             apiResponse.put("success", true);
             apiResponse.put("code", 200);
-            apiResponse.put("message","Join call successfully");
-            apiResponse.put("payload","");
+            apiResponse.put("message", "Join call successfully");
+            apiResponse.put("payload", "");
             future.complete(apiResponse);
 
         }, Future.future().setHandler(handler -> future.fail(handler.cause())));
@@ -1773,19 +1773,28 @@ public class APIService extends BaseService {
     public Future<JsonObject> getICEServer() {
         Future<JsonObject> future = Future.future();
         JsonObject request = new JsonObject();
-        request.put("format","urls");
+        request.put("format", "urls");
         webClient.putAbs("https://global.xirsys.net/_turn/hey-app")
-                .putHeader("Authorization","Basic bmdvY3Ryb25nMTAyOjBjZjRhZDMyLTk1ZTItMTFlYi05YzJkLTAyNDJhYzE1MDAwMg==")
+                .putHeader("Authorization", "Basic bmdvY3Ryb25nMTAyOjBjZjRhZDMyLTk1ZTItMTFlYi05YzJkLTAyNDJhYzE1MDAwMg==")
                 .putHeader("Content-Type", "application/json")
-                .putHeader("Content-Length","17")
-                .sendJsonObject(request,httpResponseAsyncResult -> {
-                    if (httpResponseAsyncResult.succeeded()){
-                        JsonObject payload = httpResponseAsyncResult.result().bodyAsJsonObject().getJsonObject("v").getJsonObject("iceServers");
+                .putHeader("Content-Length", "17")
+                .sendJsonObject(request, httpResponseAsyncResult -> {
+                    if (httpResponseAsyncResult.succeeded()) {
+                        JsonObject iceServers = httpResponseAsyncResult.result().bodyAsJsonObject().getJsonObject("v").getJsonObject("iceServers");
+
+                        List<JsonObject> servers = iceServers.getJsonArray("urls").stream().map(url -> {
+                            JsonObject server = new JsonObject();
+                            server.put("username", iceServers.getString("username"));
+                            server.put("url", url);
+                            server.put("credential", iceServers.getString("credential"));
+                            return server;
+                        }).collect(Collectors.toList());
+
                         JsonObject apiResponse = new JsonObject();
                         apiResponse.put("success", true);
                         apiResponse.put("code", 200);
-                        apiResponse.put("message","");
-                        apiResponse.put("payload",payload);
+                        apiResponse.put("message", "");
+                        apiResponse.put("payload", servers);
                         future.complete(apiResponse);
                     }
                 });
@@ -1793,6 +1802,7 @@ public class APIService extends BaseService {
 
         return future;
     }
+
     public Future<Boolean> addFriendToSessionRequest(AddFriendToSessionRequest request, String userId) {
         Future<Boolean> future = Future.future();
 
