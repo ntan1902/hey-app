@@ -1,7 +1,10 @@
 package com.hey.lucky.controller;
 
 import com.hey.lucky.dto.ApiResponse;
-import com.hey.lucky.dto.user.*;
+import com.hey.lucky.dto.user.CreateLuckyMoneyRequest;
+import com.hey.lucky.dto.user.LuckyMoneyDTO;
+import com.hey.lucky.dto.user.LuckyMoneyDetails;
+import com.hey.lucky.dto.user.ReceiveLuckyMoneyRequest;
 import com.hey.lucky.exception_handler.exception.*;
 import com.hey.lucky.service.LuckyMoneyService;
 import lombok.AllArgsConstructor;

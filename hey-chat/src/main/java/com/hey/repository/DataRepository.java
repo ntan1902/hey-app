@@ -1,11 +1,6 @@
 package com.hey.repository;
 
-import com.hey.model.ChatList;
-import com.hey.model.ChatMessage;
-import com.hey.model.FriendList;
-import com.hey.model.UserAuth;
-import com.hey.model.UserFull;
-import com.hey.model.UserStatus;
+import com.hey.model.*;
 import io.vertx.core.Future;
 
 import java.util.List;

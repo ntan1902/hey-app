@@ -2,23 +2,16 @@ package com.hey.handler.api;
 
 import com.hey.manager.JwtManager;
 import com.hey.model.*;
-import com.hey.model.lucky.UserIdSessionIdRequest;
-import com.hey.model.lucky.UserIdSessionIdResponse;
-import com.hey.service.APIService;
-import com.hey.util.ErrorCode;
 import com.hey.util.HttpStatus;
 import com.hey.util.JsonUtils;
 import com.hey.util.LogUtils;
 import io.vertx.core.Future;
-import io.vertx.core.http.HttpHeaders;
 import io.vertx.core.http.HttpServerRequest;
 import io.vertx.core.http.HttpServerResponse;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.RoutingContext;
 import io.vertx.ext.web.handler.impl.HttpStatusException;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 public class ProtectedApiHandler extends BaseHandler {
     public JwtManager jwtManager;
