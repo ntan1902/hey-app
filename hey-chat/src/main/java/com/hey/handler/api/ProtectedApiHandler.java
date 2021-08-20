@@ -118,11 +118,60 @@ public class ProtectedApiHandler extends BaseHandler {
                         LogUtils.log("User " + userId + " add friend to session " + requestObject);
                         addFriendToSession(response, requestObject, userId);
                         break;
+                    case "/makeCall":
+                        LogUtils.log("User " + userId + " make call " + requestObject);
+                        makeCall(response,requestObject,userId);
+                    case "/getICEServer":
+                        LogUtils.log("User " + userId + " get ICEServer");
+                        getICEServer(response,userId);
+                    case "/joinCall":
+                        LogUtils.log("User "+ userId + " join call " + requestObject);
+                        joinCall(response, requestObject,userId);
                 }
             } else {
                 handleUnauthorizedException(new HttpStatusException(HttpStatus.UNAUTHORIZED.code(), HttpStatus.UNAUTHORIZED.message()), response);
             }
         });
+    }
+
+    private void joinCall(HttpServerResponse response, JsonObject requestObject, String userId) {
+        JoinCallRequest joinCallRequest = requestObject.mapTo(JoinCallRequest.class);
+        Future<JsonObject> makeCallFuture = apiService.joinCall(joinCallRequest, userId);
+
+        makeCallFuture.compose(makeCallResponse -> {
+            response
+                    .setStatusCode(HttpStatus.OK.code())
+                    .putHeader("content-type", "application/json; charset=utf-8")
+                    .end(makeCallResponse.encodePrettily());
+
+        }, Future.future().setHandler(handler -> {
+            handleException(handler.cause(), response);
+        }));
+    }
+
+    private void getICEServer(HttpServerResponse response, String userId) {
+        Future<JsonObject> getICEServer = apiService.getICEServer();
+        getICEServer.compose(apiResponse -> {
+        response
+                .setStatusCode(HttpStatus.OK.code())
+                .putHeader("content-type", "application/json; charset=utf-8")
+                .end(apiResponse.encodePrettily());
+        }, Future.future().setHandler(handler ->  handleException(handler.cause(),response)));
+    }
+
+    private void makeCall(HttpServerResponse response, JsonObject requestObject, String userId) {
+        MakeCallRequest makeCallRequest = requestObject.mapTo(MakeCallRequest.class);
+        Future<JsonObject> makeCallFuture = apiService.makeCall(makeCallRequest, userId);
+
+        makeCallFuture.compose(makeCallResponse -> {
+            response
+                    .setStatusCode(HttpStatus.OK.code())
+                    .putHeader("content-type", "application/json; charset=utf-8")
+                    .end(makeCallResponse.encodePrettily());
+
+        }, Future.future().setHandler(handler -> {
+            handleException(handler.cause(), response);
+        }));
     }
 
     public void ping(HttpServerResponse response) {

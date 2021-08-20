@@ -1,11 +1,13 @@
 import React from "react";
 import { connect } from "react-redux";
 import CustomAvatar from "./custom-avatar";
-import { Menu, Icon } from "antd";
+import { Menu, Icon, Button } from "antd";
 
 import { channingActions } from "../utils";
 import { bindChatActions, bindPaymentActions } from "../actions";
 import { ChatAPI } from "../api/chat";
+
+import popupWindow from "../utils/popupWindow";
 
 const { SubMenu } = Menu;
 
@@ -32,6 +34,28 @@ class ChatHeader extends React.Component {
       console.log(res)
     );
   };
+  makeCall = async (isVideoCall) => {
+    // window.hadCall = true;
+    var newWindow = popupWindow(`/call`, "Video call", 600, 800);
+    // if (newWindow) newWindow.makeCall(user, conversation, true);
+    if (newWindow) {
+      newWindow.addEventListener("load", async () => {
+        var ICEServer = await ChatAPI.getICEServer()
+          .then((res) => {
+            console.log("data nef" + res.data);
+            return res.data.payload;
+          })
+          .catch((err) => {
+            console.error("loi iceServer" + err.response);
+          });
+        // var ICEServer = "key iceServer";
+        console.log(ICEServer);
+        newWindow.init(ICEServer);
+        newWindow.makeCall(this.props.currentSessionId, isVideoCall);
+      });
+    }
+  };
+
   render() {
     const IconFont = Icon.createFromIconfontCN({
       scriptUrl: "//at.alicdn.com/t/font_8d5l8fzk5b87iudi.js",
@@ -51,7 +75,25 @@ class ChatHeader extends React.Component {
         <div style={{ overflow: "hidden", paddingTop: 5 }}>
           <div className="panel-message">{this.props.header.title}</div>
         </div>
-        <div style={{ flex: 1 }} />
+        <div
+          style={{
+            flex: 1,
+            display: "flex",
+            justifyContent: "flex-end",
+            alignItems: "center",
+          }}
+        >
+          <div style={{ marginRight: 10 }}>
+            <Button type="ghost" onClick={() => this.makeCall(false)}>
+              Voice Call
+            </Button>
+          </div>
+          <div>
+            <Button type="primary" onClick={() => this.makeCall(true)}>
+              Video Call
+            </Button>
+          </div>
+        </div>
         <Menu
           onClick={this.handleClick}
           // selectedKeys={[this.state.current]}

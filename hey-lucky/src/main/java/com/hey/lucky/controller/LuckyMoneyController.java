@@ -5,6 +5,7 @@ import com.hey.lucky.dto.user.*;
 import com.hey.lucky.exception_handler.exception.*;
 import com.hey.lucky.service.LuckyMoneyService;
 import lombok.AllArgsConstructor;
+import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

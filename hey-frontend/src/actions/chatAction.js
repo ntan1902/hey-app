@@ -1,3 +1,4 @@
+import React from "react";
 import { store } from "../store";
 import { API_WS } from "../config/setting";
 import Sockette from "sockette";
@@ -7,7 +8,7 @@ import {
   isEmptyString,
 } from "../utils/utils";
 import deepcopy from "deepcopy";
-import { message } from "antd/lib/index";
+import { Button, message, notification } from "antd/lib/index";
 import {
   changeUserOnlineStatus,
   loadAddressBookList,
@@ -21,6 +22,7 @@ import { ChatAPI } from "../api/chat";
 import { PaymentAPI } from "../api";
 import { bindActionCreators } from "redux";
 import * as actionTypes from "./actionTypes";
+import videoCallUtils from "../utils/videoCallUtils";
 
 export const EMPTY = "chatList.EMPTY";
 export const CHATLIST_FETCHED = "chatList.CHATLIST_FETCHED";
@@ -44,7 +46,6 @@ export function initialWebSocket() {
     timeout: 5e3,
     maxAttempts: 100,
     onopen: (e) => {},
-
     onmessage: (e) => {
       var data = JSON.parse(e.data);
       switch (data.type) {
@@ -71,6 +72,41 @@ export function initialWebSocket() {
           message.success("Accept Friend Request !!!");
           store.dispatch(loadAddressBookList());
           break;
+        case "HAVE_CALL":
+          let type = data.videoCall ? "video call" : "all";
+          let description = `You have a ${type} from ${data.groupName}`;
+          const key = `open${Date.now()}`;
+          let btn = (
+            <div style={{ display: "flex" }}>
+              <Button
+                type="danger"
+                style={{ marginRight: 10 }}
+                onClick={() => {
+                  notification.close(key);
+                  videoCallUtils.rejectCall(data.sessionId);
+                }}
+              >
+                {" "}
+                Reject{" "}
+              </Button>{" "}
+              <Button
+                type="primary"
+                onClick={() => {
+                  notification.close(key);
+                  videoCallUtils.acceptCall(data.sessionId, data.videoCall);
+                }}
+              >
+                {" "}
+                Join{" "}
+              </Button>{" "}
+            </div>
+          );
+          notification.open({
+            message: data.videoCall ? "Video Call" : "Call",
+            description,
+            btn,
+            key,
+          });
       }
     },
     onreconnect: (e) => console.log("Reconnecting...", e),
@@ -85,6 +121,13 @@ export function closeWebSocket() {
   store.getState().chatReducer.webSocket.close();
   return { type: EMPTY };
 }
+function createLoadNewAddFriendRequest(sessionId) {
+  const req = {
+    type: "ADD_FRIEND_REQUEST",
+    sessionId: sessionId,
+  };
+  return req;
+}
 
 export function loadChatList() {
   return function (dispatch) {
@@ -92,6 +135,14 @@ export function loadChatList() {
       dispatch(receivedChatList(result));
     });
   };
+}
+
+export function loadNewAddFriend(sessionId) {
+  store
+    .getState()
+    .chatReducer.webSocket.json(createLoadNewAddFriendRequest(sessionId));
+  message.success("Sending friend request to " + sessionId);
+  return { type: EMPTY };
 }
 
 export function reloadChatList() {

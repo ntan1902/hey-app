@@ -8,6 +8,7 @@ import com.hey.util.GenerationUtils;
 import io.vertx.core.CompositeFuture;
 import io.vertx.core.Future;
 import io.vertx.core.json.JsonObject;
+import io.vertx.ext.web.client.WebClient;
 import org.ajbrown.namemachine.Gender;
 import org.ajbrown.namemachine.Name;
 import org.ajbrown.namemachine.NameGenerator;
@@ -29,8 +30,14 @@ public abstract class BaseService {
 
     protected JwtManager jwtManager;
 
+    protected WebClient webClient;
+
     public void setDataRepository(DataRepository dataRepository) {
         this.dataRepository = dataRepository;
+    }
+
+    public void setWebClient(WebClient webClient) {
+        this.webClient = webClient;
     }
 
     public DataRepository getDataRepository() {
