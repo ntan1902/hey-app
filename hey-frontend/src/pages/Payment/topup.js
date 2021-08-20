@@ -91,7 +91,7 @@ class MessagePanel extends React.Component {
       .topup(this.state.amount)
       .then((res) => {
         console.log("Topup Success");
-        this.props.paymentActions.getAllTransferStatement();
+        this.props.paymentActions.getNewTransferStatement(this.props.offset);
       })
       .catch((err) => {
         message.error(err.error.response.data.message);
@@ -143,7 +143,7 @@ class MessagePanel extends React.Component {
                 <Button
                   style={{
                     backgroundColor:
-                      this.state.topupType == 1 ? "#1890FF" : "white",
+                      this.state.topupType === 1 ? "#1890FF" : "white",
                     borderColor: "black",
                     color: "black",
                     borderRadius: 200,
@@ -162,7 +162,7 @@ class MessagePanel extends React.Component {
                     theme="outlined"
                     style={{
                       fontSize: 30,
-                      color: this.state.topupType == 2 ? "black" : "white",
+                      color: this.state.topupType === 2 ? "black" : "white",
                     }}
                     type="bank"
                   />
@@ -180,7 +180,7 @@ class MessagePanel extends React.Component {
                 <Button
                   style={{
                     backgroundColor:
-                      this.state.topupType == 2 ? "#1890FF" : "white",
+                      this.state.topupType === 2 ? "#1890FF" : "white",
                     borderColor: "black",
                     color: "black",
                     borderRadius: 200,
@@ -198,7 +198,7 @@ class MessagePanel extends React.Component {
                   <Icon
                     style={{
                       fontSize: 30,
-                      color: this.state.topupType == 1 ? "black" : "white",
+                      color: this.state.topupType === 1 ? "black" : "white",
                     }}
                     type="credit-card"
                   />
@@ -272,6 +272,7 @@ class MessagePanel extends React.Component {
 export default connect(
   (state) => ({
     messageItems: state.chatReducer.messageItems,
+    offset: state.paymentReducer.offset,
   }),
   (dispatch) => channingActions({}, dispatch, bindPaymentActions)
 )(MessagePanel);

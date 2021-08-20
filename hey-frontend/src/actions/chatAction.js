@@ -1,6 +1,6 @@
 import React from "react";
 import { store } from "../store";
-import { api, ws_host } from "../api/api";
+import { API_WS } from "../config/setting";
 import Sockette from "sockette";
 import {
   getJwtFromStorage,
@@ -14,7 +14,7 @@ import {
   loadAddressBookList,
   loadWaitingFriendList,
 } from "./addressBookAction";
-import { changeTransferStatements } from "./paymentAction";
+import { newTransferStatement, changeOffset } from "./paymentAction";
 
 import { statusNotification } from "../components/status-notification";
 import { AuthAPI } from "../api";
@@ -42,7 +42,7 @@ export const WEBSOCKET_FETCHED = "chatList.WEBSOCKET_FETCHED";
 
 export function initialWebSocket() {
   const jwt = getJwtFromStorage();
-  const webSocket = new Sockette(ws_host + "?jwt=" + jwt, {
+  const webSocket = new Sockette(API_WS + "?jwt=" + jwt, {
     timeout: 5e3,
     maxAttempts: 100,
     onopen: (e) => {},
@@ -308,8 +308,9 @@ export function receivedNewMessage(message) {
 
   // Realtime get transfer statement
   if (message.transferStatement) {
-    PaymentAPI.getAllTransferStatement().then((res) => {
-      store.dispatch(changeTransferStatements(res.data.payload));
+    PaymentAPI.getTransferStatements(0, 1).then((res) => {
+      store.dispatch(newTransferStatement(res.data.payload[0]));
+      store.dispatch(changeOffset(store.getState().paymentReducer.offset + 1));
     });
   }
 
@@ -330,8 +331,9 @@ export function receivedNewChatSession(message) {
 
   // Realtime get transfer statement
   if (message.transferStatement) {
-    PaymentAPI.getAllTransferStatement().then((res) => {
-      store.dispatch(changeTransferStatements(res.data.payload));
+    PaymentAPI.getTransferStatements(0, 1).then((res) => {
+      store.dispatch(newTransferStatement(res.data.payload[0]));
+      store.dispatch(changeOffset(store.getState().paymentReducer.offset + 1));
     });
   }
   return { type: EMPTY };

@@ -2,7 +2,6 @@ package com.hey.verticle;
 
 import com.hey.api.ApiServer;
 import com.hey.api.WsServer;
-import com.hey.auth.AuthService;
 import com.hey.cache.client.RedisCacheClient;
 import com.hey.handler.api.ProtectedApiHandler;
 import com.hey.handler.api.PublicApiHandler;
@@ -12,6 +11,7 @@ import com.hey.manager.JwtManager;
 import com.hey.manager.UserWsChannelManager;
 import com.hey.repository.DataRepository;
 import com.hey.service.APIService;
+import com.hey.service.AuthService;
 import com.hey.util.PropertiesUtils;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Future;

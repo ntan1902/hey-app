@@ -152,7 +152,7 @@ class UserControllerTest {
         transferStatementDTOList.add(ts1);
         transferStatementDTOList.add(ts2);
 
-        when(transferStatementService.getTransferStatementOfUser(page,size)).thenReturn(transferStatementDTOList);
+        when(transferStatementService.getTransferStatementsOfUser(page,size)).thenReturn(transferStatementDTOList);
 
         ApiResponse<Object> expected = ApiResponse.builder()
                 .success(true)

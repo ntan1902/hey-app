@@ -4,7 +4,6 @@ import $ from "jquery";
 
 import { channingActions } from "../utils";
 import { bindPaymentActions } from "../actions";
-import { api } from "../api/api";
 import { Select } from "antd";
 import { ChatAPI } from "../api/chat";
 
@@ -59,7 +58,6 @@ class AddFriend extends React.Component {
   };
 
   render() {
-    console.log("Friend", this.state.friends);
     return (
       <div>
         {/* <div className="new-action-menu" onClick={this.showModal}>
@@ -78,8 +76,12 @@ class AddFriend extends React.Component {
           onBlur={this.onBlur}
           onSearch={this.onSearch}
         >
-          {this.state.friends.map((e) => {
-            return <Option value={e.userId}>{e.name}</Option>;
+          {this.state.friends.map((e, index) => {
+            return (
+              <Option value={e.userId} key={index}>
+                {e.name}
+              </Option>
+            );
           })}
         </Select>
       </div>

@@ -16,6 +16,8 @@ export const PaymentAPI = {
     axios.get(`${API_LUCKY}/api/v1/getAllLuckyMoney?sessionId=${sessionId}`),
   receivedLuckymoney: (data) =>
     axios.post(`${API_LUCKY}/api/v1/receiveLuckyMoney`, data),
-  getAllTransferStatement: () =>
-    axios.get(`${API_PAYMENT}/api/v1/me/getTransferStatement`),
+  getTransferStatements: (offset, limit) =>
+    axios.get(
+      `${API_PAYMENT}/api/v1/me/getTransferStatements?offset=${offset}&limit=${limit}`
+    ),
 };

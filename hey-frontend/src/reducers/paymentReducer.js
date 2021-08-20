@@ -12,6 +12,8 @@ const initialState = {
   isAddFriendToSession: false,
   membersModal: false,
   transferStatements: [],
+  offset: 0,
+  limit: 10,
 };
 
 export default (state = initialState, action = {}) => {
@@ -75,7 +77,25 @@ export default (state = initialState, action = {}) => {
     case actionTypes.FETCH_TRANSFER_STATEMENT:
       return {
         ...state,
-        transferStatements: action.transferStatements,
+        transferStatements: [
+          ...state.transferStatements,
+          ...action.transferStatements,
+        ],
+      };
+
+    case actionTypes.NEW_TRANSFER_STATEMENT:
+      return {
+        ...state,
+        transferStatements: [
+          action.transferStatement,
+          ...state.transferStatements,
+        ],
+      };
+
+    case actionTypes.CHANGE_OFFSET:
+      return {
+        ...state,
+        offset: action.offset,
       };
     default:
       return { ...state };

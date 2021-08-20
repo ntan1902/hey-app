@@ -67,11 +67,11 @@ public class UserController {
 
 
     @SneakyThrows
-    @GetMapping("/getTransferStatement")
+    @GetMapping("/getTransferStatements")
     public ResponseEntity<ApiResponse<Object>> getTransferStatement(
-            @RequestParam(value = "page", defaultValue = "0") int page,
-            @RequestParam(value = "size", defaultValue = "10") int size) {
-        List<TransferStatementDTO> transferStatementDTOList = transferStatementService.getTransferStatementOfUser(page, size);
+            @RequestParam(value = "offset", defaultValue = "0") int offset,
+            @RequestParam(value = "limit", defaultValue = "10") int limit) {
+        List<TransferStatementDTO> transferStatementDTOList = transferStatementService.getTransferStatementsOfUser(offset, limit);
         return ResponseEntity.ok(
                 ApiResponse.builder()
                         .success(true)

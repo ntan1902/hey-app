@@ -47,9 +47,10 @@ class MessagePanel extends React.Component {
     }
   };
 
-  renderButtonMoney = (item) => {
+  renderButtonMoney = (item, index) => {
     return (
       <Button
+        key={index}
         className="money-btn"
         onClick={() => {
           this.errorAmount.current.innerText = "";
@@ -70,20 +71,20 @@ class MessagePanel extends React.Component {
     ];
     const data2 = [
       { title: "500,000", value: "500000" },
-      { title: "1,000,000", value: "10000000" },
+      { title: "1,000,000", value: "1000000" },
       { title: "2,000,000", value: "2000000" },
     ];
 
     return (
       <div className="wrapper-money-btns">
         <div className="row-money-btns">
-          {data1.map((e) => {
-            return this.renderButtonMoney(e);
+          {data1.map((e, index) => {
+            return this.renderButtonMoney(e, index);
           })}
         </div>
         <div className="row-money-btns">
-          {data2.map((e) => {
-            return this.renderButtonMoney(e);
+          {data2.map((e, index) => {
+            return this.renderButtonMoney(e, index);
           })}
         </div>
       </div>

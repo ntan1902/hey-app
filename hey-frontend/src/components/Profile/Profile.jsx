@@ -13,7 +13,7 @@ import {
   changeVisibleChangeProfile,
 } from "../../actions/modalAction";
 import InputFile from "../InputFile/InputFile";
-import { updateAvatar } from "../../actions/userAction";
+import { updateAvatar, getHasPin } from "../../actions/userAction";
 
 const pStyle = {
   fontSize: 16,
@@ -30,6 +30,10 @@ const HIDE_PROFILE_DRAWER = false;
 class Profile extends React.Component {
   constructor(props) {
     super(props);
+  }
+
+  componentDidMount() {
+    this.props.getHasPin();
   }
 
   onChangeAvatarInput = (event) => {
@@ -54,9 +58,9 @@ class Profile extends React.Component {
         onClose={() => this.props.changeStateDrawerProfile(HIDE_PROFILE_DRAWER)}
         visible={this.props.visibleProfile}
       >
-        <p style={{ ...pStyle, marginBottom: 24 }}>
+        <div style={{ ...pStyle, marginBottom: 24 }}>
           <h2>User Profile</h2>
-        </p>
+        </div>
         <Row style={{ display: "flex", justifyContent: "center" }}>
           <InputFile name="file" onChange={this.onChangeAvatarInput}>
             {this.props.profile.miniAvatar ? (
@@ -68,7 +72,7 @@ class Profile extends React.Component {
             ) : (
               <CustomAvatar
                 type="main-avatar"
-                avatar={this.props.userName}
+                avatar={this.props.profile.username}
                 size={120}
               />
             )}
@@ -87,9 +91,9 @@ class Profile extends React.Component {
         </Row>
 
         <Divider />
-        <p style={pStyle}>
+        <div style={pStyle}>
           <h2>Personal</h2>
-        </p>
+        </div>
         <Row>
           <Col span={12}>
             <DescriptionItem
@@ -139,9 +143,9 @@ class Profile extends React.Component {
           </Col>
         </Row>
         <Divider />
-        <p style={pStyle}>
+        <div style={pStyle}>
           <h2>Settings</h2>
-        </p>
+        </div>
         <Row style={{ display: "flex", justifyContent: "space-around" }}>
           <Button
             style={{ width: 150 }}
@@ -159,7 +163,7 @@ class Profile extends React.Component {
             }
             type="primary"
           >
-            Edit Pin
+            {this.props.hasPin ? "Edit Pin" : "Create Pin"}
           </Button>
           <Button
             style={{ width: 150 }}
@@ -185,6 +189,7 @@ function mapStateToProps(state) {
     balance: state.paymentReducer.balance,
     profile: state.userReducer.profile,
     userStatus: state.userReducer.userStatus,
+    hasPin: state.userReducer.hasPin,
   };
 }
 function mapDispatchToProps(dispatch) {
@@ -198,6 +203,7 @@ function mapDispatchToProps(dispatch) {
     changeVisibleChangePassword: (isVisible) =>
       dispatch(changeVisibleChangePassword(isVisible)),
     updateAvatar: (fileAvatar) => dispatch(updateAvatar(fileAvatar)),
+    getHasPin: () => dispatch(getHasPin()),
   };
 }
 

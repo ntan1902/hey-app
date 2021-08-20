@@ -62,6 +62,20 @@ export const changeTransferStatements = (transferStatements) => {
   };
 };
 
+export const newTransferStatement = (transferStatement) => {
+  return {
+    type: actionTypes.NEW_TRANSFER_STATEMENT,
+    transferStatement: transferStatement,
+  };
+};
+
+export const changeOffset = (offset) => {
+  return {
+    type: actionTypes.CHANGE_OFFSET,
+    offset: offset,
+  };
+};
+
 const switchMainScreen =
   (screenName, data = null) =>
   async (dispatch) => {
@@ -160,7 +174,7 @@ const createLuckymoney = (data) => async (dispatch) => {
 const getListLuckymoney = (sessionId) => async (dispatch) => {
   return new Promise(async (resolve, reject) => {
     try {
-      if (sessionId == -1) return;
+      if (sessionId === -1) return;
 
       const res = await PaymentAPI.getListLuckymoney(sessionId);
       await dispatch(getBalance());
@@ -185,13 +199,30 @@ const receivedLuckymoney = (data) => async (dispatch) => {
   });
 };
 
-export const getAllTransferStatement = (data) => async (dispatch) => {
+const getTransferStatements = (offset, limit) => async (dispatch) => {
   return new Promise(async (resolve, reject) => {
     try {
-      const res = await PaymentAPI.getAllTransferStatement();
+      const res = await PaymentAPI.getTransferStatements(offset, limit);
       // await dispatch(getBalance());
       // await dispatch(switchMainScreen("TransferSuccess"));
-      await dispatch(changeTransferStatements(res.data.payload));
+      dispatch(changeTransferStatements(res.data.payload));
+      dispatch(changeOffset(offset + res.data.payload.length));
+
+      resolve({ data: res.data.payload, success: true });
+    } catch (err) {
+      reject({ error: err, success: false });
+    }
+  });
+};
+
+const getNewTransferStatement = (offset) => async (dispatch) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const res = await PaymentAPI.getTransferStatements(0, 1);
+      // await dispatch(getBalance());
+      // await dispatch(switchMainScreen("TransferSuccess"));
+      dispatch(newTransferStatement(res.data.payload[0]));
+      dispatch(changeOffset(offset + 1));
       resolve({ data: res.data.payload, success: true });
     } catch (err) {
       reject({ error: err, success: false });
@@ -220,10 +251,11 @@ export const paymentActions = {
   createLuckymoney,
   getListLuckymoney,
   receivedLuckymoney,
-  getAllTransferStatement,
+  getTransferStatements,
   checkBalance,
   changeStateAddFriendPopup,
   changeStateMembersModal,
+  getNewTransferStatement,
 };
 
 export function bindPaymentActions(currentActions, dispatch) {

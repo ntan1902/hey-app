@@ -1,37 +1,27 @@
-import React from 'react';
-import { Modal, Form, Input, message } from 'antd';
-import { connect } from 'react-redux';
-import $ from 'jquery';
-import { changeVisibleChangePin } from '../../actions/modalAction';
-import { AuthAPI } from '../../api';
+import React from "react";
+import { Modal, Form, Input, message } from "antd";
+import { connect } from "react-redux";
+import $ from "jquery";
+import { changeVisibleChangePin } from "../../actions/modalAction";
+import { getHasPin } from "../../actions/userAction";
+import { AuthAPI } from "../../api";
 
 const HIDE_CHANGE_PIN_MODAL = false;
 class ChangePinModal extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      hasPin: false,
-    }
-  }
-
-  async componentDidMount() {
-    let res = await AuthAPI.hasPin();
-    this.setState({
-      hasPin: res.data.payload.hasPin,
-    });
-  }
-
   onChangePin = () => {
-    if (!this.state.hasPin) {
+    if (!this.props.hasPin) {
       AuthAPI.createPin({
         pin: $("#pin").val(),
-      }).then(res => {
-        this.props.changeVisibleChangePin(HIDE_CHANGE_PIN_MODAL);
-        message.success("Change pin success !!!");
-      }).catch(err => {
-        console.log(err.response);
-        message.error(err.response.data.message);
-      });
+      })
+        .then((res) => {
+          this.props.changeVisibleChangePin(HIDE_CHANGE_PIN_MODAL);
+          this.props.getHasPin();
+          message.success("Change pin success !!!");
+        })
+        .catch((err) => {
+          console.log(err.response);
+          message.error(err.response.data.message);
+        });
       return;
     }
 
@@ -41,16 +31,17 @@ class ChangePinModal extends React.Component {
       confirmPin: $("#confirm-pin").val(),
     };
     AuthAPI.changePin(data)
-      .then(res => {
+      .then((res) => {
         this.props.changeVisibleChangePin(HIDE_CHANGE_PIN_MODAL);
         $("#old-pin").val("");
         $("#new-pin").val("");
         $("#confirm-pin").val("");
         message.success("Change pin success !!!");
-      }).catch(err => {
+      })
+      .catch((err) => {
         console.log(err.response);
         message.error(err.response.data.message);
-      })
+      });
   };
 
   render() {
@@ -60,13 +51,15 @@ class ChangePinModal extends React.Component {
     return (
       <Modal
         visible={this.props.visibleChangePin}
-        title={this.state.hasPin ? "Change Pin" : "Create your new PIN"}
+        title={this.props.hasPin ? "Change Pin" : "Create your new PIN"}
         okText="Ok"
-        onCancel={() => this.props.changeVisibleChangePin(HIDE_CHANGE_PIN_MODAL)}
+        onCancel={() =>
+          this.props.changeVisibleChangePin(HIDE_CHANGE_PIN_MODAL)
+        }
         onOk={this.onChangePin}
       >
         <Form layout="vertical">
-          {this.state.hasPin ? (
+          {this.props.hasPin ? (
             <div>
               <Form.Item label="Old Pin">
                 {getFieldDecorator("old-pin", {
@@ -124,19 +117,25 @@ class ChangePinModal extends React.Component {
         </Form>
       </Modal>
     );
-  };
+  }
 }
 
 function mapStateToProps(state) {
   return {
     visibleChangePin: state.modalReducer.visibleChangePin,
-  }
+    hasPin: state.userReducer.hasPin,
+  };
 }
 
 function mapDispatchToProps(dispatch) {
   return {
-    changeVisibleChangePin: (isVisible) => dispatch(changeVisibleChangePin(isVisible))
-  }
+    changeVisibleChangePin: (isVisible) =>
+      dispatch(changeVisibleChangePin(isVisible)),
+    getHasPin: () => dispatch(getHasPin()),
+  };
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(Form.create()(ChangePinModal));
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(Form.create()(ChangePinModal));

@@ -60,7 +60,6 @@ class ChatHeader extends React.Component {
     const IconFont = Icon.createFromIconfontCN({
       scriptUrl: "//at.alicdn.com/t/font_8d5l8fzk5b87iudi.js",
     });
-    console.log("Header", this.props.header);
     return (
       <div className="chat-header">
         <div style={{ width: 50 }}>

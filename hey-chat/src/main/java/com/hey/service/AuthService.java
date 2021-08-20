@@ -1,4 +1,4 @@
-package com.hey.auth;
+package com.hey.service;
 
 import com.hey.model.EditProfileRequest;
 import com.hey.util.PropertiesUtils;

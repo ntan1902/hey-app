@@ -1,5 +1,5 @@
 import React from "react";
-import { Menu } from "antd";
+import { Menu, Spin } from "antd";
 import CustomAvatar from "../../components/custom-avatar";
 import Topup from "./top-up";
 
@@ -10,20 +10,36 @@ import { Scrollbars } from "react-custom-scrollbars";
 import { channingActions } from "../../utils";
 import { bindPaymentActions } from "../../actions";
 
-class AddressBook extends React.Component {
+class Payment extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       current: [],
       newselect: [],
+      isAll: false,
     };
+    this.divLoadMore = React.createRef();
     this.handleCurrentChange = this.handleCurrentChange.bind(this);
     this.handleNewChange = this.handleNewChange.bind(this);
   }
 
   componentDidMount() {
-    // this.props.loadAddressBookList();
-    this.props.paymentActions.getAllTransferStatement();
+    this.observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          this.props.paymentActions
+            .getTransferStatements(this.props.offset, this.props.limit)
+            .then((res) => {
+              this.setState({
+                isAll: res.data.length < 10,
+              });
+            });
+        });
+      },
+      { threshold: 1 }
+    );
+
+    this.observer.observe(this.divLoadMore.current);
   }
 
   handleCurrentChange(event) {
@@ -40,14 +56,6 @@ class AddressBook extends React.Component {
       .then((res) => {
         console.log("res");
       });
-    // this.props.handleChangeAddressBook(
-    //   this.props.addressBookList[event.key].userId
-    // );
-    // this.props.changeMessageHeader(
-    //   this.props.addressBookList[event.key].name,
-    //   this.props.addressBookList[event.key].avatar,
-    //   false
-    // );
   }
 
   handleNewChange(event) {
@@ -72,12 +80,38 @@ class AddressBook extends React.Component {
     // );
   }
 
+  // handleScroll = (event) => {
+  //   let { scrollHeight, clientHeight, scrollTop } = event.currentTarget;
+  //   console.log({ scrollHeight, clientHeight, scrollTop });
+  //   if (
+  //     !this.state.isAll &&
+  //     scrollHeight === clientHeight + scrollTop + 1 &&
+  //   ) {
+  //     this.setState((preState) => ({
+  //       page: preState.page + 1,
+  //     }));
+  //     this.props.paymentActions
+  //       .getTransferStatement(this.state.page, this.state.size)
+  //       .then((res) => {
+  //         this.setState((preState) => ({
+  //           data: [...preState.data, ...res.data],
+  //           isAll: res.data.length < 10,
+  //         }));
+  //       });
+  //   }
+  // };
+
   render() {
     if (this.props.transferStatements == []) return;
     return (
       <div className="d-flex flex-column full-height address-book-menu">
         <Topup />
-        <Scrollbars autoHide autoHideTimeout={500} autoHideDuration={200}>
+        <Scrollbars
+          autoHide
+          autoHideTimeout={500}
+          autoHideDuration={200}
+          // onScroll={this.handleScroll}
+        >
           <hr className="hr-sub-menu-title" />
           <div className="sub-menu-title">
             Transfer Statements ({this.props.transferStatements.length})
@@ -120,6 +154,17 @@ class AddressBook extends React.Component {
               </Menu.Item>
             ))}
           </Menu>
+          <div style={{ height: 10 }} />
+          {!this.state.isAll && (
+            <div
+              ref={this.divLoadMore}
+              id="load_more"
+              style={{ display: "flex", justifyContent: "center" }}
+            >
+              <Spin size="large" />
+            </div>
+          )}
+          <div style={{ height: 10 }} />
         </Scrollbars>
       </div>
     );
@@ -132,6 +177,8 @@ export default connect(
     addFriendErrorMessage: state.addressBookReducer.addFriendErrorMessage,
     addFriendPopup: state.addressBookReducer.topup,
     transferStatements: state.paymentReducer.transferStatements,
+    offset: state.paymentReducer.offset,
+    limit: state.paymentReducer.limit,
   }),
   (dispatch) => channingActions({}, dispatch, bindPaymentActions)
-)(AddressBook);
+)(Payment);

@@ -4,9 +4,9 @@ import com.hey.payment.entity.TransferStatement;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.test.annotation.DirtiesContext;
 
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 
@@ -30,6 +30,7 @@ class TransferStatementRepositoryTest {
                                 .targetId(2L)
                                 .transferFee(0L)
                                 .transferType("transfer")
+                                .createdAt(LocalDateTime.of(2021,8,1,12,19,20))
                                 .status(2)
                                 .build(),
                         TransferStatement.builder()
@@ -39,13 +40,14 @@ class TransferStatementRepositoryTest {
                                 .targetId(1L)
                                 .transferFee(0L)
                                 .transferType("transfer")
+                                .createdAt(LocalDateTime.of(2021,8,1,11,19,20))
                                 .status(2)
                                 .build()
                 );
         underTest.saveAll(expected);
 
         // when
-        List<TransferStatement> actual = underTest.findAllBySourceIdOrTargetId(1L, PageRequest.of(0, 10));
+        List<TransferStatement> actual = underTest.findAllBySourceIdOrTargetIdOrderByCreatedAtDesc(1L, 0, 10);
 
         // then
         assertThat(actual).isEqualTo(expected);
