@@ -1,9 +1,8 @@
 import React, { useEffect, useRef, useState } from "react";
 import { getJwtFromStorage } from "../../utils/utils";
-import { API_WS } from "../../config/setting";
-
 import Sockette from "sockette";
 import Peer from "peerjs";
+import { API_WS } from "../../config/setting";
 
 import "./CallPopUp.css";
 import RemoteVideo from "../../components/RemoteVideo/RemoteVideo";
