@@ -1,20 +1,16 @@
 import React from "react";
-import { Button, Icon, Input, Layout, Menu } from "antd";
-// import CustomAvatar from "../components/custom-avatar";
-import ChatList from "../../components/chat-list";
+import { Button, Input, Layout } from "antd";
 import AddressBook from "../../components/address-book";
-import ChatHeader from "../../components/chat-header";
 import Profile from "../../components/profile";
 import MessagePanel from "../../components/message-panel";
+import { connect } from "react-redux";
 import {
   closeWebSocket,
   initialWebSocket,
   loadChatContainer,
   submitChatMessage,
 } from "../../actions/chatAction";
-import { connect } from "react-redux";
-import { isAuthenticated, isEmptyString } from "../../utils/utils";
-import { Redirect } from "react-router-dom";
+import { isEmptyString } from "../../utils/utils";
 import $ from "jquery";
 
 const { Header, Content, Footer, Sider } = Layout;
@@ -80,10 +76,10 @@ class Chat extends React.Component {
             <Profile />
             <div className="menu-separation" />
             <AddressBook />
-          </Sider>
+          </Sider>{" "}
           <div className="chat-container" style={{ padding: 0 }}>
-            {/* <ChatHeader /> */}
-            <MessagePanel />
+            {" "}
+            {/* <ChatHeader /> */} <MessagePanel />
             <div className="chat-footer">
               <TextArea
                 id="messageTextArea"
@@ -93,11 +89,11 @@ class Chat extends React.Component {
                 ref="messageTextArea"
               />
               <Button type="primary" onClick={this.handleSendClick}>
-                Send
-              </Button>
-            </div>
-          </div>
-        </Layout>
+                Send{" "}
+              </Button>{" "}
+            </div>{" "}
+          </div>{" "}
+        </Layout>{" "}
       </div>
     );
   }
