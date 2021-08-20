@@ -10,6 +10,7 @@ import { Provider } from "react-redux";
 
 import { store } from "./store";
 import DOM from 'react-dom';
+import CallPopUp from "./pages/VideoCall/CallPopUp";
 
 window.store = store;
 
@@ -19,6 +20,7 @@ DOM.render(
       <div style={{ overflow: "hidden" }}>
         <Route exact path="/login" component={Portal} />
         <Route exact path="/" component={Main} />
+        <Route exact path="/call" component={CallPopUp} />
       </div>
     </Router>
   </Provider>,

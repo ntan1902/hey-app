@@ -629,7 +629,7 @@ public class APIService extends BaseService {
     private List<String> getListFullNameExcludedCurrentUser(String currentUserId, List<UserHash> userHashes) {
         List<String> listFullNameExcludedCurrentUser = new ArrayList<>();
         for (UserHash userHash : userHashes) {
-            if(!userHash.getUserId().equals(currentUserId)) {
+            if (!userHash.getUserId().equals(currentUserId)) {
                 listFullNameExcludedCurrentUser.add(userHash.getFullName());
             }
         }
@@ -1716,6 +1716,89 @@ public class APIService extends BaseService {
                 future.fail(new HeyHttpStatusException(HttpStatus.BAD_REQUEST.code(), "400", "You aren't in that group!"));
             }
         }, Future.future().setHandler(handler -> future.fail(handler.cause())));
+        return future;
+    }
+
+    public Future<JsonObject> makeCall(MakeCallRequest makeCallRequest, String userId) {
+        Future<JsonObject> future = Future.future();
+        Future<ChatList> getChatListBySessionIdFuture = getChatListBySessionId(makeCallRequest.getSessionId());
+        getChatListBySessionIdFuture.compose(chatList -> {
+            HaveCallDTO haveCallDTO = new HaveCallDTO();
+            haveCallDTO.setType(IWsMessage.HAVE_CALL);
+            haveCallDTO.setGroupName(chatList.getGroupName().equals("") ? chatList.getSessionId() : chatList.getGroupName());
+            haveCallDTO.setSessionId(chatList.getSessionId());
+            haveCallDTO.setVideoCall(makeCallRequest.getIsVideoCall());
+            for (UserHash userhash : chatList.getUserHashes()) {
+                if (!userhash.getUserId().equals(userId)) {
+                    userWsChannelManager.sendMessage(haveCallDTO, userhash.getUserId());
+                }
+            }
+
+            JsonObject apiResponse = new JsonObject();
+            apiResponse.put("success", true);
+            apiResponse.put("code", 200);
+            apiResponse.put("message", "Make call successfully");
+            apiResponse.put("payload", "");
+            future.complete(apiResponse);
+
+        }, Future.future().setHandler(handler -> future.fail(handler.cause())));
+        return future;
+    }
+
+    public Future<JsonObject> joinCall(JoinCallRequest joinCallRequest, String userId) {
+        Future<JsonObject> future = Future.future();
+        Future<ChatList> getChatListBySessionIdFuture = getChatListBySessionId(joinCallRequest.getSessionId());
+        getChatListBySessionIdFuture.compose(chatList -> {
+            JoinCallDTO joinCallDTO = new JoinCallDTO();
+            joinCallDTO.setType(IWsMessage.JOIN_CALL);
+            joinCallDTO.setPeerId(joinCallRequest.getPeerId());
+            for (UserHash userhash : chatList.getUserHashes()) {
+                if (!userhash.getUserId().equals(userId)) {
+                    userWsChannelManager.sendMessage(joinCallDTO, userhash.getUserId());
+                }
+            }
+
+            JsonObject apiResponse = new JsonObject();
+            apiResponse.put("success", true);
+            apiResponse.put("code", 200);
+            apiResponse.put("message", "Join call successfully");
+            apiResponse.put("payload", "");
+            future.complete(apiResponse);
+
+        }, Future.future().setHandler(handler -> future.fail(handler.cause())));
+        return future;
+    }
+
+    public Future<JsonObject> getICEServer() {
+        Future<JsonObject> future = Future.future();
+        JsonObject request = new JsonObject();
+        request.put("format", "urls");
+        webClient.putAbs("https://global.xirsys.net/_turn/hey-app")
+                .putHeader("Authorization", "Basic bmdvY3Ryb25nMTAyOjBjZjRhZDMyLTk1ZTItMTFlYi05YzJkLTAyNDJhYzE1MDAwMg==")
+                .putHeader("Content-Type", "application/json")
+                .putHeader("Content-Length", "17")
+                .sendJsonObject(request, httpResponseAsyncResult -> {
+                    if (httpResponseAsyncResult.succeeded()) {
+                        JsonObject iceServers = httpResponseAsyncResult.result().bodyAsJsonObject().getJsonObject("v").getJsonObject("iceServers");
+
+                        List<JsonObject> servers = iceServers.getJsonArray("urls").stream().map(url -> {
+                            JsonObject server = new JsonObject();
+                            server.put("username", iceServers.getString("username"));
+                            server.put("url", url);
+                            server.put("credential", iceServers.getString("credential"));
+                            return server;
+                        }).collect(Collectors.toList());
+
+                        JsonObject apiResponse = new JsonObject();
+                        apiResponse.put("success", true);
+                        apiResponse.put("code", 200);
+                        apiResponse.put("message", "");
+                        apiResponse.put("payload", servers);
+                        future.complete(apiResponse);
+                    }
+                });
+
+
         return future;
     }
 

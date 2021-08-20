@@ -74,6 +74,7 @@ public class HeyVerticle extends AbstractVerticle {
             // API Service
             APIService apiService = new APIService(userWsChannelManager, AuthService.getInstance());
             apiService.setDataRepository(repository);
+            apiService.setWebClient(webClient);
 
             // Protected API Handler
             ProtectedApiHandler protectedApiHandler = new ProtectedApiHandler();
