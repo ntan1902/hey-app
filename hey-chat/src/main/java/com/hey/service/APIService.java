@@ -1903,4 +1903,42 @@ public class APIService extends BaseService {
 
         return future;
     }
+
+    public Future<JsonObject> rejectCall(RejectCallRequest rejectCallRequest, String userId) {
+        Future<JsonObject> future = Future.future();
+        Future<ChatList> getChatListBySessionIdFuture = getChatListBySessionId(rejectCallRequest.getSessionId());
+        getChatListBySessionIdFuture.compose(chatList -> {
+            RejectCallDTO rejectCallDTO = new RejectCallDTO();
+            rejectCallDTO.setType(IWsMessage.REJECT_CAL);
+            rejectCallDTO.setSessionId(rejectCallRequest.getSessionId());
+            rejectCallDTO.setGroup(chatList.isGroup());
+            for (UserHash userHash : chatList.getUserHashes()) {
+                if (userHash.getUserId().equals(userId)) {
+                    rejectCallDTO.setFullName(userHash.getFullName());
+                }
+            }
+            if (rejectCallDTO.getFullName() == null) {
+                JsonObject apiResponse = new JsonObject();
+                apiResponse.put("success", true);
+                apiResponse.put("code", 400);
+                apiResponse.put("message", "You are not in that group!");
+                apiResponse.put("payload", "");
+                future.complete(apiResponse);
+            } else {
+                for (UserHash userhash : chatList.getUserHashes()) {
+                    if (!userhash.getUserId().equals(userId)) {
+                        userWsChannelManager.sendMessage(rejectCallDTO, userhash.getUserId());
+                    }
+                }
+
+                JsonObject apiResponse = new JsonObject();
+                apiResponse.put("success", true);
+                apiResponse.put("code", 200);
+                apiResponse.put("message", "Reject call successfully");
+                apiResponse.put("payload", "");
+                future.complete(apiResponse);
+            }
+        }, Future.future().setHandler(handler -> future.fail(handler.cause())));
+        return future;
+    }
 }
