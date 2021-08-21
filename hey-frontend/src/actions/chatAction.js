@@ -216,7 +216,7 @@ export function submitChatMessage(message) {
 
 export function receivedChatList(chatList) {
   const fetchedChatList = chatList;
-  let header = {};
+  let header = null;
   if (fetchedChatList.length > 0) {
     // header = {
     //   title:
@@ -369,11 +369,12 @@ export function changeMessageItems(chatItems, sessionId) {
   };
 }
 
-export function changeMessageHeader(title, avatar, group) {
+export function changeMessageHeader(title, avatar, group, userIds = []) {
   const header = {
     title: title,
     avatar: avatar,
     group: group,
+    userIds: userIds,
   };
   return { type: MESSAGE_HEADER_FETCHED, messageHeader: header };
 }

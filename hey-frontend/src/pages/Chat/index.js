@@ -1,11 +1,15 @@
 import React from "react";
-import {Input, Layout} from "antd";
+import { Input, Layout } from "antd";
 import ChatList from "../../components/chat-list";
 import ChatHeader from "../../components/ChatHeader/chat-header";
 import Profile from "../../components/profile";
 import MessagePanel from "../../components/message-panel";
-import {closeWebSocket, initialWebSocket, loadChatContainer,} from "../../actions/chatAction";
-import {connect} from "react-redux";
+import {
+  closeWebSocket,
+  initialWebSocket,
+  loadChatContainer,
+} from "../../actions/chatAction";
+import { connect } from "react-redux";
 import LuckyMoney from "../../components/lucky-money";
 import AddFriendSession from "../../components/add-friend-session";
 import MembersModal from "../../components/MembersModal/MembersModal";
@@ -55,8 +59,16 @@ class Chat extends React.Component {
             <AddFriendSession />
             <MembersModal />
             <ChatHeader />
-            <MessagePanel />
-            <FormConversation />
+            {this.props.currentSessionId != null ? (
+              <MessagePanel />
+            ) : (
+              <div></div>
+            )}
+            {this.props.currentSessionId != null ? (
+              <FormConversation />
+            ) : (
+              <div></div>
+            )}
           </div>
         </Layout>
       </div>
@@ -67,6 +79,7 @@ class Chat extends React.Component {
 function mapStateToProps(state) {
   return {
     userName: state.userReducer.userName,
+    currentSessionId: state.chatReducer.currentSessionId,
   };
 }
 

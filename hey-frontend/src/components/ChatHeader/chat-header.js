@@ -7,6 +7,8 @@ import { Menu, Icon, Button, Input } from "antd";
 import { channingActions } from "../../utils";
 import { bindChatActions, bindPaymentActions } from "../../actions";
 import { ChatAPI } from "../../api/chat";
+import { getProfileURL } from "../../utils";
+import { getUserIdFromStorage } from "../../utils/utils";
 
 import popupWindow from "../../utils/popupWindow";
 
@@ -21,7 +23,7 @@ class ChatHeader extends React.Component {
       isHover: false,
       current: "",
       status_box_state: false,
-      groupTitle: this.props.header.title,
+      groupTitle: "",
     };
   }
   handleClick = (e) => {
@@ -99,22 +101,289 @@ class ChatHeader extends React.Component {
     });
   };
 
+  renderListAvatar = (item) => {
+    if (item.group == false || item.userIds.length == 1) {
+      let singleId = item.userIds[0];
+      if (item.userIds.length != 1)
+        singleId = item.userIds.filter((e) => e != getUserIdFromStorage());
+
+      return (
+        <CustomAvatar
+          type="avatar"
+          src={getProfileURL(singleId)}
+          size={60}
+          style={{
+            // position: "absolute",
+            // left: 10,
+            // top: 10,
+            border: "0.5px solid white",
+            cursor: "pointer",
+          }}
+        />
+      );
+    }
+
+    let userIdsSlice = item.userIds;
+    if (item.userIds.length == 2) {
+      userIdsSlice = item.userIds.slice(0, 2);
+      return (
+        <div
+          style={{
+            width: 60,
+            height: 60,
+            position: "relative",
+          }}
+        >
+          <CustomAvatar
+            type="avatar"
+            src={getProfileURL(userIdsSlice[0])}
+            size={40}
+            style={{
+              position: "absolute",
+              right: 0,
+              top: 0,
+              border: "0.5px solid white",
+              cursor: "pointer",
+            }}
+          />
+
+          <CustomAvatar
+            type="avatar"
+            src={getProfileURL(userIdsSlice[1])}
+            size={40}
+            style={{
+              position: "absolute",
+              left: 0,
+              bottom: 0,
+              border: "0.5px solid white",
+              cursor: "pointer",
+            }}
+          />
+        </div>
+      );
+    }
+
+    if (item.userIds.length == 3) {
+      userIdsSlice = item.userIds.slice(0, 3);
+      return (
+        <div
+          style={{
+            width: 60,
+            height: 60,
+            position: "relative",
+          }}
+        >
+          <CustomAvatar
+            type="avatar"
+            src={getProfileURL(userIdsSlice[1])}
+            size={30}
+            style={{
+              position: "absolute",
+              left: 4,
+              bottom: 4,
+              border: "0.5px solid white",
+              cursor: "pointer",
+            }}
+          />
+
+          <CustomAvatar
+            type="avatar"
+            src={getProfileURL(userIdsSlice[2])}
+            size={30}
+            style={{
+              position: "absolute",
+              right: 4,
+              bottom: 4,
+              border: "0.5px solid white",
+              cursor: "pointer",
+            }}
+          />
+          <CustomAvatar
+            type="avatar"
+            src={getProfileURL(userIdsSlice[0])}
+            size={30}
+            style={{
+              position: "absolute",
+              left: 15,
+              top: 4,
+              border: "0.5px solid white",
+              cursor: "pointer",
+            }}
+          />
+        </div>
+      );
+    }
+
+    if (item.userIds.length == 4) {
+      userIdsSlice = item.userIds.slice(0, 4);
+      return (
+        <div
+          style={{
+            width: 60,
+            height: 60,
+            position: "relative",
+          }}
+        >
+          <CustomAvatar
+            type="avatar"
+            src={getProfileURL(userIdsSlice[0])}
+            size={30}
+            style={{
+              position: "absolute",
+              left: 2,
+              top: 0,
+              border: "0.5px solid white",
+              cursor: "pointer",
+            }}
+          />
+
+          <CustomAvatar
+            type="avatar"
+            src={getProfileURL(userIdsSlice[1])}
+            size={30}
+            style={{
+              position: "absolute",
+              right: 2,
+              top: 0,
+              border: "0.5px solid white",
+              cursor: "pointer",
+            }}
+          />
+
+          <CustomAvatar
+            type="avatar"
+            src={getProfileURL(userIdsSlice[2])}
+            size={30}
+            style={{
+              position: "absolute",
+              right: 2,
+              bottom: 4,
+              border: "0.5px solid white",
+              cursor: "pointer",
+            }}
+          />
+          <CustomAvatar
+            type="avatar"
+            src={getProfileURL(userIdsSlice[3])}
+            size={30}
+            style={{
+              position: "absolute",
+              left: 2,
+              bottom: 4,
+              border: "0.5px solid white",
+              cursor: "pointer",
+            }}
+          />
+        </div>
+      );
+    }
+
+    if (item.userIds.length > 4) {
+      userIdsSlice = item.userIds.slice(0, 4);
+      return (
+        <div
+          style={{
+            width: 60,
+            height: 60,
+            position: "relative",
+          }}
+        >
+          <CustomAvatar
+            type="avatar"
+            src={getProfileURL(userIdsSlice[0])}
+            size={30}
+            style={{
+              position: "absolute",
+              left: 2,
+              top: 0,
+              border: "0.5px solid white",
+              cursor: "pointer",
+            }}
+          />
+
+          <CustomAvatar
+            type="avatar"
+            src={getProfileURL(userIdsSlice[1])}
+            size={30}
+            style={{
+              position: "absolute",
+              right: 2,
+              top: 0,
+              border: "0.5px solid white",
+              cursor: "pointer",
+            }}
+          />
+          <CustomAvatar
+            type="avatar"
+            src={getProfileURL(userIdsSlice[3])}
+            size={30}
+            style={{
+              position: "absolute",
+              left: 2,
+              bottom: 4,
+              border: "0.5px solid white",
+              cursor: "pointer",
+            }}
+          />
+          <CustomAvatar
+            type="avatar"
+            src={getProfileURL(userIdsSlice[2])}
+            size={30}
+            style={{
+              position: "absolute",
+              right: 2,
+              bottom: 4,
+              border: "0.5px solid white",
+              cursor: "pointer",
+            }}
+          />
+
+          <div
+            style={{
+              width: 30,
+              height: 30,
+              backgroundColor: "rgba(232, 234, 239,0.8)",
+              borderRadius: 30,
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              position: "absolute",
+              right: 2,
+              bottom: 4,
+              border: "0.5px solid white",
+              cursor: "pointer",
+              zIndex: 1000,
+            }}
+          >
+            <p
+              style={{
+                padding: 0,
+                margin: 0,
+                color: "#72808e",
+                fontWeight: "lighter",
+                fontSize: 12,
+              }}
+            >
+              {item.userIds.length - 3}
+            </p>
+          </div>
+        </div>
+      );
+    }
+  };
+
   render() {
     console.log("Header", this.props);
     const IconFont = Icon.createFromIconfontCN({
       scriptUrl: "//at.alicdn.com/t/font_8d5l8fzk5b87iudi.js",
     });
+
+    if (this.props.header == {} || !this.props.header) return null;
+
     return (
       <div className="chat-header">
         <div style={{ width: 50 }}>
-          {this.props.header.group ? (
-            <CustomAvatar type="panel-group-avatar" />
-          ) : (
-            <CustomAvatar
-              type="panel-avatar"
-              avatar={this.props.header.avatar}
-            />
-          )}
+          {this.renderListAvatar(this.props.header)}
         </div>
         <div style={{ overflow: "hidden", paddingTop: 5, marginLeft: 5 }}>
           {!this.state.status_box_state || !this.props.header.group ? (
@@ -187,32 +456,35 @@ class ChatHeader extends React.Component {
                   </svg>
                 </button>
               </li>
-
-              <li>
-                <button
-                  style={{
-                    backgroundColor: this.state.isHover
-                      ? "rgba(228, 225, 225, 0.733)"
-                      : "white",
-                  }}
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="20"
-                    height="20"
-                    viewBox="0 0 24 24"
-                    fill="#212529"
-                    stroke="#212529"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
+              {this.props.header.group ? (
+                <li>
+                  <button
+                    style={{
+                      backgroundColor: this.state.isHover
+                        ? "rgba(228, 225, 225, 0.733)"
+                        : "white",
+                    }}
                   >
-                    <circle cx="12" cy="12" r="1"></circle>
-                    <circle cx="19" cy="12" r="1"></circle>
-                    <circle cx="5" cy="12" r="1"></circle>
-                  </svg>
-                </button>
-              </li>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="20"
+                      height="20"
+                      viewBox="0 0 24 24"
+                      fill="#212529"
+                      stroke="#212529"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <circle cx="12" cy="12" r="1"></circle>
+                      <circle cx="19" cy="12" r="1"></circle>
+                      <circle cx="5" cy="12" r="1"></circle>
+                    </svg>
+                  </button>
+                </li>
+              ) : (
+                <div></div>
+              )}
             </ul>
           </div>
         </div>
