@@ -1,5 +1,5 @@
 import React from "react";
-import {connect} from "react-redux";
+import { connect } from "react-redux";
 import ChatItem from "./chat-item";
 
 class MessagePanel extends React.Component {
@@ -12,6 +12,7 @@ class MessagePanel extends React.Component {
   }
 
   render() {
+    console.log("MEssage Item", this.props.messageItems);
     return (
       <div className="chat-content">
         <div
@@ -27,6 +28,7 @@ class MessagePanel extends React.Component {
             showavatar={item.showavatar}
             avatar={item.avatar}
             date={item.createdDate}
+            userId={item.userId}
           />
         ))}
       </div>

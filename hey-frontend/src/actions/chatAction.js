@@ -244,8 +244,6 @@ export function receivedReloadChatList(chatList) {
 }
 
 export function receivedNewMessage(message) {
-  console.log("New Message", message);
-
   let currentSessionId = store.getState().chatReducer.currentSessionId;
   let userId = getUserIdFromStorage();
   let userSelected = store.getState().chatReducer.userSelected;
@@ -259,11 +257,18 @@ export function receivedNewMessage(message) {
     chatList = deepcopy(store.getState().chatReducer.chatList);
   }
 
+  let title = "";
+
+  if (message.changeGroupName) {
+    title = JSON.parse(message.message).content.groupName;
+  }
+
   if (currentSessionId == message.sessionId) {
     let type = 1;
     if (message.userId != userId) {
       type = 2;
     }
+
     let showAvatar = true;
     if (
       messageItems.length > 0 &&
@@ -287,6 +292,7 @@ export function receivedNewMessage(message) {
       if (chatList[i].sessionId == message.sessionId) {
         userSelected = message.sessionId;
         chatList[i].lastMessage = message.message;
+        chatList[i].groupName = title;
         var temp = chatList[i];
         chatList.splice(i, 1);
         chatList.unshift(temp);
@@ -298,6 +304,8 @@ export function receivedNewMessage(message) {
     for (var i = 0; i < chatList.length; i++) {
       if (chatList[i].sessionId == message.sessionId) {
         chatList[i].lastMessage = message.message;
+        chatList[i].groupName = title;
+
         chatList[i].unread = chatList[i].unread + 1;
         var temp = chatList[i];
         chatList.splice(i, 1);
@@ -320,6 +328,7 @@ export function receivedNewMessage(message) {
     messageItems: messageItems,
     chatList: chatList,
     userSelected: userSelected,
+    title: title,
   };
 }
 

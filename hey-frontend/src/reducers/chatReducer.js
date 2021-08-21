@@ -1,23 +1,25 @@
 import {
-    ADD_NEW_START_CHAT_GROUP,
-    ADD_NEW_START_CHAT_GROUP_FAIL,
-    CHATLIST_FETCHED,
-    CHATLIST_REFETCHED,
-    MESSAGE_HEADER_FETCHED,
-    MESSAGE_PANEL_FETCHED,
-    NEW_MESSAGE_IN_PANEL_FETCHED,
-    REMOVE_START_CHAT_GROUP,
-    START_CHAT_GROUP,
-    START_CHAT_SINGLE,
-    USER_SELECTED,
-    WEBSOCKET_FETCHED,
+  ADD_NEW_START_CHAT_GROUP,
+  ADD_NEW_START_CHAT_GROUP_FAIL,
+  CHATLIST_FETCHED,
+  CHATLIST_REFETCHED,
+  MESSAGE_HEADER_FETCHED,
+  MESSAGE_PANEL_FETCHED,
+  NEW_MESSAGE_IN_PANEL_FETCHED,
+  REMOVE_START_CHAT_GROUP,
+  START_CHAT_GROUP,
+  START_CHAT_SINGLE,
+  USER_SELECTED,
+  WEBSOCKET_FETCHED,
 } from "../actions/chatAction";
 import * as actionTypes from "../actions/actionTypes";
 
 const initialState = {
   chatList: [],
   messageItems: [],
-  messageHeader: {},
+  messageHeader: {
+    title: "",
+  },
   webSocket: null,
   currentSessionId: null,
   startChatGroupList: [],
@@ -95,6 +97,10 @@ export default function reduce(state = initialState, action) {
         ...state,
         messageItems: action.messageItems,
         chatList: action.chatList,
+        messageHeader: {
+          ...state.messageHeader,
+          title: action.title,
+        },
       };
     case MESSAGE_HEADER_FETCHED:
       return {

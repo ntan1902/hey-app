@@ -1,21 +1,33 @@
 import React from "react";
-import {Form, Icon, Layout, Menu} from "antd";
+import { Form, Icon, Layout, Menu } from "antd";
 import CustomAvatar from "../components/custom-avatar";
 import Chat from "./Chat";
 import Friend from "./Friend";
 import Payment from "./Payment";
 import ProfileScreen from "./Profile";
 
-import {closeWebSocket, initialWebSocket, loadChatContainer, submitChatMessage,} from "../actions/chatAction";
-import {connect} from "react-redux";
-import {clearStorage, isAuthenticated, isEmptyString, setUserIdToStorage,} from "../utils/utils";
-import {Redirect} from "react-router-dom";
+import {
+  closeWebSocket,
+  initialWebSocket,
+  loadChatContainer,
+  submitChatMessage,
+} from "../actions/chatAction";
+import { connect } from "react-redux";
+import {
+  clearStorage,
+  isAuthenticated,
+  isEmptyString,
+  setUserIdToStorage,
+} from "../utils/utils";
+import { Redirect } from "react-router-dom";
 import $ from "jquery";
-import {channingActions} from "../utils";
-import {bindAuthActions, bindPaymentActions} from "../actions";
-import {changeStateDrawerProfile} from "../actions/modalAction";
+import { channingActions } from "../utils";
+import { bindAuthActions, bindPaymentActions } from "../actions";
+import { changeStateDrawerProfile } from "../actions/modalAction";
 import Profile from "../components/Profile/Profile";
-import {setProfile} from "../actions/userAction";
+import { setProfile } from "../actions/userAction";
+import { getProfileURL } from "../utils";
+import { getUserIdFromStorage } from "../utils/utils";
 
 const { Sider } = Layout;
 
@@ -121,17 +133,10 @@ class Main extends React.Component {
                 this.showDrawerProfile();
               }}
             >
-              {this.props.profile.miniAvatar ? (
-                <CustomAvatar
-                  type="main-avatar"
-                  src={this.props.profile.miniAvatar}
-                />
-              ) : (
-                <CustomAvatar
-                  type="main-avatar"
-                  avatar={this.props.profile.username}
-                />
-              )}
+              <CustomAvatar
+                type="main-avatar"
+                src={getProfileURL(getUserIdFromStorage())}
+              />
             </div>
             <Profile />
             <div className="menu-separation" />

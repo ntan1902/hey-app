@@ -1,10 +1,15 @@
 import React from "react";
-import {Menu} from "antd";
+import { Menu } from "antd";
 import CustomAvatar from "../components/custom-avatar";
 import StartChatGroup from "./start-chat-group";
-import {connect} from "react-redux";
-import {changeMessageHeader, loadChatContainer, loadChatList, userSelected,} from "../actions/chatAction";
-import {Scrollbars} from "react-custom-scrollbars";
+import { connect } from "react-redux";
+import {
+  changeMessageHeader,
+  loadChatContainer,
+  loadChatList,
+  userSelected,
+} from "../actions/chatAction";
+import { Scrollbars } from "react-custom-scrollbars";
 
 class ChatList extends React.Component {
   constructor(props) {
@@ -37,6 +42,7 @@ class ChatList extends React.Component {
 
   render() {
     if (this.props.chatList) {
+      console.log(this.props.chatList, " CAFWEFWEF");
       return (
         <div className="d-flex flex-column full-height">
           <StartChatGroup />

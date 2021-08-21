@@ -1,19 +1,21 @@
 import React from "react";
-import {connect} from "react-redux";
-import {Button, Col, Divider, Drawer, Icon, message, Row} from "antd";
+import { connect } from "react-redux";
+import { Button, Col, Divider, Drawer, Icon, message, Row } from "antd";
 import DescriptionItem from "../DescriptionItem/DescriptionItem";
 import ChangePasswordModal from "../ChangePasswordModal/ChangePasswordModal";
 import ChangePinModal from "../ChangePinModal/ChangePinModal";
 import ChangeProfileModal from "../ChangeProfileModal/ChangeProfileModal";
 import CustomAvatar from "../custom-avatar";
 import {
-    changeStateDrawerProfile,
-    changeVisibleChangePassword,
-    changeVisibleChangePin,
-    changeVisibleChangeProfile,
+  changeStateDrawerProfile,
+  changeVisibleChangePassword,
+  changeVisibleChangePin,
+  changeVisibleChangeProfile,
 } from "../../actions/modalAction";
 import InputFile from "../InputFile/InputFile";
-import {getHasPin, updateAvatar} from "../../actions/userAction";
+import { getHasPin, updateAvatar } from "../../actions/userAction";
+import { getProfileURL } from "../../utils";
+import { getUserIdFromStorage } from "../../utils/utils";
 
 const pStyle = {
   fontSize: 16,
@@ -63,19 +65,11 @@ class Profile extends React.Component {
         </div>
         <Row style={{ display: "flex", justifyContent: "center" }}>
           <InputFile name="file" onChange={this.onChangeAvatarInput}>
-            {this.props.profile.miniAvatar ? (
-              <CustomAvatar
-                type="main-avatar"
-                src={this.props.profile.miniAvatar}
-                size={120}
-              />
-            ) : (
-              <CustomAvatar
-                type="main-avatar"
-                avatar={this.props.profile.username}
-                size={120}
-              />
-            )}
+            <CustomAvatar
+              type="main-avatar"
+              src={getProfileURL(getUserIdFromStorage())}
+              size={120}
+            />
             <Icon
               type="plus-circle"
               theme={"outlined"}
