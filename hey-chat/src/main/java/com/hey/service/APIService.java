@@ -122,8 +122,11 @@ public class APIService extends BaseService {
     private ChatListItem getChatListItem(String userId, ChatList chatList) {
         ChatListItem chatListItem = new ChatListItem();
 
-        List<String> listFullNameExcludedCurrentUser = getListFullNameExcludedCurrentUser(userId,
-                chatList.getUserHashes());
+        List<UserHash> userHashes = chatList.getUserHashes();
+        List<String> listFullNameExcludedCurrentUser = getListFullNameExcludedCurrentUser(
+                userId,
+                userHashes
+        );
 
         if (listFullNameExcludedCurrentUser.size() > 1) {
             // Chat Group
@@ -135,8 +138,7 @@ public class APIService extends BaseService {
             chatListItem.setName(listFullNameExcludedCurrentUser.get(0));
         } else {
             // Just only current user in group
-            chatList.getUserHashes()
-                    .stream()
+            userHashes.stream()
                     .findAny()
                     .filter(userHash -> userHash.getUserId().equals(userId))
                     .ifPresentOrElse(
@@ -147,6 +149,10 @@ public class APIService extends BaseService {
 
         chatListItem.setGroupName(chatList.getGroupName());
         chatListItem.setGroup(chatList.isGroup());
+
+        List<String> userIds = new ArrayList<>();
+        userHashes.forEach(userHash -> userIds.add(userHash.getUserId()));
+        chatListItem.setUserIds(userIds);
 
         chatListItem.setSessionId(chatList.getSessionId());
         chatListItem.setLastMessage(chatList.getLastMessage());
