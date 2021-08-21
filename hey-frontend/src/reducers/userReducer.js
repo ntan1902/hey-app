@@ -1,11 +1,11 @@
 import {
-    CHANGE_STATUS,
-    CHANGE_TAB,
-    HAS_PIN,
-    REGISTER_SUCCEEDED,
-    SET_PROFILE,
-    UPDATE_AVATAR,
-    USER_PROFILE,
+  CHANGE_STATUS,
+  CHANGE_TAB,
+  HAS_PIN,
+  REGISTER_SUCCEEDED,
+  SET_PROFILE,
+  UPDATE_AVATAR,
+  USER_PROFILE,
 } from "../actions/userAction";
 
 const initialState = {
@@ -14,7 +14,7 @@ const initialState = {
   userFullName: "",
   userName: "",
   userStatus: "",
-  profile: {},
+  profile: { avatar: "" },
   hasPin: false,
 };
 

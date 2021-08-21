@@ -1,7 +1,7 @@
 import React from "react";
 import Gravatar from "react-gravatar";
 import Ravatar from "react-avatar";
-import {Avatar} from "antd";
+import { Avatar } from "antd";
 
 class CustomAvatar extends React.Component {
   state = { visible: true };
@@ -14,7 +14,10 @@ class CustomAvatar extends React.Component {
           className={customClassName}
           src={this.props.src}
           size={this.props.size}
-          style={{ border: "3px solid gray", cursor: "pointer" }}
+          style={
+            ({ border: "3px solid gray", cursor: "pointer" },
+            { ...this.props.style })
+          }
         />
       );
     }
@@ -37,7 +40,11 @@ class CustomAvatar extends React.Component {
           <Avatar
             icon="plus"
             className={customClassName}
-            style={{ fontSize: 30 }}
+            size={this.props.size}
+            style={
+              ({ border: "3px solid gray", cursor: "pointer" },
+              { ...this.props.style })
+            }
           />
         );
       case "panel-avatar":

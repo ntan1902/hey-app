@@ -65,11 +65,14 @@ class Profile extends React.Component {
         </div>
         <Row style={{ display: "flex", justifyContent: "center" }}>
           <InputFile name="file" onChange={this.onChangeAvatarInput}>
-            <CustomAvatar
-              type="main-avatar"
-              src={getProfileURL(getUserIdFromStorage())}
-              size={120}
-            />
+            {this.props.profile.avatar && (
+              <CustomAvatar
+                type="main-avatar"
+                src={getProfileURL(getUserIdFromStorage())}
+                size={120}
+              />
+            )}
+
             <Icon
               type="plus-circle"
               theme={"outlined"}

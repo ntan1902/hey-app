@@ -9,7 +9,8 @@ export function channingActions(currentActions, dispatch, ...actionGenerators) {
   }, currentActions);
 }
 
-export function getProfileURL(userId) {
+export function getProfileURL(userId, isBig = false) {
+  if (!isBig) userId = userId + "_400";
   return `${SITE_URL}auth/api/v1/users/images/${userId}.png`;
 }
 

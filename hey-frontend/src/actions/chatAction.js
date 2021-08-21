@@ -544,6 +544,7 @@ function getChatList() {
             groupName: items[index].groupName,
             group: items[index].group,
             updatedDate: items[index].updatedDate,
+            userIds: items[index].userIds,
           };
           results.push(chatItem);
         }
