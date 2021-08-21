@@ -53,9 +53,9 @@ const CallPopUp = ({
           path: "/",
           port: 443,
           secure: true,
-          // config: {
-          //   iceServers: ICEServer,
-          // },
+          config: {
+            iceServers: ICEServer,
+          },
         });
         peer.on("open", async (id) => {
           peer.on("call", function (call) {

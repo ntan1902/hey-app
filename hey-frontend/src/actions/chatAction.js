@@ -196,8 +196,8 @@ export function specialLoadChatContainer(sessionId) {
 
 export function submitChatMessage(message) {
   let sessionId = store.getState().chatReducer.currentSessionId;
-  let waitingGroupUsernames =
-    store.getState().chatReducer.waitingGroupUsernames;
+  let waitingGroupUsernames = store.getState().chatReducer
+    .waitingGroupUsernames;
 
   let groupName = store.getState().chatReducer.messageHeader.title;
   store
@@ -232,8 +232,7 @@ export function receivedChatList(chatList) {
     type: CHATLIST_FETCHED,
     fetchedChatList: fetchedChatList,
     messageHeader: header,
-    currentSessionId:
-      fetchedChatList.length > 0 ? fetchedChatList[0].sessionId : null,
+    currentSessionId: null,
   };
 }
 

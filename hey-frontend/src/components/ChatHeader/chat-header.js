@@ -455,68 +455,64 @@ class ChatHeader extends React.Component {
                   </svg>
                 </button>
               </li>
-              {this.props.header.group ? (
-                <li>
-                  <button
-                    style={{
-                      backgroundColor: this.state.isHover
-                        ? "rgba(228, 225, 225, 0.733)"
-                        : "white",
-                    }}
+              <li>
+                <button
+                  style={{
+                    backgroundColor: this.state.isHover
+                      ? "rgba(228, 225, 225, 0.733)"
+                      : "white",
+                  }}
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="20"
+                    height="20"
+                    viewBox="0 0 24 24"
+                    fill="#212529"
+                    stroke="#212529"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
                   >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="20"
-                      height="20"
-                      viewBox="0 0 24 24"
-                      fill="#212529"
-                      stroke="#212529"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    >
-                      <circle cx="12" cy="12" r="1"></circle>
-                      <circle cx="19" cy="12" r="1"></circle>
-                      <circle cx="5" cy="12" r="1"></circle>
-                    </svg>
-                  </button>
-                </li>
-              ) : (
-                <div></div>
-              )}
+                    <circle cx="12" cy="12" r="1"></circle>
+                    <circle cx="19" cy="12" r="1"></circle>
+                    <circle cx="5" cy="12" r="1"></circle>
+                  </svg>
+                </button>
+              </li>
             </ul>
           </div>
         </div>
-        {this.props.header.group ? (
-          <Menu
-            onClick={this.handleClick}
-            // selectedKeys={[this.state.current]}
-            mode="horizontal"
-            style={{
-              position: "absolute",
-              top: 5,
-              right: 10,
-              opacity: 0,
-            }}
-            onMouseEnter={() => this.setState({ isHover: true })}
-            onMouseLeave={() => this.setState({ isHover: false })}
-          >
-            <Menu.ItemGroup title="Lucky Money">
-              <Menu.Item
-                key="setting:1"
-                onClick={() => this.showLuckyMoneyModal(true)}
-              >
-                <Icon style={{ fontSize: 20 }} type="plus" />
-                Create New One
-              </Menu.Item>
-              <Menu.Item
-                key="setting:2"
-                onClick={() => this.showLuckyMoneyModal(false)}
-              >
-                <Icon style={{ fontSize: 20 }} type="money-collect" />
-                View List
-              </Menu.Item>
-            </Menu.ItemGroup>
+        <Menu
+          onClick={this.handleClick}
+          selectedKeys={[this.state.current]}
+          mode="horizontal"
+          style={{
+            position: "absolute",
+            top: 5,
+            right: 10,
+            opacity: 0,
+          }}
+          onMouseEnter={() => this.setState({ isHover: true })}
+          onMouseLeave={() => this.setState({ isHover: false, current: 0 })}
+        >
+          <Menu.ItemGroup title="Lucky Money">
+            <Menu.Item
+              key="setting:1"
+              onClick={() => this.showLuckyMoneyModal(true)}
+            >
+              <Icon style={{ fontSize: 20 }} type="plus" />
+              Create New One
+            </Menu.Item>
+            <Menu.Item
+              key="setting:2"
+              onClick={() => this.showLuckyMoneyModal(false)}
+            >
+              <Icon style={{ fontSize: 20 }} type="money-collect" />
+              View List
+            </Menu.Item>
+          </Menu.ItemGroup>
+          {this.props.header.group ? (
             <Menu.ItemGroup title="Settings">
               <Menu.Item
                 key="setting:3"
@@ -541,10 +537,10 @@ class ChatHeader extends React.Component {
                 Leave
               </Menu.Item>
             </Menu.ItemGroup>
-          </Menu>
-        ) : (
-          <div> </div>
-        )}
+          ) : (
+            <div> </div>
+          )}
+        </Menu>
       </div>
     );
   }
