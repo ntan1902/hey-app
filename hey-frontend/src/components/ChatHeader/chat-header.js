@@ -54,7 +54,7 @@ class ChatHeader extends React.Component {
   };
   makeCall = async (isVideoCall) => {
     // window.hadCall = true;
-    var newWindow = popupWindow(`/call`, "Video call", 600, 800);
+    var newWindow = popupWindow(`/call`, "Video call", 900, 700);
     // if (newWindow) newWindow.makeCall(user, conversation, true);
     if (newWindow) {
       newWindow.addEventListener("load", async () => {
@@ -388,8 +388,7 @@ class ChatHeader extends React.Component {
         <div style={{ overflow: "hidden", paddingTop: 5, marginLeft: 5 }}>
           {!this.state.status_box_state || !this.props.header.group ? (
             <div onClick={this.openChangeTitle} className="panel-message">
-              {" "}
-              {this.props.header.title}{" "}
+              {this.props.header.title}
             </div>
           ) : (
             <Input
@@ -488,7 +487,6 @@ class ChatHeader extends React.Component {
             </ul>
           </div>
         </div>
-
         {this.props.header.group ? (
           <Menu
             onClick={this.handleClick}
@@ -545,7 +543,7 @@ class ChatHeader extends React.Component {
             </Menu.ItemGroup>
           </Menu>
         ) : (
-          <div></div>
+          <div> </div>
         )}
       </div>
     );

@@ -1378,7 +1378,7 @@ public class APIService extends BaseService {
             throw new RuntimeException(handler.cause());
         }));
     }
-
+    
     public Future<JsonObject> editProfile(EditProfileRequest editProfileRequest, String userId) {
         Future<JsonObject> future = Future.future();
         List<Future> futures = new ArrayList<>();
