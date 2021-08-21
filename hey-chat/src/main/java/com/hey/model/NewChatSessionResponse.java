@@ -6,6 +6,7 @@ public class NewChatSessionResponse extends WsMessage implements Serializable {
 
     private String sessionId;
     private boolean isTransferStatement;
+    private boolean isChangeGroupName;
 
     public String getSessionId() {
         return sessionId;
@@ -21,5 +22,13 @@ public class NewChatSessionResponse extends WsMessage implements Serializable {
 
     public void setTransferStatement(boolean transferStatement) {
         isTransferStatement = transferStatement;
+    }
+
+    public boolean isChangeGroupName() {
+        return isChangeGroupName;
+    }
+
+    public void setChangeGroupName(boolean changeGroupName) {
+        isChangeGroupName = changeGroupName;
     }
 }
