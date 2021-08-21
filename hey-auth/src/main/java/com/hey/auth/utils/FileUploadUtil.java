@@ -65,7 +65,12 @@ public class FileUploadUtil {
         try {
             Path uploadPath = originalUploadPath.resolve("");
             Path destination = uploadPath.resolve(filename);
-            return IOUtils.toByteArray(destination.toUri());
+            if (Files.exists(destination)) {
+                return IOUtils.toByteArray(destination.toUri());
+            } else {
+                Path noAvatarPath = uploadPath.resolve("noAvatar.png");
+                return IOUtils.toByteArray(noAvatarPath.toUri());
+            }
         } catch (MalformedURLException e) {
             throw new RuntimeException("Error: " + e.getMessage());
         } catch (IOException e) {
