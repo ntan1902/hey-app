@@ -1,7 +1,7 @@
 import React from "react";
 import Gravatar from "react-gravatar";
 import Ravatar from "react-avatar";
-import { Avatar } from "antd";
+import {Avatar} from "antd";
 
 class CustomAvatar extends React.Component {
   state = { visible: true };

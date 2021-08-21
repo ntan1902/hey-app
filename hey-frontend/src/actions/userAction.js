@@ -1,6 +1,6 @@
-import { message } from "antd";
-import { AuthAPI } from "../api";
-import { ChatAPI } from "../api/chat";
+import {message} from "antd";
+import {AuthAPI} from "../api";
+import {ChatAPI} from "../api/chat";
 
 export const CHANGE_TAB = "portal.CHANGE_TAB";
 export const REGISTER_SUCCEEDED = "user.REGISTER_SUCCEEDED";

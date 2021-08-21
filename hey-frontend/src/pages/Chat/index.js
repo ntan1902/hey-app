@@ -1,17 +1,11 @@
 import React from "react";
-import { Button, Input, Layout } from "antd";
+import {Input, Layout} from "antd";
 import ChatList from "../../components/chat-list";
 import ChatHeader from "../../components/ChatHeader/chat-header";
 import Profile from "../../components/profile";
 import MessagePanel from "../../components/message-panel";
-import {
-  closeWebSocket,
-  initialWebSocket,
-  loadChatContainer,
-} from "../../actions/chatAction";
-import { connect } from "react-redux";
-import { isEmptyString } from "../../utils/utils";
-import $ from "jquery";
+import {closeWebSocket, initialWebSocket, loadChatContainer,} from "../../actions/chatAction";
+import {connect} from "react-redux";
 import LuckyMoney from "../../components/lucky-money";
 import AddFriendSession from "../../components/add-friend-session";
 import MembersModal from "../../components/MembersModal/MembersModal";

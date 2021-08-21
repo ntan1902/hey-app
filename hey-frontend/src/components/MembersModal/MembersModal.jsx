@@ -1,9 +1,9 @@
 import React from "react";
-import { Modal, Menu, Icon } from "antd";
-import { connect } from "react-redux";
+import {Icon, Menu, Modal} from "antd";
+import {connect} from "react-redux";
 import CustomAvatar from "../../components/custom-avatar";
-import { bindPaymentActions, bindChatActions } from "../../actions";
-import { channingActions } from "../../utils";
+import {bindChatActions, bindPaymentActions} from "../../actions";
+import {channingActions} from "../../utils";
 
 class MembersModal extends React.Component {
   constructor(props) {

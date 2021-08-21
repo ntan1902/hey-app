@@ -1,6 +1,6 @@
 import React from "react";
-import { connect } from "react-redux";
-import { Button, Icon, Input } from "antd";
+import {connect} from "react-redux";
+import {Button, Input} from "antd";
 import NumericInput from "../../components/numberic-input";
 import Transfer from "../../components/transfer";
 import AddFriendTransfer from "../../components/add-friend-transfer";

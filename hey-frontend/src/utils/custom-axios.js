@@ -3,14 +3,14 @@ import _ from "lodash";
 import queryString from "query-string";
 
 import {
-  isAuthenticated,
-  getJwtFromStorage,
-  getRefreshTokenFromStorage,
-  setJwtToStorage,
-  clearStorage,
-  isEmptyString,
+    clearStorage,
+    getJwtFromStorage,
+    getRefreshTokenFromStorage,
+    isAuthenticated,
+    isEmptyString,
+    setJwtToStorage,
 } from "./utils";
-import { API_AUTH, SITE_URL } from "../config/setting";
+import {API_AUTH, SITE_URL} from "../config/setting";
 
 const axiosInstance = axios.create({
   baseURL: SITE_URL,

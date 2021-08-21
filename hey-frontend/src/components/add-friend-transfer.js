@@ -1,11 +1,11 @@
 import React from "react";
-import { connect } from "react-redux";
+import {connect} from "react-redux";
 import $ from "jquery";
 
-import { channingActions } from "../utils";
-import { bindPaymentActions } from "../actions";
-import { Select } from "antd";
-import { ChatAPI } from "../api/chat";
+import {channingActions} from "../utils";
+import {bindPaymentActions} from "../actions";
+import {Select} from "antd";
+import {ChatAPI} from "../api/chat";
 
 const { Option } = Select;
 

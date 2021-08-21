@@ -1,10 +1,10 @@
-import { store } from "../store";
-import { loadChatContainer, startNewChatSingle } from "./chatAction";
-import { isEmptyString } from "../utils/utils";
+import {store} from "../store";
+import {loadChatContainer, startNewChatSingle} from "./chatAction";
+import {isEmptyString} from "../utils/utils";
 import deepcopy from "deepcopy";
-import { AuthAPI } from "../api";
-import { message } from "antd";
-import { ChatAPI } from "../api/chat";
+import {AuthAPI} from "../api";
+import {message} from "antd";
+import {ChatAPI} from "../api/chat";
 
 export const ADDRESSBOOK_FETCHED = "addressBook.ADDRESSBOOK_FETCHED";
 export const WAITINGFRIEND_FETCHED = "addressBook.WAITINGFRIEND_FETCHED";

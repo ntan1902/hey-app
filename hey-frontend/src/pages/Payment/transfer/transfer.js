@@ -1,12 +1,14 @@
 import React from "react";
 import { connect } from "react-redux";
-import { Button, Icon, Input } from "antd";
+import { Button, Input } from "antd";
 import NumericInput from "../../../components/numberic-input";
 import Transfer from "../../../components/transfer";
 import AddFriendTransfer from "../../../components/add-friend-transfer";
-import { DocTien, formatToCurrency, currencyToString } from "../../../utils";
-
-import { channingActions } from "../../../utils";
+import {
+  channingActions,
+  currencyToString,
+  formatToCurrency,
+} from "../../../utils";
 import { bindPaymentActions } from "../../../actions";
 
 import "./transfer.css";

@@ -1,7 +1,9 @@
 import * as actionTypes from "./actionTypes";
+
 import { bindActionCreators } from "redux";
 import { PaymentAPI, AuthAPI } from "../api";
 import { Button, message, notification } from "antd/lib/index";
+
 /* Get */
 
 const onShow = (screenName, data) => {

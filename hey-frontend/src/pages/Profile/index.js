@@ -2,12 +2,7 @@ import React from "react";
 import {Layout} from "antd";
 import Payment from "./payment";
 import Profile from "../../components/profile";
-import {
-    closeWebSocket,
-    initialWebSocket,
-    loadChatContainer,
-    submitChatMessage,
-} from "../../actions/chatAction";
+import {closeWebSocket, initialWebSocket, loadChatContainer, submitChatMessage,} from "../../actions/chatAction";
 import {connect} from "react-redux";
 import {isEmptyString} from "../../utils/utils";
 import $ from "jquery";

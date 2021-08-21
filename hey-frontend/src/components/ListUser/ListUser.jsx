@@ -1,7 +1,7 @@
 import React from 'react';
 import {Menu} from 'antd';
 import CustomAvatar from "../../components/custom-avatar";
-import { connect } from 'react-redux';
+import {connect} from 'react-redux';
 
 class ListUser extends React.Component {
     constructor(props) {

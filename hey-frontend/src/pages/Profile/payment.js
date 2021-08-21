@@ -1,12 +1,12 @@
 import React from "react";
-import { Menu } from "antd";
+import {Menu} from "antd";
 import Topup from "./top-up";
 
-import { connect } from "react-redux";
-import { Scrollbars } from "react-custom-scrollbars";
+import {connect} from "react-redux";
+import {Scrollbars} from "react-custom-scrollbars";
 
-import { channingActions } from "../../utils";
-import { bindPaymentActions } from "../../actions";
+import {channingActions} from "../../utils";
+import {bindPaymentActions} from "../../actions";
 
 class AddressBook extends React.Component {
   constructor(props) {

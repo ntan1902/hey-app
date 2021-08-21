@@ -1,10 +1,10 @@
 import React from "react";
-import { Modal, Form, Input, message } from "antd";
-import { connect } from "react-redux";
+import {Form, Input, message, Modal} from "antd";
+import {connect} from "react-redux";
 import $ from "jquery";
-import { changeVisibleChangePin } from "../../actions/modalAction";
-import { getHasPin } from "../../actions/userAction";
-import { AuthAPI } from "../../api";
+import {changeVisibleChangePin} from "../../actions/modalAction";
+import {getHasPin} from "../../actions/userAction";
+import {AuthAPI} from "../../api";
 
 const HIDE_CHANGE_PIN_MODAL = false;
 class ChangePinModal extends React.Component {

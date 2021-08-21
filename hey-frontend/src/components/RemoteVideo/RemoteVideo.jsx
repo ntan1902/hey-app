@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react"
+import React, {useEffect, useRef} from "react"
 
 const RemoteVideo = ({ stream, changeCurrenStream }) => {
   var videoTag = useRef();
