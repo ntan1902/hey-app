@@ -1,6 +1,7 @@
 package com.hey.model;
 
 import java.util.Date;
+import java.util.List;
 
 public class ChatListItem {
     private String name;
@@ -10,6 +11,7 @@ public class ChatListItem {
     private Date updatedDate;
     private String groupName;
     private boolean isGroup;
+    private List<String> userIds;
 
     public String getName() {
         return name;
@@ -65,5 +67,13 @@ public class ChatListItem {
 
     public void setGroup(boolean group) {
         isGroup = group;
+    }
+
+    public List<String> getUserIds() {
+        return userIds;
+    }
+
+    public void setUserIds(List<String> userIds) {
+        this.userIds = userIds;
     }
 }
