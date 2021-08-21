@@ -1,10 +1,10 @@
 import React from "react";
 import CustomAvatar from "./custom-avatar";
-import {SlideDown} from "react-slidedown";
+import { SlideDown } from "react-slidedown";
 
-import {Avatar, Card} from "antd";
-import {currency, formatToCurrency} from "../utils";
-
+import { Avatar, Card } from "antd";
+import { currency, formatToCurrency } from "../utils";
+import { getProfileURL } from "../utils/";
 const { Meta } = Card;
 
 class ChatItem extends React.Component {
@@ -146,7 +146,7 @@ class ChatItem extends React.Component {
         <div className={"chat-item " + cssClass}>
           <CustomAvatar
             type="chat-avatar"
-            avatar={this.props.avatar}
+            src={getProfileURL(this.props.userId)}
             show={this.props.showavatar}
           />
           {this.renderChat()}

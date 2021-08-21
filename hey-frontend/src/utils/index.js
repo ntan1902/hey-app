@@ -1,12 +1,17 @@
-import {axios} from "./custom-axios";
+import { axios } from "./custom-axios";
 import DocTien from "./docTien";
-
+import { SITE_URL } from "../config/setting";
 export function channingActions(currentActions, dispatch, ...actionGenerators) {
   return actionGenerators.reduce((accActions, actionGenerator) => {
     return {
       ...actionGenerator(accActions, dispatch),
     };
   }, currentActions);
+}
+
+export function getProfileURL(userId, isBig = false) {
+  if (!isBig) userId = userId + "_400";
+  return `${SITE_URL}auth/api/v1/users/images/${userId}.png`;
 }
 
 const formatToCurrency = (amount) => {

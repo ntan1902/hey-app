@@ -130,6 +130,7 @@ class ChatHeader extends React.Component {
               value={this.state.groupTitle}
               ref="statusInput"
               onChange={this.onChangeTitle}
+              onPressEnter={this.closeStatusBoxStateTitle}
               style={{ width: 300, height: 40 }}
             />
           )}
