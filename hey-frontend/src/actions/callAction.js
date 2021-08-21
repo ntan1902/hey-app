@@ -34,9 +34,10 @@ const setScreenStream = (screenStream) => {
         screenStream
     }
 }
-const removeScreenStream = () => {
+const removeRemoteStream = (stream) => {
     return {
-        type: "REMOVE_SCREEN_STREAM",
+        type: "REMOVE_REMOTE_STREAM",
+        stream
     }
 }
 
@@ -52,9 +53,8 @@ let joinCallHandle = ({ peerId }) => {
             remoteStream
         })
     });
-    var screenStream = store.getState().callReducer.screenStream;
-    if (screenStream) {
-        store.getState().callReducer.peer.call(peerId, screenStream);
+    if (store.getState().callReducer.screenStream) {
+        store.getState().callReducer.peer.call(peerId, store.getState().callReducer.screenStream);
     }
 };
 
@@ -118,7 +118,7 @@ export {
     appendRemoteStreams,
     setPeer,
     setScreenStream,
-    removeScreenStream,
+    removeRemoteStream,
     initSocket,
     answerPeerCall,
     shareScreen

@@ -16,7 +16,6 @@ function callReducer(state = initialState, action) {
                 ...state,
                 peer: action.peer
             }
-
         case "SET_LOCAL_STREAM":
             return {
                 ...state,
@@ -25,7 +24,8 @@ function callReducer(state = initialState, action) {
         case "APPEND_REMOTE_STREAMS":
 
             {
-                if (!state.remoteStreams.includes(action.remoteStream)) {
+                if (!state.remoteStreams.map(stream => stream.id).includes(action.remoteStream.id)) {
+                    console.log(state.remoteStreams);
                     return {
                         ...state,
                         remoteStreams: [...state.remoteStreams, action.remoteStream]
@@ -51,10 +51,10 @@ function callReducer(state = initialState, action) {
                 ...state,
                 screenStream: action.screenStream
             }
-        case "REMOVE_SCREEN_STREAM":
+        case "REMOVE_REMOTE_STREAM":
             return {
                 ...state,
-                screenStream: null
+                remoteStreams: state.remoteStreams.filter(remoteStream => remoteStream.id != action.stream.id)
             }
         default:
             return state;

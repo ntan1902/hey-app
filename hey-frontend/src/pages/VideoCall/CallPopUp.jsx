@@ -1,8 +1,7 @@
-import React, { useEffect, useRef, useState, useReducer } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { getJwtFromStorage } from "../../utils/utils";
-import Sockette from "sockette";
 import Peer from "peerjs";
-import { API_WS } from "../../config/setting";
+import { Icon } from "antd";
 
 import "./CallPopUp.css";
 import RemoteVideo from "../../components/RemoteVideo/RemoteVideo";
@@ -12,7 +11,6 @@ import { connect } from "react-redux";
 import {
   setPeer,
   appendRemoteStreams,
-  removeScreenStream,
   setLocalStream,
   setScreenStream,
   initSocket,
@@ -30,6 +28,9 @@ const CallPopUp = ({
   setScreenStream,
   initSocket,
 }) => {
+  var [showNavVideo, setShowNavVideo] = useState(true);
+  var [enableVoice, setEnableVoice] = useState(true);
+  var [enableVideo, setEnableVideo] = useState(true);
   var videoCurrentTag = useRef();
 
   const jwt = getJwtFromStorage();
@@ -66,6 +67,7 @@ const CallPopUp = ({
       window.makeCall = async (sessionId, isVideoCall) => {
         let _localStream = await getMediaStream(isVideoCall);
         setLocalStream(_localStream);
+        setEnableVideo(isVideoCall);
         ChatAPI.makeCall(sessionId, isVideoCall);
       };
 
@@ -106,17 +108,45 @@ const CallPopUp = ({
       shareScreen(peerId);
     });
   };
+  const toggleVoice = () => {
+    localStream.getAudioTracks()[0].enabled = !enableVoice;
+    setEnableVoice(!enableVoice);
+  };
+  const toggleVideo = () => {
+    localStream.getVideoTracks()[0].enabled = !enableVideo;
+    setEnableVideo(!enableVideo);
+  };
   return (
     <div className="call-pop-up-focus">
       <div className="current-video">
         <video ref={videoCurrentTag} autoPlay={true} />
       </div>
-      <LocalVideo stream={localStream} />
-      <div className="group-video">{renderRemoteVideo}</div>
+      <div className={`videos-nav ${showNavVideo ? "" : "hidden"}`}>
+        <div className="group-video">{renderRemoteVideo}</div>
+        <LocalVideo stream={localStream} />
+        <button
+          className={`toggle-nav ${showNavVideo ? "" : "hidden"}`}
+          onClick={() => setShowNavVideo(!showNavVideo)}
+        >
+          <Icon type="right" />
+        </button>
+      </div>
       <div className="actions">
-        <button>MIC</button>
-        <button>Out</button>
-        <button onClick={handleShareScreen}>Share</button>
+        <button onClick={toggleVoice} className={enableVoice ? "" : "disable"}>
+          <Icon type="audio" style={{ fontSize: 23 }} />
+        </button>
+        <button onClick={toggleVideo} className={enableVideo ? "" : "disable"}>
+          <Icon type="video-camera" style={{ fontSize: 23 }} />
+        </button>
+        <button onClick={handleShareScreen}>
+          <Icon
+            type="import"
+            style={{ fontSize: 23, transform: "rotate(90deg)" }}
+          />
+        </button>
+        <button style={{ backgroundColor: "red" }}>
+          <Icon type="phone" style={{ fontSize: 23 }} />
+        </button>
       </div>
     </div>
   );
@@ -136,7 +166,6 @@ function mapDispatchToProps(dispatch) {
     setPeer: (peer) => dispatch(setPeer(peer)),
     appendRemoteStreams: (remoteStream) =>
       dispatch(appendRemoteStreams(remoteStream)),
-    removeScreenStream: () => dispatch(removeScreenStream()),
     setLocalStream: (localStream) => dispatch(setLocalStream(localStream)),
     setScreenStream: (screenStream) => dispatch(setScreenStream(screenStream)),
     initSocket: (jwt) => dispatch(initSocket(jwt)),
