@@ -1,16 +1,30 @@
 import React, { useRef, useState } from "react";
-import Picker from "emoji-picker-react";
+import "emoji-mart/css/emoji-mart.css";
+import { Picker } from "emoji-mart-virtualized";
 import { connect } from "react-redux";
 import { submitChatMessage } from "../../actions/chatAction";
 
 import "./FormConversation.css";
+import TextArea from "antd/lib/input/TextArea";
 
 const FormConversation = ({ submitChatMessage }) => {
   var [message, setMessage] = useState("");
   var picker = useRef();
+  var [showPicker, setShowPicker] = useState(false);
 
-  const onEmojiClick = (event, emojiObject) => {
-    setMessage(message + emojiObject.emoji);
+  const selectEmoji = (emoji) => {
+    console.log(emoji);
+    setMessage(message + emoji.native);
+  };
+
+  const handleEnter = (e) => {
+    if (!e.shiftKey) {
+      e.preventDefault();
+      if (message != "") {
+        submitChatMessage(message);
+      }
+      setMessage("");
+    }
   };
 
   const handleSubmit = (e) => {
@@ -21,17 +35,18 @@ const FormConversation = ({ submitChatMessage }) => {
     setMessage("");
   };
   const togglePicker = (e) => {
-    picker.current.classList.toggle("hidden");
+    setShowPicker(!showPicker);
   };
   return (
     <div className="form-conversation">
       <form onSubmit={handleSubmit}>
-        <input
+        <TextArea
           className="mess-content"
           type="text"
           value={message}
           placeholder="Nhập tin nhắn ..."
           onChange={(e) => setMessage(e.target.value)}
+          onPressEnter={handleEnter}
         />
         <div className="icon-wrapper">
           <button className="icon" type="button" onClick={togglePicker}>
@@ -53,7 +68,7 @@ const FormConversation = ({ submitChatMessage }) => {
             </svg>
           </button>
           <div className="icon-picker hidden" ref={picker}>
-            <Picker onEmojiClick={onEmojiClick} />
+            {showPicker && <Picker onSelect={selectEmoji} set="apple" />}
           </div>
         </div>
         <button className="submit" type="submit">

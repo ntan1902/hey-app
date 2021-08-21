@@ -62,18 +62,6 @@ class Chat extends React.Component {
             <MembersModal />
             <ChatHeader />
             <MessagePanel />
-            {/* <div className="chat-footer">
-              <TextArea
-                id="messageTextArea"
-                onPressEnter={this.handleMessageEnter}
-                rows={1}
-                placeholder="Type a new message"
-                ref="messageTextArea"
-              />
-              <Button type="primary" onClick={this.handleSendClick}>
-                Send
-              </Button>
-            </div> */}
             <FormConversation />
           </div>
         </Layout>
