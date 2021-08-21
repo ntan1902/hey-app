@@ -7,6 +7,7 @@ import {connect} from "react-redux";
 import {closeWebSocket, initialWebSocket, loadChatContainer, submitChatMessage,} from "../../actions/chatAction";
 import {isEmptyString} from "../../utils/utils";
 import $ from "jquery";
+import ChatHeader from "../../components/ChatHeader/chat-header";
 
 const { Header, Content, Footer, Sider } = Layout;
 const { TextArea } = Input;
@@ -74,7 +75,8 @@ class Chat extends React.Component {
           </Sider>{" "}
           <div className="chat-container" style={{ padding: 0 }}>
             {" "}
-            {/* <ChatHeader /> */} <MessagePanel />
+            <ChatHeader />
+            <MessagePanel />
             <div className="chat-footer">
               <TextArea
                 id="messageTextArea"
