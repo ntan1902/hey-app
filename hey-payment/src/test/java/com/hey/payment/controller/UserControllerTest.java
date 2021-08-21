@@ -162,7 +162,7 @@ class UserControllerTest {
                 .build();
         // when
         MockHttpServletResponse actual = mockMvc.perform(
-                get(String.format( "/payment/api/v1/me/getTransferStatement?page=%d&size=%d", page,size))
+                get(String.format( "/payment/api/v1/me/getTransferStatements?offset=%d&size=%d", page,size))
         ).andReturn().getResponse();
         // then
         assertEquals(HttpStatus.OK.value(),actual.getStatus());
