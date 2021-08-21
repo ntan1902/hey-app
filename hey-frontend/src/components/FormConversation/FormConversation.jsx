@@ -1,15 +1,8 @@
-<<<<<<< HEAD
 import React, { useRef, useState } from "react";
 import "emoji-mart/css/emoji-mart.css";
 import { Picker } from "emoji-mart-virtualized";
 import { connect } from "react-redux";
 import { submitChatMessage } from "../../actions/chatAction";
-=======
-import React, {useRef, useState} from "react";
-import Picker from "emoji-picker-react";
-import {connect} from "react-redux";
-import {submitChatMessage} from "../../actions/chatAction";
->>>>>>> develop
 
 import "./FormConversation.css";
 import TextArea from "antd/lib/input/TextArea";
