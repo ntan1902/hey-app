@@ -1,14 +1,12 @@
 import React from "react";
-import { Modal, Input, Alert } from "antd";
+import {Alert, Input, Modal} from "antd";
 import CustomAvatar from "../components/custom-avatar";
-import {
-  changeStateAddFriendPopup,
-  addNewFriendRequest,
-} from "../actions/addressBookAction";
-import { connect } from "react-redux";
+import {addNewFriendRequest, changeStateAddFriendPopup,} from "../actions/addressBookAction";
+import {connect} from "react-redux";
 import $ from "jquery";
 import ListUser from "./ListUser/ListUser";
-import { AuthAPI } from "../api";
+import {AuthAPI} from "../api";
+
 class AddFriend extends React.Component {
   constructor(props) {
     super(props);

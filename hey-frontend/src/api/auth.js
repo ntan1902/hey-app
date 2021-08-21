@@ -1,5 +1,5 @@
-import { axios } from "../utils/custom-axios";
-import { API_AUTH } from "../config/setting";
+import {axios} from "../utils/custom-axios";
+import {API_AUTH} from "../config/setting";
 
 export const AuthAPI = {
     /* Get Event */

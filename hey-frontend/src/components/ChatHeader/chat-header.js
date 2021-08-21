@@ -1,11 +1,11 @@
 import React from "react";
-import { connect } from "react-redux";
+import {connect} from "react-redux";
 import CustomAvatar from "../custom-avatar";
-import { Menu, Icon, Button } from "antd";
+import {Icon, Menu} from "antd";
 
-import { channingActions } from "../../utils";
-import { bindChatActions, bindPaymentActions } from "../../actions";
-import { ChatAPI } from "../../api/chat";
+import {channingActions} from "../../utils";
+import {bindChatActions, bindPaymentActions} from "../../actions";
+import {ChatAPI} from "../../api/chat";
 
 import popupWindow from "../../utils/popupWindow";
 

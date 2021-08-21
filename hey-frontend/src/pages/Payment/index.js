@@ -1,16 +1,11 @@
 import React from "react";
-import { Input, Layout } from "antd";
+import {Layout} from "antd";
 // import CustomAvatar from "../components/custom-avatar";
 import Payment from "./payment";
 import Profile from "../../components/profile";
-import {
-  closeWebSocket,
-  initialWebSocket,
-  loadChatContainer,
-  submitChatMessage,
-} from "../../actions/chatAction";
-import { connect } from "react-redux";
-import { isEmptyString } from "../../utils/utils";
+import {closeWebSocket, initialWebSocket, loadChatContainer, submitChatMessage,} from "../../actions/chatAction";
+import {connect} from "react-redux";
+import {isEmptyString} from "../../utils/utils";
 import $ from "jquery";
 import Topup from "./topup";
 import Transfer from "./transfer/transfer";

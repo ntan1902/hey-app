@@ -1,4 +1,4 @@
-import { combineReducers } from "redux";
+import {combineReducers} from "redux";
 import chatReducer from "./chatReducer";
 import addressBookReducer from "./addressBookReducer";
 import userReducer from "./userReducer";

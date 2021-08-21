@@ -1,7 +1,7 @@
-import React, { useRef, useState } from "react";
+import React, {useRef, useState} from "react";
 import Picker from "emoji-picker-react";
-import { connect } from "react-redux";
-import { submitChatMessage } from "../../actions/chatAction";
+import {connect} from "react-redux";
+import {submitChatMessage} from "../../actions/chatAction";
 
 import "./FormConversation.css";
 

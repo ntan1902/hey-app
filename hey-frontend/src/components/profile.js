@@ -1,16 +1,12 @@
 import React from "react";
-import { Icon, Input } from "antd";
-import {
-  clearStorage,
-  getRefreshTokenFromStorage,
-  isEmptyString,
-} from "../utils/utils";
-import { withRouter } from "react-router-dom";
-import { closeWebSocket } from "../actions/chatAction";
-import { formatToCurrency, currency } from "../utils/index";
-import { connect } from "react-redux";
-import { changeUserStatus, getProfile, logout } from "../actions/userAction";
-import { AuthAPI } from "../api";
+import {Icon, Input} from "antd";
+import {clearStorage, getRefreshTokenFromStorage, isEmptyString,} from "../utils/utils";
+import {withRouter} from "react-router-dom";
+import {closeWebSocket} from "../actions/chatAction";
+import {currency, formatToCurrency} from "../utils/index";
+import {connect} from "react-redux";
+import {changeUserStatus, getProfile, logout} from "../actions/userAction";
+import {AuthAPI} from "../api";
 
 class Profile extends React.Component {
   constructor(props) {

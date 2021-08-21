@@ -1,32 +1,21 @@
 import React from "react";
-import { Icon, Layout, Menu } from "antd";
+import {Form, Icon, Layout, Menu} from "antd";
 import CustomAvatar from "../components/custom-avatar";
 import Chat from "./Chat";
 import Friend from "./Friend";
 import Payment from "./Payment";
 import ProfileScreen from "./Profile";
-import { Form } from "antd";
 
-import {
-  closeWebSocket,
-  initialWebSocket,
-  loadChatContainer,
-  submitChatMessage,
-} from "../actions/chatAction";
-import { connect } from "react-redux";
-import {
-  isAuthenticated,
-  isEmptyString,
-  setUserIdToStorage,
-  clearStorage,
-} from "../utils/utils";
-import { Redirect } from "react-router-dom";
+import {closeWebSocket, initialWebSocket, loadChatContainer, submitChatMessage,} from "../actions/chatAction";
+import {connect} from "react-redux";
+import {clearStorage, isAuthenticated, isEmptyString, setUserIdToStorage,} from "../utils/utils";
+import {Redirect} from "react-router-dom";
 import $ from "jquery";
-import { channingActions } from "../utils";
-import { bindAuthActions, bindPaymentActions } from "../actions";
-import { changeStateDrawerProfile } from "../actions/modalAction";
+import {channingActions} from "../utils";
+import {bindAuthActions, bindPaymentActions} from "../actions";
+import {changeStateDrawerProfile} from "../actions/modalAction";
 import Profile from "../components/Profile/Profile";
-import { setProfile } from "../actions/userAction";
+import {setProfile} from "../actions/userAction";
 
 const { Sider } = Layout;
 

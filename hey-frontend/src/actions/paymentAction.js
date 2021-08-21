@@ -1,6 +1,6 @@
 import * as actionTypes from "./actionTypes";
-import { bindActionCreators } from "redux";
-import { PaymentAPI, AuthAPI } from "../api";
+import {bindActionCreators} from "redux";
+import {AuthAPI, PaymentAPI} from "../api";
 /* Get */
 
 const onShow = (screenName, data) => {

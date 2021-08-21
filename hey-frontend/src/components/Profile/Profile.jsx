@@ -1,19 +1,19 @@
 import React from "react";
-import { connect } from "react-redux";
-import { Col, Button, Row, Drawer, Divider, Upload, message, Icon } from "antd";
+import {connect} from "react-redux";
+import {Button, Col, Divider, Drawer, Icon, message, Row} from "antd";
 import DescriptionItem from "../DescriptionItem/DescriptionItem";
 import ChangePasswordModal from "../ChangePasswordModal/ChangePasswordModal";
 import ChangePinModal from "../ChangePinModal/ChangePinModal";
 import ChangeProfileModal from "../ChangeProfileModal/ChangeProfileModal";
 import CustomAvatar from "../custom-avatar";
 import {
-  changeStateDrawerProfile,
-  changeVisibleChangePassword,
-  changeVisibleChangePin,
-  changeVisibleChangeProfile,
+    changeStateDrawerProfile,
+    changeVisibleChangePassword,
+    changeVisibleChangePin,
+    changeVisibleChangeProfile,
 } from "../../actions/modalAction";
 import InputFile from "../InputFile/InputFile";
-import { updateAvatar, getHasPin } from "../../actions/userAction";
+import {getHasPin, updateAvatar} from "../../actions/userAction";
 
 const pStyle = {
   fontSize: 16,

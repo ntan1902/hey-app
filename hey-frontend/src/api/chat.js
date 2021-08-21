@@ -1,5 +1,5 @@
-import { axios } from "../utils/custom-axios";
-import { API_CHAT } from "../config/setting";
+import {axios} from "../utils/custom-axios";
+import {API_CHAT} from "../config/setting";
 
 export const ChatAPI = {
     getMembersOfSessionChat: (sessionId) => {

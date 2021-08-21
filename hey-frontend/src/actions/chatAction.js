@@ -1,26 +1,17 @@
 import React from "react";
-import { store } from "../store";
-import { API_WS } from "../config/setting";
+import {store} from "../store";
+import {API_WS} from "../config/setting";
 import Sockette from "sockette";
-import {
-  getJwtFromStorage,
-  getUserIdFromStorage,
-  isEmptyString,
-} from "../utils/utils";
+import {getJwtFromStorage, getUserIdFromStorage, isEmptyString,} from "../utils/utils";
 import deepcopy from "deepcopy";
-import { Button, message, notification } from "antd/lib/index";
-import {
-  changeUserOnlineStatus,
-  loadAddressBookList,
-  loadWaitingFriendList,
-} from "./addressBookAction";
-import { newTransferStatement, changeOffset } from "./paymentAction";
+import {Button, message, notification} from "antd/lib/index";
+import {changeUserOnlineStatus, loadAddressBookList, loadWaitingFriendList,} from "./addressBookAction";
+import {changeOffset, newTransferStatement} from "./paymentAction";
 
-import { statusNotification } from "../components/status-notification";
-import { AuthAPI } from "../api";
-import { ChatAPI } from "../api/chat";
-import { PaymentAPI } from "../api";
-import { bindActionCreators } from "redux";
+import {statusNotification} from "../components/status-notification";
+import {AuthAPI, PaymentAPI} from "../api";
+import {ChatAPI} from "../api/chat";
+import {bindActionCreators} from "redux";
 import * as actionTypes from "./actionTypes";
 import videoCallUtils from "../utils/videoCallUtils";
 

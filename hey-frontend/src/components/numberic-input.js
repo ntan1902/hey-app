@@ -1,6 +1,6 @@
-import { Input, Tooltip } from "antd";
+import {Input, Tooltip} from "antd";
 import React from "react";
-import { currencyToString, DocTien } from "../utils/index";
+import {currencyToString, DocTien} from "../utils/index";
 
 export default class NumericInput extends React.Component {
   onChange = (e) => {

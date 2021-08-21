@@ -1,6 +1,6 @@
 import * as actionTypes from "./actionTypes";
-import { bindActionCreators } from "redux";
-import { AuthAPI } from "../api";
+import {bindActionCreators} from "redux";
+import {AuthAPI} from "../api";
 
 const onLogin = (data) => {
   return {
