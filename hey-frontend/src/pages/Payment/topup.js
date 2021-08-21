@@ -1,10 +1,9 @@
 import React from "react";
-import { connect } from "react-redux";
-import { Button, Icon, message } from "antd";
+import {connect} from "react-redux";
+import {Button, Icon, message} from "antd";
 import NumericInput from "../../components/numberic-input";
-import { formatToCurrency, currencyToString } from "../../utils";
-import { channingActions } from "../../utils";
-import { bindPaymentActions } from "../../actions";
+import {channingActions, currencyToString, formatToCurrency} from "../../utils";
+import {bindPaymentActions} from "../../actions";
 
 class MessagePanel extends React.Component {
   constructor(props) {

@@ -1,5 +1,5 @@
-import { axios } from "../utils/custom-axios";
-import { API_PAYMENT, API_LUCKY } from "../config/setting";
+import {axios} from "../utils/custom-axios";
+import {API_LUCKY, API_PAYMENT} from "../config/setting";
 
 export const PaymentAPI = {
   /* Get Event */

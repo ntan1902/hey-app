@@ -1,13 +1,13 @@
 import React from "react";
-import {Menu, Icon} from "antd";
+import {Icon, Menu} from "antd";
 import CustomAvatar from "../components/custom-avatar";
 import AddFriend from "./add-friend";
 import {connect} from "react-redux";
 import {
+    addNewFriend,
     handleChangeAddressBook,
     loadAddressBookList,
     loadWaitingFriendList,
-    addNewFriend,
     rejectWaitingFriend,
 } from "../actions/addressBookAction";
 import {Scrollbars} from "react-custom-scrollbars";

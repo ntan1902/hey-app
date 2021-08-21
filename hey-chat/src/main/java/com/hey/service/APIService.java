@@ -124,12 +124,23 @@ public class APIService extends BaseService {
 
         List<String> listFullNameExcludedCurrentUser = getListFullNameExcludedCurrentUser(userId,
                 chatList.getUserHashes());
+
+        chatListItem.setName("Just you");
         if (listFullNameExcludedCurrentUser.size() > 1) {
+            // Chat Group
             String name = listFullNameExcludedCurrentUser.stream()
                     .map(fullName -> fullName.split(" ")[0]).collect(Collectors.joining(", "));
             chatListItem.setName(name);
-        } else {
+        } else if (listFullNameExcludedCurrentUser.size() == 1) {
+            // Chat 1-1
             chatListItem.setName(listFullNameExcludedCurrentUser.get(0));
+        } else {
+            // Just only current user in group
+            chatList.getUserHashes()
+                    .stream()
+                    .findAny()
+                    .filter(userHash -> userHash.getUserId().equals(userId))
+                    .ifPresent(currentUserHash -> chatListItem.setName(currentUserHash.getFullName()));
         }
 
         chatListItem.setGroupName(chatList.getGroupName());
@@ -1458,12 +1469,13 @@ public class APIService extends BaseService {
                     .anyMatch(userHash -> userHash.getUserId().equals(userId));
 
             if (isUserIdInSessionId
-                    && chatList.isGroup()
-                    && chatList.getOwner().equals(userId)) {
+                    && chatList.isGroup()) {
                 chatList.setGroupName(groupName);
 
                 Future<ChatList> insertChatListFuture = dataRepository.insertChatList(chatList);
                 insertChatListFuture.compose(res -> {
+                    insertNewChatOnExistedSessionId(editGroupNameRequest, userId, userHashes);
+
                     JsonObject apiResponse = new JsonObject();
                     apiResponse.put("success", true);
                     apiResponse.put("message", "Edit group name successfully");
@@ -1479,6 +1491,46 @@ public class APIService extends BaseService {
 
         }, Future.future().setHandler(handler -> future.fail(handler.cause())));
         return future;
+    }
+
+    private void insertNewChatOnExistedSessionId(EditGroupNameRequest editGroupNameRequest, String userId, List<UserHash> userHashes) {
+        Future<UserFull> getUserFullFuture = dataRepository.getUserFull(userId);
+        getUserFullFuture.compose(userFull -> {
+            JsonObject content = new JsonObject();
+            content.put("message", userFull.getFullName() + " edit group name into: " + editGroupNameRequest.getGroupName());
+
+            JsonObject editGroupNameResponse = new JsonObject();
+            editGroupNameResponse.put("type", "message");
+            editGroupNameResponse.put("content", content);
+
+            ChatMessage chatMessage = new ChatMessage();
+            chatMessage.setUserHash(new UserHash(userFull.getUserId(), userFull.getFullName()));
+            chatMessage.setSessionId(editGroupNameRequest.getSessionId());
+            chatMessage.setMessage(editGroupNameResponse.encode());
+            chatMessage.setCreatedDate(new Date());
+
+            Future<ChatMessage> insertChatMessagesAndUpdateChatListAndUpdateUnseenCountFuture = insertChatMessagesAndUpdateChatListAndUpdateUnseenCount(
+                    chatMessage);
+
+            insertChatMessagesAndUpdateChatListAndUpdateUnseenCountFuture.compose(resChatMessage -> {
+                ChatMessageResponse response = new ChatMessageResponse();
+                response.setType(IWsMessage.TYPE_CHAT_MESSAGE_RESPONSE);
+                response.setCreatedDate(chatMessage.getCreatedDate());
+                response.setName(userFull.getFullName());
+                response.setMessage(chatMessage.getMessage());
+                response.setSessionId(chatMessage.getSessionId());
+                response.setUserId(chatMessage.getUserHash().getUserId());
+                for (UserHash userhash : userHashes) {
+                    userWsChannelManager.sendMessage(response, userhash.getUserId());
+                }
+
+            }, Future.future().setHandler(handler -> {
+                throw new RuntimeException(handler.cause());
+            }));
+
+        }, Future.future().setHandler(handler -> {
+            throw new RuntimeException(handler.cause());
+        }));
     }
 
     public Future<JsonObject> kickMember(KickMemberRequest kickMemberRequest, String userId) {

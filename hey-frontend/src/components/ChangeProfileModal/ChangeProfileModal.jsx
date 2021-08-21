@@ -1,12 +1,13 @@
 import React from 'react';
-import { Modal, Form, Input, DatePicker, message } from 'antd';
+import {DatePicker, Form, Input, message, Modal} from 'antd';
 import moment from 'moment';
-import { connect } from 'react-redux';
+import {connect} from 'react-redux';
 import $ from 'jquery';
-import { ChatAPI } from '../../api/chat';
-import { changeVisibleChangeProfile } from '../../actions/modalAction';
-import { setProfile } from '../../actions/userAction';
-import { AuthAPI } from '../../api';
+import {ChatAPI} from '../../api/chat';
+import {changeVisibleChangeProfile} from '../../actions/modalAction';
+import {setProfile} from '../../actions/userAction';
+import {AuthAPI} from '../../api';
+
 const HIDE_CHANGE_PROFILE_MODAL = false;
 
 class ChangeProfileModal extends React.Component {

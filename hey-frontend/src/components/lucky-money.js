@@ -1,22 +1,14 @@
 import React from "react";
-import { Modal, Input, Button, Icon } from "antd";
-import { connect } from "react-redux";
+import {Avatar, Button, Card, Col, Icon, Input, Modal, Row} from "antd";
+import {connect} from "react-redux";
 import $ from "jquery";
-import { Scrollbars } from "react-custom-scrollbars";
+import {Scrollbars} from "react-custom-scrollbars";
 
 import NumericInput from "./numberic-input";
 import Transfer from "./transfer";
 
-import {
-  channingActions,
-  currencyToString,
-  formatToCurrency,
-  currency,
-} from "../utils";
-import { bindPaymentActions } from "../actions";
-
-import { Row, Col } from "antd";
-import { Card, Avatar } from "antd";
+import {channingActions, currency, currencyToString, formatToCurrency,} from "../utils";
+import {bindPaymentActions} from "../actions";
 import LuckyAnimation from "./LuckyAnimation/LuckyAnimation";
 
 const { Meta } = Card;

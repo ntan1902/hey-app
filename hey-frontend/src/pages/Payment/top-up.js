@@ -1,10 +1,10 @@
 import React from "react";
-import { Button, Icon } from "antd";
-import { connect } from "react-redux";
+import {Button, Icon} from "antd";
+import {connect} from "react-redux";
 import $ from "jquery";
 
-import { channingActions } from "../../utils";
-import { bindPaymentActions } from "../../actions";
+import {channingActions} from "../../utils";
+import {bindPaymentActions} from "../../actions";
 
 class Topup extends React.Component {
   constructor(props) {

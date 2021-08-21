@@ -1,13 +1,8 @@
 import React from "react";
 import {Alert, Button, Input, Modal, Tag} from "antd";
 import CustomAvatar from "../components/custom-avatar";
-import $ from "jquery";
 import {connect} from "react-redux";
-import {
-    addNewUserChatGroup,
-    removeUserChatGroup,
-    startNewChatGroup,
-} from "../actions/chatAction";
+import {addNewUserChatGroup, removeUserChatGroup, startNewChatGroup,} from "../actions/chatAction";
 import AddFriend from "./add-friend-transfer";
 
 const {Search} = Input;

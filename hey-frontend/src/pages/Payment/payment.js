@@ -1,14 +1,14 @@
 import React from "react";
-import { Menu, Spin } from "antd";
+import {Menu, Spin} from "antd";
 import CustomAvatar from "../../components/custom-avatar";
 import Topup from "./top-up";
 
-import { connect } from "react-redux";
+import {connect} from "react-redux";
 
-import { Scrollbars } from "react-custom-scrollbars";
+import {Scrollbars} from "react-custom-scrollbars";
 
-import { channingActions } from "../../utils";
-import { bindPaymentActions } from "../../actions";
+import {channingActions} from "../../utils";
+import {bindPaymentActions} from "../../actions";
 
 class Payment extends React.Component {
   constructor(props) {

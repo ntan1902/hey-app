@@ -1,9 +1,6 @@
 import React from "react";
-import { connect } from "react-redux";
-import { Button, Icon, Input } from "antd";
-import NumericInput from "../../components/numberic-input";
-import Transfer from "../../components/transfer";
-import AddFriendTransfer from "../../components/add-friend-transfer";
+import {connect} from "react-redux";
+import {Button} from "antd";
 
 class MessagePanel extends React.Component {
   constructor(props) {

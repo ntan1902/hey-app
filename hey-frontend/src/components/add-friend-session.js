@@ -1,8 +1,6 @@
 import React from "react";
 import {Modal} from "antd";
-import {
-    addFriendToSession,
-} from "../actions/chatAction";
+import {addFriendToSession,} from "../actions/chatAction";
 
 import {connect} from "react-redux";
 import {changeStateAddFriendPopup} from "../actions/paymentAction";

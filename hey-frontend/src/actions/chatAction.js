@@ -1,26 +1,17 @@
 import React from "react";
-import { store } from "../store";
-import { API_WS } from "../config/setting";
+import {store} from "../store";
+import {API_WS} from "../config/setting";
 import Sockette from "sockette";
-import {
-  getJwtFromStorage,
-  getUserIdFromStorage,
-  isEmptyString,
-} from "../utils/utils";
+import {getJwtFromStorage, getUserIdFromStorage, isEmptyString,} from "../utils/utils";
 import deepcopy from "deepcopy";
-import { Button, message, notification } from "antd/lib/index";
-import {
-  changeUserOnlineStatus,
-  loadAddressBookList,
-  loadWaitingFriendList,
-} from "./addressBookAction";
-import { newTransferStatement, changeOffset } from "./paymentAction";
+import {Button, message, notification} from "antd/lib/index";
+import {changeUserOnlineStatus, loadAddressBookList, loadWaitingFriendList,} from "./addressBookAction";
+import {changeOffset, newTransferStatement} from "./paymentAction";
 
-import { statusNotification } from "../components/status-notification";
-import { AuthAPI } from "../api";
-import { ChatAPI } from "../api/chat";
-import { PaymentAPI } from "../api";
-import { bindActionCreators } from "redux";
+import {statusNotification} from "../components/status-notification";
+import {AuthAPI, PaymentAPI} from "../api";
+import {ChatAPI} from "../api/chat";
+import {bindActionCreators} from "redux";
 import * as actionTypes from "./actionTypes";
 import videoCallUtils from "../utils/videoCallUtils";
 
@@ -198,8 +189,8 @@ export function specialLoadChatContainer(sessionId) {
 
 export function submitChatMessage(message) {
   let sessionId = store.getState().chatReducer.currentSessionId;
-  let waitingGroupUsernames =
-    store.getState().chatReducer.waitingGroupUsernames;
+  let waitingGroupUsernames = store.getState().chatReducer
+    .waitingGroupUsernames;
 
   let groupName = store.getState().chatReducer.messageHeader.title;
   store
@@ -601,6 +592,15 @@ const kickMembers = (sessionId, userId) => async (dispatch) => {
   }
 };
 
+const changeGroupTitle = (data) => async (dispatch) => {
+  try {
+    let changeGroupName = await ChatAPI.changeGroupName(data);
+    return Promise.resolve(changeGroupName);
+  } catch (error) {
+    return Promise.reject({ error, success: false });
+  }
+};
+
 const fetchMember = (sessionId) => async (dispatch) => {
   try {
     let fetchMemberRes = await ChatAPI.getMembersOfSessionChat(sessionId);
@@ -617,6 +617,7 @@ const fetchMember = (sessionId) => async (dispatch) => {
 export const chatActions = {
   kickMembers,
   fetchMember,
+  changeGroupTitle,
 };
 
 export function bindChatActions(currentActions, dispatch) {

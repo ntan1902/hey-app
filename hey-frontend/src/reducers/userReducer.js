@@ -1,11 +1,11 @@
 import {
-  CHANGE_STATUS,
-  CHANGE_TAB,
-  REGISTER_SUCCEEDED,
-  USER_PROFILE,
-  SET_PROFILE,
-  UPDATE_AVATAR,
-  HAS_PIN,
+    CHANGE_STATUS,
+    CHANGE_TAB,
+    HAS_PIN,
+    REGISTER_SUCCEEDED,
+    SET_PROFILE,
+    UPDATE_AVATAR,
+    USER_PROFILE,
 } from "../actions/userAction";
 
 const initialState = {

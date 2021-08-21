@@ -1,11 +1,10 @@
 import React from "react";
-import { Modal, Input, message } from "antd";
-import { connect } from "react-redux";
-import $ from "jquery";
+import {message, Modal} from "antd";
+import {connect} from "react-redux";
 import PinInput from "react-pin-input";
 
-import { channingActions } from "../utils";
-import { bindPaymentActions } from "../actions";
+import {channingActions} from "../utils";
+import {bindPaymentActions} from "../actions";
 
 class VerifyPIN extends React.Component {
   constructor(props) {

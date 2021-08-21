@@ -1,11 +1,11 @@
 import React from "react";
-import { Button, Form, Icon, Input, message } from "antd";
-import { withRouter } from "react-router-dom";
-import { setJwtToStorage, setRefreshTokenToStorage } from "../utils/utils";
+import {Button, Form, Icon, Input, message} from "antd";
+import {withRouter} from "react-router-dom";
+import {setJwtToStorage, setRefreshTokenToStorage} from "../utils/utils";
 
-import { connect } from "react-redux";
-import { channingActions } from "../utils";
-import { bindAuthActions } from "../actions";
+import {connect} from "react-redux";
+import {channingActions} from "../utils";
+import {bindAuthActions} from "../actions";
 
 const FormItem = Form.Item;
 

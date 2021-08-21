@@ -1,13 +1,13 @@
-import React, { useEffect, useRef, useState } from "react";
-import { getJwtFromStorage } from "../../utils/utils";
+import React, {useEffect, useRef, useState} from "react";
+import {getJwtFromStorage} from "../../utils/utils";
 import Sockette from "sockette";
 import Peer from "peerjs";
-import { API_WS } from "../../config/setting";
+import {API_WS} from "../../config/setting";
 
 import "./CallPopUp.css";
 import RemoteVideo from "../../components/RemoteVideo/RemoteVideo";
-import { ChatAPI } from "../../api/chat";
-import { message } from "antd";
+import {ChatAPI} from "../../api/chat";
+import {message} from "antd";
 
 const socketEvent = {
   REJECT_CALL: "REJECT_CALL",

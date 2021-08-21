@@ -1,9 +1,10 @@
 import React from "react";
 import CustomAvatar from "./custom-avatar";
-import { SlideDown } from "react-slidedown";
+import {SlideDown} from "react-slidedown";
 
-import { Card, Avatar } from "antd";
-import { formatToCurrency, currency } from "../utils";
+import {Avatar, Card} from "antd";
+import {currency, formatToCurrency} from "../utils";
+
 const { Meta } = Card;
 
 class ChatItem extends React.Component {

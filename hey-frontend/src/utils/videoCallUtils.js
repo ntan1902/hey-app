@@ -1,4 +1,4 @@
-import { ChatAPI } from "../api/chat";
+import {ChatAPI} from "../api/chat";
 import popupWindow from "./popupWindow";
 
 const acceptCall = (sessionId, isVideoCall) => {

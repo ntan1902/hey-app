@@ -1,9 +1,10 @@
 import React from 'react';
-import { Modal, Form, Input, message } from 'antd';
-import { connect } from 'react-redux';
+import {Form, Input, message, Modal} from 'antd';
+import {connect} from 'react-redux';
 import $ from 'jquery';
-import { AuthAPI } from '../../api';
-import { changeVisibleChangePassword } from '../../actions/modalAction';
+import {AuthAPI} from '../../api';
+import {changeVisibleChangePassword} from '../../actions/modalAction';
+
 const HIDE_CHANGE_PASSWORD_MODAL = false;
 class ChangePasswordModal extends React.Component {
   constructor(props) {

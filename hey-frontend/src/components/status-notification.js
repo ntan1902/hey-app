@@ -1,4 +1,4 @@
-import { notification } from "antd";
+import {notification} from "antd";
 import Ravatar from "react-avatar";
 import React from "react";
 

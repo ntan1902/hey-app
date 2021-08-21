@@ -1,18 +1,16 @@
 import React from "react";
-import { Button, Input, Layout } from "antd";
+import {Button, Input, Layout} from "antd";
 import AddressBook from "../../components/address-book";
 import Profile from "../../components/profile";
 import MessagePanel from "../../components/message-panel";
-import { connect } from "react-redux";
-import {
-  closeWebSocket,
-  initialWebSocket,
-  loadChatContainer,
-  submitChatMessage,
-} from "../../actions/chatAction";
-import { isEmptyString } from "../../utils/utils";
+import {connect} from "react-redux";
+import {closeWebSocket, initialWebSocket, loadChatContainer, submitChatMessage,} from "../../actions/chatAction";
+import {isEmptyString} from "../../utils/utils";
 import $ from "jquery";
+<<<<<<< HEAD
 import FormConversation from "../../components/FormConversation/FormConversation";
+=======
+>>>>>>> develop
 import ChatHeader from "../../components/ChatHeader/chat-header";
 
 const { Header, Content, Footer, Sider } = Layout;
@@ -58,11 +56,31 @@ class Chat extends React.Component {
             <AddressBook />
           </Sider>
           <div className="chat-container" style={{ padding: 0 }}>
+<<<<<<< HEAD
             <ChatHeader />
             <MessagePanel />
             <FormConversation />
           </div>
         </Layout>
+=======
+            {" "}
+            <ChatHeader />
+            <MessagePanel />
+            <div className="chat-footer">
+              <TextArea
+                id="messageTextArea"
+                onPressEnter={this.handleMessageEnter}
+                rows={1}
+                placeholder="Type a new message"
+                ref="messageTextArea"
+              />
+              <Button type="primary" onClick={this.handleSendClick}>
+                Send{" "}
+              </Button>{" "}
+            </div>{" "}
+          </div>{" "}
+        </Layout>{" "}
+>>>>>>> develop
       </div>
     );
   }
