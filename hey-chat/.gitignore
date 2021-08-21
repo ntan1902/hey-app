@@ -34,3 +34,4 @@ build/
 
 src/main/resources/application-local.properties
 src/main/resources/static/images/
+!src/main/resources/static/images/noAvatar.png
