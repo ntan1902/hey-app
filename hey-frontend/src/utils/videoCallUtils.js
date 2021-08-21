@@ -4,7 +4,7 @@ import popupWindow from "./popupWindow";
 const acceptCall = (sessionId, isVideoCall) => {
     var newWindow = popupWindow('/call', "Video call", 600, 800);
     if (newWindow) {
-        newWindow.addEventListener('load', async () => {
+        newWindow.addEventListener('load', async() => {
             var ICEServer = await ChatAPI.getICEServer()
                 .then(res => {
                     console.log("data nef" + res.data);
@@ -19,7 +19,7 @@ const acceptCall = (sessionId, isVideoCall) => {
     }
 }
 const rejectCall = (sessionId) => {
-    console.log("từ chối nghe máy")
+    ChatAPI.rejectCall(sessionId);
 }
 export default {
     acceptCall,
