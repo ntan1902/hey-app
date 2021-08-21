@@ -1,42 +1,38 @@
-import React, {useEffect, useRef, useState} from "react";
-import {getJwtFromStorage} from "../../utils/utils";
+import React, { useEffect, useRef, useState, useReducer } from "react";
+import { getJwtFromStorage } from "../../utils/utils";
 import Sockette from "sockette";
 import Peer from "peerjs";
-import {API_WS} from "../../config/setting";
+import { API_WS } from "../../config/setting";
 
 import "./CallPopUp.css";
 import RemoteVideo from "../../components/RemoteVideo/RemoteVideo";
-import {ChatAPI} from "../../api/chat";
-import {message} from "antd";
+import { ChatAPI } from "../../api/chat";
+import LocalVideo from "../../components/LocalVideo/LocalVideo";
+import { connect } from "react-redux";
+import {
+  setPeer,
+  appendRemoteStreams,
+  removeScreenStream,
+  setLocalStream,
+  setScreenStream,
+  initSocket,
+  answerPeerCall,
+  shareScreen,
+} from "../../actions/callAction";
 
-const socketEvent = {
-  REJECT_CALL: "REJECT_CALL",
-  JOIN_CALL: "JOIN_CALL",
-  MAKE_CALL: "MAKE_CALL",
-};
-
-const CallPopUp = () => {
-  var peer;
-  var socket;
-  var localStream;
-  let [remoteStreams, setRemoteStreams] = useState([]);
-  var videoTag = useRef();
+const CallPopUp = ({
+  remoteStreams,
+  localStream,
+  peerIds,
+  setPeer,
+  appendRemoteStreams,
+  setLocalStream,
+  setScreenStream,
+  initSocket,
+}) => {
   var videoCurrentTag = useRef();
 
   const jwt = getJwtFromStorage();
-
-  let joinCallHandle = ({ peerId }) => {
-    console.log("call 2:", peerId);
-    var call = peer.call(peerId, localStream);
-    call.on("stream", (remoteStream) => {
-      console.log("đã bắt được", peerId);
-      setRemoteStreams((prev) => {
-        if (!prev.includes(remoteStream)) return [...prev, remoteStream];
-        return [...prev];
-      });
-      console.log("remote 2:", remoteStreams);
-    });
-  };
 
   const getMediaStream = (isVideo) => {
     return navigator.mediaDevices.getUserMedia({
@@ -47,37 +43,8 @@ const CallPopUp = () => {
 
   useEffect(() => {
     (async () => {
-      socket = new Sockette(API_WS + "?jwt=" + jwt, {
-        timeout: 5e3,
-        maxAttempts: 100,
-        onopen: (e) => {},
-        onmessage: (e) => {
-          var data = JSON.parse(e.data);
-          console.log("New Socket");
-          console.log(data, "New Socket");
-          switch (data.type) {
-            case socketEvent.REJECT_CALL: {
-              // do something
-              console.log("Từ chối cuộc gọi");
-              message.warning(`${data.fullName} rejected call.`);
-              if (!data.group) {
-                setTimeout(() => {
-                  window.close();
-                }, 2000);
-              }
-              break;
-            }
-            case socketEvent.JOIN_CALL: {
-              joinCallHandle(data);
-              break;
-            }
-          }
-        },
-        onreconnect: (e) => console.log("Reconnecting...", e),
-        onmaximum: (e) => console.log("Stop Attempting!", e),
-        onclose: (e) => console.log("Closed!", e),
-        onerror: (e) => console.log("Error:", e),
-      });
+      let peer = null;
+      initSocket(jwt);
       window.init = (ICEServer) => {
         peer = new Peer({
           host: "peer-server-ngoctrong102.herokuapp.com",
@@ -85,55 +52,36 @@ const CallPopUp = () => {
           path: "/",
           port: 443,
           secure: true,
-          config: {
-            iceServers: ICEServer,
-          },
+          // config: {
+          //   iceServers: ICEServer,
+          // },
         });
         peer.on("open", async (id) => {
-          console.log("open 1:", id);
           peer.on("call", function (call) {
-            console.log("call 1:");
-            call.answer(localStream);
-            call.on("stream", (remoteStream) => {
-              setRemoteStreams((prev) => {
-                if (!prev.includes(remoteStream))
-                  return [...prev, remoteStream];
-                return [...prev];
-              });
-              console.log("remote 1:", remoteStreams);
-            });
+            answerPeerCall(call);
           });
         });
+        setPeer(peer);
       };
       window.makeCall = async (sessionId, isVideoCall) => {
-        localStream = await getMediaStream(isVideoCall);
-        videoTag.current.srcObject = localStream;
-        videoTag.current.volume = 0;
-        console.log(localStream);
+        let _localStream = await getMediaStream(isVideoCall);
+        setLocalStream(_localStream);
         ChatAPI.makeCall(sessionId, isVideoCall);
       };
 
       window.answerCall = async (sessionId, isVideoCall) => {
-        localStream = await getMediaStream(isVideoCall);
-        videoTag.current.srcObject = localStream;
-        videoTag.current.volume = 0;
+        let _localStream = await getMediaStream(isVideoCall);
+        setLocalStream(_localStream);
         if (peer.id) {
-          console.log("answer call, my peer id: ", peer.id);
           ChatAPI.joinCall(sessionId, peer.id);
         } else {
           peer.on("open", async (id) => {
-            console.log("open 2:", id);
-            console.log("answer call, my peer id: ", id);
             ChatAPI.joinCall(sessionId, peer.id);
           });
         }
       };
     })();
   }, []);
-  useEffect(() => {
-    videoTag.current.srcObject = localStream;
-    videoTag.current.volume = 0;
-  }, [localStream]);
   useEffect(() => {
     if (!videoCurrentTag.current.srcObject && remoteStreams[0]) {
       videoCurrentTag.current.srcObject = remoteStreams[0];
@@ -150,17 +98,48 @@ const CallPopUp = () => {
       changeCurrenStream={changeCurrenStream}
     />
   ));
+  const handleShareScreen = async () => {
+    let screenStream = await navigator.mediaDevices.getDisplayMedia();
+    appendRemoteStreams(screenStream);
+    setScreenStream(screenStream);
+    peerIds.forEach((peerId) => {
+      shareScreen(peerId);
+    });
+  };
   return (
     <div className="call-pop-up-focus">
       <div className="current-video">
         <video ref={videoCurrentTag} autoPlay={true} />
       </div>
-      <div className="me">
-        <video ref={videoTag} autoPlay={true} />
-      </div>
+      <LocalVideo stream={localStream} />
       <div className="group-video">{renderRemoteVideo}</div>
+      <div className="actions">
+        <button>MIC</button>
+        <button>Out</button>
+        <button onClick={handleShareScreen}>Share</button>
+      </div>
     </div>
   );
 };
 
-export default CallPopUp;
+function mapStateToProps(state) {
+  return {
+    localStream: state.callReducer.localStream,
+    remoteStreams: state.callReducer.remoteStreams,
+    screenStream: state.callReducer.screenStream,
+    peer: state.callReducer.peer,
+    peerIds: state.callReducer.peerIds,
+  };
+}
+function mapDispatchToProps(dispatch) {
+  return {
+    setPeer: (peer) => dispatch(setPeer(peer)),
+    appendRemoteStreams: (remoteStream) =>
+      dispatch(appendRemoteStreams(remoteStream)),
+    removeScreenStream: () => dispatch(removeScreenStream()),
+    setLocalStream: (localStream) => dispatch(setLocalStream(localStream)),
+    setScreenStream: (screenStream) => dispatch(setScreenStream(screenStream)),
+    initSocket: (jwt) => dispatch(initSocket(jwt)),
+  };
+}
+export default connect(mapStateToProps, mapDispatchToProps)(CallPopUp);
