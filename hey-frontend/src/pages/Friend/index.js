@@ -1,12 +1,18 @@
 import React from "react";
-import {Button, Input, Layout} from "antd";
+import { Button, Input, Layout } from "antd";
 import AddressBook from "../../components/address-book";
 import Profile from "../../components/profile";
 import MessagePanel from "../../components/message-panel";
-import {connect} from "react-redux";
-import {closeWebSocket, initialWebSocket, loadChatContainer, submitChatMessage,} from "../../actions/chatAction";
-import {isEmptyString} from "../../utils/utils";
+import { connect } from "react-redux";
+import {
+  closeWebSocket,
+  initialWebSocket,
+  loadChatContainer,
+  submitChatMessage,
+} from "../../actions/chatAction";
+import { isEmptyString } from "../../utils/utils";
 import $ from "jquery";
+import FormConversation from "../../components/FormConversation/FormConversation";
 import ChatHeader from "../../components/ChatHeader/chat-header";
 
 const { Header, Content, Footer, Sider } = Layout;
@@ -19,8 +25,6 @@ class Chat extends React.Component {
       menuaction: 1,
     };
     this.handleMainMenuChange = this.handleMainMenuChange.bind(this);
-    this.handleMessageEnter = this.handleMessageEnter.bind(this);
-    this.handleSendClick = this.handleSendClick.bind(this);
   }
 
   componentDidMount() {
@@ -31,26 +35,6 @@ class Chat extends React.Component {
 
   handleMainMenuChange(e) {
     this.setState({ menuaction: e.key });
-  }
-
-  handleMessageEnter(e) {
-    let charCode = e.keyCode || e.which;
-    if (!e.shiftKey) {
-      e.preventDefault();
-      let message = e.target.value;
-      if (!isEmptyString(message)) {
-        this.props.submitChatMessage(message);
-      }
-      e.target.value = "";
-    }
-  }
-
-  handleSendClick(e) {
-    let message = $("#messageTextArea").val();
-    if (!isEmptyString(message)) {
-      this.props.submitChatMessage(message);
-    }
-    $("#messageTextArea").val("");
   }
 
   render() {
@@ -72,25 +56,13 @@ class Chat extends React.Component {
             <Profile />
             <div className="menu-separation" />
             <AddressBook />
-          </Sider>{" "}
+          </Sider>
           <div className="chat-container" style={{ padding: 0 }}>
-            {" "}
             <ChatHeader />
             <MessagePanel />
-            <div className="chat-footer">
-              <TextArea
-                id="messageTextArea"
-                onPressEnter={this.handleMessageEnter}
-                rows={1}
-                placeholder="Type a new message"
-                ref="messageTextArea"
-              />
-              <Button type="primary" onClick={this.handleSendClick}>
-                Send{" "}
-              </Button>{" "}
-            </div>{" "}
-          </div>{" "}
-        </Layout>{" "}
+            <FormConversation />
+          </div>
+        </Layout>
       </div>
     );
   }
@@ -112,9 +84,6 @@ function mapDispatchToProps(dispatch) {
     },
     loadChatContainer(sessionId) {
       dispatch(loadChatContainer(sessionId));
-    },
-    submitChatMessage(message) {
-      dispatch(submitChatMessage(message));
     },
   };
 }

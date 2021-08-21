@@ -125,7 +125,6 @@ public class APIService extends BaseService {
         List<String> listFullNameExcludedCurrentUser = getListFullNameExcludedCurrentUser(userId,
                 chatList.getUserHashes());
 
-        chatListItem.setName("Just you");
         if (listFullNameExcludedCurrentUser.size() > 1) {
             // Chat Group
             String name = listFullNameExcludedCurrentUser.stream()
@@ -140,7 +139,10 @@ public class APIService extends BaseService {
                     .stream()
                     .findAny()
                     .filter(userHash -> userHash.getUserId().equals(userId))
-                    .ifPresent(currentUserHash -> chatListItem.setName(currentUserHash.getFullName()));
+                    .ifPresentOrElse(
+                            currentUserHash -> chatListItem.setName(currentUserHash.getFullName()),
+                            () -> chatListItem.setName("")
+                    );
         }
 
         chatListItem.setGroupName(chatList.getGroupName());
@@ -1201,6 +1203,7 @@ public class APIService extends BaseService {
                     newChatSessionResponse.setType(IWsMessage.TYPE_CHAT_NEW_SESSION_RESPONSE);
                     newChatSessionResponse.setSessionId(chatMessage.getSessionId());
                     newChatSessionResponse.setTransferStatement(true);
+                    newChatSessionResponse.setChangeGroupName(false);
 
                     for (UserHash userhash : chatList.getUserHashes()) {
                         userWsChannelManager.sendMessage(newChatSessionResponse, userhash.getUserId());
@@ -1354,6 +1357,7 @@ public class APIService extends BaseService {
                     response.setSessionId(chatMessage.getSessionId());
                     response.setUserId(chatMessage.getUserHash().getUserId());
                     response.setTransferStatement(true);
+                    response.setChangeGroupName(false);
 
                     for (UserHash userhash : chatList.getUserHashes()) {
                         userWsChannelManager.sendMessage(response, userhash.getUserId());
@@ -1498,6 +1502,7 @@ public class APIService extends BaseService {
         getUserFullFuture.compose(userFull -> {
             JsonObject content = new JsonObject();
             content.put("message", userFull.getFullName() + " edit group name into: " + editGroupNameRequest.getGroupName());
+            content.put("groupName", editGroupNameRequest.getGroupName());
 
             JsonObject editGroupNameResponse = new JsonObject();
             editGroupNameResponse.put("type", "message");
@@ -1520,6 +1525,8 @@ public class APIService extends BaseService {
                 response.setMessage(chatMessage.getMessage());
                 response.setSessionId(chatMessage.getSessionId());
                 response.setUserId(chatMessage.getUserHash().getUserId());
+                response.setTransferStatement(false);
+                response.setChangeGroupName(true);
                 for (UserHash userhash : userHashes) {
                     userWsChannelManager.sendMessage(response, userhash.getUserId());
                 }
@@ -1633,6 +1640,8 @@ public class APIService extends BaseService {
                 response.setMessage(chatMessage.getMessage());
                 response.setSessionId(chatMessage.getSessionId());
                 response.setUserId(chatMessage.getUserHash().getUserId());
+                response.setTransferStatement(false);
+                response.setChangeGroupName(false);
                 for (UserHash userhash : userHashes) {
                     userWsChannelManager.sendMessage(response, userhash.getUserId());
                 }
@@ -1727,6 +1736,8 @@ public class APIService extends BaseService {
                 response.setMessage(chatMessage.getMessage());
                 response.setSessionId(chatMessage.getSessionId());
                 response.setUserId(chatMessage.getUserHash().getUserId());
+                response.setTransferStatement(false);
+                response.setChangeGroupName(false);
                 for (UserHash userhash : userHashes) {
                     userWsChannelManager.sendMessage(response, userhash.getUserId());
                 }

@@ -5,6 +5,7 @@
 
 .form-conversation form {
     display: flex;
+    align-items: center;
 }
 
 .form-conversation form>button,
@@ -41,6 +42,8 @@
     font-size: 15px;
     flex-basis: 100px;
     width: 100px;
+    height: 36px;
+    resize: none;
 }
 
 .form-conversation form .icon-wrapper {
@@ -57,9 +60,20 @@
     transition: all 0.3s;
 }
 
-.form-conversation form .icon-wrapper .icon-picker.hidden {
-    opacity: 0;
-    visibility: hidden;
+.emoji-mart li {
+    list-style: none;
+}
+
+.emoji-mart-preview {
+    display: none;
+}
+
+.icon-picker.hidden {
+    height: 358px;
+}
+
+.emoji-mart-scroll>div {
+    width: 350px !important;
 }
 
 @media only screen and (max-width: 824px) {
