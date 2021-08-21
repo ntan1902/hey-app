@@ -1,8 +1,8 @@
-import {ChatAPI} from "../api/chat";
+import { ChatAPI } from "../api/chat";
 import popupWindow from "./popupWindow";
 
 const acceptCall = (sessionId, isVideoCall) => {
-    var newWindow = popupWindow('/call', "Video call", 600, 800);
+    var newWindow = popupWindow('/call', "Video call", 900, 700);
     if (newWindow) {
         newWindow.addEventListener('load', async() => {
             var ICEServer = await ChatAPI.getICEServer()
@@ -21,6 +21,7 @@ const acceptCall = (sessionId, isVideoCall) => {
 const rejectCall = (sessionId) => {
     ChatAPI.rejectCall(sessionId);
 }
+
 export default {
     acceptCall,
     rejectCall

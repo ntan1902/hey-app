@@ -85,9 +85,8 @@ export function initialWebSocket() {
                   videoCallUtils.rejectCall(data.sessionId);
                 }}
               >
-                {" "}
-                Reject{" "}
-              </Button>{" "}
+                Reject
+              </Button>
               <Button
                 type="primary"
                 onClick={() => {
@@ -95,9 +94,8 @@ export function initialWebSocket() {
                   videoCallUtils.acceptCall(data.sessionId, data.videoCall);
                 }}
               >
-                {" "}
-                Join{" "}
-              </Button>{" "}
+                Join
+              </Button>
             </div>
           );
           notification.open({
@@ -105,6 +103,7 @@ export function initialWebSocket() {
             description,
             btn,
             key,
+            duration: 100,
           });
       }
     },
@@ -197,8 +196,8 @@ export function specialLoadChatContainer(sessionId) {
 
 export function submitChatMessage(message) {
   let sessionId = store.getState().chatReducer.currentSessionId;
-  let waitingGroupUsernames = store.getState().chatReducer
-    .waitingGroupUsernames;
+  let waitingGroupUsernames =
+    store.getState().chatReducer.waitingGroupUsernames;
 
   let groupName = store.getState().chatReducer.messageHeader.title;
   store
