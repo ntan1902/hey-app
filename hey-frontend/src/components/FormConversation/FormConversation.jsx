@@ -32,7 +32,6 @@ const FormConversation = ({ submitChatMessage }) => {
           value={message}
           placeholder="Nhập tin nhắn ..."
           onChange={(e) => setMessage(e.target.value)}
-          onPressEnter={() => console.log("enter")}
         />
         <div className="icon-wrapper">
           <button className="icon" type="button" onClick={togglePicker}>

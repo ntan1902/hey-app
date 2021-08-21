@@ -77,7 +77,7 @@ class LuckyMoneyServiceImplTest {
 
         // when
         // then
-        assertThrows(UnauthorizeException.class, ()-> luckyMoneyService.createLuckyMoney(request));
+        assertThrows(UserNotInSessionChatException.class, ()-> luckyMoneyService.createLuckyMoney(request));
     }
 
     @Test
@@ -174,7 +174,7 @@ class LuckyMoneyServiceImplTest {
         when(luckyMoneyRepository.getLuckyMoneyById(request.getLuckyMoneyId())).thenReturn(Optional.of(luckyMoney));
         // when
         // then
-        assertThrows(UnauthorizeException.class, () -> luckyMoneyService.receiveLuckyMoney(request));
+        assertThrows(UserNotInSessionChatException.class, () -> luckyMoneyService.receiveLuckyMoney(request));
 
     }
 
@@ -295,7 +295,7 @@ class LuckyMoneyServiceImplTest {
         when(luckyMoneyServiceUtil.getCurrentUser()).thenReturn(user);
         when(luckyMoneyRepository.getLuckyMoneyById(anyLong())).thenReturn(Optional.of(luckyMoney));
 
-        when(luckyMoneyServiceUtil.isUserInSession(anyString(), luckyMoney.getSessionChatId())).thenReturn(true);
+        when(luckyMoneyServiceUtil.isUserInSession(user.getId(), luckyMoney.getSessionChatId())).thenReturn(true);
         when(luckyMoneyServiceUtil.hadUserReceived(luckyMoney.getId(), user.getId())).thenReturn(false);
         long amount = 3_000L;
         when(luckyMoneyServiceUtil.calculateAmountLuckyMoney(any(LuckyMoney.class))).thenReturn(amount);
@@ -330,7 +330,7 @@ class LuckyMoneyServiceImplTest {
         when(luckyMoneyServiceUtil.isUserInSession(user.getId(), sessionId)).thenReturn(false);
         // when
         // then
-        assertThrows(UnauthorizeException.class, () -> luckyMoneyService.getAllLuckyMoneyOfSession(sessionId));
+        assertThrows(UserNotInSessionChatException.class, () -> luckyMoneyService.getAllLuckyMoneyOfSession(sessionId));
 
     }
 
@@ -374,7 +374,7 @@ class LuckyMoneyServiceImplTest {
         luckyMoneyService.getAllLuckyMoneyOfSession(sessionId);
         // then
         ArgumentCaptor<List<LuckyMoney>> argumentCaptor = ArgumentCaptor.forClass(List.class);
-        verify(luckyMoneyServiceUtil, times(1)).luckyMoneyList2LuckyMoneyDTOList(argumentCaptor.capture(), user);
+        verify(luckyMoneyServiceUtil, times(1)).luckyMoneyList2LuckyMoneyDTOList(argumentCaptor.capture(), eq(user));
         List<LuckyMoney> actual = argumentCaptor.getValue();
         assertEquals(expected, actual);
     }
@@ -416,7 +416,7 @@ class LuckyMoneyServiceImplTest {
         when(luckyMoneyServiceUtil.isUserInSession(user.getId(), luckyMoney.getSessionChatId())).thenReturn(false);
         // when
         // then
-        assertThrows(UnauthorizeException.class, () -> luckyMoneyService.getLuckyMoneyDetails(luckyMoneyId));
+        assertThrows(UserNotInSessionChatException.class, () -> luckyMoneyService.getLuckyMoneyDetails(luckyMoneyId));
     }
 
     @Test

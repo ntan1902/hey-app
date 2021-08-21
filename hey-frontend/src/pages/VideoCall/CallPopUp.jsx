@@ -7,9 +7,10 @@ import { API_WS } from "../../config/setting";
 import "./CallPopUp.css";
 import RemoteVideo from "../../components/RemoteVideo/RemoteVideo";
 import { ChatAPI } from "../../api/chat";
+import { message } from "antd";
 
 const socketEvent = {
-  REFUSE_CALL: "REFUSE_CALL",
+  REJECT_CALL: "REJECT_CALL",
   JOIN_CALL: "JOIN_CALL",
   MAKE_CALL: "MAKE_CALL",
 };
@@ -37,6 +38,13 @@ const CallPopUp = () => {
     });
   };
 
+  const getMediaStream = (isVideo) => {
+    return navigator.mediaDevices.getUserMedia({
+      video: isVideo,
+      audio: true,
+    });
+  };
+
   useEffect(() => {
     (async () => {
       socket = new Sockette(API_WS + "?jwt=" + jwt, {
@@ -48,9 +56,15 @@ const CallPopUp = () => {
           console.log("New Socket");
           console.log(data, "New Socket");
           switch (data.type) {
-            case socketEvent.REFUSE_CALL: {
+            case socketEvent.REJECT_CALL: {
               // do something
               console.log("Từ chối cuộc gọi");
+              message.warning(`${data.fullName} rejected call.`);
+              if (!data.group) {
+                setTimeout(() => {
+                  window.close();
+                }, 2000);
+              }
               break;
             }
             case socketEvent.JOIN_CALL: {
@@ -92,10 +106,7 @@ const CallPopUp = () => {
         });
       };
       window.makeCall = async (sessionId, isVideoCall) => {
-        localStream = await navigator.mediaDevices.getUserMedia({
-          video: isVideoCall,
-          audio: true,
-        });
+        localStream = await getMediaStream(isVideoCall);
         videoTag.current.srcObject = localStream;
         videoTag.current.volume = 0;
         console.log(localStream);
@@ -103,10 +114,7 @@ const CallPopUp = () => {
       };
 
       window.answerCall = async (sessionId, isVideoCall) => {
-        localStream = await navigator.mediaDevices.getUserMedia({
-          video: isVideoCall,
-          audio: true,
-        });
+        localStream = await getMediaStream(isVideoCall);
         videoTag.current.srcObject = localStream;
         videoTag.current.volume = 0;
         if (peer.id) {
@@ -122,7 +130,10 @@ const CallPopUp = () => {
       };
     })();
   }, []);
-
+  useEffect(() => {
+    videoTag.current.srcObject = localStream;
+    videoTag.current.volume = 0;
+  }, [localStream]);
   useEffect(() => {
     if (!videoCurrentTag.current.srcObject && remoteStreams[0]) {
       videoCurrentTag.current.srcObject = remoteStreams[0];

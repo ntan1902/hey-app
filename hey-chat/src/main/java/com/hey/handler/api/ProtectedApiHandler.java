@@ -113,18 +113,36 @@ public class ProtectedApiHandler extends BaseHandler {
                         break;
                     case "/makeCall":
                         LogUtils.log("User " + userId + " make call " + requestObject);
-                        makeCall(response,requestObject,userId);
+                        makeCall(response, requestObject, userId);
                     case "/getICEServer":
                         LogUtils.log("User " + userId + " get ICEServer");
-                        getICEServer(response,userId);
+                        getICEServer(response, userId);
                     case "/joinCall":
-                        LogUtils.log("User "+ userId + " join call " + requestObject);
-                        joinCall(response, requestObject,userId);
+                        LogUtils.log("User " + userId + " join call " + requestObject);
+                        joinCall(response, requestObject, userId);
+                    case "/rejectCall":
+                        LogUtils.log("User " + userId + " reject call " + requestObject);
+                        rejectCall(response,requestObject,userId);
                 }
             } else {
                 handleUnauthorizedException(new HttpStatusException(HttpStatus.UNAUTHORIZED.code(), HttpStatus.UNAUTHORIZED.message()), response);
             }
         });
+    }
+
+    private void rejectCall(HttpServerResponse response, JsonObject requestObject, String userId) {
+        RejectCallRequest rejectCallRequest = requestObject.mapTo(RejectCallRequest.class);
+        Future<JsonObject> rejectCallFuture = apiService.rejectCall(rejectCallRequest, userId);
+
+        rejectCallFuture.compose(makeCallResponse -> {
+            response
+                    .setStatusCode(HttpStatus.OK.code())
+                    .putHeader("content-type", "application/json; charset=utf-8")
+                    .end(makeCallResponse.encodePrettily());
+
+        }, Future.future().setHandler(handler -> {
+            handleException(handler.cause(), response);
+        }));
     }
 
     private void joinCall(HttpServerResponse response, JsonObject requestObject, String userId) {
@@ -145,11 +163,11 @@ public class ProtectedApiHandler extends BaseHandler {
     private void getICEServer(HttpServerResponse response, String userId) {
         Future<JsonObject> getICEServer = apiService.getICEServer();
         getICEServer.compose(apiResponse -> {
-        response
-                .setStatusCode(HttpStatus.OK.code())
-                .putHeader("content-type", "application/json; charset=utf-8")
-                .end(apiResponse.encodePrettily());
-        }, Future.future().setHandler(handler ->  handleException(handler.cause(),response)));
+            response
+                    .setStatusCode(HttpStatus.OK.code())
+                    .putHeader("content-type", "application/json; charset=utf-8")
+                    .end(apiResponse.encodePrettily());
+        }, Future.future().setHandler(handler -> handleException(handler.cause(), response)));
     }
 
     private void makeCall(HttpServerResponse response, JsonObject requestObject, String userId) {
