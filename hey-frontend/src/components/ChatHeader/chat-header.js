@@ -1,7 +1,7 @@
 import React from "react";
 import { connect } from "react-redux";
 import CustomAvatar from "../custom-avatar";
-import { Menu, Icon, Button } from "antd";
+import { Menu, Icon, Button, Input } from "antd";
 
 import { channingActions } from "../../utils";
 import { bindChatActions, bindPaymentActions } from "../../actions";
@@ -19,6 +19,8 @@ class ChatHeader extends React.Component {
     this.state = {
       isHover: false,
       current: "",
+      status_box_state: false,
+      groupTitle: this.props.header.title,
     };
   }
   handleClick = (e) => {
@@ -26,6 +28,10 @@ class ChatHeader extends React.Component {
       current: e.key,
     });
   };
+
+  componentDidUpdate() {
+    if (this.refs.statusInput) this.refs.statusInput.focus();
+  }
 
   showLuckyMoneyModal = (isCreate) => {
     this.props.paymentActions.changeStateLuckyMoneyPopup(true, isCreate);
@@ -65,7 +71,34 @@ class ChatHeader extends React.Component {
     }
   };
 
+  openChangeTitle = () => {
+    this.setState({
+      ...this.state,
+      status_box_state: true,
+      groupTitle: this.props.header.title,
+    });
+  };
+
+  onChangeTitle = (e) => {
+    this.setState({
+      ...this.state,
+      groupTitle: e.target.value,
+    });
+  };
+
+  closeStatusBoxStateTitle = () => {
+    this.props.chatActions.changeGroupTitle({
+      groupName: this.state.groupTitle,
+      sessionId: this.props.currentSessionId,
+    });
+    this.setState({
+      ...this.state,
+      status_box_state: false,
+    });
+  };
+
   render() {
+    console.log("Header", this.props);
     const IconFont = Icon.createFromIconfontCN({
       scriptUrl: "//at.alicdn.com/t/font_8d5l8fzk5b87iudi.js",
     });
@@ -81,8 +114,23 @@ class ChatHeader extends React.Component {
             />
           )}
         </div>
-        <div style={{ overflow: "hidden", paddingTop: 5 }}>
-          <div className="panel-message"> {this.props.header.title} </div>
+        <div style={{ overflow: "hidden", paddingTop: 5, marginLeft: 5 }}>
+          {!this.state.status_box_state || !this.props.header.group ? (
+            <div onClick={this.openChangeTitle} className="panel-message">
+              {" "}
+              {this.props.header.title}{" "}
+            </div>
+          ) : (
+            <Input
+              onBlur={this.closeStatusBoxStateTitle}
+              onPressEnter={this.closeStatusBoxStatetitle}
+              placeholder="Please enter a group title..."
+              value={this.state.groupTitle}
+              ref="statusInput"
+              onChange={this.onChangeTitle}
+              style={{ width: 300, height: 40 }}
+            />
+          )}
         </div>
         <div
           style={{
@@ -166,57 +214,64 @@ class ChatHeader extends React.Component {
           </div>
         </div>
 
-        <Menu
-          onClick={this.handleClick}
-          // selectedKeys={[this.state.current]}
-          mode="horizontal"
-          style={{
-            position: "absolute",
-            top: 5,
-            right: 10,
-            opacity: 0,
-          }}
-          onMouseEnter={() => this.setState({ isHover: true })}
-          onMouseLeave={() => this.setState({ isHover: false })}
-        >
-          <Menu.ItemGroup title="Lucky Money">
-            <Menu.Item
-              key="setting:1"
-              onClick={() => this.showLuckyMoneyModal(true)}
-            >
-              <Icon style={{ fontSize: 20 }} type="plus" />
-              Create New One
-            </Menu.Item>
-            <Menu.Item
-              key="setting:2"
-              onClick={() => this.showLuckyMoneyModal(false)}
-            >
-              <Icon style={{ fontSize: 20 }} type="money-collect" />
-              View List
-            </Menu.Item>
-          </Menu.ItemGroup>
-          <Menu.ItemGroup title="Settings">
-            <Menu.Item key="setting:3" onClick={() => this.showMembersModal()}>
-              <Icon style={{ fontSize: 20 }} type="usergroup-add" />
-              Members
-            </Menu.Item>
-            <Menu.Item
-              key="setting:4"
-              onClick={() => this.showAddFriendToSessionModal(true)}
-            >
-              <Icon style={{ fontSize: 20 }} type="plus" />
-              Add More Friend
-            </Menu.Item>
-            <Menu.Item
-              key="setting:5"
-              onClick={() => this.leaveGroup()}
-              style={{ color: "red" }}
-            >
-              <IconFont style={{ fontSize: 20 }} type="icon-tuichu" />
-              Leave
-            </Menu.Item>
-          </Menu.ItemGroup>
-        </Menu>
+        {this.props.header.group ? (
+          <Menu
+            onClick={this.handleClick}
+            // selectedKeys={[this.state.current]}
+            mode="horizontal"
+            style={{
+              position: "absolute",
+              top: 5,
+              right: 10,
+              opacity: 0,
+            }}
+            onMouseEnter={() => this.setState({ isHover: true })}
+            onMouseLeave={() => this.setState({ isHover: false })}
+          >
+            <Menu.ItemGroup title="Lucky Money">
+              <Menu.Item
+                key="setting:1"
+                onClick={() => this.showLuckyMoneyModal(true)}
+              >
+                <Icon style={{ fontSize: 20 }} type="plus" />
+                Create New One
+              </Menu.Item>
+              <Menu.Item
+                key="setting:2"
+                onClick={() => this.showLuckyMoneyModal(false)}
+              >
+                <Icon style={{ fontSize: 20 }} type="money-collect" />
+                View List
+              </Menu.Item>
+            </Menu.ItemGroup>
+            <Menu.ItemGroup title="Settings">
+              <Menu.Item
+                key="setting:3"
+                onClick={() => this.showMembersModal()}
+              >
+                <Icon style={{ fontSize: 20 }} type="usergroup-add" />
+                Members
+              </Menu.Item>
+              <Menu.Item
+                key="setting:4"
+                onClick={() => this.showAddFriendToSessionModal(true)}
+              >
+                <Icon style={{ fontSize: 20 }} type="plus" />
+                Add More Friend
+              </Menu.Item>
+              <Menu.Item
+                key="setting:5"
+                onClick={() => this.leaveGroup()}
+                style={{ color: "red" }}
+              >
+                <IconFont style={{ fontSize: 20 }} type="icon-tuichu" />
+                Leave
+              </Menu.Item>
+            </Menu.ItemGroup>
+          </Menu>
+        ) : (
+          <div></div>
+        )}
       </div>
     );
   }

@@ -198,8 +198,8 @@ export function specialLoadChatContainer(sessionId) {
 
 export function submitChatMessage(message) {
   let sessionId = store.getState().chatReducer.currentSessionId;
-  let waitingGroupUsernames =
-    store.getState().chatReducer.waitingGroupUsernames;
+  let waitingGroupUsernames = store.getState().chatReducer
+    .waitingGroupUsernames;
 
   let groupName = store.getState().chatReducer.messageHeader.title;
   store
@@ -601,6 +601,15 @@ const kickMembers = (sessionId, userId) => async (dispatch) => {
   }
 };
 
+const changeGroupTitle = (data) => async (dispatch) => {
+  try {
+    let changeGroupName = await ChatAPI.changeGroupName(data);
+    return Promise.resolve(changeGroupName);
+  } catch (error) {
+    return Promise.reject({ error, success: false });
+  }
+};
+
 const fetchMember = (sessionId) => async (dispatch) => {
   try {
     let fetchMemberRes = await ChatAPI.getMembersOfSessionChat(sessionId);
@@ -617,6 +626,7 @@ const fetchMember = (sessionId) => async (dispatch) => {
 export const chatActions = {
   kickMembers,
   fetchMember,
+  changeGroupTitle,
 };
 
 export function bindChatActions(currentActions, dispatch) {

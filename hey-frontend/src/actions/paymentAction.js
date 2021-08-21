@@ -1,6 +1,7 @@
 import * as actionTypes from "./actionTypes";
 import { bindActionCreators } from "redux";
 import { PaymentAPI, AuthAPI } from "../api";
+import { Button, message, notification } from "antd/lib/index";
 /* Get */
 
 const onShow = (screenName, data) => {
@@ -19,10 +20,10 @@ const updateBalance = (balance) => {
   };
 };
 
-const onOpenPinPopup = () => {
+const onOpenPin = (hasPin) => {
   return {
     type: actionTypes.ON_SHOW_PIN,
-    verifyPin: true,
+    verifyPin: hasPin,
   };
 };
 
@@ -76,18 +77,32 @@ export const changeOffset = (offset) => {
   };
 };
 
-const switchMainScreen =
-  (screenName, data = null) =>
-  async (dispatch) => {
-    return new Promise(async (resolve, reject) => {
-      try {
-        await dispatch(onShow(screenName, data));
-        resolve({ success: true });
-      } catch (err) {
-        reject({ error: err, success: false });
+const switchMainScreen = (screenName, data = null) => async (dispatch) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      await dispatch(onShow(screenName, data));
+      resolve({ success: true });
+    } catch (err) {
+      reject({ error: err, success: false });
+    }
+  });
+};
+
+const onOpenPinPopup = () => async (dispatch) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      let res = await AuthAPI.hasPin();
+      if (!res.data.payload.hasPin) {
+        message.warning("You need to create pin in profile");
+      } else {
+        await dispatch(onOpenPin(true));
       }
-    });
-  };
+      resolve({ success: true });
+    } catch (err) {
+      reject({ error: err, success: false });
+    }
+  });
+};
 
 const verifyPin = (pin, amount) => async (dispatch) => {
   return new Promise(async (resolve, reject) => {
