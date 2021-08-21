@@ -131,14 +131,15 @@
   font-size: 13px;
   color: #999;
   font-weight: 100;
-  line-height: 10px;
+  line-height: 14px;
   margin-left: 10px;
   overflow: hidden;
   text-overflow: ellipsis;
   padding-bottom: 5px;
 }
 
-.chat-list .unread-item, .chat-list .unread-item .history-message {
+.chat-list .unread-item,
+.chat-list .unread-item .history-message {
   font-style: oblique;
 }
 
@@ -238,7 +239,8 @@
   border-radius: 0;
 }
 
-.chat-footer textarea:focus, .chat-footer textarea:active {
+.chat-footer textarea:focus,
+.chat-footer textarea:active {
   border: none;
   box-shadow: none;
 }
@@ -286,7 +288,9 @@
 
 .chat-content .chat-item-content {
   padding: 6px 12px;
-  border-radius: 5px;
+  /* border-radius: 5px; */
+  border-radius: 20px;
+
   width: fit-content;
   margin: 5px 5px;
   min-height: 100%;
@@ -364,7 +368,8 @@
 .new-action-menu {
   padding: 8px 16px 8px 16px;
   margin-bottom: 15px;
-  transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+  transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out,
+    border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
   transition-property: color, background-color, border-color, box-shadow;
   transition-duration: 0.15s, 0.15s, 0.15s, 0.15s;
   transition-timing-function: ease-in-out, ease-in-out, ease-in-out, ease-in-out;
@@ -469,11 +474,14 @@
   text-align: center;
 }
 
-.box.user-name {}
+.box.user-name {
+}
 
-.box.status {}
+.box.status {
+}
 
-.box.logout {}
+.box.logout {
+}
 
 .logout-a .anticon:hover {
   color: #1890ff !important;
