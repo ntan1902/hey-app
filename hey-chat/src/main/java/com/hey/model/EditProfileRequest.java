@@ -3,16 +3,16 @@ package com.hey.model;
 public class EditProfileRequest {
     private String email;
     private String fullName;
-    private String dateOfBirth;
+    private String dob;
     private String phoneNumber;
 
     public EditProfileRequest() {
     }
 
-    public EditProfileRequest(String email, String fullName, String dateOfBirth, String phoneNumber) {
+    public EditProfileRequest(String email, String fullName, String dob, String phoneNumber) {
         this.email = email;
         this.fullName = fullName;
-        this.dateOfBirth = dateOfBirth;
+        this.dob = dob;
         this.phoneNumber = phoneNumber;
     }
 
@@ -32,12 +32,12 @@ public class EditProfileRequest {
         this.fullName = fullName;
     }
 
-    public String getDateOfBirth() {
-        return dateOfBirth;
+    public String getDob() {
+        return dob;
     }
 
-    public void setDateOfBirth(String dateOfBirth) {
-        this.dateOfBirth = dateOfBirth;
+    public void setDob(String dob) {
+        this.dob = dob;
     }
 
     public String getPhoneNumber() {
