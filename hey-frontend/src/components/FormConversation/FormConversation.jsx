@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import "emoji-mart/css/emoji-mart.css";
 import { Picker } from "emoji-mart-virtualized";
 import { connect } from "react-redux";
@@ -26,6 +26,18 @@ const FormConversation = ({ submitChatMessage }) => {
       setMessage("");
     }
   };
+
+  const handleClickOutside = (event) => {
+    if (picker && !picker.current.contains(event.target)) {
+      setShowPicker(!showPicker);
+    }
+  };
+
+  useEffect(() => {
+    if (showPicker) document.addEventListener("mousedown", handleClickOutside);
+
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [showPicker]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
