@@ -1,17 +1,25 @@
 import React from "react";
-import {store} from "../store";
-import {API_WS} from "../config/setting";
+import { store } from "../store";
+import { API_WS } from "../config/setting";
 import Sockette from "sockette";
-import {getJwtFromStorage, getUserIdFromStorage, isEmptyString,} from "../utils/utils";
+import {
+  getJwtFromStorage,
+  getUserIdFromStorage,
+  isEmptyString,
+} from "../utils/utils";
 import deepcopy from "deepcopy";
-import {Button, message, notification} from "antd/lib/index";
-import {changeUserOnlineStatus, loadAddressBookList, loadWaitingFriendList,} from "./addressBookAction";
-import {changeOffset, newTransferStatement} from "./paymentAction";
+import { Button, message, notification } from "antd/lib/index";
+import {
+  changeUserOnlineStatus,
+  loadAddressBookList,
+  loadWaitingFriendList,
+} from "./addressBookAction";
+import { changeOffset, newTransferStatement } from "./paymentAction";
 
-import {statusNotification} from "../components/status-notification";
-import {AuthAPI, PaymentAPI} from "../api";
-import {ChatAPI} from "../api/chat";
-import {bindActionCreators} from "redux";
+import { statusNotification } from "../components/status-notification";
+import { AuthAPI, PaymentAPI } from "../api";
+import { ChatAPI } from "../api/chat";
+import { bindActionCreators } from "redux";
 import * as actionTypes from "./actionTypes";
 import videoCallUtils from "../utils/videoCallUtils";
 
@@ -210,15 +218,15 @@ export function receivedChatList(chatList) {
   const fetchedChatList = chatList;
   let header = {};
   if (fetchedChatList.length > 0) {
-    header = {
-      title:
-        fetchedChatList[0].groupName === ""
-          ? fetchedChatList[0].name
-          : fetchedChatList[0].groupName,
-      avatar: fetchedChatList[0].avatar,
-      group: fetchedChatList[0].group,
-    };
-    store.dispatch(specialLoadChatContainer(fetchedChatList[0].sessionId));
+    // header = {
+    //   title:
+    //     fetchedChatList[0].groupName === ""
+    //       ? fetchedChatList[0].name
+    //       : fetchedChatList[0].groupName,
+    //   avatar: fetchedChatList[0].avatar,
+    //   group: fetchedChatList[0].group,
+    // };
+    // store.dispatch(specialLoadChatContainer(fetchedChatList[0].sessionId));
   }
 
   return {
@@ -236,6 +244,8 @@ export function receivedReloadChatList(chatList) {
 }
 
 export function receivedNewMessage(message) {
+  console.log("New Message", message);
+
   let currentSessionId = store.getState().chatReducer.currentSessionId;
   let userId = getUserIdFromStorage();
   let userSelected = store.getState().chatReducer.userSelected;

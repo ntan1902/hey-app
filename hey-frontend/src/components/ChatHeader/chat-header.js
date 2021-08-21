@@ -1,12 +1,12 @@
 import React from "react";
-import {connect} from "react-redux";
+import { connect } from "react-redux";
 import CustomAvatar from "../custom-avatar";
 
 import { Menu, Icon, Button, Input } from "antd";
 
-import {channingActions} from "../../utils";
-import {bindChatActions, bindPaymentActions} from "../../actions";
-import {ChatAPI} from "../../api/chat";
+import { channingActions } from "../../utils";
+import { bindChatActions, bindPaymentActions } from "../../actions";
+import { ChatAPI } from "../../api/chat";
 
 import popupWindow from "../../utils/popupWindow";
 
@@ -88,10 +88,11 @@ class ChatHeader extends React.Component {
   };
 
   closeStatusBoxStateTitle = () => {
-    this.props.chatActions.changeGroupTitle({
-      groupName: this.state.groupTitle,
-      sessionId: this.props.currentSessionId,
-    });
+    if (this.state.groupTitle != this.props.header.title)
+      this.props.chatActions.changeGroupTitle({
+        groupName: this.state.groupTitle,
+        sessionId: this.props.currentSessionId,
+      });
     this.setState({
       ...this.state,
       status_box_state: false,
