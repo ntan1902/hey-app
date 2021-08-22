@@ -24,7 +24,7 @@ public interface UserRepository extends JpaRepository<User, String> {
 
     Boolean existsByUsernameOrEmail(String username, String email);
 
-    @Query("select u from User u where u.fullName like %:key% or u.email like %:key%")
-    List<User> findAllByFullNameContainsOrEmailContains(String key);
+    @Query("SELECT u FROM User u WHERE (u.fullName LIKE %:key% OR u.email LIKE %:key%) AND u.id <> :userId")
+    List<User> findAllByFullNameContainsOrEmailContainsAndIdIsNot(String key, String userId);
 
 }
