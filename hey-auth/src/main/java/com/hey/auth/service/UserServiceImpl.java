@@ -255,7 +255,8 @@ public class UserServiceImpl implements UserDetailsService, UserService {
     @Override
     public List<UserDTO> searchUser(String key) {
         log.info("Inside searchUser of UserServiceImpl: {}", key);
-        return userRepository.findAllByFullNameContainsOrEmailContains(key)
+        String userId = getCurrentUserId();
+        return userRepository.findAllByFullNameContainsOrEmailContainsAndIdIsNot(key, userId)
                 .stream()
                 .map(userMapper::user2UserDTO)
                 .collect(Collectors.toList());
