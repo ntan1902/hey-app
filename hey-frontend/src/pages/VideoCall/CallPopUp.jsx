@@ -53,9 +53,21 @@ const CallPopUp = ({
           path: "/",
           port: 443,
           secure: true,
-          // config: {
-          //   iceServers: ICEServer,
-          // },
+          config: {
+            // iceServers: ICEServer,
+            iceServers: [
+              {
+                username: "lygioian",
+                url: "stun:stun.oispyouthunion.vn:5349",
+                credential: "12345",
+              },
+              {
+                username: "lygioian",
+                url: "turn:turn.oispyouthunion.vn:5349",
+                credential: "12345",
+              },
+            ],
+          },
         });
         peer.on("open", async (id) => {
           peer.on("call", function (call) {
