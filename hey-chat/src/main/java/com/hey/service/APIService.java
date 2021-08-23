@@ -1063,7 +1063,8 @@ public class APIService extends BaseService {
                     response.setMessage(chatMessage.getMessage());
                     response.setSessionId(chatMessage.getSessionId());
                     response.setUserId(chatMessage.getUserHash().getUserId());
-                    response.setTransferStatement(true);
+                    response.setTransferStatement(false);
+                    response.setChangeGroupName(false);
 
                     for (UserHash userhash : chatList.getUserHashes()) {
                         userWsChannelManager.sendMessage(response, userhash.getUserId());
@@ -1123,6 +1124,7 @@ public class APIService extends BaseService {
                     response.setSessionId(chatMessage.getSessionId());
                     response.setUserId(chatMessage.getUserHash().getUserId());
                     response.setTransferStatement(true);
+                    response.setChangeGroupName(false);
 
                     for (UserHash userhash : chatList.getUserHashes()) {
                         userWsChannelManager.sendMessage(response, userhash.getUserId());
@@ -1350,7 +1352,7 @@ public class APIService extends BaseService {
                     response.setMessage(chatMessage.getMessage());
                     response.setSessionId(chatMessage.getSessionId());
                     response.setUserId(chatMessage.getUserHash().getUserId());
-                    response.setTransferStatement(true);
+                    response.setTransferStatement(false);
                     response.setChangeGroupName(false);
 
                     for (UserHash userhash : chatList.getUserHashes()) {
