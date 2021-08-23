@@ -65,13 +65,14 @@ class Profile extends React.Component {
         </div>
         <Row style={{ display: "flex", justifyContent: "center" }}>
           <InputFile name="file" onChange={this.onChangeAvatarInput}>
-            {this.props.profile.avatar && (
-              <CustomAvatar
-                type="main-avatar"
-                src={getProfileURL(getUserIdFromStorage())}
-                size={120}
-              />
-            )}
+            <CustomAvatar
+              type="main-avatar"
+              src={
+                getProfileURL(getUserIdFromStorage()) +
+                `?key=${this.props.profileKey}`
+              }
+              size={120}
+            />
 
             <Icon
               type="plus-circle"
@@ -187,6 +188,7 @@ function mapStateToProps(state) {
     profile: state.userReducer.profile,
     userStatus: state.userReducer.userStatus,
     hasPin: state.userReducer.hasPin,
+    profileKey: state.userReducer.profileKey,
   };
 }
 function mapDispatchToProps(dispatch) {
