@@ -14,8 +14,7 @@ import com.hey.lucky.mapper.LuckyMoneyMapper;
 import com.hey.lucky.repository.LuckyMoneyRepository;
 import com.hey.lucky.repository.ReceivedLuckyMoneyRepository;
 import com.hey.lucky.shared_data.WalletsInfo;
-import com.hey.lucky.util.LuckyMoneyServiceUtil;
-import com.hey.lucky.util.LuckyMoneyServiceUtilImpl;
+import com.hey.lucky.util.*;
 import lombok.NoArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,32 +34,39 @@ public class LuckyMoneyServiceImpl implements LuckyMoneyService {
     private LuckyMoneyMapper luckyMoneyMapper;
     private LuckyMoneyServiceUtil luckyMoneyServiceUtil;
     private WalletsInfo walletsInfo;
+    private UserUtil userUtil;
+    private PaymentUtil paymentUtil;
+    private ChatUtil chatUtil;
 
     @Autowired
     public LuckyMoneyServiceImpl(LuckyMoneyRepository luckyMoneyRepository,
                                  ReceivedLuckyMoneyRepository receivedLuckyMoneyRepository,
-                                 LuckyMoneyMapper luckyMoneyMapper, LuckyMoneyServiceUtilImpl luckyMoneyServiceUtil, WalletsInfo walletsInfo) {
+                                 LuckyMoneyMapper luckyMoneyMapper, LuckyMoneyServiceUtilImpl luckyMoneyServiceUtil, WalletsInfo walletsInfo, UserUtil userUtil, PaymentUtil paymentUtil, ChatUtil chatUtil) {
         this.luckyMoneyRepository = luckyMoneyRepository;
         this.receivedLuckyMoneyRepository = receivedLuckyMoneyRepository;
         this.luckyMoneyMapper = luckyMoneyMapper;
         this.luckyMoneyServiceUtil = luckyMoneyServiceUtil;
         this.walletsInfo = walletsInfo;
+        this.userUtil = userUtil;
+        this.paymentUtil = paymentUtil;
+        this.chatUtil = chatUtil;
     }
 
     @Override
-    @Transactional(noRollbackFor = ErrCallApiException.class)
+    @Transactional(noRollbackFor = ErrCallChatApiException.class, rollbackFor = {CannotTransferMoneyException.class})
     public void createLuckyMoney(CreateLuckyMoneyRequest request) throws ErrCallApiException, CannotTransferMoneyException, ErrCallChatApiException, UserNotInSessionChatException {
         long walletId = walletsInfo.getCurrentWallet();
-        User user = luckyMoneyServiceUtil.getCurrentUser();
+        User user = userUtil.getCurrentUser();
 
         log.info("Send lucky money for user {} by wallet {}", user.getId(), walletId);
-
-        if (!luckyMoneyServiceUtil.isUserInSession(user.getId(), request.getSessionChatId())) {
+        // check user in session chat
+        if (!userUtil.isUserInSession(user.getId(), request.getSessionChatId())) {
             log.info("User {} isn't in group chat {}", user.getId(), request.getSessionChatId());
             throw new UserNotInSessionChatException("You aren't in that group chat");
         }
 
-        long amount = luckyMoneyServiceUtil.transferMoneyFromUser(
+        // transfer money from user
+        long amount = paymentUtil.transferMoneyFromUser(
                 TransferFromUserRequest.builder()
                         .userId(user.getId())
                         .message(request.getMessage())
@@ -69,47 +75,60 @@ public class LuckyMoneyServiceImpl implements LuckyMoneyService {
                         .build()
         );
 
-        log.info("Amount: {}", amount);
-        LocalDateTime createdAt = LocalDateTime.now();
+        try {
+            log.info("Amount: {}", amount);
+            LocalDateTime createdAt = LocalDateTime.now();
 
-        LuckyMoney luckyMoney = LuckyMoney.builder()
-                .userId(user.getId())
-                .systemWalletId(walletId)
-                .sessionChatId(request.getSessionChatId())
-                .amount(amount)
-                .restMoney(amount)
-                .numberBag(request.getNumberBag())
-                .restBag(request.getNumberBag())
-                .type(request.getType())
-                .wishMessage(request.getMessage())
-                .createdAt(createdAt)
-                .expiredAt(createdAt.plusDays(1))
-                .build();
-        luckyMoneyRepository.save(luckyMoney);
+            LuckyMoney luckyMoney = LuckyMoney.builder()
+                    .userId(user.getId())
+                    .systemWalletId(walletId)
+                    .sessionChatId(request.getSessionChatId())
+                    .amount(amount)
+                    .restMoney(amount)
+                    .numberBag(request.getNumberBag())
+                    .restBag(request.getNumberBag())
+                    .type(request.getType())
+                    .wishMessage(request.getMessage())
+                    .createdAt(createdAt)
+                    .expiredAt(createdAt.plusDays(1))
+                    .build();
+            luckyMoneyRepository.save(luckyMoney);
 
-        log.info("Send message lucky money");
-        luckyMoneyServiceUtil.sendMessageLuckyMoney(
-                LuckyMoneyMessageContent.builder()
-                        .userId(luckyMoney.getUserId())
-                        .sessionId(luckyMoney.getSessionChatId())
-                        .message(luckyMoney.getWishMessage())
-                        .luckyMoneyId(luckyMoney.getId())
-                        .createdAt(luckyMoney.getCreatedAt().toString())
-                        .build()
-        );
+            log.info("Send message lucky money");
+            chatUtil.sendMessageLuckyMoney(
+                    LuckyMoneyMessageContent.builder()
+                            .userId(luckyMoney.getUserId())
+                            .sessionId(luckyMoney.getSessionChatId())
+                            .message(luckyMoney.getWishMessage())
+                            .luckyMoneyId(luckyMoney.getId())
+                            .createdAt(luckyMoney.getCreatedAt().toString())
+                            .build()
+            );
+        }catch (ErrCallChatApiException exception){
+            throw exception;
+        } catch (Exception exception){ // save lucky money have error
+            // refund money for user
+            paymentUtil.transferMoneyToUser(TransferToUserRequest.builder()
+                    .amount(amount)
+                    .receiverId(user.getId())
+                    .message("Refund")
+                    .walletId(walletId)
+                    .build());
+        }
+
         log.info("Send message lucky money success");
     }
 
     @Override
-    @Transactional(noRollbackFor = ErrCallApiException.class)
+    @Transactional(noRollbackFor = ErrCallChatApiException.class, rollbackFor = {CannotTransferMoneyException.class})
     public void receiveLuckyMoney(ReceiveLuckyMoneyRequest request) throws InvalidLuckyMoneyException, ErrCallApiException, LuckyMoneyExpiredException, CannotTransferMoneyException, OutOfBagException, HadReceivedException, ErrCallChatApiException, UserNotInSessionChatException {
-        User user = luckyMoneyServiceUtil.getCurrentUser();
+        User user = userUtil.getCurrentUser();
         LocalDateTime now = LocalDateTime.now();
         LuckyMoney luckyMoney = luckyMoneyRepository.getLuckyMoneyById(request.getLuckyMoneyId())
                 .orElseThrow(InvalidLuckyMoneyException::new);
         log.info("User {} receive lucky money {}", user.getId(), luckyMoney.getId());
 
-        if (!luckyMoneyServiceUtil.isUserInSession(user.getId(), luckyMoney.getSessionChatId())) {
+        if (!userUtil.isUserInSession(user.getId(), luckyMoney.getSessionChatId())) {
             log.info("User {} isn't in group chat {}", user.getId(), luckyMoney.getSessionChatId());
             throw new UserNotInSessionChatException("You aren't in that group chat");
         }
@@ -132,8 +151,22 @@ public class LuckyMoneyServiceImpl implements LuckyMoneyService {
         long amount = luckyMoneyServiceUtil.calculateAmountLuckyMoney(luckyMoney);
 
         String message = String.format("User %s receive %d from lucky money %d", user.getId(), amount, luckyMoney.getId());
+        // update rest bag and rest money
+        long newRestMoney = luckyMoney.getRestMoney() - amount;
+        int newRestBag = luckyMoney.getRestBag() - 1;
+        luckyMoney.setRestMoney(newRestMoney);
+        luckyMoney.setRestBag(newRestBag);
+        luckyMoneyRepository.save(luckyMoney);
 
-        luckyMoneyServiceUtil.transferMoneyToUser(
+        ReceivedLuckyMoney receivedLuckyMoney = ReceivedLuckyMoney.builder()
+                .luckyMoneyId(luckyMoney.getId())
+                .receiverId(user.getId())
+                .amount(amount)
+                .createdAt(now).build();
+        receivedLuckyMoneyRepository.save(receivedLuckyMoney);
+
+        // transfer to user after do every thing
+        paymentUtil.transferMoneyToUser(
                 TransferToUserRequest.builder()
                         .walletId(luckyMoney.getSystemWalletId())
                         .receiverId(user.getId())
@@ -142,23 +175,7 @@ public class LuckyMoneyServiceImpl implements LuckyMoneyService {
                         .build()
         );
 
-        long newRestMoney = luckyMoney.getRestMoney() - amount;
-        int newRestBag = luckyMoney.getRestBag() - 1;
-
-        luckyMoney.setRestMoney(newRestMoney);
-        luckyMoney.setRestBag(newRestBag);
-
-        luckyMoneyRepository.save(luckyMoney);
-
-        ReceivedLuckyMoney receivedLuckyMoney = ReceivedLuckyMoney.builder()
-                .luckyMoneyId(luckyMoney.getId())
-                .receiverId(user.getId())
-                .amount(amount)
-                .createdAt(now).build();
-
-        receivedLuckyMoneyRepository.save(receivedLuckyMoney);
-
-        luckyMoneyServiceUtil.sendMessageReceiveLuckyMoney(
+        chatUtil.sendMessageReceiveLuckyMoney(
                 ReceiveLuckyMoneyMessageContent.builder()
                         .receiverId(user.getId())
                         .sessionId(luckyMoney.getSessionChatId())
@@ -172,12 +189,12 @@ public class LuckyMoneyServiceImpl implements LuckyMoneyService {
 
     @Override
     public List<LuckyMoneyDTO> getAllLuckyMoneyOfSession(String sessionId) throws  ErrCallApiException, CannotGetUserInfo, UserNotInSessionChatException {
-        User user = luckyMoneyServiceUtil.getCurrentUser();
+        User user = userUtil.getCurrentUser();
         log.info("User {} get all lucky money of chat group {}", user.getId(), sessionId);
         if ("-1".equals(sessionId)){
             return new ArrayList<>();
         }
-        if (!luckyMoneyServiceUtil.isUserInSession(user.getId(), sessionId)) {
+        if (!userUtil.isUserInSession(user.getId(), sessionId)) {
             log.info("User {} isn't in group chat {}", user.getId(), sessionId);
             throw new UserNotInSessionChatException("You aren't in that group chat");
         }
@@ -191,21 +208,21 @@ public class LuckyMoneyServiceImpl implements LuckyMoneyService {
     @Override
     public LuckyMoneyDetails getLuckyMoneyDetails(long luckyMoneyId) throws InvalidLuckyMoneyException, CannotGetUserInfo, ErrCallApiException, UserNotInSessionChatException {
         log.info("Get details of lucky money {}", luckyMoneyId);
-        User user = luckyMoneyServiceUtil.getCurrentUser();
+        User user = userUtil.getCurrentUser();
         LuckyMoney luckyMoney = luckyMoneyRepository.findLuckyMoneyById(luckyMoneyId)
                 .orElseThrow(() -> {
                     log.error("Lucky money {} is not exists", luckyMoneyId);
                     return new InvalidLuckyMoneyException();
                 });
 
-        if (!luckyMoneyServiceUtil.isUserInSession(user.getId(), luckyMoney.getSessionChatId())) {
+        if (!userUtil.isUserInSession(user.getId(), luckyMoney.getSessionChatId())) {
             log.info("User {} isn't in group chat {}", user.getId(), luckyMoney.getSessionChatId());
             throw new UserNotInSessionChatException("You aren't in that group chat");
         }
 
         LuckyMoneyDetails luckyMoneyDetails = luckyMoneyMapper.luckyMoney2LuckyMoneyDetails(luckyMoney);
 
-        UserInfo senderLuckyMoney = luckyMoneyServiceUtil.getUserInfo(luckyMoney.getUserId());
+        UserInfo senderLuckyMoney = userUtil.getUserInfo(luckyMoney.getUserId());
 
         List<UserReceiveInfo> listReceivedUsers = luckyMoneyServiceUtil.getListReceivedUsers(luckyMoney.getId());
 
@@ -224,9 +241,14 @@ public class LuckyMoneyServiceImpl implements LuckyMoneyService {
         List<LuckyMoney> luckyMoneyList = luckyMoneyRepository.getAllByRestMoneyGreaterThanZeroAndExpiredAtBetween(now, now.plusMinutes(6));
         luckyMoneyList.forEach(luckyMoney -> {
             log.info("Return lucky money {} with rest {} for user {}", luckyMoney.getId(), luckyMoney.getRestMoney(), luckyMoney.getUserId());
+            long restMoney = luckyMoney.getRestMoney();
             try {
 
-                luckyMoneyServiceUtil.transferMoneyToUser(
+                luckyMoney.setRestMoney(0L);
+                luckyMoneyRepository.save(luckyMoney);
+
+                // return lucky money
+                paymentUtil.transferMoneyToUser(
                         TransferToUserRequest.builder()
                                 .walletId(luckyMoney.getSystemWalletId())
                                 .receiverId(luckyMoney.getUserId())
@@ -235,11 +257,10 @@ public class LuckyMoneyServiceImpl implements LuckyMoneyService {
                                 .build()
                 );
 
-                luckyMoney.setRestMoney(0L);
-                luckyMoneyRepository.save(luckyMoney);
             } catch (CannotTransferMoneyException exception) {
                 log.error("Can't transfer money");
                 luckyMoney.setExpiredAt(now.plusMinutes(10));
+                luckyMoney.setRestMoney(restMoney);
                 luckyMoneyRepository.save(luckyMoney);
             }
         });
