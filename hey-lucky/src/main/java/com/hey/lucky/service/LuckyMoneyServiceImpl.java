@@ -104,9 +104,9 @@ public class LuckyMoneyServiceImpl implements LuckyMoneyService {
                             .createdAt(luckyMoney.getCreatedAt().toString())
                             .build()
             );
-        }catch (ErrCallChatApiException exception){
+        } catch (ErrCallChatApiException exception) {
             throw exception;
-        } catch (Exception exception){ // save lucky money have error
+        } catch (Exception exception) { // save lucky money have error
             // refund money for user
             paymentUtil.transferMoneyToUser(TransferToUserRequest.builder()
                     .amount(amount)
@@ -188,10 +188,10 @@ public class LuckyMoneyServiceImpl implements LuckyMoneyService {
     }
 
     @Override
-    public List<LuckyMoneyDTO> getAllLuckyMoneyOfSession(String sessionId) throws  ErrCallApiException, CannotGetUserInfo, UserNotInSessionChatException {
+    public List<LuckyMoneyDTO> getAllLuckyMoneyOfSession(String sessionId) throws ErrCallApiException, CannotGetUserInfo, UserNotInSessionChatException {
         User user = userUtil.getCurrentUser();
         log.info("User {} get all lucky money of chat group {}", user.getId(), sessionId);
-        if ("-1".equals(sessionId)){
+        if ("-1".equals(sessionId)) {
             return new ArrayList<>();
         }
         if (!userUtil.isUserInSession(user.getId(), sessionId)) {
