@@ -290,7 +290,7 @@ export function receivedNewMessage(message) {
       if (chatList[i].sessionId == message.sessionId) {
         userSelected = message.sessionId;
         chatList[i].lastMessage = message.message;
-        chatList[i].groupName = title;
+        if (title != "") chatList[i].groupName = title;
         var temp = chatList[i];
         chatList.splice(i, 1);
         chatList.unshift(temp);
@@ -302,7 +302,7 @@ export function receivedNewMessage(message) {
     for (var i = 0; i < chatList.length; i++) {
       if (chatList[i].sessionId == message.sessionId) {
         chatList[i].lastMessage = message.message;
-        chatList[i].groupName = title;
+        if (title != "") chatList[i].groupName = title;
 
         chatList[i].unread = chatList[i].unread + 1;
         var temp = chatList[i];
