@@ -37,10 +37,17 @@ function callReducer(state = initialState, action) {
                 };
             }
         case "APPEND_PEER_IDS":
+            if (!state.peerIds.includes(action.peerId)) {
+                console.log(state.remoteStreams);
+                return {
+                    ...state,
+                    peerIds: [...state.peerIds, action.peerId]
+                };
+            }
             return {
                 ...state,
-                peerIds: [...state.peerIds, action.peerId]
-            }
+                peerIds: [...state.peerIds]
+            };
         case "INIT_SOCKET":
             return {
                 ...state,
