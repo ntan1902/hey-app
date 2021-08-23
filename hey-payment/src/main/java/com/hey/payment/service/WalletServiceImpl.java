@@ -72,7 +72,7 @@ public class WalletServiceImpl implements WalletService {
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = {BalanceNotEnoughException.class})
     public void transferMoney(long sourceWalletId, long targetWalletId, long amount) throws MaxBalanceException, BalanceNotEnoughException, HaveNoWalletException {
         // Get and lock 2 wallets
         Wallet sourceWallet = walletRepository.findAndLockWalletById(sourceWalletId)
