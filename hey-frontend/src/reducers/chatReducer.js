@@ -91,14 +91,21 @@ export default function reduce(state = initialState, action) {
         userSelected: action.userSelected,
       };
     case NEW_MESSAGE_IN_PANEL_FETCHED:
+      if (action.title != "" && state.messageHeader) {
+        return {
+          ...state,
+          messageItems: action.messageItems,
+          chatList: action.chatList,
+          messageHeader: {
+            ...state.messageHeader,
+            title: action.title,
+          },
+        };
+      }
       return {
         ...state,
         messageItems: action.messageItems,
         chatList: action.chatList,
-        messageHeader: {
-          ...state.messageHeader,
-          title: action.title,
-        },
       };
     case MESSAGE_HEADER_FETCHED:
       return {
