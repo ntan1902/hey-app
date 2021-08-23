@@ -8,6 +8,7 @@ import {
   closeWebSocket,
   initialWebSocket,
   loadChatContainer,
+  userUnSelected,
 } from "../../actions/chatAction";
 import { connect } from "react-redux";
 import LuckyMoney from "../../components/lucky-money";
@@ -29,6 +30,8 @@ class Chat extends React.Component {
 
   componentDidMount() {
     // this.props.initialWebSocket();
+    this.props.userUnSelected();
+    console.log("Hello Chat");
   }
 
   componentWillUnmount() {}
@@ -59,12 +62,14 @@ class Chat extends React.Component {
             <AddFriendSession />
             <MembersModal />
             <ChatHeader />
-            {this.props.currentSessionId != null ? (
+            {this.props.currentSessionId != null &&
+            this.props.userSelectedKeys != [] ? (
               <MessagePanel />
             ) : (
               <div></div>
             )}
-            {this.props.currentSessionId != null ? (
+            {this.props.currentSessionId != null &&
+            this.props.userSelectedKeys != [] ? (
               <FormConversation />
             ) : (
               <div></div>
@@ -80,6 +85,7 @@ function mapStateToProps(state) {
   return {
     userName: state.userReducer.userName,
     currentSessionId: state.chatReducer.currentSessionId,
+    userSelectedKeys: state.chatReducer.userSelectedKeys,
   };
 }
 
@@ -93,6 +99,9 @@ function mapDispatchToProps(dispatch) {
     },
     loadChatContainer(sessionId) {
       dispatch(loadChatContainer(sessionId));
+    },
+    userUnSelected() {
+      dispatch(userUnSelected());
     },
   };
 }

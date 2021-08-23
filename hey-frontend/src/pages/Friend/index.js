@@ -8,6 +8,7 @@ import {
   closeWebSocket,
   initialWebSocket,
   loadChatContainer,
+  userUnSelected,
   submitChatMessage,
 } from "../../actions/chatAction";
 import { isEmptyString } from "../../utils/utils";
@@ -29,6 +30,7 @@ class Chat extends React.Component {
 
   componentDidMount() {
     // this.props.initialWebSocket();
+    this.props.userUnSelected();
   }
 
   componentWillUnmount() {}
@@ -59,12 +61,14 @@ class Chat extends React.Component {
           </Sider>
           <div className="chat-container" style={{ padding: 0 }}>
             <ChatHeader />
-            {this.props.currentSessionId != null ? (
+            {this.props.currentSessionId != null &&
+            this.props.userSelectedKeys != [] ? (
               <MessagePanel />
             ) : (
               <div></div>
             )}
-            {this.props.currentSessionId != null ? (
+            {this.props.currentSessionId != null &&
+            this.props.userSelectedKeys != [] ? (
               <FormConversation />
             ) : (
               <div></div>
@@ -80,6 +84,7 @@ function mapStateToProps(state) {
   return {
     userName: state.userReducer.userName,
     currentSessionId: state.chatReducer.currentSessionId,
+    userSelectedKeys: state.chatReducer.userSelectedKeys,
   };
 }
 
@@ -93,6 +98,9 @@ function mapDispatchToProps(dispatch) {
     },
     loadChatContainer(sessionId) {
       dispatch(loadChatContainer(sessionId));
+    },
+    userUnSelected() {
+      dispatch(userUnSelected());
     },
   };
 }
