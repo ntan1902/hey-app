@@ -59,8 +59,11 @@ class Chat extends React.Component {
             <AddFriendSession />
             <MembersModal />
             <ChatHeader />
-            <MessagePanel />
-
+            {this.props.currentSessionId != null ? (
+              <MessagePanel />
+            ) : (
+              <div></div>
+            )}
             {this.props.currentSessionId != null ? (
               <FormConversation />
             ) : (
