@@ -22,7 +22,7 @@ import java.util.List;
 @RequestMapping("/auth/api/v1/users")
 @AllArgsConstructor
 @Log4j2
-@CrossOrigin({ "http://localhost:3000", "http://web.oispyouthunion.vn", "https://web.oispyouthunion.vn" })
+@CrossOrigin({ "http://localhost:3000", "http://web.oispyouthunion.vn", "https://web.oispyouthunion.vn", "https://www.heypay.top/", "https://heypay.top/" })
 public class UserController {
     private final UserService userService;
 
