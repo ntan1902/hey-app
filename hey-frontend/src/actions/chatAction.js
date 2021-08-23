@@ -37,6 +37,8 @@ export const START_CHAT_SINGLE = "chatList.START_CHAT_SINGLE";
 export const ADD_NEW_START_CHAT_GROUP_FAIL =
   "chatList.ADD_NEW_START_CHAT_GROUP_FAIL";
 export const USER_SELECTED = "chatList.USER_SELECTED";
+export const USER_UNSELECTED = "chatList.USER_UNSELECTED";
+
 export const WEBSOCKET_FETCHED = "chatList.WEBSOCKET_FETCHED";
 
 export function initialWebSocket() {
@@ -325,7 +327,7 @@ export function receivedNewMessage(message) {
     type: NEW_MESSAGE_IN_PANEL_FETCHED,
     messageItems: messageItems,
     chatList: chatList,
-    userSelected: userSelected,
+    // userSelected: userSelected,
     title: title,
   };
 }
@@ -436,7 +438,9 @@ export function startNewChatGroup(groupName) {
       createWaitingChatHeaderRequest(waitingGroupUsernames, groupName)
     )
       .then((res) => {
-        store.dispatch(changeMessageHeader(res.data.payload.title, "", true));
+        store.dispatch(
+          changeMessageHeader(res.data.payload.title, "", true, ["groupChat"])
+        );
       })
       .catch((err) => {
         console.log("ERR", err.response);
@@ -493,6 +497,14 @@ export function userSelected(sessionId) {
   var userSelectedKeys = [sessionId];
   return {
     type: USER_SELECTED,
+    userSelectedKeys: userSelectedKeys,
+  };
+}
+
+export function userUnSelected() {
+  var userSelectedKeys = [];
+  return {
+    type: USER_UNSELECTED,
     userSelectedKeys: userSelectedKeys,
   };
 }

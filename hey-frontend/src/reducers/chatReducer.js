@@ -11,6 +11,7 @@ import {
   START_CHAT_SINGLE,
   USER_SELECTED,
   WEBSOCKET_FETCHED,
+  USER_UNSELECTED,
 } from "../actions/chatAction";
 import * as actionTypes from "../actions/actionTypes";
 
@@ -47,6 +48,13 @@ export default function reduce(state = initialState, action) {
       return {
         ...state,
         userSelectedKeys: action.userSelectedKeys,
+      };
+    case USER_UNSELECTED:
+      return {
+        ...state,
+        userSelectedKeys: [],
+        currentSessionId: null,
+        messageHeader: null,
       };
     case ADD_NEW_START_CHAT_GROUP_FAIL:
       return {
