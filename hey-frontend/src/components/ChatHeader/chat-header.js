@@ -378,7 +378,13 @@ class ChatHeader extends React.Component {
       scriptUrl: "//at.alicdn.com/t/font_8d5l8fzk5b87iudi.js",
     });
 
-    if (this.props.header == {} || !this.props.header) return null;
+    if (
+      this.props.header == {} ||
+      !this.props.header ||
+      !this.props.header.userIds ||
+      !this.props.header.userIds.length
+    )
+      return null;
 
     return (
       <div className="chat-header">

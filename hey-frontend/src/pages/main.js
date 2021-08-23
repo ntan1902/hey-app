@@ -135,7 +135,10 @@ class Main extends React.Component {
             >
               <CustomAvatar
                 type="main-avatar"
-                src={getProfileURL(getUserIdFromStorage())}
+                src={
+                  getProfileURL(getUserIdFromStorage()) +
+                  `?key=${this.props.profileKey}`
+                }
               />
             </div>
             <Profile />
@@ -171,6 +174,7 @@ function mapStateToProps(state) {
   return {
     userStatus: state.userReducer.userStatus,
     profile: state.userReducer.profile,
+    profileKey: state.userReducer.profileKey,
   };
 }
 

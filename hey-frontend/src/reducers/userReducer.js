@@ -16,6 +16,7 @@ const initialState = {
   userStatus: "",
   profile: { avatar: "" },
   hasPin: false,
+  profileKey: 0,
 };
 
 export default function reduce(state = initialState, action) {
@@ -57,6 +58,7 @@ export default function reduce(state = initialState, action) {
           avatar: action.avatar,
           miniAvatar: action.miniAvatar,
         },
+        profileKey: Date.now(),
       };
     case HAS_PIN:
       return {
