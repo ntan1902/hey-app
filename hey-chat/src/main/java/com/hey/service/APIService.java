@@ -722,50 +722,38 @@ public class APIService extends BaseService {
             return future;
         }
 
-        String keyPattern = "friend:list:" + userId + ":*";
-        String keyPatternReverse = "friend:list:*:" + userId;
+        String keyPattern = "friend:list:*" + userId + "*";
 
-        List<Future> getKeysByPatternFutures = new ArrayList<>();
+        Future<List<String>> getKeysByPatternFuture = dataRepository.getKeysByPattern(keyPattern);
 
-        getKeysByPatternFutures.add(dataRepository.getKeysByPattern(keyPattern));
-        getKeysByPatternFutures.add(dataRepository.getKeysByPattern(keyPatternReverse));
+        getKeysByPatternFuture.compose(keys -> {
 
-        CompositeFuture cp = CompositeFuture.all(getKeysByPatternFutures);
-        cp.setHandler(ar -> {
-            if (ar.succeeded()) {
-                List<String> keys = new ArrayList<>();
-                for (int index = 0; index < getKeysByPatternFutures.size(); ++index) {
-                    keys.addAll(cp.resultAt(index));
-                }
+            List<Future> getFriendListFutures = new ArrayList<>();
 
-                List<Future> getFriendListFutures = new ArrayList<>();
-
-                for (String friendListKey : keys) {
-                    getFriendListFutures.add(dataRepository.getFriendList(friendListKey, userId));
-                }
-
-                CompositeFuture cp2 = CompositeFuture.all(getFriendListFutures);
-                cp2.setHandler(ar2 -> {
-                    if (ar2.succeeded()) {
-
-                        List<FriendList> friendLists = new ArrayList<>();
-                        for (int index = 0; index < getFriendListFutures.size(); ++index) {
-                            if (cp2.resultAt(index) != null) {
-                                friendLists.add(cp2.resultAt(index));
-                            }
-                        }
-                        future.complete(friendLists);
-
-                    } else {
-                        future.fail(ar2.cause());
-                    }
-                });
-
-            } else {
-                future.fail(ar.cause());
+            for(String friendListKey: keys){
+                getFriendListFutures.add(dataRepository.getFriendList(friendListKey, userId));
             }
 
-        });
+            CompositeFuture cp = CompositeFuture.all(getFriendListFutures);
+            cp.setHandler(ar -> {
+                if (ar.succeeded()) {
+
+                    List<FriendList> friendLists = new ArrayList<>();
+                    for(int index = 0; index < getFriendListFutures.size(); ++index){
+                        if(cp.resultAt(index) != null) {
+                            friendLists.add(cp.resultAt(index));
+                        }
+                    }
+                    future.complete(friendLists);
+
+                } else {
+                    future.fail(ar.cause());
+                }
+            });
+
+        }, Future.future().setHandler(handler -> {
+            //future.fail(handler.cause());
+        }));
 
         return future;
     }
@@ -1378,7 +1366,7 @@ public class APIService extends BaseService {
             throw new RuntimeException(handler.cause());
         }));
     }
-
+    
     public Future<JsonObject> editProfile(EditProfileRequest editProfileRequest, String userId) {
         Future<JsonObject> future = Future.future();
         List<Future> futures = new ArrayList<>();

@@ -85,9 +85,8 @@ export function initialWebSocket() {
                   videoCallUtils.rejectCall(data.sessionId);
                 }}
               >
-                {" "}
-                Reject{" "}
-              </Button>{" "}
+                Reject
+              </Button>
               <Button
                 type="primary"
                 onClick={() => {
@@ -95,9 +94,8 @@ export function initialWebSocket() {
                   videoCallUtils.acceptCall(data.sessionId, data.videoCall);
                 }}
               >
-                {" "}
-                Join{" "}
-              </Button>{" "}
+                Join
+              </Button>
             </div>
           );
           notification.open({
@@ -105,6 +103,7 @@ export function initialWebSocket() {
             description,
             btn,
             key,
+            duration: 100,
           });
       }
     },
@@ -216,7 +215,7 @@ export function submitChatMessage(message) {
 
 export function receivedChatList(chatList) {
   const fetchedChatList = chatList;
-  let header = {};
+  let header = null;
   if (fetchedChatList.length > 0) {
     // header = {
     //   title:
@@ -233,8 +232,7 @@ export function receivedChatList(chatList) {
     type: CHATLIST_FETCHED,
     fetchedChatList: fetchedChatList,
     messageHeader: header,
-    currentSessionId:
-      fetchedChatList.length > 0 ? fetchedChatList[0].sessionId : null,
+    currentSessionId: null,
   };
 }
 
@@ -369,11 +367,12 @@ export function changeMessageItems(chatItems, sessionId) {
   };
 }
 
-export function changeMessageHeader(title, avatar, group) {
+export function changeMessageHeader(title, avatar, group, userIds = []) {
   const header = {
     title: title,
     avatar: avatar,
     group: group,
+    userIds: userIds,
   };
   return { type: MESSAGE_HEADER_FETCHED, messageHeader: header };
 }

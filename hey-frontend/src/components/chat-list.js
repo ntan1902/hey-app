@@ -36,7 +36,8 @@ class ChatList extends React.Component {
             ? this.props.chatList[i].name
             : this.props.chatList[i].groupName,
           this.props.chatList[i].avatar,
-          this.props.chatList[i].group
+          this.props.chatList[i].group,
+          this.props.chatList[i].userIds
         );
       }
     }
@@ -283,7 +284,7 @@ class ChatList extends React.Component {
             style={{
               width: 30,
               height: 30,
-              backgroundcolor: "rgba(232, 234, 239,0.5)",
+              backgroundColor: "rgba(232, 234, 239,0.8)",
               borderRadius: 30,
               display: "flex",
               justifyContent: "center",
@@ -392,8 +393,8 @@ function mapDispatchToProps(dispatch) {
     loadChatContainer(sessionId) {
       dispatch(loadChatContainer(sessionId));
     },
-    changeMessageHeader(avatar, title, groupchat) {
-      dispatch(changeMessageHeader(avatar, title, groupchat));
+    changeMessageHeader(avatar, title, groupchat, userIds) {
+      dispatch(changeMessageHeader(avatar, title, groupchat, userIds));
     },
     userSelected(sessionId) {
       dispatch(userSelected(sessionId));

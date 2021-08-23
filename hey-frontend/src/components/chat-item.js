@@ -109,20 +109,29 @@ class ChatItem extends React.Component {
       <div
         className={"chat-item-content " + cssContentClass}
         style={{
-          padding: 10,
+          padding: "3px 10px 3px 10px",
           // paddingLeft: 10,
           // paddingright: 10,
-          margin: 0,
+          // margin: 0,
           marginLeft: this.props.type == 1 ? 0 : 5,
           marginRight: this.props.type == 1 ? 5 : 0,
           maxWidth: 500,
-          height: "auto",
+          // height: "auto",
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
+          overflow: "hidden",
         }}
       >
-        <p style={{ width: "100%" }}>
+        <p
+          style={{
+            padding: 0,
+            margin: 0,
+            textAlign: "left",
+            overflow: "hidden",
+            wordWrap: "break-word",
+          }}
+        >
           {data.type == "transfer"
             ? "Transfer: " + formatToCurrency(data.content.amount) + currency
             : data.content.message}
@@ -153,7 +162,9 @@ class ChatItem extends React.Component {
         </div>
         {this.state.showDate ? (
           <SlideDown>
-            <div className={"chat-item-date"}>{this.props.date}</div>
+            <div className={"chat-item-date"} style={{ marginTop: 5 }}>
+              {this.props.date}
+            </div>
           </SlideDown>
         ) : (
           ""

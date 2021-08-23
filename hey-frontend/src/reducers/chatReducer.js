@@ -17,9 +17,7 @@ import * as actionTypes from "../actions/actionTypes";
 const initialState = {
   chatList: [],
   messageItems: [],
-  messageHeader: {
-    title: "",
-  },
+  messageHeader: null,
   webSocket: null,
   currentSessionId: null,
   startChatGroupList: [],
