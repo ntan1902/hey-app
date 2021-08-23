@@ -59,8 +59,16 @@ class Chat extends React.Component {
           </Sider>
           <div className="chat-container" style={{ padding: 0 }}>
             <ChatHeader />
-            <MessagePanel />
-            <FormConversation />
+            {this.props.currentSessionId != null ? (
+              <MessagePanel />
+            ) : (
+              <div></div>
+            )}
+            {this.props.currentSessionId != null ? (
+              <FormConversation />
+            ) : (
+              <div></div>
+            )}
           </div>
         </Layout>
       </div>
@@ -71,6 +79,7 @@ class Chat extends React.Component {
 function mapStateToProps(state) {
   return {
     userName: state.userReducer.userName,
+    currentSessionId: state.chatReducer.currentSessionId,
   };
 }
 
