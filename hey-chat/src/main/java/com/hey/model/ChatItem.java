@@ -8,9 +8,7 @@ public class ChatItem implements Serializable {
     private String message;
     private String name;
     private Date createdDate;
-    private String groupName;
-    private boolean isGroup;
-    private String owner;
+    private String id;
 
     public String getUserId() {
         return userId;
@@ -44,27 +42,11 @@ public class ChatItem implements Serializable {
         this.name = name;
     }
 
-    public String getGroupName() {
-        return groupName;
+    public String getId() {
+        return id;
     }
 
-    public void setGroupName(String groupName) {
-        this.groupName = groupName;
-    }
-
-    public boolean isGroup() {
-        return isGroup;
-    }
-
-    public void setGroup(boolean group) {
-        isGroup = group;
-    }
-
-    public String getOwner() {
-        return owner;
-    }
-
-    public void setOwner(String owner) {
-        this.owner = owner;
+    public void setId(String id) {
+        this.id = id;
     }
 }
