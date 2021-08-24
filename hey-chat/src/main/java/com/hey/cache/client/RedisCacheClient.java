@@ -12,10 +12,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class RedisCacheClient implements DataRepository {
 
@@ -69,9 +66,9 @@ public class RedisCacheClient implements DataRepository {
         return "chat:list:" + sessionId + ":" + String.join(":", userIds);
     }
 
-    String generateChatMessageKey(String sessionId, String createdDate) {
+    String generateChatMessageKey(String sessionId, String uuid) {
 
-        return "chat:message:" + sessionId + ":" + createdDate;
+        return "chat:message:" + sessionId + ":" + uuid;
     }
 
     String generateUnSeenKey(String userId, String sessionId) {
@@ -416,8 +413,9 @@ public class RedisCacheClient implements DataRepository {
         chatMessageJsonObject.put(chatMessage.getUserHash().getUserId(), chatMessage.getUserHash().getFullName());
         chatMessageJsonObject.put("message", chatMessage.getMessage());
         chatMessageJsonObject.put("created_date", String.valueOf(chatMessage.getCreatedDate().getTime()));
+        chatMessageJsonObject.put("id", chatMessage.getId());
 
-        client.hmset(generateChatMessageKey(chatMessage.getSessionId(), String.valueOf(chatMessage.getCreatedDate().getTime())), chatMessageJsonObject, resInsertChatMessage -> {
+        client.hmset(generateChatMessageKey(chatMessage.getSessionId(), UUID.randomUUID().toString()), chatMessageJsonObject, resInsertChatMessage -> {
             if (resInsertChatMessage.succeeded()) {
 
                 future.complete(chatMessage);
@@ -447,6 +445,9 @@ public class RedisCacheClient implements DataRepository {
                                 break;
                             case "created_date":
                                 chatMessage.setCreatedDate(new Date(Long.parseLong(res.result().getString(fieldName))));
+                                break;
+                            case "id":
+                                chatMessage.setId(res.result().getString(fieldName));
                                 break;
                             default:
                                 chatMessage.setUserHash(new UserHash(fieldName, res.result().getString(fieldName)));
