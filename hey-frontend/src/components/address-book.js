@@ -375,13 +375,20 @@ class AddressBook extends React.Component {
                     ) : (
                       <div className="status-point offline" />
                     )}
-                    <div style={{ overflow: "hidden", paddingTop: 5 }}>
+                    <div
+                      style={{
+                        overflow: "hidden",
+                        paddingTop: 5,
+                        width: 150,
+                        marginRight: 10,
+                      }}
+                    >
                       <div className="user-name">{item.name}</div>
                       <div className="history-message">{item.status}</div>
                     </div>
                     <div
                       style={{
-                        flex: 1,
+                        width: 30,
                         display: "flex",
                         justifyContent: "center",
                         alignItems: "center",

@@ -1,9 +1,9 @@
 import React from "react";
-import {connect} from "react-redux";
-import {Button} from "antd";
+import { connect } from "react-redux";
+import { Button } from "antd";
 
-import {channingActions} from "../../utils";
-import {bindPaymentActions} from "../../actions";
+import { channingActions } from "../../utils";
+import { bindPaymentActions } from "../../actions";
 
 class MessagePanel extends React.Component {
   constructor(props) {
@@ -117,9 +117,22 @@ class MessagePanel extends React.Component {
               }}
             >
               <div
-                style={{ fontSize: 20, marginRight: 100, fontWeight: "bold" }}
+                style={{
+                  fontSize: 20,
+                  fontWeight: 200,
+                  width: 200,
+                }}
               >
-                Transfer To: {data.target.fullName}
+                Transfer To:
+              </div>
+              <div
+                style={{
+                  fontSize: 20,
+                  marginRight: 100,
+                  fontWeight: 200,
+                }}
+              >
+                {data.target.fullName}
               </div>
               {/* <AddFriendTransfer></AddFriendTransfer> */}
             </div>
@@ -131,7 +144,8 @@ class MessagePanel extends React.Component {
                   fontSize: 20,
                   // marginRight: 100,
                   fontWeight: "bold",
-                  width: 150,
+                  fontWeight: 200,
+                  width: 200,
                 }}
               >
                 Amount
@@ -141,7 +155,7 @@ class MessagePanel extends React.Component {
                   fontSize: 20,
                   // marginRight: 100,
                   fontWeight: "bold",
-                  width: 150,
+                  fontWeight: 200,
                 }}
               >
                 {data.amount}vnđ
@@ -155,7 +169,8 @@ class MessagePanel extends React.Component {
                   fontSize: 20,
                   // marginRight: 100,
                   fontWeight: "bold",
-                  width: 150,
+                  fontWeight: 200,
+                  width: 200,
                 }}
               >
                 Message
@@ -164,7 +179,7 @@ class MessagePanel extends React.Component {
                 style={{
                   fontSize: 20,
                   // marginRight: 100,
-                  fontWeight: "bold",
+                  fontWeight: 200,
                 }}
               >
                 {data.description}

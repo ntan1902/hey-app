@@ -1,10 +1,10 @@
 import React from "react";
-import {message, Modal} from "antd";
-import {connect} from "react-redux";
+import { message, Modal } from "antd";
+import { connect } from "react-redux";
 import PinInput from "react-pin-input";
 
-import {channingActions} from "../utils";
-import {bindPaymentActions} from "../actions";
+import { channingActions } from "../utils";
+import { bindPaymentActions } from "../actions";
 
 class VerifyPIN extends React.Component {
   constructor(props) {
@@ -38,7 +38,7 @@ class VerifyPIN extends React.Component {
         })
         .then((res) => {
           if (this.props.cb) this.props.cb();
-          this.setState({ handleSoftToken: false, softToken: "" });
+          this.setState({ handleSoftToken: false, softToken: "", pin: "" });
         });
       return true;
     }
@@ -50,7 +50,7 @@ class VerifyPIN extends React.Component {
       })
       .then((res) => {
         if (this.props.cb) this.props.cb();
-        this.setState({ handleSoftToken: false, softToken: "" });
+        this.setState({ handleSoftToken: false, softToken: "", pin: "" });
       })
       .catch((err) => {
         message.error(err.error.response.data.message);
@@ -61,7 +61,11 @@ class VerifyPIN extends React.Component {
     this.props.paymentActions
       .verifyPin(this.state.pin, this.props.amount)
       .then((res) => {
-        this.setState({ handleSoftToken: true, softToken: res.softToken });
+        this.setState({
+          handleSoftToken: true,
+          softToken: res.softToken,
+          pin: "",
+        });
         this.startTimer();
       })
       .catch((err) => {

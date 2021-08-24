@@ -1,9 +1,13 @@
 import React from "react";
-import {connect} from "react-redux";
-import {Button, Icon, message} from "antd";
+import { connect } from "react-redux";
+import { Button, Icon, message } from "antd";
 import NumericInput from "../../components/numberic-input";
-import {channingActions, currencyToString, formatToCurrency} from "../../utils";
-import {bindPaymentActions} from "../../actions";
+import {
+  channingActions,
+  currencyToString,
+  formatToCurrency,
+} from "../../utils";
+import { bindPaymentActions } from "../../actions";
 
 class MessagePanel extends React.Component {
   constructor(props) {
@@ -17,14 +21,7 @@ class MessagePanel extends React.Component {
   renderButtonMoney = (item) => {
     return (
       <Button
-        style={{
-          backgroundColor: "white",
-          borderColor: "black",
-          color: "black",
-          width: "30%",
-          height: 50,
-          margin: 20,
-        }}
+        className="money-btn"
         onClick={() => {
           this.setState({ amount: item.value });
         }}
@@ -236,29 +233,11 @@ class MessagePanel extends React.Component {
           >
             <div style={{ flex: 1 }}></div>
             <Button
-              style={{
-                borderColor: "black",
-                color: "black",
-                height: 50,
-                width: 250,
-                justifyContent: "center",
-                alignItems: "center",
-                backgroundColor: "white",
-                padding: 0,
-              }}
               type="primary"
               onClick={this.handleTopup}
+              className="continue-btn"
             >
-              <p
-                style={{
-                  fontsize: 20,
-                  fontWeight: 400,
-                  padding: 0,
-                  margin: 0,
-                }}
-              >
-                Confirm
-              </p>
+              Confirm
             </Button>
             {/* <Transfer amount={this.state.amount}></Transfer> */}
           </div>
