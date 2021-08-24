@@ -11,4 +11,7 @@ public class Constant {
     public final static String BANK_ID = "e8984aa8-b1a5-4c65-8c5e-036851ec783c";
     public final static Long AMOUNT = 2_000_000L;
     public final static String CREATE_PIN_URL = "/auth/api/v1/users/createPin";
+    public final static String CREATE_TRANSFER_URL = "/payment/api/v1/me/createTransfer";
+    public final static String CREATE_SOFT_TOKEN_URL = "/auth/api/v1/users/createSoftTokenByPin";
+    public final static String GET_WALLET_URL = "/payment/api/v1/me/wallet";
 }

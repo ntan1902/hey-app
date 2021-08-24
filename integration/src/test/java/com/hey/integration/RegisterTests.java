@@ -32,7 +32,7 @@ public class RegisterTests {
 
     @ParameterizedTest
     @CsvFileSource(resources = "/RegisterData.csv", numLinesToSkip = 1)
-    void register(String username, String password, String email, String fullName) {
+    void register(String username, String fullName, String email, String password) {
 
         // Register
         Map<String, String> registerRequest = new HashMap<>();
