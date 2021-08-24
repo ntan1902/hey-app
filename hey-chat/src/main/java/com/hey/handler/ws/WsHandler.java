@@ -265,6 +265,8 @@ public class WsHandler {
                 chatItems.add(chatItem);
             }
 
+            chatItems.sort(Comparator.comparing(ChatItem::getCreatedDate));
+
             future.complete(chatItems);
 
         }, Future.future().setHandler(handler -> {
