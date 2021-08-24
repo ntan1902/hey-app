@@ -512,6 +512,7 @@ export function userUnSelected() {
 function getMessageItems(chatItems) {
   var userId = getUserIdFromStorage();
   var results = [];
+  console.log(chatItems);
   for (var i = 0; i < chatItems.length; i++) {
     var type = 1;
     if (chatItems[i].userId != userId) {
@@ -528,6 +529,7 @@ function getMessageItems(chatItems) {
     var messageItem = {
       message: chatItems[i].message,
       type: type,
+      name: chatItems[i].message,
       showavatar: showAvatar,
       avatar: processUsernameForAvatar(chatItems[i].name),
       userId: chatItems[i].userId,

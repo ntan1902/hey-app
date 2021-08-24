@@ -29,6 +29,7 @@ class MessagePanel extends React.Component {
             avatar={item.avatar}
             date={item.createdDate}
             userId={item.userId}
+            name={item.name}
           />
         ))}
       </div>
