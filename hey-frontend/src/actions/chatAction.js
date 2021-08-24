@@ -244,6 +244,7 @@ export function receivedReloadChatList(chatList) {
 }
 
 export function receivedNewMessage(message) {
+  console.log("New message Item", message);
   let currentSessionId = store.getState().chatReducer.currentSessionId;
   let userId = getUserIdFromStorage();
   let userSelected = store.getState().chatReducer.userSelected;
@@ -280,6 +281,7 @@ export function receivedNewMessage(message) {
     let messageItem = {
       message: message.message,
       type: type,
+      name: message.name,
       showavatar: showAvatar,
       avatar: processUsernameForAvatar(message.name),
       userId: message.userId,
