@@ -529,7 +529,7 @@ function getMessageItems(chatItems) {
     var messageItem = {
       message: chatItems[i].message,
       type: type,
-      name: chatItems[i].message,
+      name: chatItems[i].name,
       showavatar: showAvatar,
       avatar: processUsernameForAvatar(chatItems[i].name),
       userId: chatItems[i].userId,
