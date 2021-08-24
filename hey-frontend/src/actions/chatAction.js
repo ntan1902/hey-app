@@ -533,6 +533,7 @@ function getMessageItems(chatItems) {
       showavatar: showAvatar,
       avatar: processUsernameForAvatar(chatItems[i].name),
       userId: chatItems[i].userId,
+      id: chatItems[i].id,
       createdDate: new Date(chatItems[i].createdDate).toLocaleString(),
     };
     results.push(messageItem);
