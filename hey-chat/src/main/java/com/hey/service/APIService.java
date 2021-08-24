@@ -1840,7 +1840,7 @@ public class APIService extends BaseService {
         JsonObject request = new JsonObject();
         request.put("format", "urls");
         webClient.putAbs("https://global.xirsys.net/_turn/hey-app")
-                .putHeader("Authorization", "Basic bmdvY3Ryb25nMTAyOjBjZjRhZDMyLTk1ZTItMTFlYi05YzJkLTAyNDJhYzE1MDAwMg==")
+                .putHeader("Authorization", "Basic dHJvbmcxMDI6ODRiZGViM2EtMDRhYS0xMWVjLTlkZmMtMDI0MmFjMTMwMDAz")
                 .putHeader("Content-Type", "application/json")
                 .putHeader("Content-Length", "17")
                 .sendJsonObject(request, httpResponseAsyncResult -> {
