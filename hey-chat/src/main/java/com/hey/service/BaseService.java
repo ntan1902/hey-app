@@ -466,6 +466,8 @@ public abstract class BaseService {
             chatMessage.setUserHash(userHashes.get(randomUserId));
             chatMessage.setSessionId(sessionId);
             chatMessage.setCreatedDate(new Date(createdDate + i * 1000 * 60 * 5));
+            chatMessage.setId(UUID.randomUUID().toString());
+
             int ran = RandomUtils.nextInt(1, 4);
             switch (ran) {
                 case 1:

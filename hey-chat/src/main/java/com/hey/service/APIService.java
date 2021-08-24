@@ -1043,6 +1043,7 @@ public class APIService extends BaseService {
             chatMessage.setSessionId(luckyMoneyMessageRequest.getSessionId());
             chatMessage.setMessage(luckyMoneyResponse.encode());
             chatMessage.setCreatedDate(new Date());
+            chatMessage.setId(UUID.randomUUID().toString());
 
             Future<ChatMessage> insertChatMessagesAndUpdateChatListAndUpdateUnseenCountFuture = insertChatMessagesAndUpdateChatListAndUpdateUnseenCount(
                     chatMessage);
@@ -1102,6 +1103,7 @@ public class APIService extends BaseService {
             chatMessage.setSessionId(sessionId);
             chatMessage.setMessage(transferMessageResponse.encode());
             chatMessage.setCreatedDate(new Date());
+            chatMessage.setId(UUID.randomUUID().toString());
 
             Future<ChatMessage> insertChatMessagesAndUpdateChatListAndUpdateUnseenCountFuture = insertChatMessagesAndUpdateChatListAndUpdateUnseenCount(
                     chatMessage);
@@ -1171,6 +1173,7 @@ public class APIService extends BaseService {
             chatMessage.setSessionId(sessionId);
             chatMessage.setMessage(transferMessageResponse.encode());
             chatMessage.setCreatedDate(new Date());
+            chatMessage.setId(UUID.randomUUID().toString());
 
             ChatList chatList = new ChatList();
             chatList.setSessionId(sessionId);
@@ -1332,6 +1335,7 @@ public class APIService extends BaseService {
             chatMessage.setSessionId(request.getSessionId());
             chatMessage.setMessage(receiveLuckyReponse.encode());
             chatMessage.setCreatedDate(new Date());
+            chatMessage.setId(UUID.randomUUID().toString());
 
             Future<ChatMessage> insertChatMessagesAndUpdateChatListAndUpdateUnseenCountFuture = insertChatMessagesAndUpdateChatListAndUpdateUnseenCount(
                     chatMessage);
@@ -1509,6 +1513,7 @@ public class APIService extends BaseService {
             chatMessage.setSessionId(editGroupNameRequest.getSessionId());
             chatMessage.setMessage(editGroupNameResponse.encode());
             chatMessage.setCreatedDate(new Date());
+            chatMessage.setId(UUID.randomUUID().toString());
 
             Future<ChatMessage> insertChatMessagesAndUpdateChatListAndUpdateUnseenCountFuture = insertChatMessagesAndUpdateChatListAndUpdateUnseenCount(
                     chatMessage);
@@ -1625,6 +1630,7 @@ public class APIService extends BaseService {
             chatMessage.setSessionId(kickMemberRequest.getSessionId());
             chatMessage.setMessage(messageKickMember.encode());
             chatMessage.setCreatedDate(new Date());
+            chatMessage.setId(UUID.randomUUID().toString());
 
             Future<ChatMessage> insertChatMessagesAndUpdateChatListAndUpdateUnseenCountFuture = insertChatMessagesAndUpdateChatListAndUpdateUnseenCount(chatMessage);
 
@@ -1720,6 +1726,7 @@ public class APIService extends BaseService {
             chatMessage.setSessionId(outGroupRequest.getSessionId());
             chatMessage.setMessage(receiveLuckyReponse.encode());
             chatMessage.setCreatedDate(new Date());
+            chatMessage.setId(UUID.randomUUID().toString());
 
             Future<ChatMessage> insertChatMessagesAndUpdateChatListAndUpdateUnseenCountFuture = insertChatMessagesAndUpdateChatListAndUpdateUnseenCount(
                     chatMessage);
@@ -1898,12 +1905,12 @@ public class APIService extends BaseService {
                     messageRequest.put("type", "message");
                     messageRequest.put("content", content);
 
-
                     ChatMessage chatMessage = new ChatMessage();
                     chatMessage.setUserHash(me);
                     chatMessage.setSessionId(sessionId);
                     chatMessage.setMessage(messageRequest.encode());
                     chatMessage.setCreatedDate(new Date());
+                    chatMessage.setId(UUID.randomUUID().toString());
 
                     chatList.setSessionId(sessionId);
                     chatList.setUpdatedDate(new Date());
