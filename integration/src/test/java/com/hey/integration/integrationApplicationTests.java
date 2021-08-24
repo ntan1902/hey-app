@@ -45,7 +45,6 @@ class integrationApplicationTests {
                 .getForEntity(GET_INFO_URL, String.class);
 
         System.out.println(getProfile);
-
     }
 
     private void setHeaders(RestTemplate testRestTemplate, String token) {
