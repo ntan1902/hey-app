@@ -1,6 +1,7 @@
 package com.hey.integration.test_scenario;
 
 import com.hey.integration.utils.RestTemplateUtil;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.DefaultUriBuilderFactory;
 
@@ -11,24 +12,18 @@ import java.util.Random;
 
 import static com.hey.integration.constants.Constant.*;
 
-public class NUserTransferToOneUser extends Thread {
+public class TransferMoneyThread extends Thread {
 
-    private RestTemplateUtil restTemplateUtil;
-    private String username;
-    private String password;
-    private String targetId;
+    private final RestTemplateUtil restTemplateUtil;
+    private final String username;
+    private final String password;
+    private final String targetId;
 
-    private volatile long balance;
-
-    public NUserTransferToOneUser(RestTemplateUtil restTemplateUtil, String username, String password, String targetId) {
+    public TransferMoneyThread(RestTemplateUtil restTemplateUtil, String username, String password, String targetId) {
         this.restTemplateUtil = restTemplateUtil;
         this.username = username;
         this.password = password;
         this.targetId = targetId;
-    }
-
-    public long getBalance() {
-        return balance;
     }
 
     @Override
@@ -42,12 +37,12 @@ public class NUserTransferToOneUser extends Thread {
         loginRequest.put("password", this.password);
 
         var response = restTemplate.
-                postForEntity( LOGIN_URL, loginRequest, Map.class);
+                postForEntity(LOGIN_URL, loginRequest, Map.class);
 
 
         @SuppressWarnings("unchecked")
-        var payload = (Map<String, String>) Objects.requireNonNull(response.getBody()).get(PAYLOAD);
-        String token = payload.get(ACCESS_TOKEN);
+        var payload = (Map<String, String>) Objects.requireNonNull(response.getBody()).get("payload");
+        String token = payload.get("accessToken");
 
         // Set header for bearer token
         restTemplateUtil.setHeaders(restTemplate, token);
@@ -60,11 +55,6 @@ public class NUserTransferToOneUser extends Thread {
         createTransferReq.put("message", "message ne");
         createTransferReq.put("softToken", softToken);
         restTemplate.postForEntity(CREATE_TRANSFER_URL, createTransferReq, Map.class);
-
-        // get balance
-        var getBalanceRes = restTemplate.getForObject(GET_WALLET_URL, Map.class);
-        Map<String, String> pl = (Map<String, String>) getBalanceRes.get("payload");
-        balance = Long.parseLong(pl.get("balance"));
     }
 
     private String createSofToken(RestTemplate restTemplate) {
@@ -72,13 +62,13 @@ public class NUserTransferToOneUser extends Thread {
         Random random = new Random();
         var createSoftToken = new HashMap<String, Object>();
         createSoftToken.put("pin", "123456");
-        createSoftToken.put("amount", random.nextInt(25_000)+10_000);
+        createSoftToken.put("amount", random.nextInt(25_123) + 10_000);
         var createSoftTokenRes = restTemplate.
                 postForEntity(CREATE_SOFT_TOKEN_URL, createSoftToken, Map.class);
+
         @SuppressWarnings("unchecked")
-        var payloadCreateSoftToken = (Map<String, String>) Objects.requireNonNull(createSoftTokenRes.getBody()).get(PAYLOAD);
-        String softToken = payloadCreateSoftToken.get("softToken");
-        return softToken;
+        var payloadCreateSoftToken = (Map<String, String>) Objects.requireNonNull(createSoftTokenRes.getBody()).get("payload");
+        return payloadCreateSoftToken.get("softToken");
     }
 
 }
