@@ -13,6 +13,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
+import static com.hey.integration.constants.Constant.*;
+
 @SpringBootTest
 public class RegisterTests {
     private RestTemplate restTemplate;
@@ -20,15 +22,6 @@ public class RegisterTests {
     @Autowired
     private RestTemplateUtil restTemplateUtil;
 
-    private final static String BASE_URL = "http://localhost:5050";
-    private final static String REGISTER_URL = "/auth/api/v1/users/register";
-    private final static String LOGIN_URL = "/auth/api/v1/users/login";
-    private final static String CREATE_WALLET_URL = "/payment/api/v1/me/createWallet";
-    private final static String TOP_UP_URL = "/payment/api/v1/me/topup";
-    private final static String PAYLOAD = "payload";
-    private final static String ACCESS_TOKEN = "accessToken";
-    private final static String BANK_ID = "e8984aa8-b1a5-4c65-8c5e-036851ec783c";
-    private final static Long AMOUNT = 2_000_000L;
 
     @BeforeEach
     void setUp() {
@@ -74,5 +67,10 @@ public class RegisterTests {
         topUpRequest.put("amount", AMOUNT);
         topUpRequest.put("bankId", BANK_ID);
         restTemplate.postForObject(TOP_UP_URL, topUpRequest, String.class);
+
+        // Top up
+        var createPinReq = new HashMap<String, Object>();
+        createPinReq.put("pin", "123456");
+        restTemplate.postForObject(CREATE_PIN_URL, createPinReq, String.class);
     }
 }

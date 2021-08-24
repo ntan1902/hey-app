@@ -15,6 +15,8 @@ entity "users" as users #Aqua{
     password: varchar
     full_name: varchar
     pin: varchar
+    avatar: varchar
+    mini_avatar: varchar
 }
 
 ' LuckyMoney system: 
