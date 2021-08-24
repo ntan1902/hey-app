@@ -7,13 +7,14 @@ import org.springframework.web.client.RestTemplate;
 import java.util.List;
 
 @Component
-public class RestTemplateUtil {
-    private void setHeaders(RestTemplate testRestTemplate, String token) {
-        List<ClientHttpRequestInterceptor> interceptors = testRestTemplate.getInterceptors();
+public class RestTemplateUtilImpl implements RestTemplateUtil {
+    @Override
+    public void setHeaders(RestTemplate restTemplate, String token) {
+        List<ClientHttpRequestInterceptor> interceptors = restTemplate.getInterceptors();
         interceptors.add((request, body, execution) -> {
             request.getHeaders().setBearerAuth(token);
             return execution.execute(request, body);
         });
-        testRestTemplate.setInterceptors(interceptors);
+        restTemplate.setInterceptors(interceptors);
     }
 }
