@@ -53,8 +53,8 @@ public class RegisterTests {
                 postForEntity( LOGIN_URL, loginRequest, Map.class);
 
         @SuppressWarnings("unchecked")
-        var payload =  (Map<String, String>) Objects.requireNonNull(response.getBody()).get(PAYLOAD);
-        String token = payload.get(ACCESS_TOKEN);
+        var payload =  (Map<String, String>) Objects.requireNonNull(response.getBody()).get("payload");
+        String token = payload.get("accessToken");
 
         // Set header for bearer token
         restTemplateUtil.setHeaders(restTemplate, token);
@@ -68,7 +68,7 @@ public class RegisterTests {
         topUpRequest.put("bankId", BANK_ID);
         restTemplate.postForObject(TOP_UP_URL, topUpRequest, String.class);
 
-        // Top up
+        // Create Pin
         var createPinReq = new HashMap<String, Object>();
         createPinReq.put("pin", "123456");
         restTemplate.postForObject(CREATE_PIN_URL, createPinReq, String.class);
