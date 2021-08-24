@@ -55,6 +55,8 @@ public class RegisterTests {
         @SuppressWarnings("unchecked")
         var payload =  (Map<String, String>) Objects.requireNonNull(response.getBody()).get("payload");
         String token = payload.get("accessToken");
+        String refreshToken = payload.get("refreshToken");
+
 
         // Set header for bearer token
         restTemplateUtil.setHeaders(restTemplate, token);
@@ -72,5 +74,12 @@ public class RegisterTests {
         var createPinReq = new HashMap<String, Object>();
         createPinReq.put("pin", "123456");
         restTemplate.postForObject(CREATE_PIN_URL, createPinReq, String.class);
+
+        // Logout
+        var logoutRequest = new HashMap<String, String>();
+        logoutRequest.put("refreshToken", refreshToken);
+
+        restTemplate.
+                postForEntity( LOGOUT_URL, logoutRequest, Map.class);
     }
 }

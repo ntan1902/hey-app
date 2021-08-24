@@ -12,14 +12,14 @@ import java.util.Random;
 
 import static com.hey.integration.constants.Constant.*;
 
-public class ManyUserTransferToOneUser extends Thread {
+public class TransferMoneyThread extends Thread {
 
     private final RestTemplateUtil restTemplateUtil;
     private final String username;
     private final String password;
     private final String targetId;
 
-    public ManyUserTransferToOneUser(RestTemplateUtil restTemplateUtil, String username, String password, String targetId) {
+    public TransferMoneyThread(RestTemplateUtil restTemplateUtil, String username, String password, String targetId) {
         this.restTemplateUtil = restTemplateUtil;
         this.username = username;
         this.password = password;

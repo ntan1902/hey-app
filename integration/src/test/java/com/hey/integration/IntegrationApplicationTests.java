@@ -4,11 +4,12 @@ import com.hey.integration.entity.User;
 import com.hey.integration.repository.TransferStatementRepository;
 import com.hey.integration.repository.UserRepository;
 import com.hey.integration.repository.WalletRepository;
-import com.hey.integration.test_scenario.ManyUserTransferToOneUser;
+import com.hey.integration.test_scenario.TransferMoneyThread;
 import com.hey.integration.utils.RestTemplateUtil;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVRecord;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.shadow.com.univocity.parsers.common.record.Record;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.util.ResourceUtils;
@@ -38,7 +39,7 @@ class IntegrationApplicationTests {
     UserRepository userRepository;
 
     @Test
-    public void manyUserTransferToOneUser() throws IOException, InterruptedException {
+    public void manyUserTransferToOneUsers() throws IOException, InterruptedException {
         Long expected = walletRepository.sumAllBalance();
 
         String[] HEADERS = {"username", "fullName", "email", "password"};
@@ -47,7 +48,7 @@ class IntegrationApplicationTests {
                 .withHeader(HEADERS)
                 .withFirstRecordAsHeader()
                 .parse(in);
-        List<ManyUserTransferToOneUser> threads = new ArrayList<>();
+        List<TransferMoneyThread> threads = new ArrayList<>();
 
         // Start threads for the transaction in the same time
         List<User> users = userRepository.findAll();
@@ -61,18 +62,18 @@ class IntegrationApplicationTests {
             String password = record.get("password");
 
             if(!username.equals(targetUser.getUsername())) {
-                ManyUserTransferToOneUser manyUserTransferToOneUser =
-                        new ManyUserTransferToOneUser(restTemplateUtil,
+                TransferMoneyThread transferMoneyThread =
+                        new TransferMoneyThread(restTemplateUtil,
                                 username,
                                 password,
                                 targetId);
 
-                manyUserTransferToOneUser.start();
-                threads.add(manyUserTransferToOneUser);
+                transferMoneyThread.start();
+                threads.add(transferMoneyThread);
             }
         });
 
-        for (ManyUserTransferToOneUser thread : threads) {
+        for (TransferMoneyThread thread : threads) {
             thread.join();
         }
 
@@ -80,4 +81,45 @@ class IntegrationApplicationTests {
         assertThat(actual).isEqualTo(expected);
     }
 
+    @Test
+    public void oneUserTransferToManyUsers() throws IOException, InterruptedException {
+        Long expected = walletRepository.sumAllBalance();
+
+        String[] HEADERS = {"username", "fullName", "email", "password"};
+        Reader in = new FileReader(ResourceUtils.getFile("classpath:RegisterData.csv"));
+        List<CSVRecord> records = CSVFormat.DEFAULT
+                .withHeader(HEADERS)
+                .withFirstRecordAsHeader()
+                .parse(in)
+                .getRecords();
+        List<TransferMoneyThread> threads = new ArrayList<>();
+
+        // Start threads for the transaction in the same time
+        List<User> users = userRepository.findAll();
+
+        Random randomUser = new Random();
+        CSVRecord sourceUser = records.get(randomUser.nextInt(records.size()));
+
+        String username = sourceUser.get("username");
+        String password = sourceUser.get("password");
+        users.forEach(user -> {
+            if(!username.equals(user.getUsername())) {
+                TransferMoneyThread transferMoneyThread =
+                        new TransferMoneyThread(restTemplateUtil,
+                                username,
+                                password,
+                                user.getId());
+
+                transferMoneyThread.start();
+                threads.add(transferMoneyThread);
+            }
+        });
+
+        for (TransferMoneyThread thread : threads) {
+            thread.join();
+        }
+
+        long actual = walletRepository.sumAllBalance();
+        assertThat(actual).isEqualTo(expected);
+    }
 }
