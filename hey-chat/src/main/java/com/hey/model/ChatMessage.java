@@ -5,6 +5,7 @@ import java.util.Date;
 
 public class ChatMessage implements Serializable {
     private String sessionId;
+    private String id;
     private UserHash userHash;
     private String message;
     private Date createdDate;
@@ -39,5 +40,13 @@ public class ChatMessage implements Serializable {
 
     public void setCreatedDate(Date createdDate) {
         this.createdDate = createdDate;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 }
