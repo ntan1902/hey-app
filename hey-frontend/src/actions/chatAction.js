@@ -244,6 +244,7 @@ export function receivedReloadChatList(chatList) {
 }
 
 export function receivedNewMessage(message) {
+  console.log("New message Item", message);
   let currentSessionId = store.getState().chatReducer.currentSessionId;
   let userId = getUserIdFromStorage();
   let userSelected = store.getState().chatReducer.userSelected;
@@ -280,6 +281,7 @@ export function receivedNewMessage(message) {
     let messageItem = {
       message: message.message,
       type: type,
+      name: message.name,
       showavatar: showAvatar,
       avatar: processUsernameForAvatar(message.name),
       userId: message.userId,
@@ -512,6 +514,7 @@ export function userUnSelected() {
 function getMessageItems(chatItems) {
   var userId = getUserIdFromStorage();
   var results = [];
+  console.log(chatItems);
   for (var i = 0; i < chatItems.length; i++) {
     var type = 1;
     if (chatItems[i].userId != userId) {
@@ -528,9 +531,11 @@ function getMessageItems(chatItems) {
     var messageItem = {
       message: chatItems[i].message,
       type: type,
+      name: chatItems[i].name,
       showavatar: showAvatar,
       avatar: processUsernameForAvatar(chatItems[i].name),
       userId: chatItems[i].userId,
+      id: chatItems[i].id,
       createdDate: new Date(chatItems[i].createdDate).toLocaleString(),
     };
     results.push(messageItem);

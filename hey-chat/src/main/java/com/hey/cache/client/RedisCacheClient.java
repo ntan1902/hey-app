@@ -415,7 +415,7 @@ public class RedisCacheClient implements DataRepository {
         chatMessageJsonObject.put("created_date", String.valueOf(chatMessage.getCreatedDate().getTime()));
         chatMessageJsonObject.put("id", chatMessage.getId());
 
-        client.hmset(generateChatMessageKey(chatMessage.getSessionId(), UUID.randomUUID().toString()), chatMessageJsonObject, resInsertChatMessage -> {
+        client.hmset(generateChatMessageKey(chatMessage.getSessionId(), chatMessage.getId()), chatMessageJsonObject, resInsertChatMessage -> {
             if (resInsertChatMessage.succeeded()) {
 
                 future.complete(chatMessage);

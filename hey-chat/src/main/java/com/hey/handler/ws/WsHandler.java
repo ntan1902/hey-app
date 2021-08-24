@@ -11,10 +11,7 @@ import io.vertx.core.CompositeFuture;
 import io.vertx.core.Future;
 import io.vertx.core.json.JsonObject;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 public class WsHandler {
 
@@ -111,6 +108,7 @@ public class WsHandler {
             chatMessage.setSessionId(sessionId);
             chatMessage.setMessage(messageRequest.encode());
             chatMessage.setCreatedDate(new Date());
+            chatMessage.setId(UUID.randomUUID().toString());
 
             ChatList chatList = new ChatList();
             chatList.setSessionId(sessionId);
@@ -210,6 +208,7 @@ public class WsHandler {
             chatMessage.setSessionId(request.getSessionId());
             chatMessage.setMessage(messageRequest.encode());
             chatMessage.setCreatedDate(new Date());
+            chatMessage.setId(UUID.randomUUID().toString());
 
             Future<ChatMessage> insertChatMessagesAndUpdateChatListAndUpdateUnseenCountFuture = apiService
                     .insertChatMessagesAndUpdateChatListAndUpdateUnseenCount(chatMessage);
@@ -265,6 +264,8 @@ public class WsHandler {
                 chatItem.setId(chatMessage.getId());
                 chatItems.add(chatItem);
             }
+
+            chatItems.sort(Comparator.comparing(ChatItem::getCreatedDate));
 
             future.complete(chatItems);
 

@@ -15,7 +15,7 @@ import java.util.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
-class integrationApplicationTests {
+class IntegrationApplicationTests {
     public final static String LOGIN_URL = "http://localhost:7070/auth/api/v1/users/login";
     public final static String GET_INFO_URL = "http://localhost:7070/auth/api/v1/users/getInfo";
     public final static String PAYLOAD = "payload";

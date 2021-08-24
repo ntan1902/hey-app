@@ -152,6 +152,11 @@ class ChatItem extends React.Component {
         className={"chat-item chat-item-outer " + cssClass}
         style={{ margin: 0, marginBottom: 10 }}
       >
+        {this.props.type != 1 && (
+          <div className={"chat-item-date"} style={{ marginTop: 5 }}>
+            {this.props.name}
+          </div>
+        )}
         <div className={"chat-item " + cssClass}>
           <CustomAvatar
             type="chat-avatar"
