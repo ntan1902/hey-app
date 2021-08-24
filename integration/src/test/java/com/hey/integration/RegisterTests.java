@@ -23,8 +23,8 @@ public class RegisterTests {
     private final static String BASE_URL = "http://localhost:5050";
     private final static String REGISTER_URL = "/auth/api/v1/users/register";
     private final static String LOGIN_URL = "/auth/api/v1/users/login";
-    private final static String CREATE_WALLET_URL = "/payment/api/v1/users/createWallet";
-    private final static String TOP_UP_URL = "/payment/api/v1/users/topup";
+    private final static String CREATE_WALLET_URL = "/payment/api/v1/me/createWallet";
+    private final static String TOP_UP_URL = "/payment/api/v1/me/topup";
     private final static String PAYLOAD = "payload";
     private final static String ACCESS_TOKEN = "accessToken";
     private final static String BANK_ID = "e8984aa8-b1a5-4c65-8c5e-036851ec783c";
@@ -41,7 +41,7 @@ public class RegisterTests {
     @CsvFileSource(resources = "/RegisterData.csv", numLinesToSkip = 1)
     void register(String username, String password, String email, String fullName) {
 
-        // Login
+        // Register
         Map<String, String> registerRequest = new HashMap<>();
         registerRequest.put("username", username);
         registerRequest.put("password", password);
