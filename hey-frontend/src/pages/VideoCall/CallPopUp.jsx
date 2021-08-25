@@ -54,7 +54,13 @@ const CallPopUp = ({
           port: 443,
           secure: true,
           config: {
-            iceServers: ICEServer,
+            iceServers: [
+              {
+                username: "trong102",
+                url: "turn:stun.southeastasia.cloudapp.azure.com",
+                credential: "trong102",
+              },
+            ],
           },
         });
         peer.on("open", async (id) => {
