@@ -730,7 +730,7 @@ public class APIService extends BaseService {
 
             List<Future> getFriendListFutures = new ArrayList<>();
 
-            for(String friendListKey: keys){
+            for (String friendListKey : keys) {
                 getFriendListFutures.add(dataRepository.getFriendList(friendListKey, userId));
             }
 
@@ -739,8 +739,8 @@ public class APIService extends BaseService {
                 if (ar.succeeded()) {
 
                     List<FriendList> friendLists = new ArrayList<>();
-                    for(int index = 0; index < getFriendListFutures.size(); ++index){
-                        if(cp.resultAt(index) != null) {
+                    for (int index = 0; index < getFriendListFutures.size(); ++index) {
+                        if (cp.resultAt(index) != null) {
                             friendLists.add(cp.resultAt(index));
                         }
                     }
@@ -1372,7 +1372,7 @@ public class APIService extends BaseService {
             throw new RuntimeException(handler.cause());
         }));
     }
-    
+
     public Future<JsonObject> editProfile(EditProfileRequest editProfileRequest, String userId) {
         Future<JsonObject> future = Future.future();
         List<Future> futures = new ArrayList<>();
@@ -1881,25 +1881,21 @@ public class APIService extends BaseService {
                     .deleteSessionKey(chatList);
 
             deleteSessionFuture.compose(res -> {
-                List<String> userIds = new ArrayList<>();
-                userIds.add(request.getUserId());
-
-                Future<List<UserFull>> getUserFullsFuture = getUserFulls(userIds);
-
-                getUserFullsFuture.compose(userFulls -> {
+                Future<UserFull> getUserFullsFuture = dataRepository.getUserFull(request.getUserId());
+                getUserFullsFuture.compose(newUserFull -> {
 
                     List<UserHash> userHashes = chatList.getUserHashes();
 
                     UserHash me = userHashes.get(0);
-                    for (UserFull userFull : userFulls) {
-                        if (userFull.getUserId().equals(userId)) {
-                            me = new UserHash(userFull.getUserId(), userFull.getFullName());
+                    for (UserHash userHash : chatList.getUserHashes()) {
+                        if (userHash.getUserId().equals(userId)) {
+                            me = userHash;
                         }
-                        userHashes.add(new UserHash(userFull.getUserId(), userFull.getFullName()));
                     }
+                    userHashes.add(new UserHash(newUserFull.getUserId(), newUserFull.getFullName()));
 
                     JsonObject content = new JsonObject();
-                    content.put("message", me.getFullName() + " add " + userFulls.get(0).getFullName() + " to group");
+                    content.put("message", me.getFullName() + " add " + newUserFull.getFullName() + " to group");
 
                     JsonObject messageRequest = new JsonObject();
                     messageRequest.put("type", "message");
@@ -1922,7 +1918,11 @@ public class APIService extends BaseService {
 
                     Future<ChatMessage> insertChatMessageFuture = dataRepository.insertChatMessage(chatMessage);
 
-                    List<String> userFriendIds = userIds.subList(1, userIds.size());
+                    List<String> userFriendIds = userHashes.stream()
+                            .map(UserHash::getUserId)
+                            .filter(id -> !id.equals(userId))
+                            .collect(Collectors.toList());
+
                     Future<HashMap<String, Long>> increaseUnseenCountFuture = increaseUnseenCount(userFriendIds,
                             chatList.getSessionId());
 
