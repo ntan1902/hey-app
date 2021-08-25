@@ -31,7 +31,7 @@ public class CreateLuckyMoneyThread extends Thread{
         restTemplateUtil.login(username,password);
 
         String type = "random";
-        int numBag = 99;
+        int numBag = 100;
         long amount = 50_000;
 
         // generate soft token;

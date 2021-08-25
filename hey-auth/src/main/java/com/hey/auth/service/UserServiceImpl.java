@@ -288,7 +288,8 @@ public class UserServiceImpl implements UserDetailsService, UserService {
                 .orElseThrow(() -> new UserIdNotFoundException("User Id " + userId + " not found"));
         log.info("User " + userId + " update avatar");
         user.setAvatar(request.getUri());
-        user.setMiniAvatar(request.getMiniUri());
+        user.setMediumAvatar(request.getMediumUri());
+        user.setSmallAvatar(request.getSmallUri());
         userRepository.save(user);
     }
 

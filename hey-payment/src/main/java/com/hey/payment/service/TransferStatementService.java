@@ -11,14 +11,14 @@ import com.hey.payment.exception_handler.exception.*;
 import java.util.List;
 
 public interface TransferStatementService {
-    void createTransfer(CreateTransferRequest createTransferRequest) throws SoftTokenAuthorizeException, NegativeAmountException, MaxAmountException, HaveNoWalletException,  SourceAndTargetAreTheSameException,  BalanceNotEnoughException, MaxBalanceException;
+    void createTransfer(CreateTransferRequest createTransferRequest) throws SoftTokenAuthorizeException, MinAmountException, MaxAmountException, HaveNoWalletException,  SourceAndTargetAreTheSameException,  BalanceNotEnoughException, MaxBalanceException;
 
     void topUp(TopUpRequest topupRequest) throws MaxAmountException, MaxBalanceException, HaveNoWalletException, BankInvalidException;
 
     List<TransferStatementDTO> getTransferStatementsOfUser(int offset, int limit) throws HaveNoWalletException, DatabaseHasErr, ApiErrException;
 
-    void systemCreateTransferToUser(SystemCreateTransferToUserRequest request) throws NegativeAmountException, MaxAmountException,  HaveNoWalletException, BalanceNotEnoughException, MaxBalanceException;
+    void systemCreateTransferToUser(SystemCreateTransferToUserRequest request) throws MinAmountException, MaxAmountException,  HaveNoWalletException, BalanceNotEnoughException, MaxBalanceException;
 
-    SystemCreateTransferFromUserResponse systemCreateTransferFromUser(SystemCreateTransferFromUserRequest request) throws SoftTokenAuthorizeException, NegativeAmountException,  MaxAmountException,  BalanceNotEnoughException, MaxBalanceException, HaveNoWalletException;
+    SystemCreateTransferFromUserResponse systemCreateTransferFromUser(SystemCreateTransferFromUserRequest request) throws SoftTokenAuthorizeException, MinAmountException,  MaxAmountException,  BalanceNotEnoughException, MaxBalanceException, HaveNoWalletException;
 
 }

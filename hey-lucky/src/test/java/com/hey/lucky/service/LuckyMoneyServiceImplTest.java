@@ -1,7 +1,9 @@
 package com.hey.lucky.service;
 
+import com.hey.lucky.api.AuthApi;
 import com.hey.lucky.constant.TypeLuckyMoney;
 import com.hey.lucky.dto.auth_service.UserInfo;
+import com.hey.lucky.dto.auth_service.VerifySoftTokenResponse;
 import com.hey.lucky.dto.chat_service.LuckyMoneyMessageContent;
 import com.hey.lucky.dto.chat_service.ReceiveLuckyMoneyMessageContent;
 import com.hey.lucky.dto.payment_service.TransferFromUserRequest;
@@ -22,12 +24,16 @@ import com.hey.lucky.util.ChatUtil;
 import com.hey.lucky.util.LuckyMoneyServiceUtil;
 import com.hey.lucky.util.PaymentUtil;
 import com.hey.lucky.util.UserUtil;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpStatus;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -68,6 +74,9 @@ class LuckyMoneyServiceImplTest {
     @Mock
     private ChatUtil chatUtil;
 
+    @Mock
+    private AuthApi authApi;
+
     @Test
     void createLuckyMoney_throw_UnauthorizeException() throws ErrCallApiException {
         // given
@@ -81,10 +90,19 @@ class LuckyMoneyServiceImplTest {
         User user = new User("abc");
         long walletId = 1L;
 
+        VerifySoftTokenResponse.SoftTokenEncoded softTokenEncoded = new VerifySoftTokenResponse.SoftTokenEncoded(user.getId(),200_000);
+        VerifySoftTokenResponse verifySoftTokenResponse = VerifySoftTokenResponse.builder()
+                .success(true)
+                .code(HttpStatus.OK.value())
+                .message("")
+                .payload(softTokenEncoded)
+                .build();
+        when(authApi.verifySoftToken(request.getSoftToken())).thenReturn(verifySoftTokenResponse);
         when(walletsInfo.getCurrentWallet()).thenReturn(walletId);
         when(userUtil.getCurrentUser()).thenReturn(user);
 
         when(userUtil.isUserInSession(anyString(), anyString())).thenReturn(false);
+
 
 
         // when
@@ -93,7 +111,7 @@ class LuckyMoneyServiceImplTest {
     }
 
     @Test
-    void createLuckyMoney() throws ErrCallApiException, CannotTransferMoneyException, ErrCallChatApiException, UnauthorizeException, UserNotInSessionChatException {
+    void createLuckyMoney() throws ErrCallApiException, CannotTransferMoneyException, ErrCallChatApiException, UnauthorizeException, UserNotInSessionChatException, SoftTokenAuthorizeException, MinAmountPerBagException {
         // given
         CreateLuckyMoneyRequest request = CreateLuckyMoneyRequest.builder()
                 .sessionChatId("abc")
@@ -107,6 +125,14 @@ class LuckyMoneyServiceImplTest {
         long amount = 20000L;
         LocalDateTime createdAt = LocalDateTime.now();
 
+        VerifySoftTokenResponse.SoftTokenEncoded softTokenEncoded = new VerifySoftTokenResponse.SoftTokenEncoded(user.getId(),200_000);
+        VerifySoftTokenResponse verifySoftTokenResponse = VerifySoftTokenResponse.builder()
+                .success(true)
+                .code(HttpStatus.OK.value())
+                .message("")
+                .payload(softTokenEncoded)
+                .build();
+        when(authApi.verifySoftToken(request.getSoftToken())).thenReturn(verifySoftTokenResponse);
         when(walletsInfo.getCurrentWallet()).thenReturn(walletId);
         when(userUtil.getCurrentUser()).thenReturn(user);
 

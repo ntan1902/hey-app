@@ -8,6 +8,8 @@ import javax.validation.constraints.NotEmpty;
 public class UpdateAvatarRequest {
     @NotEmpty(message = "Uri mustn't empty")
     private String uri;
-    @NotEmpty(message = "Mini uri mustn't empty")
-    private String miniUri;
+    @NotEmpty(message = "Medium uri mustn't empty")
+    private String mediumUri;
+    @NotEmpty(message = "Small uri mustn't empty")
+    private String smallUri;
 }

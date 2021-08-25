@@ -40,7 +40,7 @@ public class UserController {
     }
 
     @PostMapping("/createTransfer")
-    public ResponseEntity<ApiResponse<Object>> createTransfer(@RequestBody CreateTransferRequest createTransferRequest) throws NegativeAmountException, MaxAmountException, HaveNoWalletException, SoftTokenAuthorizeException, SourceAndTargetAreTheSameException, BalanceNotEnoughException, MaxBalanceException {
+    public ResponseEntity<ApiResponse<Object>> createTransfer(@RequestBody CreateTransferRequest createTransferRequest) throws MinAmountException, MaxAmountException, HaveNoWalletException, SoftTokenAuthorizeException, SourceAndTargetAreTheSameException, BalanceNotEnoughException, MaxBalanceException {
         transferStatementService.createTransfer(createTransferRequest);
         return ResponseEntity.ok(
                 ApiResponse.builder()

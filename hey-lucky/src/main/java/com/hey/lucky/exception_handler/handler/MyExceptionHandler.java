@@ -93,4 +93,18 @@ public class MyExceptionHandler {
         return getResponse(code, exception.getMessage());
     }
 
+    @ExceptionHandler(value = {SoftTokenAuthorizeException.class})
+    public ResponseEntity<ApiResponse> handleSoftTokenAuthorizeException(Exception exception) {
+        log.error(exception.getMessage());
+        HttpStatus code = HttpStatus.UNAUTHORIZED;
+        return getResponse(code, exception.getMessage());
+    }
+
+    @ExceptionHandler(value = {MinAmountPerBagException.class})
+    public ResponseEntity<ApiResponse> handleMinAmountPerBagException(Exception exception) {
+        log.error(exception.getMessage());
+        HttpStatus code = HttpStatus.BAD_REQUEST;
+        return getResponse(code, exception.getMessage());
+    }
+
 }

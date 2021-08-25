@@ -51,9 +51,11 @@ public class User implements Serializable, UserDetails {
     @Column(name="avatar")
     private String avatar;
 
-    @Column(name="mini_avatar")
-    private String miniAvatar;
+    @Column(name="medium_avatar")
+    private String mediumAvatar;
 
+    @Column(name="small_avatar")
+    private String smallAvatar;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

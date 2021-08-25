@@ -21,6 +21,7 @@ import java.util.Random;
 @Log4j2
 public class LuckyMoneyServiceUtilImpl implements LuckyMoneyServiceUtil {
 
+    public static final int MIN_AMOUNT = 100;
     private final LuckyMoneyMapper luckyMoneyMapper;
     private final ReceivedLuckyMoneyRepository receivedLuckyMoneyRepository;
     private final UserUtil userUtil;
@@ -89,6 +90,9 @@ public class LuckyMoneyServiceUtilImpl implements LuckyMoneyServiceUtil {
                     return luckyMoney.getRestMoney();
                 }
                 long minPerBag = (long) ((luckyMoney.getAmount() * 0.9) / luckyMoney.getNumberBag());
+                if (minPerBag < MIN_AMOUNT){
+                    return MIN_AMOUNT;
+                }
                 Random random = new Random();
                 long randomMoney = luckyMoney.getRestMoney() - (minPerBag * luckyMoney.getRestBag());
                 long result = minPerBag + (long) ((random.nextDouble() / luckyMoney.getRestBag() + random.nextDouble() / luckyMoney.getNumberBag() + (double) (luckyMoney.getRestBag()) / luckyMoney.getNumberBag() / luckyMoney.getNumberBag()) * randomMoney);
