@@ -31,7 +31,7 @@ public class RegisterTests {
     }
 
     @ParameterizedTest
-    @CsvFileSource(resources = "/RegisterData.csv", numLinesToSkip = 1)
+    @CsvFileSource(resources = "/Data_100.csv", numLinesToSkip = 1)
     void register(String username, String fullName, String email, String password) {
 
         // Register

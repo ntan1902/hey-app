@@ -43,6 +43,7 @@ public class TransferMoneyThread extends Thread {
         @SuppressWarnings("unchecked")
         var payload = (Map<String, String>) Objects.requireNonNull(response.getBody()).get("payload");
         String token = payload.get("accessToken");
+        String refreshToken = payload.get("refreshToken");
 
         // Set header for bearer token
         restTemplateUtil.setHeaders(restTemplate, token);
@@ -55,6 +56,13 @@ public class TransferMoneyThread extends Thread {
         createTransferReq.put("message", "message ne");
         createTransferReq.put("softToken", softToken);
         restTemplate.postForEntity(CREATE_TRANSFER_URL, createTransferReq, Map.class);
+
+        // Logout
+        var logoutRequest = new HashMap<String, String>();
+        logoutRequest.put("refreshToken", refreshToken);
+
+        restTemplate.
+                postForEntity( LOGOUT_URL, logoutRequest, Map.class);
     }
 
     private String createSofToken(RestTemplate restTemplate) {

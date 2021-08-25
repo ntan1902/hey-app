@@ -39,11 +39,18 @@ class IntegrationApplicationTests {
     UserRepository userRepository;
 
     @Test
+    public void clearDB() {
+        userRepository.deleteAll();
+        walletRepository.deleteWalletsByRefFrom("system");
+        transferStatementRepository.deleteAll();
+    }
+
+    @Test
     public void manyUserTransferToOneUsers() throws IOException, InterruptedException {
         Long expected = walletRepository.sumAllBalance();
 
         String[] HEADERS = {"username", "fullName", "email", "password"};
-        Reader in = new FileReader(ResourceUtils.getFile("classpath:RegisterData.csv"));
+        Reader in = new FileReader(ResourceUtils.getFile("classpath:Data_1000.csv"));
         Iterable<CSVRecord> records = CSVFormat.DEFAULT
                 .withHeader(HEADERS)
                 .withFirstRecordAsHeader()
@@ -86,7 +93,7 @@ class IntegrationApplicationTests {
         Long expected = walletRepository.sumAllBalance();
 
         String[] HEADERS = {"username", "fullName", "email", "password"};
-        Reader in = new FileReader(ResourceUtils.getFile("classpath:RegisterData.csv"));
+        Reader in = new FileReader(ResourceUtils.getFile("classpath:Data_1000.csv"));
         List<CSVRecord> records = CSVFormat.DEFAULT
                 .withHeader(HEADERS)
                 .withFirstRecordAsHeader()
@@ -113,6 +120,50 @@ class IntegrationApplicationTests {
                 transferMoneyThread.start();
                 threads.add(transferMoneyThread);
             }
+        });
+
+        for (TransferMoneyThread thread : threads) {
+            thread.join();
+        }
+
+        long actual = walletRepository.sumAllBalance();
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    public void manyUserTransferToManyUsers() throws IOException, InterruptedException {
+        Long expected = walletRepository.sumAllBalance();
+
+        String[] HEADERS = {"username", "fullName", "email", "password"};
+        Reader in = new FileReader(ResourceUtils.getFile("classpath:Data_1000.csv"));
+        List<CSVRecord> records = CSVFormat.DEFAULT
+                .withHeader(HEADERS)
+                .withFirstRecordAsHeader()
+                .parse(in)
+                .getRecords();
+        List<TransferMoneyThread> threads = new ArrayList<>();
+
+        // Start threads for the transaction in the same time
+        List<User> users = userRepository.findAll();
+
+        Random randomUser = new Random();
+        users.forEach(user -> {
+            String username = "";
+            String password = "";
+            do {
+                CSVRecord sourceUser = records.get(randomUser.nextInt(records.size()));
+                username = sourceUser.get("username");
+                password = sourceUser.get("password");
+            } while (username.equals(user.getUsername()));
+
+            TransferMoneyThread transferMoneyThread =
+                    new TransferMoneyThread(restTemplateUtil,
+                            username,
+                            password,
+                            user.getId());
+
+            transferMoneyThread.start();
+            threads.add(transferMoneyThread);
         });
 
         for (TransferMoneyThread thread : threads) {
