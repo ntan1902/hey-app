@@ -30,13 +30,8 @@ public class AcceptFriendThread extends Thread {
         RestTemplateUtil restTemplateUtil = new RestTemplateUtilImpl(restTemplate);
 
         // Login
-        Map<String, String> payload = restTemplateUtil.login(username, password);
+        restTemplateUtil.login(username, password);
 
-        String token = payload.get("accessToken");
-        String refreshToken = payload.get("refreshToken");
-
-        // Set header for bearer token
-        restTemplateUtil.setHeaders(token);
 
         // Send accept friend request
         restTemplateUtil.acceptFriend(friendUsername);
@@ -45,7 +40,7 @@ public class AcceptFriendThread extends Thread {
         restTemplateUtil.closeWaitingFriend(friendId);
 
         // Logout
-        restTemplateUtil.logout(refreshToken);
+        restTemplateUtil.logout();
     }
 
 

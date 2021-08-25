@@ -33,14 +33,8 @@ public class RegisterTests {
         restTemplateUtil.register(username, fullName, email, password);
 
         // Login
-        Map<String, String> payload = restTemplateUtil.login(username, password);
+        restTemplateUtil.login(username, password);
 
-        String token = payload.get("accessToken");
-        String refreshToken = payload.get("refreshToken");
-
-
-        // Set header for bearer token
-        restTemplateUtil.setHeaders(token);
 
         // Create Wallet
         restTemplateUtil.createWallet();
@@ -52,7 +46,7 @@ public class RegisterTests {
         restTemplateUtil.createPin("123456");
 
         // Logout
-        restTemplateUtil.logout(refreshToken);
+        restTemplateUtil.logout();
     }
 
 }

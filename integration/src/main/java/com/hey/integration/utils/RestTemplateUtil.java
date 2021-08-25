@@ -16,9 +16,9 @@ public interface RestTemplateUtil {
 
     void createPin(String pin);
 
-    void logout(String refreshToken);
+    void logout();
 
-    String createSofToken(String pin);
+    String createSofToken(String pin, long amount);
 
     void createTransfer(String targetId, String softToken);
 
@@ -27,4 +27,12 @@ public interface RestTemplateUtil {
     void acceptFriend(String friendUsername);
 
     void closeWaitingFriend(String friendId);
+
+    Map<String, Object> getChatList();
+
+    Map<String, Object> getLuckyMoneyOfSession(String sessionId);
+
+    void createLuckyMoney(String sessionId, String type, int numBag, String softToken);
+
+    void receiveLuckyMoney(Long luckyMoneyId);
 }

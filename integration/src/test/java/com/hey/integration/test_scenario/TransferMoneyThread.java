@@ -33,22 +33,17 @@ public class TransferMoneyThread extends Thread {
         RestTemplateUtil restTemplateUtil = new RestTemplateUtilImpl(restTemplate);
 
         // Login
-        Map<String, String> payload = restTemplateUtil.login(username, password);
-
-        String token = payload.get("accessToken");
-        String refreshToken = payload.get("refreshToken");
-
-        // Set header for bearer token
-        restTemplateUtil.setHeaders(token);
+        restTemplateUtil.login(username, password);
 
         // Create soft token
-        String softToken = restTemplateUtil.createSofToken("123456");
+        Random random = new Random();
+        String softToken = restTemplateUtil.createSofToken("123456", random.nextInt(25_123) + 10_000);
 
         // create transfer
         restTemplateUtil.createTransfer(this.targetId, softToken);
 
         // Logout
-        restTemplateUtil.logout(refreshToken);
+        restTemplateUtil.logout();
     }
 
 
