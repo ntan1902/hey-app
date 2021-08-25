@@ -9,6 +9,7 @@ import static com.hey.integration.constants.Constant.*;
 
 public class RestTemplateUtilImpl implements RestTemplateUtil {
     private final RestTemplate restTemplate;
+    private String refreshToken;
 
     public RestTemplateUtilImpl(RestTemplate restTemplate) {
         this.restTemplate = restTemplate;
@@ -35,6 +36,12 @@ public class RestTemplateUtilImpl implements RestTemplateUtil {
 
         @SuppressWarnings("unchecked")
         var payload =  (Map<String, String>) Objects.requireNonNull(response.getBody()).get("payload");
+
+        String token = payload.get("accessToken");
+
+        refreshToken = payload.get("refreshToken");
+        setHeaders(token);
+
         return payload;
     }
 
@@ -71,7 +78,7 @@ public class RestTemplateUtilImpl implements RestTemplateUtil {
     }
 
     @Override
-    public void logout(String refreshToken) {
+    public void logout() {
         var logoutRequest = new HashMap<String, String>();
         logoutRequest.put("refreshToken", refreshToken);
 
@@ -80,12 +87,11 @@ public class RestTemplateUtilImpl implements RestTemplateUtil {
     }
 
     @Override
-    public String createSofToken(String pin) {
+    public String createSofToken(String pin, long amount) {
         // create soft token
-        Random random = new Random();
         var createSoftToken = new HashMap<String, Object>();
         createSoftToken.put("pin", pin);
-        createSoftToken.put("amount", random.nextInt(25_123) + 10_000);
+        createSoftToken.put("amount", amount);
         var createSoftTokenRes = restTemplate.
                 postForEntity(CREATE_SOFT_TOKEN_URL, createSoftToken, Map.class);
 
@@ -122,5 +128,34 @@ public class RestTemplateUtilImpl implements RestTemplateUtil {
         var closeFriendReq = new HashMap<String, Object>();
         closeFriendReq.put("userId", friendId);
         restTemplate.postForEntity(CLOSE_FRIEND_REQUEST_URL, closeFriendReq, Map.class);
+    }
+
+    @Override
+    public Map<String, Object> getChatList() {
+        var getChatListReq = new HashMap<String, Object>();
+        return restTemplate.postForObject(GET_CHAT_LIST_REQUEST_URL, getChatListReq, Map.class);
+    }
+
+    @Override
+    public Map<String, Object> getLuckyMoneyOfSession(String sessionId) {
+        return restTemplate.getForObject(GET_LUCKY_MONEY_OF_SESSION_URL+"?sessionId="+sessionId,Map.class);
+    }
+
+    @Override
+    public void createLuckyMoney(String sessionId, String type, int numBag, String softToken) {
+        var createLuckyMoneyReq = new HashMap<String, Object>();
+        createLuckyMoneyReq.put("sessionChatId",sessionId);
+        createLuckyMoneyReq.put("type",type);
+        createLuckyMoneyReq.put("numberBag",numBag);
+        createLuckyMoneyReq.put("message", "chuc mung");
+        createLuckyMoneyReq.put("softToken",softToken);
+        restTemplate.postForEntity(CREATE_LUCKY_MONEY_URL,createLuckyMoneyReq,Map.class);
+    }
+
+    @Override
+    public void receiveLuckyMoney(Long luckyMoneyId) {
+        var receiveLuckyMoney = new HashMap<String, Long>();
+        receiveLuckyMoney.put("luckyMoneyId",luckyMoneyId);
+        restTemplate.postForEntity(RECEIVE_LUCKY_MONEY_URL,receiveLuckyMoney,Map.class);
     }
 }

@@ -5,19 +5,20 @@ import com.hey.integration.utils.RestTemplateUtilImpl;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.DefaultUriBuilderFactory;
 
+import java.util.List;
 import java.util.Map;
 
 import static com.hey.integration.constants.Constant.BASE_URL;
 
-public class AddFriendThread extends Thread {
-    private final String username;
-    private final String password;
-    private final String friendUsername;
+public class CreateLuckyMoneyThread extends Thread{
+    private String username;
+    private String password;
+    private String sessionId;
 
-    public AddFriendThread(String username, String password, String friendUsername) {
+    public CreateLuckyMoneyThread(String username,String password, String sessionId){
         this.username = username;
         this.password = password;
-        this.friendUsername = friendUsername;
+        this.sessionId = sessionId;
     }
 
     @Override
@@ -27,15 +28,19 @@ public class AddFriendThread extends Thread {
 
         RestTemplateUtil restTemplateUtil = new RestTemplateUtilImpl(restTemplate);
 
-        // Login
-        restTemplateUtil.login(username, password);
+        restTemplateUtil.login(username,password);
 
-        // Send add friend request
-        restTemplateUtil.addFriendRequest(friendUsername);
+        String type = "random";
+        int numBag = 99;
+        long amount = 50_000;
 
-        // Logout
+        // generate soft token;
+        String softToken = restTemplateUtil.createSofToken("123456", amount);
+
+        restTemplateUtil.createLuckyMoney(sessionId, type, numBag, softToken);
+
         restTemplateUtil.logout();
+
+
     }
-
-
 }

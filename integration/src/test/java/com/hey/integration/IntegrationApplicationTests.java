@@ -168,7 +168,6 @@ class IntegrationApplicationTests {
         for (TransferMoneyThread thread : threads) {
             thread.join();
         }
-
         long actual = walletRepository.sumAllBalance();
         assertThat(actual).isEqualTo(expected);
     }

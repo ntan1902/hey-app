@@ -8,11 +8,15 @@ public class Constant {
     public final static String CREATE_WALLET_URL = "/payment/api/v1/me/createWallet";
     public final static String TOP_UP_URL = "/payment/api/v1/me/topup";
     public final static String BANK_ID = "e8984aa8-b1a5-4c65-8c5e-036851ec783c";
-    public final static Long AMOUNT = 4_000_000L;
+    public final static Long AMOUNT = 10_000_000L;
     public final static String CREATE_PIN_URL = "/auth/api/v1/users/createPin";
     public final static String CREATE_TRANSFER_URL = "/payment/api/v1/me/createTransfer";
     public final static String CREATE_SOFT_TOKEN_URL = "/auth/api/v1/users/createSoftTokenByPin";
     public final static String ADD_FRIEND_REQUEST_URL = "/chat/api/protected/addfriendrequest";
     public final static String ACCEPT_FRIEND_REQUEST_URL = "/chat/api/protected/addfriend";
     public final static String CLOSE_FRIEND_REQUEST_URL = "/chat/api/protected/closewaitingfriend";
+    public final static String GET_CHAT_LIST_REQUEST_URL = "/chat/api/protected/chatlist";
+    public final static String CREATE_LUCKY_MONEY_URL = "/lucky/api/v1/createLuckyMoney";
+    public final static String GET_LUCKY_MONEY_OF_SESSION_URL = "/lucky/api/v1/getAllLuckyMoney";
+    public final static String RECEIVE_LUCKY_MONEY_URL = "/lucky/api/v1/receiveLuckyMoney";
 }

@@ -31,8 +31,6 @@ import static com.hey.integration.constants.Constant.BASE_URL;
 
 @SpringBootTest
 public class AddFriendTests {
-    @Autowired
-    private WalletRepository walletRepository;
 
     @Autowired
     TransferStatementRepository transferStatementRepository;
@@ -109,7 +107,6 @@ public class AddFriendTests {
         Map<String, String> payload = restTemplateUtil.login(targetUsername, targetPassword);
 
         String token = payload.get("accessToken");
-        String refreshToken = payload.get("refreshToken");
 
         // Create group
 
@@ -131,7 +128,7 @@ public class AddFriendTests {
 
         myEndpoint.sendMessage(new ObjectMapper().writeValueAsString(message));
 
-        restTemplateUtil.logout(refreshToken);
+        restTemplateUtil.logout();
     }
 
 }
