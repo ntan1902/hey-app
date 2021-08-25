@@ -32,7 +32,7 @@ public class RegisterTests {
 
     @ParameterizedTest
     @CsvFileSource(resources = "/RegisterData.csv", numLinesToSkip = 1)
-    void register(String username, String password, String email, String fullName) {
+    void register(String username, String fullName, String email, String password) {
 
         // Register
         Map<String, String> registerRequest = new HashMap<>();
@@ -53,8 +53,10 @@ public class RegisterTests {
                 postForEntity( LOGIN_URL, loginRequest, Map.class);
 
         @SuppressWarnings("unchecked")
-        var payload =  (Map<String, String>) Objects.requireNonNull(response.getBody()).get(PAYLOAD);
-        String token = payload.get(ACCESS_TOKEN);
+        var payload =  (Map<String, String>) Objects.requireNonNull(response.getBody()).get("payload");
+        String token = payload.get("accessToken");
+        String refreshToken = payload.get("refreshToken");
+
 
         // Set header for bearer token
         restTemplateUtil.setHeaders(restTemplate, token);
@@ -68,9 +70,16 @@ public class RegisterTests {
         topUpRequest.put("bankId", BANK_ID);
         restTemplate.postForObject(TOP_UP_URL, topUpRequest, String.class);
 
-        // Top up
+        // Create Pin
         var createPinReq = new HashMap<String, Object>();
         createPinReq.put("pin", "123456");
         restTemplate.postForObject(CREATE_PIN_URL, createPinReq, String.class);
+
+        // Logout
+        var logoutRequest = new HashMap<String, String>();
+        logoutRequest.put("refreshToken", refreshToken);
+
+        restTemplate.
+                postForEntity( LOGOUT_URL, logoutRequest, Map.class);
     }
 }
