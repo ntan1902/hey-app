@@ -6,10 +6,10 @@ import com.hey.integration.repository.UserRepository;
 import com.hey.integration.repository.WalletRepository;
 import com.hey.integration.test_scenario.TransferMoneyThread;
 import com.hey.integration.utils.RestTemplateUtil;
+import com.hey.integration.utils.RestTemplateUtilImpl;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVRecord;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.shadow.com.univocity.parsers.common.record.Record;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.util.ResourceUtils;
@@ -27,9 +27,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 class IntegrationApplicationTests {
 
     @Autowired
-    private RestTemplateUtil restTemplateUtil;
-
-    @Autowired
     private WalletRepository walletRepository;
 
     @Autowired
@@ -41,7 +38,7 @@ class IntegrationApplicationTests {
     @Test
     public void clearDB() {
         userRepository.deleteAll();
-        walletRepository.deleteWalletsByRefFrom("system");
+        walletRepository.deleteWalletsByRefFrom("users");
         transferStatementRepository.deleteAll();
     }
 
@@ -50,7 +47,7 @@ class IntegrationApplicationTests {
         Long expected = walletRepository.sumAllBalance();
 
         String[] HEADERS = {"username", "fullName", "email", "password"};
-        Reader in = new FileReader(ResourceUtils.getFile("classpath:Data_1000.csv"));
+        Reader in = new FileReader(ResourceUtils.getFile("classpath:Data_100.csv"));
         Iterable<CSVRecord> records = CSVFormat.DEFAULT
                 .withHeader(HEADERS)
                 .withFirstRecordAsHeader()
@@ -68,12 +65,14 @@ class IntegrationApplicationTests {
             String username = record.get("username");
             String password = record.get("password");
 
-            if(!username.equals(targetUser.getUsername())) {
+            if (!username.equals(targetUser.getUsername())) {
+
                 TransferMoneyThread transferMoneyThread =
-                        new TransferMoneyThread(restTemplateUtil,
+                        new TransferMoneyThread (
                                 username,
                                 password,
-                                targetId);
+                                targetId
+                        );
 
                 transferMoneyThread.start();
                 threads.add(transferMoneyThread);
@@ -93,7 +92,7 @@ class IntegrationApplicationTests {
         Long expected = walletRepository.sumAllBalance();
 
         String[] HEADERS = {"username", "fullName", "email", "password"};
-        Reader in = new FileReader(ResourceUtils.getFile("classpath:Data_1000.csv"));
+        Reader in = new FileReader(ResourceUtils.getFile("classpath:Data_100.csv"));
         List<CSVRecord> records = CSVFormat.DEFAULT
                 .withHeader(HEADERS)
                 .withFirstRecordAsHeader()
@@ -110,12 +109,13 @@ class IntegrationApplicationTests {
         String username = sourceUser.get("username");
         String password = sourceUser.get("password");
         users.forEach(user -> {
-            if(!username.equals(user.getUsername())) {
+            if (!username.equals(user.getUsername())) {
                 TransferMoneyThread transferMoneyThread =
-                        new TransferMoneyThread(restTemplateUtil,
+                        new TransferMoneyThread(
                                 username,
                                 password,
-                                user.getId());
+                                user.getId())
+                        ;
 
                 transferMoneyThread.start();
                 threads.add(transferMoneyThread);
@@ -135,7 +135,7 @@ class IntegrationApplicationTests {
         Long expected = walletRepository.sumAllBalance();
 
         String[] HEADERS = {"username", "fullName", "email", "password"};
-        Reader in = new FileReader(ResourceUtils.getFile("classpath:Data_1000.csv"));
+        Reader in = new FileReader(ResourceUtils.getFile("classpath:Data_100.csv"));
         List<CSVRecord> records = CSVFormat.DEFAULT
                 .withHeader(HEADERS)
                 .withFirstRecordAsHeader()
@@ -157,10 +157,11 @@ class IntegrationApplicationTests {
             } while (username.equals(user.getUsername()));
 
             TransferMoneyThread transferMoneyThread =
-                    new TransferMoneyThread(restTemplateUtil,
+                    new TransferMoneyThread(
                             username,
                             password,
-                            user.getId());
+                            user.getId()
+                    );
 
             transferMoneyThread.start();
             threads.add(transferMoneyThread);
