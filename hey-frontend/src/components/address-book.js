@@ -420,40 +420,6 @@ class AddressBook extends React.Component {
           ) : (
             ""
           )}
-          {this.props.newAddressBookList.length > 0 ? (
-            <div>
-              <hr className="hr-sub-menu-title" />
-              <div className="sub-menu-title new-add">
-                {" "}
-                New Friends ({this.props.newAddressBookList.length})
-              </div>
-              <Menu
-                theme="light"
-                mode="inline"
-                defaultSelectedKeys={[]}
-                selectedKeys={this.state.newselect}
-                className="address-book new-address-book"
-                onSelect={this.handleNewChange}
-              >
-                {this.props.newAddressBookList.map((item, index) => (
-                  <Menu.Item key={index}>
-                    {this.renderListAvatar({ userIds: [item.userId] })}
-                    {item.isOnline ? (
-                      <div className="status-point online" />
-                    ) : (
-                      <div className="status-point offline" />
-                    )}
-                    <div style={{ overflow: "hidden", paddingTop: 5 }}>
-                      <div className="user-name">{item.name}</div>
-                      <div className="history-message">{item.status}</div>
-                    </div>
-                  </Menu.Item>
-                ))}
-              </Menu>
-            </div>
-          ) : (
-            ""
-          )}
           <hr className="hr-sub-menu-title" />
           <div className="sub-menu-title">
             Friends ({this.props.addressBookList.length})
