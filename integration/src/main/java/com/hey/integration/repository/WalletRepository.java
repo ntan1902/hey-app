@@ -9,4 +9,7 @@ import org.springframework.stereotype.Repository;
 public interface WalletRepository extends JpaRepository<Wallet, Long> {
     @Query("SELECT SUM(wallet.balance) FROM Wallet wallet")
     Long sumAllBalance();
+
+    @Query
+    void deleteWalletsByRefFrom(String refFrom);
 }
