@@ -10,6 +10,8 @@ public enum ErrorCode {
     ADD_FRIEND_USERNAME_EMPTY("username.empty"),
     ADD_FRIEND_USERNAME_NOT_EXISTED("username.notexist"),
     ADD_FRIEND_USERNAME_ALREADY("username.already"),
+    ADD_FRIEND_REQUEST_ALREADY("username.alreadyinwaiting"),
+    ADD_FRIEND_REQUEST_NOT_EXIST("username.waitingnotexist"),
 
     START_GROUP_CHAT_USERNAME_NOT_EXISTED("username.notexist"),
     START_GROUP_CHAT_USERNAME_NOT_FRIEND("username.notfriend");

@@ -12,13 +12,13 @@ import javax.validation.constraints.NotEmpty;
 @AllArgsConstructor
 @NoArgsConstructor
 public class RegisterRequest {
-    @NotEmpty(message = "username must not be empty")
+    @NotEmpty(message = "Username must not be empty")
     private String username;
 
-    @NotEmpty(message = "password must not be empty")
+    @NotEmpty(message = "Password must not be empty")
     private String password;
 
-    @Email(message = "email is not valid")
+    @Email(message = "Email is not valid")
     private String email;
     private String fullName;
 }

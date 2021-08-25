@@ -415,81 +415,91 @@ public class APIService extends BaseService {
         getUserAuthFuture.compose(userAuth -> {
 
             if (userAuth != null) {
+                Future<Boolean> isInWaitingFriendFuture = isInWaitingFriend(userId, userAuth.getUserId());
 
-                Future<Boolean> isFriendFuture = isFriend(userId, userAuth.getUserId());
-
-                isFriendFuture.compose(isFriend -> {
-
-                    if (isFriend) {
+                isInWaitingFriendFuture.compose(isInWaitingFriend -> {
+                    if (!isInWaitingFriend) {
                         future.fail(new HeyHttpStatusException(HttpStatus.BAD_REQUEST.code(),
-                                ErrorCode.ADD_FRIEND_USERNAME_ALREADY.code(), "User Name was added as friend"));
-
+                                ErrorCode.ADD_FRIEND_REQUEST_NOT_EXIST.code(), "User Name was not in friend requested list"));
                     } else {
+                        Future<Boolean> isFriendFuture = isFriend(userId, userAuth.getUserId());
 
-                        List<String> userIds = new ArrayList<>();
-                        userIds.add(userId);
-                        userIds.add(userAuth.getUserId());
-                        Future<List<UserFull>> getUserFullsFuture = getUserFulls(userIds);
+                        isFriendFuture.compose(isFriend -> {
 
-                        getUserFullsFuture.compose(userFulls -> {
+                            if (isFriend) {
+                                future.fail(new HeyHttpStatusException(HttpStatus.BAD_REQUEST.code(),
+                                        ErrorCode.ADD_FRIEND_USERNAME_ALREADY.code(), "User Name was added as friend"));
 
-                            UserFull currentUserFull = userFulls.get(0);
-                            UserFull friendUserFull = userFulls.get(1);
+                            } else {
 
-                            FriendList friendList = new FriendList();
-                            friendList.setCurrentUserHashes(
-                                    new UserHash(currentUserFull.getUserId(), currentUserFull.getFullName()));
-                            friendList.setFriendUserHashes(
-                                    new UserHash(friendUserFull.getUserId(), friendUserFull.getFullName()));
+                                List<String> userIds = new ArrayList<>();
+                                userIds.add(userId);
+                                userIds.add(userAuth.getUserId());
+                                Future<List<UserFull>> getUserFullsFuture = getUserFulls(userIds);
 
-                            Future<FriendList> insertFriendListFuture = dataRepository.insertFriendList(friendList);
+                                getUserFullsFuture.compose(userFulls -> {
 
-                            insertFriendListFuture.compose(friendListRes -> {
+                                    UserFull currentUserFull = userFulls.get(0);
+                                    UserFull friendUserFull = userFulls.get(1);
 
-                                List<Future> getUserStatusAndUserOnlineFuture = new ArrayList<>();
-                                getUserStatusAndUserOnlineFuture
-                                        .add(dataRepository.getUserStatus(friendUserFull.getUserId()));
-                                getUserStatusAndUserOnlineFuture.add(isUserOnline(friendUserFull.getUserId()));
+                                    FriendList friendList = new FriendList();
+                                    friendList.setCurrentUserHashes(
+                                            new UserHash(currentUserFull.getUserId(), currentUserFull.getFullName()));
+                                    friendList.setFriendUserHashes(
+                                            new UserHash(friendUserFull.getUserId(), friendUserFull.getFullName()));
 
-                                CompositeFuture cp = CompositeFuture.all(getUserStatusAndUserOnlineFuture);
-                                cp.setHandler(ar -> {
-                                    if (ar.succeeded()) {
+                                    Future<FriendList> insertFriendListFuture = dataRepository.insertFriendList(friendList);
 
-                                        UserStatus friendUserStatus = cp.resultAt(0);
-                                        Boolean isUserOnline = cp.resultAt(1);
+                                    insertFriendListFuture.compose(friendListRes -> {
 
-                                        AddressBookItem addressBookItem = new AddressBookItem();
-                                        addressBookItem.setUserId(friendUserFull.getUserId());
-                                        addressBookItem.setName(friendUserFull.getFullName());
-                                        addressBookItem.setStatus(friendUserStatus.getStatus());
-                                        addressBookItem.setOnline(isUserOnline);
+                                        List<Future> getUserStatusAndUserOnlineFuture = new ArrayList<>();
+                                        getUserStatusAndUserOnlineFuture
+                                                .add(dataRepository.getUserStatus(friendUserFull.getUserId()));
+                                        getUserStatusAndUserOnlineFuture.add(isUserOnline(friendUserFull.getUserId()));
 
-                                        // WebSocket sends message
-                                        NewChatSessionResponse newChatSessionResponse = new NewChatSessionResponse();
-                                        newChatSessionResponse.setType(IWsMessage.TYPE_NOTIFICATION_ACCEPT_FRIEND_RESPONSE);
-                                        newChatSessionResponse.setSessionId(userId);
-                                        userWsChannelManager.sendMessage(newChatSessionResponse, addressBookItem.getUserId());
+                                        CompositeFuture cp = CompositeFuture.all(getUserStatusAndUserOnlineFuture);
+                                        cp.setHandler(ar -> {
+                                            if (ar.succeeded()) {
 
-                                        AddFriendResponse addFriendResponse = new AddFriendResponse();
-                                        addFriendResponse.setItem(addressBookItem);
+                                                UserStatus friendUserStatus = cp.resultAt(0);
+                                                Boolean isUserOnline = cp.resultAt(1);
 
-                                        future.complete(addFriendResponse);
-                                    } else {
-                                        future.fail(ar.cause());
-                                    }
-                                });
+                                                AddressBookItem addressBookItem = new AddressBookItem();
+                                                addressBookItem.setUserId(friendUserFull.getUserId());
+                                                addressBookItem.setName(friendUserFull.getFullName());
+                                                addressBookItem.setStatus(friendUserStatus.getStatus());
+                                                addressBookItem.setOnline(isUserOnline);
 
-                            }, Future.future().setHandler(handler -> {
-                                future.fail(handler.cause());
-                            }));
+                                                // WebSocket sends message
+                                                NewChatSessionResponse newChatSessionResponse = new NewChatSessionResponse();
+                                                newChatSessionResponse.setType(IWsMessage.TYPE_NOTIFICATION_ACCEPT_FRIEND_RESPONSE);
+                                                newChatSessionResponse.setSessionId(userId);
+                                                userWsChannelManager.sendMessage(newChatSessionResponse, addressBookItem.getUserId());
+
+                                                AddFriendResponse addFriendResponse = new AddFriendResponse();
+                                                addFriendResponse.setItem(addressBookItem);
+
+                                                future.complete(addFriendResponse);
+                                            } else {
+                                                future.fail(ar.cause());
+                                            }
+                                        });
+
+                                    }, Future.future().setHandler(handler -> {
+                                        future.fail(handler.cause());
+                                    }));
+
+                                }, Future.future().setHandler(handler -> {
+                                    future.fail(handler.cause());
+                                }));
+                            }
 
                         }, Future.future().setHandler(handler -> {
-                            future.fail(handler.cause());
                         }));
                     }
-
                 }, Future.future().setHandler(handler -> {
                 }));
+
 
             } else {
                 throw new HeyHttpStatusException(HttpStatus.BAD_REQUEST.code(),
@@ -518,80 +528,91 @@ public class APIService extends BaseService {
 
             if (userAuth != null) {
 
-                Future<Boolean> isFriendFuture = isFriend(userId, userAuth.getUserId());
+                Future<Boolean> isInWaitingFriendFuture = isInWaitingFriend(userId, userAuth.getUserId());
 
-                isFriendFuture.compose(isFriend -> {
-
-                    if (isFriend) {
+                isInWaitingFriendFuture.compose(isInWaitingFriend -> {
+                    if (isInWaitingFriend) {
                         future.fail(new HeyHttpStatusException(HttpStatus.BAD_REQUEST.code(),
-                                ErrorCode.ADD_FRIEND_USERNAME_ALREADY.code(), "User Name was added as friend"));
-
+                                ErrorCode.ADD_FRIEND_REQUEST_ALREADY.code(), "User Name was in friend requested list"));
                     } else {
+                        Future<Boolean> isFriendFuture = isFriend(userId, userAuth.getUserId());
 
-                        List<String> userIds = new ArrayList<>();
-                        userIds.add(userId);
-                        userIds.add(userAuth.getUserId());
-                        Future<List<UserFull>> getUserFullsFuture = getUserFulls(userIds);
+                        isFriendFuture.compose(isFriend -> {
 
-                        getUserFullsFuture.compose(userFulls -> {
+                            if (isFriend) {
+                                future.fail(new HeyHttpStatusException(HttpStatus.BAD_REQUEST.code(),
+                                        ErrorCode.ADD_FRIEND_USERNAME_ALREADY.code(), "User Name was added as friend"));
 
-                            UserFull currentUserFull = userFulls.get(0);
-                            UserFull friendUserFull = userFulls.get(1);
+                            } else {
 
-                            FriendList friendList = new FriendList();
-                            friendList.setCurrentUserHashes(
-                                    new UserHash(currentUserFull.getUserId(), currentUserFull.getFullName()));
-                            friendList.setFriendUserHashes(
-                                    new UserHash(friendUserFull.getUserId(), friendUserFull.getFullName()));
+                                List<String> userIds = new ArrayList<>();
+                                userIds.add(userId);
+                                userIds.add(userAuth.getUserId());
+                                Future<List<UserFull>> getUserFullsFuture = getUserFulls(userIds);
 
-                            Future<FriendList> insertWaitingFriendListFuture = dataRepository.insertWaitingFriendList(friendList);
+                                getUserFullsFuture.compose(userFulls -> {
 
-                            insertWaitingFriendListFuture.compose(friendListRes -> {
+                                    UserFull currentUserFull = userFulls.get(0);
+                                    UserFull friendUserFull = userFulls.get(1);
 
-                                List<Future> getUserStatusAndUserOnlineFuture = new ArrayList<>();
-                                getUserStatusAndUserOnlineFuture
-                                        .add(dataRepository.getUserStatus(friendUserFull.getUserId()));
-                                getUserStatusAndUserOnlineFuture.add(isUserOnline(friendUserFull.getUserId()));
+                                    FriendList friendList = new FriendList();
+                                    friendList.setCurrentUserHashes(
+                                            new UserHash(currentUserFull.getUserId(), currentUserFull.getFullName()));
+                                    friendList.setFriendUserHashes(
+                                            new UserHash(friendUserFull.getUserId(), friendUserFull.getFullName()));
 
-                                CompositeFuture cp = CompositeFuture.all(getUserStatusAndUserOnlineFuture);
-                                cp.setHandler(ar -> {
-                                    if (ar.succeeded()) {
+                                    Future<FriendList> insertWaitingFriendListFuture = dataRepository.insertWaitingFriendList(friendList);
 
-                                        UserStatus friendUserStatus = cp.resultAt(0);
-                                        Boolean isUserOnline = cp.resultAt(1);
+                                    insertWaitingFriendListFuture.compose(friendListRes -> {
 
-                                        AddressBookItem addressBookItem = new AddressBookItem();
-                                        addressBookItem.setUserId(friendUserFull.getUserId());
-                                        addressBookItem.setName(friendUserFull.getFullName());
-                                        addressBookItem.setStatus(friendUserStatus.getStatus());
-                                        addressBookItem.setOnline(isUserOnline);
+                                        List<Future> getUserStatusAndUserOnlineFuture = new ArrayList<>();
+                                        getUserStatusAndUserOnlineFuture
+                                                .add(dataRepository.getUserStatus(friendUserFull.getUserId()));
+                                        getUserStatusAndUserOnlineFuture.add(isUserOnline(friendUserFull.getUserId()));
 
-                                        // WebSocket sends message
-                                        NewChatSessionResponse newChatSessionResponse = new NewChatSessionResponse();
-                                        newChatSessionResponse.setType(IWsMessage.TYPE_NOTIFICATION_ADD_FRIEND_RESPONSE);
-                                        newChatSessionResponse.setSessionId(userId);
-                                        userWsChannelManager.sendMessage(newChatSessionResponse, addressBookItem.getUserId());
+                                        CompositeFuture cp = CompositeFuture.all(getUserStatusAndUserOnlineFuture);
+                                        cp.setHandler(ar -> {
+                                            if (ar.succeeded()) {
 
-                                        AddFriendResponse addFriendResponse = new AddFriendResponse();
-                                        addFriendResponse.setItem(addressBookItem);
+                                                UserStatus friendUserStatus = cp.resultAt(0);
+                                                Boolean isUserOnline = cp.resultAt(1);
 
-                                        future.complete(addFriendResponse);
-                                    } else {
-                                        future.fail(ar.cause());
-                                    }
-                                });
+                                                AddressBookItem addressBookItem = new AddressBookItem();
+                                                addressBookItem.setUserId(friendUserFull.getUserId());
+                                                addressBookItem.setName(friendUserFull.getFullName());
+                                                addressBookItem.setStatus(friendUserStatus.getStatus());
+                                                addressBookItem.setOnline(isUserOnline);
 
-                            }, Future.future().setHandler(handler -> {
-                                future.fail(handler.cause());
-                            }));
+                                                // WebSocket sends message
+                                                NewChatSessionResponse newChatSessionResponse = new NewChatSessionResponse();
+                                                newChatSessionResponse.setType(IWsMessage.TYPE_NOTIFICATION_ADD_FRIEND_RESPONSE);
+                                                newChatSessionResponse.setSessionId(userId);
+                                                userWsChannelManager.sendMessage(newChatSessionResponse, addressBookItem.getUserId());
+
+                                                AddFriendResponse addFriendResponse = new AddFriendResponse();
+                                                addFriendResponse.setItem(addressBookItem);
+
+                                                future.complete(addFriendResponse);
+                                            } else {
+                                                future.fail(ar.cause());
+                                            }
+                                        });
+
+                                    }, Future.future().setHandler(handler -> {
+                                        future.fail(handler.cause());
+                                    }));
+
+                                }, Future.future().setHandler(handler -> {
+                                    future.fail(handler.cause());
+                                }));
+                            }
 
                         }, Future.future().setHandler(handler -> {
-                            future.fail(handler.cause());
                         }));
                     }
-
                 }, Future.future().setHandler(handler -> {
                 }));
+
 
             } else {
                 throw new HeyHttpStatusException(HttpStatus.BAD_REQUEST.code(),
@@ -813,6 +834,42 @@ public class APIService extends BaseService {
 
         getFriendListFutures.add(dataRepository.getFriendList(friendListKey, currentUserId));
         getFriendListFutures.add(dataRepository.getFriendList(friendListKeyReverse, friendUserId));
+
+        CompositeFuture cp = CompositeFuture.all(getFriendListFutures);
+        cp.setHandler(ar -> {
+            if (ar.succeeded()) {
+
+                List<FriendList> friendLists = new ArrayList<>();
+                for (int index = 0; index < getFriendListFutures.size(); ++index) {
+                    if (cp.resultAt(index) != null) {
+                        friendLists.add(cp.resultAt(index));
+                    }
+                }
+
+                if (friendLists.size() > 0) {
+                    future.complete(true);
+                } else {
+                    future.complete(false);
+                }
+
+            } else {
+                future.fail(ar.cause());
+            }
+        });
+
+        return future;
+    }
+
+    public Future<Boolean> isInWaitingFriend(String currentUserId, String friendUserId) {
+        Future<Boolean> future = Future.future();
+
+        String friendListKey = "waiting_friend:list:" + currentUserId + ":" + friendUserId;
+        String friendListKeyReverse = "waiting_friend:list:" + friendUserId + ":" + currentUserId;
+
+        List<Future> getFriendListFutures = new ArrayList<>();
+
+        getFriendListFutures.add(dataRepository.getWaitingFriendList(friendListKey, currentUserId));
+        getFriendListFutures.add(dataRepository.getWaitingFriendList(friendListKeyReverse, friendUserId));
 
         CompositeFuture cp = CompositeFuture.all(getFriendListFutures);
         cp.setHandler(ar -> {
@@ -1376,84 +1433,84 @@ public class APIService extends BaseService {
     public Future<JsonObject> editProfile(EditProfileRequest editProfileRequest, String userId) {
         Future<JsonObject> future = Future.future();
         List<Future> futures = new ArrayList<>();
+        authService.editProfile(editProfileRequest, userId, event -> {
+            if (event.succeeded()) {
+                // UserFull
+                Future<UserFull> getUserFullFuture = dataRepository.getUserFull(userId);
+                getUserFullFuture.compose(userFull -> {
+                    userFull.setUserId(userId);
+                    userFull.setFullName(editProfileRequest.getFullName());
+                    futures.add(dataRepository.insertUserFull(userFull));
+                }, Future.future().setHandler(handler -> {
+                    future.fail(handler.cause());
+                }));
 
-        // UserFull
-        Future<UserFull> getUserFullFuture = dataRepository.getUserFull(userId);
-        getUserFullFuture.compose(userFull -> {
-            userFull.setUserId(userId);
-            userFull.setFullName(editProfileRequest.getFullName());
-            futures.add(dataRepository.insertUserFull(userFull));
-        }, Future.future().setHandler(handler -> {
-            future.fail(handler.cause());
-        }));
+                // ChatList
+                Future<List<ChatList>> getChatListsFuture = getChatLists(userId);
+                getChatListsFuture.compose(chatLists -> {
+                    chatLists.forEach(chatList -> {
+                        // Update UserHashes in ChatList
+                        List<UserHash> userHashes = chatList.getUserHashes();
 
-        // ChatList
-        Future<List<ChatList>> getChatListsFuture = getChatLists(userId);
-        getChatListsFuture.compose(chatLists -> {
-            chatLists.forEach(chatList -> {
-                // Update UserHashes in ChatList
-                List<UserHash> userHashes = chatList.getUserHashes();
+                        userHashes.forEach(userHash -> {
+                            if (userHash.getUserId().equals(userId)) {
+                                userHash.setFullName(editProfileRequest.getFullName());
+                            }
+                        });
+                        chatList.setUserHashes(userHashes);
+                        futures.add(dataRepository.insertChatList(chatList));
 
-                userHashes.forEach(userHash -> {
-                    if (userHash.getUserId().equals(userId)) {
-                        userHash.setFullName(editProfileRequest.getFullName());
-                    }
-                });
-                chatList.setUserHashes(userHashes);
-                futures.add(dataRepository.insertChatList(chatList));
+                        // Update ChatMessage of Session Id
+                        Future<List<ChatMessage>> getChatMessagesFuture = getChatMessages(chatList.getSessionId());
 
-                // Update ChatMessage of Session Id
-                Future<List<ChatMessage>> getChatMessagesFuture = getChatMessages(chatList.getSessionId());
+                        getChatMessagesFuture.compose(chatMessages -> {
+                            chatMessages.forEach(chatMessage -> {
+                                UserHash userHash = chatMessage.getUserHash();
+                                if (userHash.getUserId().equals(userId)) {
+                                    userHash.setFullName(editProfileRequest.getFullName());
+                                }
+                                chatMessage.setUserHash(userHash);
+                                futures.add(dataRepository.insertChatMessage(chatMessage));
 
-                getChatMessagesFuture.compose(chatMessages -> {
-                    chatMessages.forEach(chatMessage -> {
-                        UserHash userHash = chatMessage.getUserHash();
-                        if (userHash.getUserId().equals(userId)) {
-                            userHash.setFullName(editProfileRequest.getFullName());
-                        }
-                        chatMessage.setUserHash(userHash);
-                        futures.add(dataRepository.insertChatMessage(chatMessage));
-
+                            });
+                        }, Future.future().setHandler(handler -> future.fail(handler.cause())));
                     });
                 }, Future.future().setHandler(handler -> future.fail(handler.cause())));
-            });
-        }, Future.future().setHandler(handler -> future.fail(handler.cause())));
 
 
-        // FriendList
-        Future<List<FriendList>> getFriendListsFuture = getFriendLists(userId);
-        getFriendListsFuture.compose(friendLists -> {
-            friendLists.forEach(friendList -> {
-                UserHash friendUserHashes = friendList.getFriendUserHashes();
-                UserHash currentUserHashes = friendList.getCurrentUserHashes();
-                if (friendUserHashes.getUserId().equals(userId)) {
-                    friendUserHashes.setFullName(editProfileRequest.getFullName());
-                }
-                if (currentUserHashes.getUserId().equals(userId)) {
-                    currentUserHashes.setFullName(editProfileRequest.getFullName());
-                }
+                // FriendList
+                Future<List<FriendList>> getFriendListsFuture = getFriendLists(userId);
+                getFriendListsFuture.compose(friendLists -> {
+                    friendLists.forEach(friendList -> {
+                        UserHash friendUserHashes = friendList.getFriendUserHashes();
+                        UserHash currentUserHashes = friendList.getCurrentUserHashes();
+                        if (friendUserHashes.getUserId().equals(userId)) {
+                            friendUserHashes.setFullName(editProfileRequest.getFullName());
+                        }
+                        if (currentUserHashes.getUserId().equals(userId)) {
+                            currentUserHashes.setFullName(editProfileRequest.getFullName());
+                        }
 
-                friendList.setFriendUserHashes(friendUserHashes);
-                friendList.setCurrentUserHashes(currentUserHashes);
-                futures.add(dataRepository.insertFriendList(friendList));
-            });
-        }, Future.future().setHandler(handler -> future.fail(handler.cause())));
+                        friendList.setFriendUserHashes(friendUserHashes);
+                        friendList.setCurrentUserHashes(currentUserHashes);
+                        futures.add(dataRepository.insertFriendList(friendList));
+                    });
+                }, Future.future().setHandler(handler -> future.fail(handler.cause())));
 
-        CompositeFuture cp = CompositeFuture.all(futures);
-        cp.setHandler(ar -> {
-            if (ar.succeeded()) {
-                authService.editProfile(editProfileRequest, userId, event -> {
-                    if (event.succeeded()) {
-                        future.complete(event.result());
+                CompositeFuture cp = CompositeFuture.all(futures);
+                cp.setHandler(ar -> {
+                    if (!ar.succeeded()) {
+                        future.fail(ar.cause());
                     } else {
-                        future.fail(new HeyHttpStatusException(HttpStatus.BAD_REQUEST.code(),
-                                "400", event.cause().getMessage()));
+                        future.complete(event.result());
                     }
                 });
             } else {
-                future.fail(ar.cause());
+                future.fail(new HeyHttpStatusException(HttpStatus.BAD_REQUEST.code(),
+                        "400", event.cause().getMessage()));
             }
         });
+
         return future;
     }
 
