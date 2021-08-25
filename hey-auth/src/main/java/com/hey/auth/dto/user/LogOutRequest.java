@@ -10,6 +10,6 @@ import javax.validation.constraints.NotEmpty;
 @AllArgsConstructor
 @NoArgsConstructor
 public class LogOutRequest {
-    @NotEmpty(message = "refreshToken must be not empty")
+    @NotEmpty(message = "Refresh token must be not empty")
     private String refreshToken;
 }
