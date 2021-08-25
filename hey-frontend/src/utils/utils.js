@@ -1,30 +1,30 @@
 export function setUserIdToStorage(userId) {
-  sessionStorage.setItem("userId", userId);
+  localStorage.setItem("userId", userId);
 }
 
 export function getUserIdFromStorage() {
-  var data = sessionStorage.getItem("userId");
+  var data = localStorage.getItem("userId");
   return data;
 }
 
 export function setJwtToStorage(jwt) {
-  sessionStorage.setItem("jwt", jwt);
+  localStorage.setItem("jwt", jwt);
 }
 
 export function getJwtFromStorage() {
-  return sessionStorage.getItem("jwt");
+  return localStorage.getItem("jwt");
 }
 
 export function setRefreshTokenToStorage(jwt) {
-  sessionStorage.setItem("refreshToken", jwt);
+  localStorage.setItem("refreshToken", jwt);
 }
 
 export function getRefreshTokenFromStorage() {
-  return sessionStorage.getItem("refreshToken");
+  return localStorage.getItem("refreshToken");
 }
 
 export function clearStorage() {
-  sessionStorage.clear();
+  localStorage.clear();
 }
 
 export function isAuthenticated() {

@@ -1,7 +1,6 @@
 package com.hey.integration.utils;
 
 import org.springframework.http.client.ClientHttpRequestInterceptor;
-import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.*;
@@ -102,5 +101,26 @@ public class RestTemplateUtilImpl implements RestTemplateUtil {
         createTransferReq.put("message", "message ne");
         createTransferReq.put("softToken", softToken);
         restTemplate.postForEntity(CREATE_TRANSFER_URL, createTransferReq, Map.class);
+    }
+
+    @Override
+    public void addFriendRequest(String friendUsername) {
+        var addFriendReq = new HashMap<String, Object>();
+        addFriendReq.put("username", friendUsername);
+        restTemplate.postForEntity(ADD_FRIEND_REQUEST_URL, addFriendReq, Map.class);
+    }
+
+    @Override
+    public void acceptFriend(String friendUsername) {
+        var addFriendReq = new HashMap<String, Object>();
+        addFriendReq.put("username", friendUsername);
+        restTemplate.postForEntity(ACCEPT_FRIEND_REQUEST_URL, addFriendReq, Map.class);
+    }
+
+    @Override
+    public void closeWaitingFriend(String friendId) {
+        var closeFriendReq = new HashMap<String, Object>();
+        closeFriendReq.put("userId", friendId);
+        restTemplate.postForEntity(CLOSE_FRIEND_REQUEST_URL, closeFriendReq, Map.class);
     }
 }

@@ -12,4 +12,7 @@ public class Constant {
     public final static String CREATE_PIN_URL = "/auth/api/v1/users/createPin";
     public final static String CREATE_TRANSFER_URL = "/payment/api/v1/me/createTransfer";
     public final static String CREATE_SOFT_TOKEN_URL = "/auth/api/v1/users/createSoftTokenByPin";
+    public final static String ADD_FRIEND_REQUEST_URL = "/chat/api/protected/addfriendrequest";
+    public final static String ACCEPT_FRIEND_REQUEST_URL = "/chat/api/protected/addfriend";
+    public final static String CLOSE_FRIEND_REQUEST_URL = "/chat/api/protected/closewaitingfriend";
 }

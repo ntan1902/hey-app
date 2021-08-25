@@ -5,8 +5,6 @@ import com.hey.integration.repository.TransferStatementRepository;
 import com.hey.integration.repository.UserRepository;
 import com.hey.integration.repository.WalletRepository;
 import com.hey.integration.test_scenario.TransferMoneyThread;
-import com.hey.integration.utils.RestTemplateUtil;
-import com.hey.integration.utils.RestTemplateUtilImpl;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVRecord;
 import org.junit.jupiter.api.Test;
@@ -43,7 +41,7 @@ class IntegrationApplicationTests {
     }
 
     @Test
-    public void manyUserTransferToOneUsers() throws IOException, InterruptedException {
+    public void manyUserTransferToOneUser() throws IOException, InterruptedException {
         Long expected = walletRepository.sumAllBalance();
 
         String[] HEADERS = {"username", "fullName", "email", "password"};
@@ -131,7 +129,7 @@ class IntegrationApplicationTests {
     }
 
     @Test
-    public void manyUserTransferToManyUsers() throws IOException, InterruptedException {
+    public void manyUsersTransferToManyUsers() throws IOException, InterruptedException {
         Long expected = walletRepository.sumAllBalance();
 
         String[] HEADERS = {"username", "fullName", "email", "password"};

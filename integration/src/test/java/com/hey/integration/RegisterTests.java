@@ -55,6 +55,4 @@ public class RegisterTests {
         restTemplateUtil.logout(refreshToken);
     }
 
-
-
 }
