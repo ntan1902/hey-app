@@ -21,4 +21,10 @@ public interface RestTemplateUtil {
     String createSofToken(String pin);
 
     void createTransfer(String targetId, String softToken);
+
+    void addFriendRequest(String friendUsername);
+
+    void acceptFriend(String friendUsername);
+
+    void closeWaitingFriend(String friendId);
 }
