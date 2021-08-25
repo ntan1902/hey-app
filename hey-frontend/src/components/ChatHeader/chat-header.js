@@ -393,7 +393,10 @@ class ChatHeader extends React.Component {
         </div>
         <div style={{ overflow: "hidden", paddingTop: 5, marginLeft: 5 }}>
           {!this.state.status_box_state || !this.props.header.group ? (
-            <div onClick={this.openChangeTitle} className="panel-message">
+            <div
+              onClick={this.props.header.group && this.openChangeTitle}
+              className="panel-message"
+            >
               {this.props.header.title}
             </div>
           ) : (
