@@ -11,16 +11,16 @@ import javax.validation.constraints.NotEmpty;
 @AllArgsConstructor
 @NoArgsConstructor
 public class EditUserRequest {
-    @NotEmpty(message = "email must not be empty")
+    @NotEmpty(message = "Email must not be empty")
     @Email(message = "This is not an email")
     private String email;
 
-    @NotEmpty(message = "fullName must not be empty")
+    @NotEmpty(message = "Full name must not be empty")
     private String fullName;
 
-    @NotEmpty(message = "dob must not be empty")
+    @NotEmpty(message = "Date of birth must not be empty")
     private String dob;
 
-    @NotEmpty(message = "phoneNumber must not be empty")
+    @NotEmpty(message = "Phone number must not be empty")
     private String phoneNumber;
 }
