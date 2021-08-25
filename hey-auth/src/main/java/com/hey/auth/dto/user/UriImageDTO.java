@@ -11,5 +11,6 @@ import lombok.NoArgsConstructor;
 @Builder
 public class UriImageDTO {
     private String uri;
-    private String miniUri;
+    private String mediumUri;
+    private String smallUri;
 }

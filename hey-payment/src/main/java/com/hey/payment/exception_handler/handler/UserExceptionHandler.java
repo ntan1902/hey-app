@@ -57,7 +57,7 @@ public class UserExceptionHandler {
         return getResponse(code, exception.getMessage());
     }
 
-    @ExceptionHandler(value = {NegativeAmountException.class})
+    @ExceptionHandler(value = {MinAmountException.class})
     public ResponseEntity<ApiResponse<Object>> handleNegativeAmountException(Exception exception) {
         log.error(exception.getMessage());
         HttpStatus code = HttpStatus.BAD_REQUEST;

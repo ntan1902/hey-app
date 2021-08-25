@@ -36,6 +36,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
+import static com.hey.payment.constant.MoneyConstant.MIN_AMOUNT;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
@@ -72,7 +73,7 @@ class TransferStatementServiceImplTest {
     private UserUtil userUtil;
 
     @Test
-    void createTransfer() throws BalanceNotEnoughException, MaxBalanceException, NegativeAmountException, MaxAmountException, SourceAndTargetAreTheSameException, SoftTokenAuthorizeException, HaveNoWalletException {
+    void createTransfer() throws BalanceNotEnoughException, MaxBalanceException, MinAmountException, MaxAmountException, SourceAndTargetAreTheSameException, SoftTokenAuthorizeException, HaveNoWalletException {
         // given
         User user = User.builder()
                 .id("uuid1")
@@ -226,8 +227,8 @@ class TransferStatementServiceImplTest {
 
         // then
         assertThatThrownBy(() -> underTest.createTransfer(request))
-                .isInstanceOf(NegativeAmountException.class)
-                .hasMessageContaining("Negative amount");
+                .isInstanceOf(MinAmountException.class)
+                .hasMessageContaining("Min amount is " + MIN_AMOUNT);
 
         verify(chatApi, never()).createTransferMessage(any(TransferMessageRequest.class));
         verify(transferStatementRepository, never()).save(any(TransferStatement.class));
@@ -431,7 +432,7 @@ class TransferStatementServiceImplTest {
     }
 
     @Test
-    void systemCreateTransferToUser() throws BalanceNotEnoughException, MaxBalanceException, HaveNoWalletException, NegativeAmountException, MaxAmountException {
+    void systemCreateTransferToUser() throws BalanceNotEnoughException, MaxBalanceException, HaveNoWalletException, MinAmountException, MaxAmountException {
         // given
         System system = System.builder()
                 .id("uuid2")
@@ -480,8 +481,8 @@ class TransferStatementServiceImplTest {
 
         // then
         assertThatThrownBy(() -> underTest.systemCreateTransferToUser(request))
-                .isInstanceOf(NegativeAmountException.class)
-                .hasMessageContaining("Negative amount");
+                .isInstanceOf(MinAmountException.class)
+                .hasMessageContaining("Min amount is " + MIN_AMOUNT);
 
         verify(walletService, never()).transferMoney(anyLong(), anyLong(), anyLong());
         verify(transferStatementRepository, never()).save(any(TransferStatement.class));
@@ -645,7 +646,7 @@ class TransferStatementServiceImplTest {
     }
 
     @Test
-    void systemCreateTransferFromUser() throws BalanceNotEnoughException, MaxBalanceException, HaveNoWalletException, NegativeAmountException, MaxAmountException, SoftTokenAuthorizeException {
+    void systemCreateTransferFromUser() throws BalanceNotEnoughException, MaxBalanceException, HaveNoWalletException, MinAmountException, MaxAmountException, SoftTokenAuthorizeException {
         // given
         System system = System.builder()
                 .id("uuid2")
@@ -844,8 +845,8 @@ class TransferStatementServiceImplTest {
 
         // then
         assertThatThrownBy(() -> underTest.systemCreateTransferFromUser(request))
-                .isInstanceOf(NegativeAmountException.class)
-                .hasMessageContaining("Negative amount");
+                .isInstanceOf(MinAmountException.class)
+                .hasMessageContaining("Min amount is " + MIN_AMOUNT);
 
         verify(transferStatementRepository, never()).save(any(TransferStatement.class));
         verify(walletService, never()).transferMoney(anyLong(), anyLong(), anyLong());

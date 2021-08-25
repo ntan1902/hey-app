@@ -62,31 +62,32 @@ public class CreateAndReceiveLucyMoneyTests {
         Map<String, Object> item0 = (Map<String, Object>)items.get(0);
         String sessionId = (String)item0.get("sessionId");
 
-//        List<CreateLuckyMoneyThread> createLuckyMoneyThreads = new ArrayList<>();
-//
-//        records.forEach(record ->{
-//            CreateLuckyMoneyThread createLuckyMoneyThread = new CreateLuckyMoneyThread(record.get("username"), record.get("password"),sessionId);
-//            createLuckyMoneyThread.start();
-//            createLuckyMoneyThreads.add(createLuckyMoneyThread);
-//        });
-//
-//        for (CreateLuckyMoneyThread t : createLuckyMoneyThreads){
-//            t.join();
-//        }
+        List<CreateLuckyMoneyThread> createLuckyMoneyThreads = new ArrayList<>();
+
+        records.forEach(record ->{
+            CreateLuckyMoneyThread createLuckyMoneyThread = new CreateLuckyMoneyThread(record.get("username"), record.get("password"),sessionId);
+            createLuckyMoneyThread.start();
+            createLuckyMoneyThreads.add(createLuckyMoneyThread);
+        });
+
+        for (CreateLuckyMoneyThread t : createLuckyMoneyThreads){
+            t.join();
+        }
 
         List<ReceiveLuckyMoneyThread> receiveLuckyMoneyThreads = new ArrayList<>();
         records.forEach(record ->{
             ReceiveLuckyMoneyThread receiveLuckyMoneyThread = new ReceiveLuckyMoneyThread(record.get("username"),record.get("password"),sessionId);
-            receiveLuckyMoneyThread.start();
-            receiveLuckyMoneyThreads.add(receiveLuckyMoneyThread);
+           receiveLuckyMoneyThreads.add(receiveLuckyMoneyThread);
         });
+        for (ReceiveLuckyMoneyThread t:receiveLuckyMoneyThreads){
+            t.start();
+        }
 
         for (ReceiveLuckyMoneyThread t:receiveLuckyMoneyThreads){
             t.join();
         }
         long actual = walletRepository.sumAllBalance();
-
         assertThat(expected).isEqualTo(actual);
-
     }
+
 }

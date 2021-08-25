@@ -28,7 +28,7 @@ public class LuckyMoneyController {
     private final LuckyMoneyService luckyMoneyService;
 
     @PostMapping("/createLuckyMoney")
-    public ResponseEntity<ApiResponse<Object>> createLuckyMoney(@RequestBody CreateLuckyMoneyRequest createLuckyMoneyRequest) throws UnauthorizeException, ErrCallApiException, CannotTransferMoneyException, ErrCallChatApiException, UserNotInSessionChatException {
+    public ResponseEntity<ApiResponse<Object>> createLuckyMoney(@RequestBody CreateLuckyMoneyRequest createLuckyMoneyRequest) throws UnauthorizeException, ErrCallApiException, CannotTransferMoneyException, ErrCallChatApiException, UserNotInSessionChatException, SoftTokenAuthorizeException, MinAmountPerBagException {
         luckyMoneyService.createLuckyMoney(createLuckyMoneyRequest);
         return ResponseEntity.ok(ApiResponse.builder()
                 .success(true)

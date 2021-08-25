@@ -26,7 +26,8 @@ import java.util.List;
 @Component
 @Log4j2
 public class FileUploadUtil {
-    private static final int IMAGE_SIZE = 400;
+    private static final int IMAGE_SIZE_MEDIUM = 400;
+    private static final int IMAGE_SIZE_SMALL = 50;
     private final Path originalUploadPath = Paths.get("./src/main/resources/static/images/");
 
     private String getCurrentUserId() {
@@ -50,10 +51,14 @@ public class FileUploadUtil {
 
             Files.copy(inputStream, filePath, StandardCopyOption.REPLACE_EXISTING);
 
-            String miniFileName = resizeImage(filePath);
+            String mediumFileName = resizeImage(filePath, IMAGE_SIZE_MEDIUM);
+
+            String smallFileName = resizeImage(filePath, IMAGE_SIZE_SMALL);
+
             return UriImageDTO.builder()
                     .uri(filename)
-                    .miniUri(miniFileName)
+                    .mediumUri(mediumFileName)
+                    .smallUri(smallFileName)
                     .build();
 
         } catch (IOException e) {
@@ -78,14 +83,14 @@ public class FileUploadUtil {
         }
     }
 
-    public String resizeImage(Path imagePath) {
+    public String resizeImage(Path imagePath, int size) {
         try {
             File sourceFile = imagePath.toFile();
             BufferedImage bufferedImage = ImageIO.read(sourceFile);
-            BufferedImage outputImage = Scalr.resize(bufferedImage, IMAGE_SIZE);
+            BufferedImage outputImage = Scalr.resize(bufferedImage, size);
 
             String newFileName = FilenameUtils.getBaseName(sourceFile.getName())
-                    + "_" + IMAGE_SIZE + "."
+                    + "_" + size + "."
                     + FilenameUtils.getExtension(sourceFile.getName());
             Path path = Paths.get(String.valueOf(originalUploadPath), newFileName);
 
