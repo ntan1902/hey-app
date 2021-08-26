@@ -24,5 +24,7 @@ public class UserDTO {
 
     private String avatar;
 
-    private String miniAvatar;
+    private String mediumAvatar;
+
+    private String smallAvatar;
 }

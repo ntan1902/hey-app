@@ -5,8 +5,6 @@ import com.hey.integration.utils.RestTemplateUtilImpl;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.DefaultUriBuilderFactory;
 
-import java.util.List;
-import java.util.Map;
 
 import static com.hey.integration.constants.Constant.BASE_URL;
 
@@ -37,7 +35,7 @@ public class CreateLuckyMoneyThread extends Thread{
         // generate soft token;
         String softToken = restTemplateUtil.createSofToken("123456", amount);
 
-        restTemplateUtil.createLuckyMoney(sessionId, type, numBag, softToken);
+        restTemplateUtil.createLuckyMoney(sessionId, type, numBag, softToken, amount);
 
         restTemplateUtil.logout();
 

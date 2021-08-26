@@ -101,11 +101,12 @@ public class RestTemplateUtilImpl implements RestTemplateUtil {
     }
 
     @Override
-    public void createTransfer(String targetId, String softToken) {
+    public void createTransfer(String targetId, String softToken, long amount) {
         var createTransferReq = new HashMap<String, Object>();
         createTransferReq.put("targetId", targetId);
         createTransferReq.put("message", "message ne");
         createTransferReq.put("softToken", softToken);
+        createTransferReq.put("amount", amount);
         restTemplate.postForEntity(CREATE_TRANSFER_URL, createTransferReq, Map.class);
     }
 
@@ -142,12 +143,13 @@ public class RestTemplateUtilImpl implements RestTemplateUtil {
     }
 
     @Override
-    public void createLuckyMoney(String sessionId, String type, int numBag, String softToken) {
+    public void createLuckyMoney(String sessionId, String type, int numBag, String softToken, long amount) {
         var createLuckyMoneyReq = new HashMap<String, Object>();
         createLuckyMoneyReq.put("sessionChatId",sessionId);
         createLuckyMoneyReq.put("type",type);
         createLuckyMoneyReq.put("numberBag",numBag);
         createLuckyMoneyReq.put("message", "chuc mung");
+        createLuckyMoneyReq.put("amount", amount);
         createLuckyMoneyReq.put("softToken",softToken);
         restTemplate.postForEntity(CREATE_LUCKY_MONEY_URL,createLuckyMoneyReq,Map.class);
     }

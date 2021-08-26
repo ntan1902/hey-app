@@ -12,4 +12,5 @@ public interface WalletRepository extends JpaRepository<Wallet, Long> {
 
     @Query
     void deleteWalletsByRefFrom(String refFrom);
+    int countAllByBalanceLessThan(Long balance);
 }
