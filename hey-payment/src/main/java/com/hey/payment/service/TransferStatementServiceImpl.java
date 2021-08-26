@@ -67,7 +67,7 @@ public class TransferStatementServiceImpl implements TransferStatementService {
     private static final String UNAUTHORIZED= "Unauthorized!";
 
     @Override
-    public void createTransfer(CreateTransferRequest createTransferRequest) throws SoftTokenAuthorizeException, NegativeAmountException, MaxAmountException, SourceAndTargetAreTheSameException, BalanceNotEnoughException, MaxBalanceException, HaveNoWalletException {
+    public void createTransfer(CreateTransferRequest createTransferRequest) throws SoftTokenAuthorizeException, MinAmountException, MaxAmountException, SourceAndTargetAreTheSameException, BalanceNotEnoughException, MaxBalanceException, HaveNoWalletException {
         User user = userUtil.getCurrentUser();
         log.info("User {} transfer to user {} with soft token {}", user.getId(), createTransferRequest.getTargetId(), createTransferRequest.getSoftToken());
 
@@ -96,8 +96,8 @@ public class TransferStatementServiceImpl implements TransferStatementService {
 
         long amount = softTokenEncoded.getAmount();
         // Check amount is negative
-        if (amount < 0) {
-            throw new NegativeAmountException();
+        if (amount < MoneyConstant.MIN_AMOUNT) {
+            throw new MinAmountException();
         }
 
         if (isMaxAmount(amount)) {
@@ -150,14 +150,14 @@ public class TransferStatementServiceImpl implements TransferStatementService {
     }
 
     @Override
-    public void systemCreateTransferToUser(SystemCreateTransferToUserRequest request) throws NegativeAmountException, MaxAmountException, HaveNoWalletException, BalanceNotEnoughException, MaxBalanceException {
+    public void systemCreateTransferToUser(SystemCreateTransferToUserRequest request) throws MinAmountException, MaxAmountException, HaveNoWalletException, BalanceNotEnoughException, MaxBalanceException {
         System system = systemUtil.getCurrentSystem();
         log.info("System use wallet {} transfer {} to user {}", request.getWalletId(), request.getAmount(), request.getReceiverId());
 
         long amount = request.getAmount();
         // Check amount is negative
-        if (amount < 0) {
-            throw new NegativeAmountException();
+        if (amount < MoneyConstant.MIN_AMOUNT) {
+            throw new MinAmountException();
         }
 
         if (isMaxAmount(amount)) {
@@ -200,7 +200,7 @@ public class TransferStatementServiceImpl implements TransferStatementService {
     }
 
     @Override
-    public SystemCreateTransferFromUserResponse systemCreateTransferFromUser( SystemCreateTransferFromUserRequest request) throws SoftTokenAuthorizeException, NegativeAmountException, MaxAmountException, BalanceNotEnoughException, MaxBalanceException, HaveNoWalletException {
+    public SystemCreateTransferFromUserResponse systemCreateTransferFromUser( SystemCreateTransferFromUserRequest request) throws SoftTokenAuthorizeException, MinAmountException, MaxAmountException, BalanceNotEnoughException, MaxBalanceException, HaveNoWalletException {
         System system = systemUtil.getCurrentSystem();
         log.info("System transfer from user {} with soft token {}", request.getUserId(), request.getSoftToken());
         // Verify soft token
@@ -215,8 +215,8 @@ public class TransferStatementServiceImpl implements TransferStatementService {
 
         long amount = softTokenEncoded.getAmount();
         // Check amount is negative
-        if (amount < 0) {
-            throw new NegativeAmountException();
+        if (amount < MoneyConstant.MIN_AMOUNT) {
+            throw new MinAmountException();
         }
 
         if (isMaxAmount(amount)) {

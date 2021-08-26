@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.util.ResourceUtils;
 
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
@@ -66,7 +67,7 @@ class IntegrationApplicationTests {
             if (!username.equals(targetUser.getUsername())) {
 
                 TransferMoneyThread transferMoneyThread =
-                        new TransferMoneyThread (
+                        new TransferMoneyThread(
                                 username,
                                 password,
                                 targetId
@@ -112,8 +113,7 @@ class IntegrationApplicationTests {
                         new TransferMoneyThread(
                                 username,
                                 password,
-                                user.getId())
-                        ;
+                                user.getId());
 
                 transferMoneyThread.start();
                 threads.add(transferMoneyThread);
@@ -168,7 +168,46 @@ class IntegrationApplicationTests {
         for (TransferMoneyThread thread : threads) {
             thread.join();
         }
+        long actual = walletRepository.sumAllBalance();
+        assertThat(actual).isEqualTo(expected);
+    }
 
+    @Test
+    public void NUserTransferN_1User() throws IOException, InterruptedException {
+        Long expected = walletRepository.sumAllBalance();
+
+        String[] HEADERS = {"username", "fullName", "email", "password"};
+        Reader in = new FileReader(ResourceUtils.getFile("classpath:Data_100.csv"));
+        List<CSVRecord> records = CSVFormat.DEFAULT
+                .withHeader(HEADERS)
+                .withFirstRecordAsHeader()
+                .parse(in)
+                .getRecords();
+        List<TransferMoneyThread> threads = new ArrayList<>();
+
+        // Start threads for the transaction in the same time
+        List<User> users = userRepository.findAll();
+        records.forEach(record -> {
+            users.forEach(user -> {
+                if (!record.get("username").equals(user.getUsername())) {
+                    TransferMoneyThread transferMoneyThread =
+                            new TransferMoneyThread(
+                                    record.get("username"),
+                                    record.get("password"),
+                                    user.getId()
+                            );
+
+                    threads.add(transferMoneyThread);
+                }
+            });
+        });
+
+        for (TransferMoneyThread t : threads){
+            t.start();
+        }
+        for (TransferMoneyThread t : threads){
+            t.join();
+        }
         long actual = walletRepository.sumAllBalance();
         assertThat(actual).isEqualTo(expected);
     }

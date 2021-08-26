@@ -28,19 +28,13 @@ public class AddFriendThread extends Thread {
         RestTemplateUtil restTemplateUtil = new RestTemplateUtilImpl(restTemplate);
 
         // Login
-        Map<String, String> payload = restTemplateUtil.login(username, password);
-
-        String token = payload.get("accessToken");
-        String refreshToken = payload.get("refreshToken");
-
-        // Set header for bearer token
-        restTemplateUtil.setHeaders(token);
+        restTemplateUtil.login(username, password);
 
         // Send add friend request
         restTemplateUtil.addFriendRequest(friendUsername);
 
         // Logout
-        restTemplateUtil.logout(refreshToken);
+        restTemplateUtil.logout();
     }
 
 

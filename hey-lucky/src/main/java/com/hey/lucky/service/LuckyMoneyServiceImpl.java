@@ -1,6 +1,8 @@
 package com.hey.lucky.service;
 
+import com.hey.lucky.api.AuthApi;
 import com.hey.lucky.dto.auth_service.UserInfo;
+import com.hey.lucky.dto.auth_service.VerifySoftTokenResponse;
 import com.hey.lucky.dto.chat_service.LuckyMoneyMessageContent;
 import com.hey.lucky.dto.chat_service.ReceiveLuckyMoneyMessageContent;
 import com.hey.lucky.dto.payment_service.TransferFromUserRequest;
@@ -25,10 +27,15 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.hey.lucky.util.LuckyMoneyServiceUtilImpl.MIN_AMOUNT;
+
 @Service
 @Log4j2
 @NoArgsConstructor
 public class LuckyMoneyServiceImpl implements LuckyMoneyService {
+
+    private static final String UNAUTHORIZED= "Unauthorized!";
+
     private LuckyMoneyRepository luckyMoneyRepository;
     private ReceivedLuckyMoneyRepository receivedLuckyMoneyRepository;
     private LuckyMoneyMapper luckyMoneyMapper;
@@ -37,11 +44,12 @@ public class LuckyMoneyServiceImpl implements LuckyMoneyService {
     private UserUtil userUtil;
     private PaymentUtil paymentUtil;
     private ChatUtil chatUtil;
+    private AuthApi authApi;
 
     @Autowired
     public LuckyMoneyServiceImpl(LuckyMoneyRepository luckyMoneyRepository,
                                  ReceivedLuckyMoneyRepository receivedLuckyMoneyRepository,
-                                 LuckyMoneyMapper luckyMoneyMapper, LuckyMoneyServiceUtilImpl luckyMoneyServiceUtil, WalletsInfo walletsInfo, UserUtil userUtil, PaymentUtil paymentUtil, ChatUtil chatUtil) {
+                                 LuckyMoneyMapper luckyMoneyMapper, LuckyMoneyServiceUtilImpl luckyMoneyServiceUtil, WalletsInfo walletsInfo, UserUtil userUtil, PaymentUtil paymentUtil, ChatUtil chatUtil, AuthApi authApi) {
         this.luckyMoneyRepository = luckyMoneyRepository;
         this.receivedLuckyMoneyRepository = receivedLuckyMoneyRepository;
         this.luckyMoneyMapper = luckyMoneyMapper;
@@ -50,13 +58,34 @@ public class LuckyMoneyServiceImpl implements LuckyMoneyService {
         this.userUtil = userUtil;
         this.paymentUtil = paymentUtil;
         this.chatUtil = chatUtil;
+        this.authApi = authApi;
     }
 
     @Override
     @Transactional(noRollbackFor = ErrCallChatApiException.class, rollbackFor = {CannotTransferMoneyException.class})
-    public void createLuckyMoney(CreateLuckyMoneyRequest request) throws ErrCallApiException, CannotTransferMoneyException, ErrCallChatApiException, UserNotInSessionChatException {
+    public void createLuckyMoney(CreateLuckyMoneyRequest request) throws ErrCallApiException, CannotTransferMoneyException, ErrCallChatApiException, UserNotInSessionChatException, SoftTokenAuthorizeException, MinAmountPerBagException {
         long walletId = walletsInfo.getCurrentWallet();
         User user = userUtil.getCurrentUser();
+
+        // Authorize Soft Token
+        VerifySoftTokenResponse apiResponse = authApi.verifySoftToken(request.getSoftToken());
+        if (!Boolean.TRUE.equals(apiResponse.getSuccess())) {
+            log.error("Can't authorize soft token");
+            throw new SoftTokenAuthorizeException(apiResponse.getMessage());
+        }
+
+        // Check User Id
+        VerifySoftTokenResponse.SoftTokenEncoded softTokenEncoded = apiResponse.getPayload();
+        if (!softTokenEncoded.getUserId().equals(user.getId())) {
+            throw new SoftTokenAuthorizeException(UNAUTHORIZED);
+        }
+
+
+
+        // Check amount is negative
+        if (softTokenEncoded.getAmount()/request.getNumberBag() < MIN_AMOUNT) {
+            throw new MinAmountPerBagException("Min amount per bag is " + MIN_AMOUNT);
+        }
 
         log.info("Send lucky money for user {} by wallet {}", user.getId(), walletId);
         // check user in session chat
