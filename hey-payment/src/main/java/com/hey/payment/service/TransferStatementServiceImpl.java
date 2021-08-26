@@ -66,6 +66,9 @@ public class TransferStatementServiceImpl implements TransferStatementService {
 
     private static final String UNAUTHORIZED= "Unauthorized!";
 
+    public static final String AMOUNT_IN_SOFT_TOKEN_IS_NOT_EQUALS_AMOUNT_IN_REQUEST = "Amount in soft token is not equals amount in request";
+
+
     @Override
     public void createTransfer(CreateTransferRequest createTransferRequest) throws SoftTokenAuthorizeException, MinAmountException, MaxAmountException, SourceAndTargetAreTheSameException, BalanceNotEnoughException, MaxBalanceException, HaveNoWalletException {
         User user = userUtil.getCurrentUser();
@@ -88,10 +91,15 @@ public class TransferStatementServiceImpl implements TransferStatementService {
             throw new SoftTokenAuthorizeException(apiResponse.getMessage());
         }
 
+
         // Check User Id
         VerifySoftTokenResponse.SoftTokenEncoded softTokenEncoded = apiResponse.getPayload();
         if (!softTokenEncoded.getUserId().equals(sourceId)) {
             throw new SoftTokenAuthorizeException(UNAUTHORIZED);
+        }
+
+        if (softTokenEncoded.getAmount() != createTransferRequest.getAmount()) {
+            throw new SoftTokenAuthorizeException(AMOUNT_IN_SOFT_TOKEN_IS_NOT_EQUALS_AMOUNT_IN_REQUEST);
         }
 
         long amount = softTokenEncoded.getAmount();
@@ -211,6 +219,10 @@ public class TransferStatementServiceImpl implements TransferStatementService {
         VerifySoftTokenResponse.SoftTokenEncoded softTokenEncoded = apiResponse.getPayload();
         if (!softTokenEncoded.getUserId().equals(request.getUserId())) {
             throw new SoftTokenAuthorizeException(UNAUTHORIZED);
+        }
+
+        if (softTokenEncoded.getAmount() != request.getAmount()) {
+            throw new SoftTokenAuthorizeException(AMOUNT_IN_SOFT_TOKEN_IS_NOT_EQUALS_AMOUNT_IN_REQUEST);
         }
 
         long amount = softTokenEncoded.getAmount();

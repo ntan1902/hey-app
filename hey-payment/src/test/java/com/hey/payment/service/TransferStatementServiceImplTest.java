@@ -81,13 +81,15 @@ class TransferStatementServiceImplTest {
 
         when(userUtil.getCurrentUser()).thenReturn(user);
 
+        long amount = 50000L;
         CreateTransferRequest request = CreateTransferRequest.builder()
                 .targetId("uuid2")
                 .softToken("amountPin")
                 .message("Hello")
+                .amount(amount)
                 .build();
 
-        VerifySoftTokenResponse.SoftTokenEncoded softTokenEncoded = new VerifySoftTokenResponse.SoftTokenEncoded("uuid1", 50000L);
+        VerifySoftTokenResponse.SoftTokenEncoded softTokenEncoded = new VerifySoftTokenResponse.SoftTokenEncoded("uuid1", amount);
         VerifySoftTokenResponse authResponse = new VerifySoftTokenResponse(true, 200, "", softTokenEncoded);
 
         when(authApi.verifySoftToken(request.getSoftToken())).thenReturn(authResponse);
@@ -214,13 +216,16 @@ class TransferStatementServiceImplTest {
                 .id("uuid1")
                 .build();
         when(userUtil.getCurrentUser()).thenReturn(user);
+
+        long amount = -5L;
         CreateTransferRequest request = CreateTransferRequest.builder()
                 .targetId("uuid2")
                 .softToken("amountPin")
                 .message("Hello")
+                .amount(amount)
                 .build();
 
-        VerifySoftTokenResponse.SoftTokenEncoded softTokenEncoded = new VerifySoftTokenResponse.SoftTokenEncoded("uuid1", -5L);
+        VerifySoftTokenResponse.SoftTokenEncoded softTokenEncoded = new VerifySoftTokenResponse.SoftTokenEncoded("uuid1", amount);
         VerifySoftTokenResponse authResponse = new VerifySoftTokenResponse(true, 200, "", softTokenEncoded);
 
         when(authApi.verifySoftToken(request.getSoftToken())).thenReturn(authResponse);
@@ -243,13 +248,15 @@ class TransferStatementServiceImplTest {
                 .build();
 
         when(userUtil.getCurrentUser()).thenReturn(user);
+        long amount = 51_000_000L;
         CreateTransferRequest request = CreateTransferRequest.builder()
                 .targetId("uuid2")
                 .softToken("amountPin")
                 .message("Hello")
+                .amount(amount)
                 .build();
 
-        VerifySoftTokenResponse.SoftTokenEncoded softTokenEncoded = new VerifySoftTokenResponse.SoftTokenEncoded("uuid1", 51_000_000L);
+        VerifySoftTokenResponse.SoftTokenEncoded softTokenEncoded = new VerifySoftTokenResponse.SoftTokenEncoded("uuid1", amount);
         VerifySoftTokenResponse authResponse = new VerifySoftTokenResponse(true, 200, "", softTokenEncoded);
 
         when(authApi.verifySoftToken(request.getSoftToken())).thenReturn(authResponse);
@@ -272,13 +279,15 @@ class TransferStatementServiceImplTest {
                 .build();
 
         when(userUtil.getCurrentUser()).thenReturn(user);
+        final long amount = 50000L;
         CreateTransferRequest request = CreateTransferRequest.builder()
                 .targetId("uuid2")
                 .softToken("amountPin")
                 .message("Hello")
+                .amount(amount)
                 .build();
 
-        VerifySoftTokenResponse.SoftTokenEncoded softTokenEncoded = new VerifySoftTokenResponse.SoftTokenEncoded("uuid1", 50000L);
+        VerifySoftTokenResponse.SoftTokenEncoded softTokenEncoded = new VerifySoftTokenResponse.SoftTokenEncoded("uuid1", amount);
         VerifySoftTokenResponse authResponse = new VerifySoftTokenResponse(true, 200, "", softTokenEncoded);
 
         when(authApi.verifySoftToken(request.getSoftToken())).thenReturn(authResponse);
@@ -301,13 +310,15 @@ class TransferStatementServiceImplTest {
                 .build();
 
         when(userUtil.getCurrentUser()).thenReturn(user);
+        long amount = 50000L;
         CreateTransferRequest request = CreateTransferRequest.builder()
                 .targetId("uuid2")
                 .softToken("amountPin")
                 .message("Hello")
+                .amount(amount)
                 .build();
 
-        VerifySoftTokenResponse.SoftTokenEncoded softTokenEncoded = new VerifySoftTokenResponse.SoftTokenEncoded("uuid1", 50000L);
+        VerifySoftTokenResponse.SoftTokenEncoded softTokenEncoded = new VerifySoftTokenResponse.SoftTokenEncoded("uuid1", amount);
         VerifySoftTokenResponse authResponse = new VerifySoftTokenResponse(true, 200, "", softTokenEncoded);
 
         when(authApi.verifySoftToken(request.getSoftToken())).thenReturn(authResponse);
@@ -341,13 +352,15 @@ class TransferStatementServiceImplTest {
                 .build();
         when(userUtil.getCurrentUser()).thenReturn(user);
 
+        long amount = 50000L;
         CreateTransferRequest request = CreateTransferRequest.builder()
                 .targetId("uuid2")
                 .softToken("amountPin")
                 .message("Hello")
+                .amount(amount)
                 .build();
 
-        VerifySoftTokenResponse.SoftTokenEncoded softTokenEncoded = new VerifySoftTokenResponse.SoftTokenEncoded("uuid1", 50000L);
+        VerifySoftTokenResponse.SoftTokenEncoded softTokenEncoded = new VerifySoftTokenResponse.SoftTokenEncoded("uuid1", amount);
         VerifySoftTokenResponse authResponse = new VerifySoftTokenResponse(true, 200, "", softTokenEncoded);
 
         when(authApi.verifySoftToken(request.getSoftToken())).thenReturn(authResponse);
@@ -390,13 +403,15 @@ class TransferStatementServiceImplTest {
                 .build();
 
         when(userUtil.getCurrentUser()).thenReturn(user);
+        long amount = 50000L;
         CreateTransferRequest request = CreateTransferRequest.builder()
                 .targetId("uuid2")
                 .softToken("amountPin")
                 .message("Hello")
+                .amount(amount)
                 .build();
 
-        VerifySoftTokenResponse.SoftTokenEncoded softTokenEncoded = new VerifySoftTokenResponse.SoftTokenEncoded("uuid1", 50000L);
+        VerifySoftTokenResponse.SoftTokenEncoded softTokenEncoded = new VerifySoftTokenResponse.SoftTokenEncoded("uuid1", amount);
         VerifySoftTokenResponse authResponse = new VerifySoftTokenResponse(true, 200, "", softTokenEncoded);
 
         when(authApi.verifySoftToken(request.getSoftToken())).thenReturn(authResponse);
@@ -656,7 +671,8 @@ class TransferStatementServiceImplTest {
                 "uuid1",
                 2L,
                 "softToken",
-                "hello"
+                "hello",
+                50000L
         );
         VerifySoftTokenResponse.SoftTokenEncoded softTokenEncoded = new VerifySoftTokenResponse.SoftTokenEncoded("uuid1", 50000L);
         VerifySoftTokenResponse authResponse = new VerifySoftTokenResponse(true, 200, "", softTokenEncoded);
@@ -706,7 +722,8 @@ class TransferStatementServiceImplTest {
                 "uuid1",
                 2L,
                 "softToken",
-                "hello"
+                "hello",
+                50000L
         );
         VerifySoftTokenResponse.SoftTokenEncoded softTokenEncoded = new VerifySoftTokenResponse.SoftTokenEncoded("uuid1", 50000L);
         VerifySoftTokenResponse authResponse = new VerifySoftTokenResponse(false, 200, "", softTokenEncoded);
@@ -732,7 +749,8 @@ class TransferStatementServiceImplTest {
                 "uuid1",
                 2L,
                 "softToken",
-                "hello"
+                "hello",
+                50000L
         );
         VerifySoftTokenResponse.SoftTokenEncoded softTokenEncoded = new VerifySoftTokenResponse.SoftTokenEncoded("uuid", 50000L);
         VerifySoftTokenResponse authResponse = new VerifySoftTokenResponse(true, 200, "", softTokenEncoded);
@@ -759,7 +777,8 @@ class TransferStatementServiceImplTest {
                 "uuid1",
                 2L,
                 "softToken",
-                "hello"
+                "hello",
+                50000L
         );
         VerifySoftTokenResponse.SoftTokenEncoded softTokenEncoded = new VerifySoftTokenResponse.SoftTokenEncoded("uuid1", 50000L);
         VerifySoftTokenResponse authResponse = new VerifySoftTokenResponse(true, 200, "", softTokenEncoded);
@@ -792,7 +811,8 @@ class TransferStatementServiceImplTest {
                 "uuid1",
                 2L,
                 "softToken",
-                "hello"
+                "hello",
+                50000L
         );
         VerifySoftTokenResponse.SoftTokenEncoded softTokenEncoded = new VerifySoftTokenResponse.SoftTokenEncoded("uuid1", 50000L);
         VerifySoftTokenResponse authResponse = new VerifySoftTokenResponse(true, 200, "", softTokenEncoded);
@@ -830,13 +850,15 @@ class TransferStatementServiceImplTest {
                 .id("uuid2")
                 .build();
         when(systemUtil.getCurrentSystem()).thenReturn(system);
+        long amount = -50000L;
         SystemCreateTransferFromUserRequest request = new SystemCreateTransferFromUserRequest(
                 "uuid1",
                 2L,
                 "softToken",
-                "hello"
+                "hello",
+                amount
         );
-        VerifySoftTokenResponse.SoftTokenEncoded softTokenEncoded = new VerifySoftTokenResponse.SoftTokenEncoded("uuid1", -50000L);
+        VerifySoftTokenResponse.SoftTokenEncoded softTokenEncoded = new VerifySoftTokenResponse.SoftTokenEncoded("uuid1", amount);
         VerifySoftTokenResponse authResponse = new VerifySoftTokenResponse(true, 200, "", softTokenEncoded);
 
         when(authApi.verifySoftToken(request.getSoftToken())).thenReturn(authResponse);
@@ -861,13 +883,16 @@ class TransferStatementServiceImplTest {
                 .build();
         when(systemUtil.getCurrentSystem()).thenReturn(system);
 
+        long amount = 51_000_000L;
         SystemCreateTransferFromUserRequest request = new SystemCreateTransferFromUserRequest(
                 "uuid1",
                 2L,
                 "softToken",
-                "hello"
+                "hello",
+                amount
         );
-        VerifySoftTokenResponse.SoftTokenEncoded softTokenEncoded = new VerifySoftTokenResponse.SoftTokenEncoded("uuid1", 51_000_000L);
+
+        VerifySoftTokenResponse.SoftTokenEncoded softTokenEncoded = new VerifySoftTokenResponse.SoftTokenEncoded("uuid1", amount);
         VerifySoftTokenResponse authResponse = new VerifySoftTokenResponse(true, 200, "", softTokenEncoded);
 
         when(authApi.verifySoftToken(request.getSoftToken())).thenReturn(authResponse);
@@ -896,7 +921,8 @@ class TransferStatementServiceImplTest {
                 "uuid1",
                 2L,
                 "softToken",
-                "hello"
+                "hello",
+                50000L
         );
         VerifySoftTokenResponse.SoftTokenEncoded softTokenEncoded = new VerifySoftTokenResponse.SoftTokenEncoded("uuid1", 50000L);
         VerifySoftTokenResponse authResponse = new VerifySoftTokenResponse(true, 200, "", softTokenEncoded);
@@ -948,7 +974,8 @@ class TransferStatementServiceImplTest {
                 "uuid1",
                 2L,
                 "softToken",
-                "hello"
+                "hello",
+                50000L
         );
         VerifySoftTokenResponse.SoftTokenEncoded softTokenEncoded = new VerifySoftTokenResponse.SoftTokenEncoded("uuid1", 50000L);
         VerifySoftTokenResponse authResponse = new VerifySoftTokenResponse(true, 200, "", softTokenEncoded);

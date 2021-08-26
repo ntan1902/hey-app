@@ -2,13 +2,9 @@ package com.hey.integration.test_scenario;
 
 import com.hey.integration.utils.RestTemplateUtil;
 import com.hey.integration.utils.RestTemplateUtilImpl;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.DefaultUriBuilderFactory;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
 import java.util.Random;
 
 import static com.hey.integration.constants.Constant.*;
@@ -18,11 +14,13 @@ public class TransferMoneyThread extends Thread {
     private final String username;
     private final String password;
     private final String targetId;
+    private final long amount;
 
-    public TransferMoneyThread(String username, String password, String targetId) {
+    public TransferMoneyThread(String username, String password, String targetId, long amount) {
         this.username = username;
         this.password = password;
         this.targetId = targetId;
+        this.amount = amount;
     }
 
     @Override
@@ -36,8 +34,8 @@ public class TransferMoneyThread extends Thread {
         restTemplateUtil.login(username, password);
 
         // Create soft token
-        Random random = new Random();
-        String softToken = restTemplateUtil.createSofToken("123456", random.nextInt(25_123) + 10_000);
+        System.out.printf("User " + username + " transfer " + amount + " to " + targetId);
+        String softToken = restTemplateUtil.createSofToken("123456", amount);
 
         // create transfer
         restTemplateUtil.createTransfer(this.targetId, softToken);

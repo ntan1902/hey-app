@@ -5,8 +5,6 @@ import com.hey.integration.utils.RestTemplateUtilImpl;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.DefaultUriBuilderFactory;
 
-import java.util.List;
-import java.util.Map;
 
 import static com.hey.integration.constants.Constant.BASE_URL;
 

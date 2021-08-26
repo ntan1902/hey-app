@@ -2,7 +2,6 @@ package com.hey.lucky.service;
 
 import com.hey.lucky.api.AuthApi;
 import com.hey.lucky.dto.auth_service.UserInfo;
-import com.hey.lucky.dto.auth_service.VerifySoftTokenResponse;
 import com.hey.lucky.dto.chat_service.LuckyMoneyMessageContent;
 import com.hey.lucky.dto.chat_service.ReceiveLuckyMoneyMessageContent;
 import com.hey.lucky.dto.payment_service.TransferFromUserRequest;
@@ -67,23 +66,8 @@ public class LuckyMoneyServiceImpl implements LuckyMoneyService {
         long walletId = walletsInfo.getCurrentWallet();
         User user = userUtil.getCurrentUser();
 
-        // Authorize Soft Token
-        VerifySoftTokenResponse apiResponse = authApi.verifySoftToken(request.getSoftToken());
-        if (!Boolean.TRUE.equals(apiResponse.getSuccess())) {
-            log.error("Can't authorize soft token");
-            throw new SoftTokenAuthorizeException(apiResponse.getMessage());
-        }
-
-        // Check User Id
-        VerifySoftTokenResponse.SoftTokenEncoded softTokenEncoded = apiResponse.getPayload();
-        if (!softTokenEncoded.getUserId().equals(user.getId())) {
-            throw new SoftTokenAuthorizeException(UNAUTHORIZED);
-        }
-
-
-
         // Check amount is negative
-        if (softTokenEncoded.getAmount()/request.getNumberBag() < MIN_AMOUNT) {
+        if (request.getAmount()/request.getNumberBag() < MIN_AMOUNT) {
             throw new MinAmountPerBagException("Min amount per bag is " + MIN_AMOUNT);
         }
 
@@ -101,6 +85,7 @@ public class LuckyMoneyServiceImpl implements LuckyMoneyService {
                         .message(request.getMessage())
                         .softToken(request.getSoftToken())
                         .walletId(walletId)
+                        .amount(request.getAmount())
                         .build()
         );
 

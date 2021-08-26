@@ -15,4 +15,5 @@ public class CreateLuckyMoneyRequest {
     private String sessionChatId;
     private String type;
     private int numberBag;
+    private long amount;
 }
