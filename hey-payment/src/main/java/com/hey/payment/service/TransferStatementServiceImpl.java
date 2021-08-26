@@ -124,13 +124,13 @@ public class TransferStatementServiceImpl implements TransferStatementService {
                 .sourceId(sourceWallet.getId())
                 .targetId(targetWallet.getId())
                 .amount(amount)
-                .status(TransferStatus.PROCESSING)
+//                .status(TransferStatus.PROCESSING)
                 .transferFee(calculateTransferFee())
                 .createdAt(LocalDateTime.now())
                 .message(createTransferRequest.getMessage())
                 .transferType(TransferType.TRANSFER)
                 .build();
-        transferStatementRepository.save(transferStatement);
+//        transferStatementRepository.save(transferStatement);
 
         // Transfer money
         try {
@@ -150,7 +150,7 @@ public class TransferStatementServiceImpl implements TransferStatementService {
                             .createdAt(transferStatement.getCreatedAt().toString())
                             .build()
             );
-        } catch (BalanceNotEnoughException | MaxBalanceException exception) {
+        } catch (MaxBalanceException exception) {
             transferStatement.setStatus(TransferStatus.FAIL);
             transferStatementRepository.save(transferStatement);
             throw exception;
@@ -184,21 +184,21 @@ public class TransferStatementServiceImpl implements TransferStatementService {
                 .sourceId(s.getId())
                 .targetId(t.getId())
                 .amount(request.getAmount())
-                .status(TransferStatus.PROCESSING)
+//                .status(TransferStatus.PROCESSING)
                 .transferFee(calculateTransferFee())
                 .message(request.getMessage())
                 .transferType(TransferType.TRANSFER)
                 .createdAt(LocalDateTime.now())
                 .build();
 
-        transferStatementRepository.save(transferStatement);
+//        transferStatementRepository.save(transferStatement);
 
         try {
             walletService.transferMoney(s.getId(), t.getId(), request.getAmount());
 
             transferStatement.setStatus(TransferStatus.SUCCESS);
             transferStatementRepository.save(transferStatement);
-        } catch (BalanceNotEnoughException | MaxBalanceException exception) {
+        } catch ( MaxBalanceException exception) {
             transferStatement.setStatus(TransferStatus.FAIL);
             transferStatementRepository.save(transferStatement);
 
@@ -246,21 +246,21 @@ public class TransferStatementServiceImpl implements TransferStatementService {
                 .sourceId(source.getId())
                 .targetId(target.getId())
                 .amount(softTokenEncoded.getAmount())
-                .status(TransferStatus.PROCESSING)
+//                .status(TransferStatus.PROCESSING)
                 .transferFee(calculateTransferFee())
                 .message(request.getMessage())
                 .transferType(TransferType.TRANSFER)
                 .createdAt(LocalDateTime.now())
                 .build();
 
-        transferStatementRepository.save(transferStatement);
+//        transferStatementRepository.save(transferStatement);
 
         try {
             walletService.transferMoney(source.getId(), target.getId(), softTokenEncoded.getAmount());
             transferStatement.setStatus(TransferStatus.SUCCESS);
             transferStatementRepository.save(transferStatement);
             return new SystemCreateTransferFromUserResponse(amount);
-        } catch (BalanceNotEnoughException | MaxBalanceException exception) {
+        } catch (MaxBalanceException exception) {
             transferStatement.setStatus(TransferStatus.FAIL);
             transferStatementRepository.save(transferStatement);
             throw exception;
