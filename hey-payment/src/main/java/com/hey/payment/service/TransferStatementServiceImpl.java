@@ -66,6 +66,9 @@ public class TransferStatementServiceImpl implements TransferStatementService {
 
     private static final String UNAUTHORIZED= "Unauthorized!";
 
+    public static final String AMOUNT_IN_SOFT_TOKEN_IS_NOT_EQUALS_AMOUNT_IN_REQUEST = "Amount in soft token is not equals amount in request";
+
+
     @Override
     public void createTransfer(CreateTransferRequest createTransferRequest) throws SoftTokenAuthorizeException, MinAmountException, MaxAmountException, SourceAndTargetAreTheSameException, BalanceNotEnoughException, MaxBalanceException, HaveNoWalletException {
         User user = userUtil.getCurrentUser();
@@ -88,10 +91,15 @@ public class TransferStatementServiceImpl implements TransferStatementService {
             throw new SoftTokenAuthorizeException(apiResponse.getMessage());
         }
 
+
         // Check User Id
         VerifySoftTokenResponse.SoftTokenEncoded softTokenEncoded = apiResponse.getPayload();
         if (!softTokenEncoded.getUserId().equals(sourceId)) {
             throw new SoftTokenAuthorizeException(UNAUTHORIZED);
+        }
+
+        if (softTokenEncoded.getAmount() != createTransferRequest.getAmount()) {
+            throw new SoftTokenAuthorizeException(AMOUNT_IN_SOFT_TOKEN_IS_NOT_EQUALS_AMOUNT_IN_REQUEST);
         }
 
         long amount = softTokenEncoded.getAmount();
@@ -116,13 +124,13 @@ public class TransferStatementServiceImpl implements TransferStatementService {
                 .sourceId(sourceWallet.getId())
                 .targetId(targetWallet.getId())
                 .amount(amount)
-                .status(TransferStatus.PROCESSING)
+//                .status(TransferStatus.PROCESSING)
                 .transferFee(calculateTransferFee())
                 .createdAt(LocalDateTime.now())
                 .message(createTransferRequest.getMessage())
                 .transferType(TransferType.TRANSFER)
                 .build();
-        transferStatementRepository.save(transferStatement);
+//        transferStatementRepository.save(transferStatement);
 
         // Transfer money
         try {
@@ -142,7 +150,7 @@ public class TransferStatementServiceImpl implements TransferStatementService {
                             .createdAt(transferStatement.getCreatedAt().toString())
                             .build()
             );
-        } catch (BalanceNotEnoughException | MaxBalanceException exception) {
+        } catch (MaxBalanceException exception) {
             transferStatement.setStatus(TransferStatus.FAIL);
             transferStatementRepository.save(transferStatement);
             throw exception;
@@ -176,21 +184,21 @@ public class TransferStatementServiceImpl implements TransferStatementService {
                 .sourceId(s.getId())
                 .targetId(t.getId())
                 .amount(request.getAmount())
-                .status(TransferStatus.PROCESSING)
+//                .status(TransferStatus.PROCESSING)
                 .transferFee(calculateTransferFee())
                 .message(request.getMessage())
                 .transferType(TransferType.TRANSFER)
                 .createdAt(LocalDateTime.now())
                 .build();
 
-        transferStatementRepository.save(transferStatement);
+//        transferStatementRepository.save(transferStatement);
 
         try {
             walletService.transferMoney(s.getId(), t.getId(), request.getAmount());
 
             transferStatement.setStatus(TransferStatus.SUCCESS);
             transferStatementRepository.save(transferStatement);
-        } catch (BalanceNotEnoughException | MaxBalanceException exception) {
+        } catch ( MaxBalanceException exception) {
             transferStatement.setStatus(TransferStatus.FAIL);
             transferStatementRepository.save(transferStatement);
 
@@ -211,6 +219,10 @@ public class TransferStatementServiceImpl implements TransferStatementService {
         VerifySoftTokenResponse.SoftTokenEncoded softTokenEncoded = apiResponse.getPayload();
         if (!softTokenEncoded.getUserId().equals(request.getUserId())) {
             throw new SoftTokenAuthorizeException(UNAUTHORIZED);
+        }
+
+        if (softTokenEncoded.getAmount() != request.getAmount()) {
+            throw new SoftTokenAuthorizeException(AMOUNT_IN_SOFT_TOKEN_IS_NOT_EQUALS_AMOUNT_IN_REQUEST);
         }
 
         long amount = softTokenEncoded.getAmount();
@@ -234,21 +246,21 @@ public class TransferStatementServiceImpl implements TransferStatementService {
                 .sourceId(source.getId())
                 .targetId(target.getId())
                 .amount(softTokenEncoded.getAmount())
-                .status(TransferStatus.PROCESSING)
+//                .status(TransferStatus.PROCESSING)
                 .transferFee(calculateTransferFee())
                 .message(request.getMessage())
                 .transferType(TransferType.TRANSFER)
                 .createdAt(LocalDateTime.now())
                 .build();
 
-        transferStatementRepository.save(transferStatement);
+//        transferStatementRepository.save(transferStatement);
 
         try {
             walletService.transferMoney(source.getId(), target.getId(), softTokenEncoded.getAmount());
             transferStatement.setStatus(TransferStatus.SUCCESS);
             transferStatementRepository.save(transferStatement);
             return new SystemCreateTransferFromUserResponse(amount);
-        } catch (BalanceNotEnoughException | MaxBalanceException exception) {
+        } catch (MaxBalanceException exception) {
             transferStatement.setStatus(TransferStatus.FAIL);
             transferStatementRepository.save(transferStatement);
             throw exception;

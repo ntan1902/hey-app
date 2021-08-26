@@ -53,7 +53,7 @@ public class UserExceptionHandler {
     @ExceptionHandler(value = {SoftTokenAuthorizeException.class})
     public ResponseEntity<ApiResponse<Object>> handleSoftTokenAuthorizeException(Exception exception) {
         log.error(exception.getMessage());
-        HttpStatus code = HttpStatus.UNAUTHORIZED;
+        HttpStatus code = HttpStatus.BAD_REQUEST;
         return getResponse(code, exception.getMessage());
     }
 

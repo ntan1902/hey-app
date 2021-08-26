@@ -14,4 +14,5 @@ public class SystemCreateTransferFromUserRequest {
     private long walletId;
     private String softToken;
     private String message;
+    private long amount;
 }

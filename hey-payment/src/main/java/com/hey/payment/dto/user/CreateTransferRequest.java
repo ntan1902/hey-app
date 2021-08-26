@@ -12,5 +12,6 @@ import lombok.NoArgsConstructor;
 public class CreateTransferRequest {
     private String targetId;
     private String softToken;
+    private long amount;
     private String message;
 }
