@@ -10,6 +10,6 @@ import javax.validation.constraints.NotEmpty;
 @AllArgsConstructor
 @NoArgsConstructor
 public class SoftTokenRequest {
-    @NotEmpty(message = "softToken must not be empty")
+    @NotEmpty(message = "Soft token must not be empty")
     private String softToken;
 }
