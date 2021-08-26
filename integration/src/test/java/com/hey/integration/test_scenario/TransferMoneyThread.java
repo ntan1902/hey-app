@@ -38,7 +38,7 @@ public class TransferMoneyThread extends Thread {
         String softToken = restTemplateUtil.createSofToken("123456", amount);
 
         // create transfer
-        restTemplateUtil.createTransfer(this.targetId, softToken);
+        restTemplateUtil.createTransfer(this.targetId, softToken, amount);
 
         // Logout
         restTemplateUtil.logout();

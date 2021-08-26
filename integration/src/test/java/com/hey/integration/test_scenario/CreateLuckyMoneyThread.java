@@ -35,7 +35,7 @@ public class CreateLuckyMoneyThread extends Thread{
         // generate soft token;
         String softToken = restTemplateUtil.createSofToken("123456", amount);
 
-        restTemplateUtil.createLuckyMoney(sessionId, type, numBag, softToken);
+        restTemplateUtil.createLuckyMoney(sessionId, type, numBag, softToken, amount);
 
         restTemplateUtil.logout();
 

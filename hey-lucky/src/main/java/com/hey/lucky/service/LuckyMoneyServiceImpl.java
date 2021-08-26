@@ -62,7 +62,7 @@ public class LuckyMoneyServiceImpl implements LuckyMoneyService {
 
     @Override
     @Transactional(noRollbackFor = ErrCallChatApiException.class, rollbackFor = {CannotTransferMoneyException.class})
-    public void createLuckyMoney(CreateLuckyMoneyRequest request) throws ErrCallApiException, CannotTransferMoneyException, ErrCallChatApiException, UserNotInSessionChatException, SoftTokenAuthorizeException, MinAmountPerBagException {
+    public void createLuckyMoney(CreateLuckyMoneyRequest request) throws ErrCallApiException, CannotTransferMoneyException, ErrCallChatApiException, UserNotInSessionChatException, MinAmountPerBagException {
         long walletId = walletsInfo.getCurrentWallet();
         User user = userUtil.getCurrentUser();
 

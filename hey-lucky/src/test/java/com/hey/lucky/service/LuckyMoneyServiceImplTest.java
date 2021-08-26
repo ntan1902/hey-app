@@ -99,7 +99,7 @@ class LuckyMoneyServiceImplTest {
     }
 
     @Test
-    void createLuckyMoney() throws ErrCallApiException, CannotTransferMoneyException, ErrCallChatApiException, UnauthorizeException, UserNotInSessionChatException, SoftTokenAuthorizeException, MinAmountPerBagException {
+    void createLuckyMoney() throws ErrCallApiException, CannotTransferMoneyException, ErrCallChatApiException, UnauthorizeException, UserNotInSessionChatException, MinAmountPerBagException {
         // given
         CreateLuckyMoneyRequest request = CreateLuckyMoneyRequest.builder()
                 .sessionChatId("abc")

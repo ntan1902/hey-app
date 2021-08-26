@@ -20,7 +20,7 @@ public interface RestTemplateUtil {
 
     String createSofToken(String pin, long amount);
 
-    void createTransfer(String targetId, String softToken);
+    void createTransfer(String targetId, String softToken, long amount);
 
     void addFriendRequest(String friendUsername);
 
@@ -32,7 +32,7 @@ public interface RestTemplateUtil {
 
     Map<String, Object> getLuckyMoneyOfSession(String sessionId);
 
-    void createLuckyMoney(String sessionId, String type, int numBag, String softToken);
+    void createLuckyMoney(String sessionId, String type, int numBag, String softToken, long amount);
 
     void receiveLuckyMoney(Long luckyMoneyId);
 }
