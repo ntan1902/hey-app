@@ -8,10 +8,7 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Component;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Component
@@ -19,7 +16,6 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class JwtUserUtil {
     private final JwtProperties jwtProperties;
-
 
     public String generateAccessToken(User user) {
         Map<String, Object> claims = new HashMap<>();
@@ -48,12 +44,15 @@ public class JwtUserUtil {
     }
 
     public String generateRefreshToken(User user) {
-        return doGenerateRefreshToken(user.getId());
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("id", UUID.randomUUID().toString());
+        return doGenerateRefreshToken(claims, user.getId());
     }
 
-    private String doGenerateRefreshToken(String subject) {
+    private String doGenerateRefreshToken(Map<String, Object> claims, String subject) {
         try {
             return Jwts.builder()
+                    .setClaims(claims)
                     .setSubject(subject)
                     .setIssuedAt(new Date(System.currentTimeMillis()))
                     .setExpiration(new Date(System.currentTimeMillis() + jwtProperties.getRefreshTokenExpirationMs()))
