@@ -1,6 +1,9 @@
 server:
   port: 5050
-
+  tomcat:
+    max-keep-alive-requests: 200
+    threads:
+      max: 400
 eureka:
   client:
     serviceUrl:
