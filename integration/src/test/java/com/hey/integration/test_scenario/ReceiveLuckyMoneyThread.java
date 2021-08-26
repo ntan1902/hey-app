@@ -34,7 +34,10 @@ public class ReceiveLuckyMoneyThread extends Thread {
         List<Map<String, Object>> payload = (List<Map<String, Object>>) getLuckyMoneyRes.get("payload");
 
         payload.forEach(luckyMoney -> {
-            restTemplateUtil.receiveLuckyMoney(Long.parseLong(String.valueOf(luckyMoney.get("luckyMoneyId"))));
+            boolean isReceived = Boolean.parseBoolean(String.valueOf(luckyMoney.get("received")));
+            if (!isReceived) {
+                restTemplateUtil.receiveLuckyMoney(Long.parseLong(String.valueOf(luckyMoney.get("luckyMoneyId"))));
+            }
         });
 
         restTemplateUtil.logout();
