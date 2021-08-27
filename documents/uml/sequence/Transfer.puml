@@ -1,0 +1,26 @@
+	
+@startuml
+
+actor User
+
+participant PaymentServer
+participant AuthServer
+database MySql
+
+User -> PaymentServer: create transfer
+PaymentServer -> AuthServer: authorize user
+PaymentServer <-- AuthServer: permission
+opt permission is false
+    PaymentServer --> User: Unauthorize
+end
+PaymentServer -> AuthServer: authorize soft token
+PaymentServer <-- AuthServer: softTokenDecodeResult
+opt softTokenDecodeResult is fail
+    PaymentServer --> User: Bad request
+end
+opt balance is not enough
+    PaymentServer --> User: Your balance is not enough
+end
+PaymentServer -> MySql: create transfer
+PaymentServer --> User: transfer successfully
+@enduml

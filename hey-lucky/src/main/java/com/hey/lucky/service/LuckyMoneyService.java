@@ -9,13 +9,13 @@ import com.hey.lucky.exception_handler.exception.*;
 import java.util.List;
 
 public interface LuckyMoneyService {
-    void createLuckyMoney(CreateLuckyMoneyRequest createLuckyMoneyRequest) throws UnauthorizeException, ErrCallApiException, CannotTransferMoneyException, ErrCallChatApiException, UserNotInSessionChatException, MinAmountPerBagException;
+    void createLuckyMoney(CreateLuckyMoneyRequest createLuckyMoneyRequest) throws InternalServerErrException, ErrCallApiException, CannotTransferMoneyException, ErrCallChatApiException, UserNotInSessionChatException, MinAmountPerBagException;
 
-    void receiveLuckyMoney(ReceiveLuckyMoneyRequest request) throws InvalidLuckyMoneyException, UnauthorizeException, ErrCallApiException, LuckyMoneyExpiredException, CannotTransferMoneyException, OutOfBagException, HadReceivedException, ErrCallChatApiException, UserNotInSessionChatException;
+    void receiveLuckyMoney(ReceiveLuckyMoneyRequest request) throws InvalidLuckyMoneyException, InternalServerErrException, ErrCallApiException, LuckyMoneyExpiredException, CannotTransferMoneyException, OutOfBagException, HadReceivedException, ErrCallChatApiException, UserNotInSessionChatException;
 
-    List<LuckyMoneyDTO> getAllLuckyMoneyOfSession(String sessionId) throws UnauthorizeException, ErrCallApiException, CannotGetUserInfo, UserNotInSessionChatException;
+    List<LuckyMoneyDTO> getAllLuckyMoneyOfSession(String sessionId) throws InternalServerErrException, ErrCallApiException, CannotGetUserInfo, UserNotInSessionChatException;
 
-    LuckyMoneyDetails getLuckyMoneyDetails(long luckyMoneyId) throws InvalidLuckyMoneyException, CannotGetUserInfo, UnauthorizeException, ErrCallApiException, UserNotInSessionChatException;
+    LuckyMoneyDetails getLuckyMoneyDetails(long luckyMoneyId) throws InvalidLuckyMoneyException, CannotGetUserInfo, InternalServerErrException, ErrCallApiException, UserNotInSessionChatException;
 
     void refundLuckyMoney();
 }

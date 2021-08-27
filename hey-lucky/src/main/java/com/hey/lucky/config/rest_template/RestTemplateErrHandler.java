@@ -1,6 +1,6 @@
 package com.hey.lucky.config.rest_template;
 
-import com.hey.lucky.exception_handler.exception.UnauthorizeException;
+import com.hey.lucky.exception_handler.exception.InternalServerErrException;
 import lombok.SneakyThrows;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.client.ClientHttpResponse;
@@ -24,7 +24,7 @@ public class RestTemplateErrHandler implements ResponseErrorHandler {
     public void handleError(ClientHttpResponse httpResponse) {
         switch (httpResponse.getStatusCode().value()){
             case 401:{
-                throw new UnauthorizeException("Unauthorize!");
+                throw new InternalServerErrException("Unauthorize!");
             }
         }
     }

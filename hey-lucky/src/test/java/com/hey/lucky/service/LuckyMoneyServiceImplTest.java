@@ -91,7 +91,7 @@ class LuckyMoneyServiceImplTest {
     }
 
     @Test
-    void createLuckyMoney() throws ErrCallApiException, CannotTransferMoneyException, ErrCallChatApiException, UnauthorizeException, UserNotInSessionChatException, MinAmountPerBagException {
+    void createLuckyMoney() throws ErrCallApiException, CannotTransferMoneyException, ErrCallChatApiException, InternalServerErrException, UserNotInSessionChatException, MinAmountPerBagException {
         // given
         CreateLuckyMoneyRequest request = CreateLuckyMoneyRequest.builder()
                 .sessionChatId("abc")
@@ -165,7 +165,7 @@ class LuckyMoneyServiceImplTest {
         assertThrows(MinAmountPerBagException.class, ()->luckyMoneyService.createLuckyMoney(request));
     }
     @Test
-    void createLuckyMoneyThrowErrCallChatApiException() throws ErrCallApiException, CannotTransferMoneyException, ErrCallChatApiException, UnauthorizeException, UserNotInSessionChatException, MinAmountPerBagException {
+    void createLuckyMoneyThrowErrCallChatApiException() throws ErrCallApiException, CannotTransferMoneyException, ErrCallChatApiException, InternalServerErrException, UserNotInSessionChatException, MinAmountPerBagException {
         // given
         CreateLuckyMoneyRequest request = CreateLuckyMoneyRequest.builder()
                 .sessionChatId("abc")
@@ -196,7 +196,7 @@ class LuckyMoneyServiceImplTest {
         assertThrows(ErrCallChatApiException.class, ()->luckyMoneyService.createLuckyMoney(request));
     }
     @Test
-    void createLuckyMoneyThrowException() throws ErrCallApiException, CannotTransferMoneyException, ErrCallChatApiException, UnauthorizeException, UserNotInSessionChatException, MinAmountPerBagException {
+    void createLuckyMoneyThrowException() throws ErrCallApiException, CannotTransferMoneyException, ErrCallChatApiException, InternalServerErrException, UserNotInSessionChatException, MinAmountPerBagException {
         // given
         CreateLuckyMoneyRequest request = CreateLuckyMoneyRequest.builder()
                 .sessionChatId("abc")
@@ -390,7 +390,7 @@ class LuckyMoneyServiceImplTest {
     }
 
     @Test
-    void receiveLuckyMoneySuccessfully() throws InvalidLuckyMoneyException, ErrCallApiException, CannotTransferMoneyException, ErrCallChatApiException, UnauthorizeException, LuckyMoneyExpiredException, OutOfBagException, HadReceivedException, UserNotInSessionChatException {
+    void receiveLuckyMoneySuccessfully() throws InvalidLuckyMoneyException, ErrCallApiException, CannotTransferMoneyException, ErrCallChatApiException, InternalServerErrException, LuckyMoneyExpiredException, OutOfBagException, HadReceivedException, UserNotInSessionChatException {
         // given
         User user = new User("abc");
         ReceiveLuckyMoneyRequest request = ReceiveLuckyMoneyRequest.builder()
@@ -438,7 +438,7 @@ class LuckyMoneyServiceImplTest {
                 .isEqualTo(actual);
     }
     @Test
-    void getAllLuckyMoneyOfSessionWithNotExistSession() throws ErrCallApiException, UnauthorizeException, UserNotInSessionChatException, CannotGetUserInfo {
+    void getAllLuckyMoneyOfSessionWithNotExistSession() throws ErrCallApiException, InternalServerErrException, UserNotInSessionChatException, CannotGetUserInfo {
         // given
         User user = new User("abc");
         String sessionId = "-1";
@@ -465,7 +465,7 @@ class LuckyMoneyServiceImplTest {
     }
 
     @Test
-    void getAllLuckyMoneyOfSession_successfully() throws ErrCallApiException, UnauthorizeException, CannotGetUserInfo, UserNotInSessionChatException {
+    void getAllLuckyMoneyOfSession_successfully() throws ErrCallApiException, InternalServerErrException, CannotGetUserInfo, UserNotInSessionChatException {
         // given
         User user = new User("abc");
         String sessionId = "123-abc";
@@ -550,7 +550,7 @@ class LuckyMoneyServiceImplTest {
     }
 
     @Test
-    void getDetailsLuckyMoney_Successfully() throws ErrCallApiException, UnauthorizeException, CannotGetUserInfo, InvalidLuckyMoneyException, UserNotInSessionChatException {
+    void getDetailsLuckyMoney_Successfully() throws ErrCallApiException, InternalServerErrException, CannotGetUserInfo, InvalidLuckyMoneyException, UserNotInSessionChatException {
         User user = new User("abc");
         LocalDateTime now = LocalDateTime.now();
         Long luckyMoneyId = 10L;

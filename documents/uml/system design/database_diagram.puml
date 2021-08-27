@@ -7,7 +7,7 @@
 ' avoid problems with angled crows feet
 skinparam linetype ortho
 
-entity "users" as users #Aqua{
+entity "users" as users #Gainsboro{
     *id: number <<generated>>
     --
     username: varchar
@@ -19,19 +19,8 @@ entity "users" as users #Aqua{
     mini_avatar: varchar
 }
 
-' LuckyMoney system: 
-' - system_name: LuckyMoney
-' - system_key: 
-' ----> Request Auth system -> JWToken system 
-' LuckyMoney vS Payment 
-' LuckyMoney ----> Request Auth system -> JWToken system
-' LuckyMoney dùng JWToken vừa có để request danh sách  wallets của nó
-' sử dụng list wallets này ntn thì tuỳ nó 
 
-' LuckyMoney request lên payment chuyển tiền. Tới... với cái
-' wallet id nào của nó  
-
-entity "systems" #Aqua{
+entity "systems" #Gainsboro{
     *id: number <<generated>>
     --
     system_name: varchar
