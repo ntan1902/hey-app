@@ -9,5 +9,4 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class SystemAuthorizeResponse {
     private String systemId;
-    private String systemName;
 }

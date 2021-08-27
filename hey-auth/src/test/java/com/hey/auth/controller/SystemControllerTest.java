@@ -3,6 +3,7 @@ package com.hey.auth.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hey.auth.dto.api.ApiResponse;
 import com.hey.auth.dto.system.*;
+import com.hey.auth.dto.user.EditUserRequest;
 import com.hey.auth.dto.user.UserDTO;
 import com.hey.auth.service.SystemService;
 import com.hey.auth.service.UserService;
@@ -19,6 +20,9 @@ import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import java.util.Collections;
+
+import static org.mockito.Mockito.doNothing;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 
 
@@ -43,6 +47,7 @@ class SystemControllerTest {
     private JacksonTester<AuthorizeRequest> jsAuthorizeRequest;
     private JacksonTester<SystemAuthorizeRequest> jsSystemAuthorizeRequest;
     private JacksonTester<SoftTokenRequest> jsSoftTokenRequest;
+    private JacksonTester<EditUserRequest> jsEditUserRequest;
     private JacksonTester<ApiResponse> jsApiResponse;
 
     @BeforeEach
@@ -126,8 +131,7 @@ class SystemControllerTest {
                 "dump"
         );
         SystemAuthorizeResponse payload = new SystemAuthorizeResponse(
-                "uuid",
-                "payment"
+                "uuid"
         );
         given(systemService.authorizeSystem(authorizeRequest)).willReturn(payload);
 
@@ -218,9 +222,10 @@ class SystemControllerTest {
         // then
         assertThat(actual.getStatus()).isEqualTo(HttpStatus.OK.value());
         assertThat(actual.getContentAsString()).isEqualTo(
-            jsApiResponse.write(expected).getJson()
+                jsApiResponse.write(expected).getJson()
         );
     }
+
     @Test
     void getSystemInfo() throws Exception {
         // given
@@ -242,6 +247,70 @@ class SystemControllerTest {
                 get("/auth/api/v1/systems/getSystemInfo/" + systemId)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
+                .andReturn().getResponse();
+
+        // then
+        assertThat(actual.getStatus()).isEqualTo(HttpStatus.OK.value());
+        assertThat(actual.getContentAsString()).isEqualTo(
+                jsApiResponse.write(expected).getJson()
+        );
+    }
+
+    @Test
+    void getSystems() throws Exception {
+        // given
+        String systemId = "uuid";
+
+        SystemDTO payload = new SystemDTO(systemId, "payment", 0);
+
+        given(systemService.getSystems()).willReturn(Collections.singletonList(payload));
+
+        ApiResponse expected = ApiResponse.builder()
+                .success(true)
+                .code(HttpStatus.OK.value())
+                .message("")
+                .payload(Collections.singletonList(payload))
+                .build();
+
+        // when
+        MockHttpServletResponse actual = mockMvc.perform(
+                get("/auth/api/v1/systems/getSystems")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andReturn().getResponse();
+
+        // then
+        assertThat(actual.getStatus()).isEqualTo(HttpStatus.OK.value());
+        assertThat(actual.getContentAsString()).isEqualTo(
+                jsApiResponse.write(expected).getJson()
+        );
+    }
+
+    @Test
+    void editUser() throws Exception {
+        // given
+        String userId = "uuid";
+        EditUserRequest request = new EditUserRequest();
+        request.setDob("dob");
+        request.setPhoneNumber("phoneNumber");
+        request.setFullName("fullName");
+        request.setEmail("ntan@gmail.com");
+
+        doNothing().when(userService).editUser(userId, request);
+
+        ApiResponse expected = ApiResponse.builder()
+                .success(true)
+                .code(HttpStatus.NO_CONTENT.value())
+                .message("Edit profile successfully")
+                .payload("")
+                .build();
+
+        // when
+        MockHttpServletResponse actual = mockMvc.perform(
+                patch("/auth/api/v1/systems/editProfile/" + userId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .content(jsEditUserRequest.write(request).getJson()))
                 .andReturn().getResponse();
 
         // then

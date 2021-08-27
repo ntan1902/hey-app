@@ -2,11 +2,12 @@ package com.hey.auth.repository;
 
 
 import com.hey.auth.entity.User;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import java.util.List;
 
 @DataJpaTest
 class UserRepositoryTest {
@@ -30,7 +31,7 @@ class UserRepositoryTest {
         User actualUser = underTest.findByUsername("annt12").get();
 
         // then
-        assertThat(actualUser).isEqualTo(expectedUser);
+        Assertions.assertThat(actualUser).isEqualTo(expectedUser);
     }
 
     @Test
@@ -50,7 +51,7 @@ class UserRepositoryTest {
         Boolean actual = underTest.existsByUsernameOrEmail("ntan", "ntan@gmail.com");
 
         // then
-        assertThat(actual).isEqualTo(false);
+        Assertions.assertThat(actual).isEqualTo(false);
 
     }
 
@@ -71,7 +72,7 @@ class UserRepositoryTest {
         Boolean actual = underTest.existsByUsernameOrEmail("ntan", "ntan@gmail.com");
 
         // then
-        assertThat(actual).isEqualTo(true);
+        Assertions.assertThat(actual).isEqualTo(true);
 
     }
     @Test
@@ -91,7 +92,7 @@ class UserRepositoryTest {
         Boolean actual = underTest.existsByUsernameOrEmail("ntan", "annt12@gmail.com");
 
         // then
-        assertThat(actual).isEqualTo(true);
+        Assertions.assertThat(actual).isEqualTo(true);
 
     }
 
@@ -109,10 +110,31 @@ class UserRepositoryTest {
         underTest.save(expectedUser);
 
         // when
-        Boolean actual = underTest.existsByUsernameOrEmail("ntan", "ntan@gmail.com");
+        boolean actual = underTest.existsByUsernameOrEmail("ntan", "ntan@gmail.com");
 
         // then
-        assertThat(actual).isEqualTo(true);
+        Assertions.assertThat(actual).isEqualTo(true);
 
     }
+
+    @Test
+    void findAllByFullNameContainsOrEmailContainsAndIdIsNot() {
+        // given
+        User expectedUser = User.builder()
+                .id("uuid")
+                .email("ntan@gmail.com")
+                .password("$2a$10$atTTVVOQoQMksMstiYp3/u6tQaYRG/6S5IrMJmEkw8Yw70kKI9LW2")
+                .fullName("Trinh an")
+                .username("ntan")
+                .pin("$2a$10$atTTVVOQoQMksMstiYp3/u6tQaYRG/6S5IrMJmEkw8Yw70kKI9LW2")
+                .build();
+        underTest.save(expectedUser);
+
+        // when
+        List<User> actual = underTest.findAllByFullNameContainsOrEmailContainsAndIdIsNot("an", "uuid1");
+
+        // then
+        Assertions.assertThat(actual.get(0)).isEqualTo(expectedUser);
+    }
+
 }

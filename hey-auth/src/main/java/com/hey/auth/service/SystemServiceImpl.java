@@ -76,9 +76,9 @@ public class SystemServiceImpl implements SystemService {
         log.info("Inside authorizeUser of SystemServiceImpl: {}", authorizeRequest);
         if (jwtUserUtil.validateToken(authorizeRequest.getJwtUser())) {
             String userId = jwtUserUtil.getUserIdFromJwt(authorizeRequest.getJwtUser());
-            if (!userRepository.existsById(userId)) {
-                throw new UserIdNotFoundException("User Id " + userId + " not found");
-            }
+//            if (!userRepository.existsById(userId)) {
+//                throw new UserIdNotFoundException("User Id " + userId + " not found");
+//            }
             return new AuthorizeResponse(userId);
         } else {
             throw new InvalidJwtTokenException("Invalid JWT token");
@@ -90,10 +90,10 @@ public class SystemServiceImpl implements SystemService {
         log.info("Inside authorizeSystem of SystemServiceImpl: {}", authorizeRequest);
         if (jwtSystemUtil.validateToken(authorizeRequest.getJwtSystem())) {
             String systemId = jwtSystemUtil.getSystemIdFromJwt(authorizeRequest.getJwtSystem());
-            System system = systemRepository.findById(systemId)
-                    .orElseThrow(() -> new SystemIdNotFoundException("System Id " + systemId + " not found"));
+//            System system = systemRepository.findById(systemId)
+//                    .orElseThrow(() -> new SystemIdNotFoundException("System Id " + systemId + " not found"));
 
-            return new SystemAuthorizeResponse(systemId, system.getSystemName());
+            return new SystemAuthorizeResponse(systemId);
         } else {
             throw new InvalidJwtTokenException("Invalid JWT token");
         }

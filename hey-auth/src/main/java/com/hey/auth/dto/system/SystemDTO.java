@@ -10,5 +10,5 @@ import lombok.NoArgsConstructor;
 public class SystemDTO {
     private String id;
     private String systemName;
-    private long numberOfWallet;
+    private int numberOfWallet;
 }

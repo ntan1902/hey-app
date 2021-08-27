@@ -10,6 +10,6 @@ import javax.validation.constraints.NotEmpty;
 @AllArgsConstructor
 @NoArgsConstructor
 public class SystemAuthorizeRequest {
-    @NotEmpty(message = "jwtSystem must not be empty")
+    @NotEmpty(message = "Jwt system must not be empty")
     private String jwtSystem;
 }
