@@ -9,6 +9,5 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class SystemLoginResponse {
     private String accessToken;
-    //    private String refreshToken;
     private String tokenType;
 }
