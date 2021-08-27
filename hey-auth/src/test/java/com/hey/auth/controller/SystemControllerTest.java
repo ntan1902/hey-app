@@ -126,8 +126,7 @@ class SystemControllerTest {
                 "dump"
         );
         SystemAuthorizeResponse payload = new SystemAuthorizeResponse(
-                "uuid",
-                "payment"
+                "uuid"
         );
         given(systemService.authorizeSystem(authorizeRequest)).willReturn(payload);
 

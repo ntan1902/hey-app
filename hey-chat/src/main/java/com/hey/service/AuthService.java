@@ -48,9 +48,9 @@ public class AuthService implements AuthProvider {
                                 JsonObject user = new JsonObject();
                                 user.put("userId", payload.getString("userId"));
                                 resultHandler.handle(Future.succeededFuture(new JWTUser(user, "permissions")));
-                            } else if (payload.containsKey("systemName")) {
+                            } else if (payload.containsKey("systemId")) {
                                 JsonObject system = new JsonObject();
-                                system.put("systemName", payload.getString("systemName"));
+                                system.put("systemId", payload.getString("systemId"));
                                 resultHandler.handle(Future.succeededFuture(new JWTUser(system, "permissions")));
                             }
                         }

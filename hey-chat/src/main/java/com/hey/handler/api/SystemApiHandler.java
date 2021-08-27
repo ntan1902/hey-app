@@ -42,7 +42,7 @@ public class SystemApiHandler extends BaseHandler {
         JsonObject authObj = new JsonObject().put("jwtSystem", jwt);
         jwtManager.authenticate(authObj, event -> {
             if (event.succeeded()) {
-                String systemName = event.result().principal().getString("systemName");
+                String systemId = event.result().principal().getString("systemId");
 
                 JsonObject requestObject = null;
                 if (rc.getBody() != null && rc.getBody().length() > 0) {
@@ -51,19 +51,19 @@ public class SystemApiHandler extends BaseHandler {
 
                 switch (path) {
                     case "/createTransferMessage":
-                        LogUtils.log("System  " + systemName + " request create transfer message");
+                        LogUtils.log("System  " + systemId + " request create transfer message");
                         createTransferMessage(response, requestObject);
                         break;
                     case "/createLuckyMoneyMessage":
-                        LogUtils.log("System  " + systemName + " request create lucky money message");
+                        LogUtils.log("System  " + systemId + " request create lucky money message");
                         createLuckyMoneyMessage(response, requestObject);
                         break;
                     case "/isUserExistInSession":
-                        LogUtils.log("System  " + systemName + " request check whether user in session");
+                        LogUtils.log("System  " + systemId + " request check whether user in session");
                         checkUserIdExistInSessionId(response, requestObject);
                         break;
                     case "/receiveLuckyMoneyMessage":
-                        LogUtils.log("System  " + systemName + " request receive lucky money");
+                        LogUtils.log("System  " + systemId + " request receive lucky money");
                         receiveLuckyMoneyMessage(response, requestObject);
                         break;
 

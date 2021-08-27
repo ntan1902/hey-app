@@ -240,7 +240,7 @@ class SystemServiceImplTest {
         SystemAuthorizeResponse actual = underTest.authorizeSystem(request);
 
         // then
-        assertThat(actual.getSystemName()).isEqualTo(expected.getSystemName());
+        assertThat(actual.getSystemId()).isEqualTo(expected.getId());
 
     }
 
