@@ -107,12 +107,16 @@ public class UserServiceImpl implements UserDetailsService, UserService {
     }
 
     @Override
-    public void createPin(PinRequest pinRequest) throws UserIdNotFoundException {
+    public void createPin(PinRequest pinRequest) throws UserIdNotFoundException, AlreadyHavePinException {
         log.info("Inside createPin of UserServiceImpl: {}", pinRequest);
-        String hashPin = passwordEncoder.encode(pinRequest.getPin());
         String userId = getCurrentUserId();
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserIdNotFoundException("User Id " + userId + " not found"));
+        if (!user.getPin().isEmpty()) {
+            throw new AlreadyHavePinException("User " + userId + " already have pin");
+        }
+
+        String hashPin = passwordEncoder.encode(pinRequest.getPin());
         user.setPin(hashPin);
         userRepository.save(user);
     }

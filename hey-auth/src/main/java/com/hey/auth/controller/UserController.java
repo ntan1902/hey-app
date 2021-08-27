@@ -7,6 +7,7 @@ import com.hey.auth.exception.user.*;
 import com.hey.auth.service.UserService;
 import com.hey.auth.utils.FileUploadUtil;
 import lombok.AllArgsConstructor;
+import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -43,6 +44,7 @@ public class UserController {
                 ApiResponse.builder().success(true).code(HttpStatus.OK.value()).message("").payload(payload).build());
     }
 
+    @SneakyThrows
     @PostMapping("/createPin")
     public ResponseEntity<ApiResponse> createPin(@RequestBody @Valid PinRequest pinRequest)
             throws UserIdNotFoundException {

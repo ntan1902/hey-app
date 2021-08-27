@@ -272,8 +272,9 @@ class UserServiceImplTest {
 
     }
 
+    @SneakyThrows
     @Test
-    void createPin() throws UserIdNotFoundException {
+    void createPin() {
         // given
         PinRequest request = new PinRequest("123456");
         String hashPin = "sfsafsfsf";
@@ -281,6 +282,36 @@ class UserServiceImplTest {
         given(passwordEncoder.encode(request.getPin())).willReturn(hashPin);
 
 
+        User user = User.builder()
+                .id("uuid")
+                .email("ntan@gmail.com")
+                .username("ntan")
+                .pin("")
+                .password("gdsgdsg")
+                .fullName("Trinh An")
+                .build();
+
+        UsernamePasswordAuthenticationToken
+                authentication = new UsernamePasswordAuthenticationToken("uuid",
+                null,
+                user.getAuthorities());
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+
+        given(userRepository.findById(user.getId())).willReturn(Optional.of(user));
+
+        // when
+        underTest.createPin(request);
+
+        // then
+        verify(userRepository).save(user);
+    }
+
+    @SneakyThrows
+    @Test
+    void createPinWillThrowAlreadyHavePin() {
+        // given
+        PinRequest request = new PinRequest("123456");
+     
         User user = User.builder()
                 .id("uuid")
                 .email("ntan@gmail.com")
@@ -299,10 +330,12 @@ class UserServiceImplTest {
         given(userRepository.findById(user.getId())).willReturn(Optional.of(user));
 
         // when
-        underTest.createPin(request);
+        assertThatThrownBy(() -> underTest.createPin(request))
+                .isInstanceOf(AlreadyHavePinException.class)
+                .hasMessageContaining("User " + user.getId() + " already have pin");
 
         // then
-        verify(userRepository).save(user);
+        verify(userRepository, never()).save(user);
     }
 
     @Test

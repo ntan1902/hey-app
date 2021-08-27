@@ -16,7 +16,7 @@ public interface UserService {
 
     UserDTO findById(String userId) throws UserIdNotFoundException;
 
-    void createPin(PinRequest pinRequest) throws UserIdNotFoundException;
+    void createPin(PinRequest pinRequest) throws UserIdNotFoundException, AlreadyHavePinException;
 
     SoftTokenResponse createSoftToken(PinAmountRequest pinAmountRequest) throws EmptyPinException, PinNotMatchedException, UserIdNotFoundException;
 
