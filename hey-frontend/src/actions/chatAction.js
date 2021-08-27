@@ -38,6 +38,7 @@ export const ADD_NEW_START_CHAT_GROUP_FAIL =
   "chatList.ADD_NEW_START_CHAT_GROUP_FAIL";
 export const USER_SELECTED = "chatList.USER_SELECTED";
 export const USER_UNSELECTED = "chatList.USER_UNSELECTED";
+export const MESSAGE_OFFSET_FETCHED = "chatList.MESSAGE_OFFSET_FETCHED";
 
 export const WEBSOCKET_FETCHED = "chatList.WEBSOCKET_FETCHED";
 
@@ -379,6 +380,10 @@ export function changeMessageHeader(title, avatar, group, userIds = []) {
     userIds: userIds,
   };
   return { type: MESSAGE_HEADER_FETCHED, messageHeader: header };
+}
+
+export function changeChatListOffset(isAll, offset) {
+  return { type: MESSAGE_OFFSET_FETCHED, isAll: isAll, offset: offset };
 }
 
 export function addNewUserChatGroup(userId) {

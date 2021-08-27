@@ -14,6 +14,51 @@ import { Scrollbars } from "react-custom-scrollbars";
 import { changeMessageHeader } from "../actions/chatAction";
 import { getProfileURL } from "../utils";
 import { getUserIdFromStorage } from "../utils/utils";
+import Badge from "@material-ui/core/Badge";
+import Avatar from "@material-ui/core/Avatar";
+import { makeStyles, withStyles } from "@material-ui/core/styles";
+
+const StyledBadge = withStyles((theme) => ({
+  badge: {
+    backgroundColor: "#44b700",
+    color: "#44b700",
+    boxShadow: `0 0 0 2px ${theme.palette.background.paper}`,
+    width: 15,
+    height: 15,
+    borderRadius: "50%",
+
+    "&::after": {
+      position: "absolute",
+      top: 0,
+      left: 0,
+      width: 15,
+      height: 15,
+      borderRadius: "50%",
+      animation: "$ripple 1.2s infinite ease-in-out",
+      border: "1px solid currentColor",
+      content: '""',
+    },
+  },
+  "@keyframes ripple": {
+    "0%": {
+      transform: "scale(.8)",
+      opacity: 1,
+    },
+    "100%": {
+      transform: "scale(2.4)",
+      opacity: 0,
+    },
+  },
+}))(Badge);
+
+const useStyles = makeStyles((theme) => ({
+  root: {
+    display: "flex",
+    "& > *": {
+      margin: theme.spacing(1),
+    },
+  },
+}));
 
 class AddressBook extends React.Component {
   constructor(props) {
@@ -368,7 +413,20 @@ class AddressBook extends React.Component {
               >
                 {this.props.waitingFriendList.map((item, index) => (
                   <Menu.Item key={index}>
-                    {this.renderListAvatar({ userIds: [item.userId] })}
+                    {/* {this.renderListAvatar({ userIds: [item.userId] })} */}
+                    <StyledBadge
+                      overlap="circular"
+                      anchorOrigin={{
+                        vertical: "bottom",
+                        horizontal: "right",
+                      }}
+                      variant="dot"
+                    >
+                      <Avatar
+                        alt="Remy Sharp"
+                        src={getProfileURL(item.userId)}
+                      />
+                    </StyledBadge>
 
                     {item.isOnline ? (
                       <div className="status-point online" />
@@ -468,12 +526,40 @@ class AddressBook extends React.Component {
           >
             {this.props.addressBookList.map((item, index) => (
               <Menu.Item key={index}>
-                {this.renderListAvatar({ userIds: [item.userId] })}
+                {/* {this.renderListAvatar({ userIds: [item.userId] })} */}
 
                 {item.isOnline ? (
-                  <div className="status-point online" />
+                  <StyledBadge
+                    overlap="circular"
+                    anchorOrigin={{
+                      vertical: "bottom",
+                      horizontal: "right",
+                    }}
+                    variant="dot"
+                  >
+                    <Avatar
+                      sizes="100"
+                      alt=""
+                      src={getProfileURL(item.userId)}
+                      style={{ width: 60, height: 60 }}
+                    />
+                  </StyledBadge>
                 ) : (
-                  <div className="status-point offline" />
+                  <StyledBadge
+                    overlap="circular"
+                    anchorOrigin={{
+                      vertical: "bottom",
+                      horizontal: "right",
+                    }}
+                    // variant="dot"
+                    showZero={true}
+                  >
+                    <Avatar
+                      alt="Remy Sharp"
+                      src={getProfileURL(item.userId)}
+                      style={{ width: 60, height: 60 }}
+                    />
+                  </StyledBadge>
                 )}
                 <div style={{ overflow: "hidden", paddingTop: 5 }}>
                   <div className="user-name">{item.name}</div>

@@ -12,6 +12,7 @@ import {
   USER_SELECTED,
   WEBSOCKET_FETCHED,
   USER_UNSELECTED,
+  MESSAGE_OFFSET_FETCHED,
 } from "../actions/chatAction";
 import * as actionTypes from "../actions/actionTypes";
 
@@ -28,6 +29,8 @@ const initialState = {
   userSelectedKeys: [],
   members: [],
   isOwner: false,
+  isAll: false,
+  loadSize: 0,
 };
 
 export default function reduce(state = initialState, action) {
@@ -38,6 +41,7 @@ export default function reduce(state = initialState, action) {
         chatList: action.fetchedChatList,
         messageHeader: action.messageHeader,
         currentSessionId: action.currentSessionId,
+        isAll: false,
       };
     case CHATLIST_REFETCHED:
       return {
@@ -81,6 +85,7 @@ export default function reduce(state = initialState, action) {
         waitingGroupUsernames: action.waitingGroupUsernames,
         currentSessionId: action.currentSessionId,
         startChatGroupList: [],
+        isAll: false,
       };
     case START_CHAT_SINGLE:
       return {
@@ -88,6 +93,7 @@ export default function reduce(state = initialState, action) {
         messageItems: action.messageItems,
         waitingGroupUsernames: action.waitingGroupUsernames,
         currentSessionId: action.currentSessionId,
+        isAll: false,
       };
     case MESSAGE_PANEL_FETCHED:
       return {
@@ -97,6 +103,7 @@ export default function reduce(state = initialState, action) {
         currentSessionId: action.currentSessionId,
         chatList: action.chatList,
         userSelected: action.userSelected,
+        isAll: false,
       };
     case NEW_MESSAGE_IN_PANEL_FETCHED:
       if (action.title != "" && state.messageHeader) {
@@ -130,6 +137,12 @@ export default function reduce(state = initialState, action) {
         ...state,
         members: action.members,
         isOwner: action.isOwner,
+      };
+    case MESSAGE_OFFSET_FETCHED:
+      return {
+        ...state,
+        isAll: action.isAll,
+        loadSize: action.offset,
       };
     default:
       return state;

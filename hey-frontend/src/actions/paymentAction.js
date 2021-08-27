@@ -154,7 +154,7 @@ const topup = (amount) => async (dispatch) => {
         bankId: "e8984aa8-b1a5-4c65-8c5e-036851ec783c",
       });
       await dispatch(getBalance());
-      await dispatch(switchMainScreen("TopupSuccess"));
+      // await dispatch(switchMainScreen("TopupSuccess"));
       resolve({ success: true });
     } catch (err) {
       reject({ error: err, success: false });
