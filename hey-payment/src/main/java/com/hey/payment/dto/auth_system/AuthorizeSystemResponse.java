@@ -16,7 +16,6 @@ public class AuthorizeSystemResponse {
     @AllArgsConstructor
     public class Payload {
         String systemId;
-        String systemName;
     }
     Boolean success;
     int code;

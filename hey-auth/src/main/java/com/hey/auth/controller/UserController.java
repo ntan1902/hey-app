@@ -7,6 +7,7 @@ import com.hey.auth.exception.user.*;
 import com.hey.auth.service.UserService;
 import com.hey.auth.utils.FileUploadUtil;
 import lombok.AllArgsConstructor;
+import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -22,7 +23,7 @@ import java.util.List;
 @RequestMapping("/auth/api/v1/users")
 @AllArgsConstructor
 @Log4j2
-@CrossOrigin({ "http://localhost:3000", "http://web.oispyouthunion.vn", "https://web.oispyouthunion.vn", "https://www.heypay.top/", "https://heypay.top/" })
+@CrossOrigin({"http://localhost:3000", "http://web.oispyouthunion.vn", "https://web.oispyouthunion.vn", "https://www.heypay.top/", "https://heypay.top/"})
 public class UserController {
     private final UserService userService;
 
@@ -43,6 +44,7 @@ public class UserController {
                 ApiResponse.builder().success(true).code(HttpStatus.OK.value()).message("").payload(payload).build());
     }
 
+    @SneakyThrows
     @PostMapping("/createPin")
     public ResponseEntity<ApiResponse> createPin(@RequestBody @Valid PinRequest pinRequest)
             throws UserIdNotFoundException {
@@ -78,7 +80,9 @@ public class UserController {
     public ResponseEntity<ApiResponse> changePassword(@RequestBody @Valid ChangePasswordRequest request)
             throws PasswordNotMatchedException, UserIdNotFoundException {
         userService.changePassword(request);
-        return ResponseEntity.ok(ApiResponse.builder().success(true).code(HttpStatus.NO_CONTENT.value())
+        return ResponseEntity.ok(ApiResponse.builder()
+                .success(true)
+                .code(HttpStatus.NO_CONTENT.value())
                 .message("Change password successfully").payload("").build());
     }
 
@@ -86,7 +90,9 @@ public class UserController {
     public ResponseEntity<ApiResponse> changePin(@RequestBody @Valid ChangePinRequest request)
             throws PinNotMatchedException, EmptyPinException, UserIdNotFoundException {
         userService.changePin(request);
-        return ResponseEntity.ok(ApiResponse.builder().success(true).code(HttpStatus.NO_CONTENT.value())
+        return ResponseEntity.ok(ApiResponse.builder()
+                .success(true)
+                .code(HttpStatus.NO_CONTENT.value())
                 .message("Change pin successfully").payload("").build());
     }
 
@@ -95,7 +101,10 @@ public class UserController {
             throws InvalidJwtTokenException, UserIdNotFoundException {
         RefreshTokenResponse payload = userService.refreshToken(request);
 
-        return ResponseEntity.ok(ApiResponse.builder().success(true).code(HttpStatus.CREATED.value()).message("")
+        return ResponseEntity.ok(ApiResponse.builder()
+                .success(true)
+                .code(HttpStatus.CREATED.value())
+                .message("")
                 .payload(payload).build());
     }
 
@@ -104,14 +113,20 @@ public class UserController {
             throws InvalidJwtTokenException {
         userService.logout(request);
 
-        return ResponseEntity.ok(ApiResponse.builder().success(true).code(HttpStatus.NO_CONTENT.value())
+        return ResponseEntity.ok(ApiResponse.builder()
+                .success(true)
+                .code(HttpStatus.NO_CONTENT
+                        .value())
                 .message("Logout successfully").payload("").build());
     }
 
     @GetMapping("/searchUser")
     public ResponseEntity<ApiResponse> searchUser(@RequestParam String key) {
         List<UserDTO> userDTOList = userService.searchUser(key);
-        return ResponseEntity.ok(ApiResponse.builder().success(true).code(HttpStatus.OK.value()).message("")
+        return ResponseEntity.ok(ApiResponse.builder()
+                .success(true)
+                .code(HttpStatus.OK.value())
+                .message("")
                 .payload(userDTOList).build());
     }
 
@@ -119,7 +134,9 @@ public class UserController {
     public ResponseEntity<ApiResponse> updateAvatar(@RequestBody @Valid UpdateAvatarRequest request)
             throws UserIdNotFoundException {
         userService.updateAvatar(request);
-        return ResponseEntity.ok(ApiResponse.builder().success(true).code(HttpStatus.OK.value())
+        return ResponseEntity.ok(ApiResponse.builder()
+                .success(true)
+                .code(HttpStatus.OK.value())
                 .message("Update avatar successfully").payload(null).build());
     }
 
@@ -128,12 +145,15 @@ public class UserController {
             throws IOException {
         log.info("User upload image");
         UriImageDTO uriImageDTO = fileUploadUtil.uploadFile(multipartFile, "/auth/api/v1/users/images/");
-        return ResponseEntity.ok(ApiResponse.builder().success(true).code(HttpStatus.OK.value())
-                .message("Upload successfully").payload(uriImageDTO).build());
+        return ResponseEntity.ok(ApiResponse.builder()
+                .success(true)
+                .code(HttpStatus.OK.value())
+                .message("Upload successfully")
+                .payload(uriImageDTO).build());
     }
 
-    @GetMapping(value = "/images/{imageName}", produces = { MediaType.IMAGE_JPEG_VALUE, MediaType.IMAGE_GIF_VALUE,
-            MediaType.IMAGE_PNG_VALUE })
+    @GetMapping(value = "/images/{imageName}", produces = {MediaType.IMAGE_JPEG_VALUE, MediaType.IMAGE_GIF_VALUE,
+            MediaType.IMAGE_PNG_VALUE})
     public byte[] getImageWithMediaType(@PathVariable(name = "imageName") String fileName) {
         return fileUploadUtil.load(fileName);
     }
