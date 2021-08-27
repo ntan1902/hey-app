@@ -75,6 +75,30 @@ paths:
       responses:
         "201":
           description: CREATED
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - success
+                  - code
+                  - message
+                properties:
+                  success:
+                    type: boolean
+                    default: true
+                    example: true
+                  code:
+                    type: integer
+                    default: 201
+                    example: 201
+                  message:
+                    type: string
+                    default: "Request successfully"
+                  payload:
+                    type: object
+                    default: {}
+                    example: {}
         "400":
           description: Bad Request
           content:
@@ -90,7 +114,7 @@ paths:
         Return user info mation
       responses:
         "200":
-          description: CREATED
+          description: OK
           content:
             application/json:
               schema:
@@ -143,6 +167,36 @@ paths:
       responses:
         "201":
           description: CREATED
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - success
+                  - code
+                  - message
+                properties:
+                  success:
+                    type: boolean
+                    default: true
+                    example: true
+                  code:
+                    type: integer
+                    default: 201
+                    example: 201
+                  message:
+                    type: string
+                    default: "Request successfully"
+                  payload:
+                    type: object
+                    default: {}
+                    example: {}
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error400"
 
   # Has Pin for User
   /api/v1/users/hasPin:
@@ -150,7 +204,7 @@ paths:
       tags:
         - Auth Service
       description: >-
-        User Create Pin
+        User Has Pin
       requestBody:
         required: true
         content:
@@ -163,10 +217,42 @@ paths:
                 pin:
                   type: string
                   example: "iqewbfj9395fbs932004f5bhjkfbvew894bt75btc5nt79 9c8nmtvn5m9oc5gl983hcrf57890o32d5900a422750fe0ab1"
-        description: Create User Pin
+        description: User Has Pin
       responses:
-        "201":
-          description: CREATED
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - success
+                  - code
+                  - message
+                properties:
+                  success:
+                    type: boolean
+                    default: true
+                    example: true
+                  code:
+                    type: integer
+                    default: 200
+                    example: 200
+                  message:
+                    type: string
+                    default: "Request successfully"
+                  payload:
+                    type: object
+                    properties:
+                      hasPin:
+                        type: boolean
+                        example: true
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error400"
 
   # Generate Soft Token
   /api/v1/users/createSoftTokenByPin:
@@ -187,28 +273,496 @@ paths:
                 pin:
                   type: string
                   example: "iqewbfj9395fbs932004f5bhjkfbvew894bt75btc5nt79 9c8nmtvn5m9oc5gl983hcrf57890o32d5900a422750fe0ab1"
-        description: Create User Pin
+                amount:
+                  type: number
+                  example: 1000
+        description: Create Soft Token Pin
       responses:
         "201":
           description: CREATED
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - success
+                  - code
+                  - message
+                properties:
+                  success:
+                    type: boolean
+                    default: true
+                    example: true
+                  code:
+                    type: integer
+                    default: 201
+                    example: 201
+                  message:
+                    type: string
+                    default: "Request successfully"
+                  payload:
+                    type: object
+                    properties:
+                      softToken:
+                        type: string
+                        example: "abdbfdbfdgret4543543treg"
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error400"
 
-  /api/v1/users/signout:
-    post:
+  # Get username
+  /api/v1/users/getUsername/{userId}:
+    get:
       tags:
         - Auth Service
       description: >-
-        Login to the system
+        Get Username
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          description: User Id
+          schema:
+            type: string
+            example: "uuid"
+
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - success
+                  - code
+                  - message
+                properties:
+                  success:
+                    type: boolean
+                    default: true
+                    example: true
+                  code:
+                    type: integer
+                    default: 200
+                    example: 200
+                  message:
+                    type: string
+                    default: "Request successfully"
+                  payload:
+                    type: object
+                    properties:
+                      username:
+                        type: string
+                        example: "ntan"
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error400"
+
+  # Change password
+  /api/v1/users/changePassword:
+    patch:
+      tags:
+        - Auth Service
+      description: >-
+        User Change Password
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/LoginForm"
-        description: User login to the app
+              type: object
+              required:
+                - password
+                - oldPassword
+                - confirmPassword
+              properties:
+                password:
+                  type: string
+                  example: "123456"
+                oldPassword:
+                  type: string
+                  example: "1234"
+                confirmPassword:
+                  type: string
+                  example: "123456"
+        description: Change Password
+      responses:
+        "204":
+          description: NO_CONTENT
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - success
+                  - code
+                  - message
+                properties:
+                  success:
+                    type: boolean
+                    default: true
+                    example: true
+                  code:
+                    type: integer
+                    default: 204
+                    example: 204
+                  message:
+                    type: string
+                    default: "Change password successfully"
+                  payload:
+                    type: object
+                    default: {}
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error400"
+
+  # Change pin
+  /api/v1/users/changePin:
+    patch:
+      tags:
+        - Auth Service
+      description: >-
+        User Change Pin
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - pin
+                - oldPin
+                - confirmPin
+              properties:
+                pin:
+                  type: string
+                  example: "123456"
+                oldPin:
+                  type: string
+                  example: "1234"
+                confirmPin:
+                  type: string
+                  example: "123456"
+        description: Change Pin
+      responses:
+        "204":
+          description: NO_CONTENT
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - success
+                  - code
+                  - message
+                properties:
+                  success:
+                    type: boolean
+                    default: true
+                    example: true
+                  code:
+                    type: integer
+                    default: 204
+                    example: 204
+                  message:
+                    type: string
+                    default: "Change pin successfully"
+                  payload:
+                    type: object
+                    default: {}
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error400"
+
+  # Refresh token
+  /api/v1/users/refreshToken:
+    post:
+      tags:
+        - Auth Service
+      description: >-
+        User Refresh Token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - pin
+                - oldPin
+                - confirmPin
+              properties:
+                refreshToken:
+                  type: string
+                  example: "abc"
+
+        description: Refresh token
+      responses:
+        "201":
+          description: CREATED
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - success
+                  - code
+                  - message
+                properties:
+                  success:
+                    type: boolean
+                    default: true
+                    example: true
+                  code:
+                    type: integer
+                    default: 201
+                    example: 201
+                  message:
+                    type: string
+                    default: "Change pin successfully"
+                  payload:
+                    type: object
+                    properties:
+                      accessToken:
+                        type: string
+                        example: "abcbb"
+                      tokenType:
+                        type: string
+                        example: "Bearer"
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error400"
+
+  # User logout
+  /api/v1/users/logout:
+    post:
+      tags:
+        - Auth Service
+      description: >-
+        Logout the system
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                refreshToken:
+                  type: string
+                  example: "abc"
+        description: User logout the app
+      responses:
+        "204":
+          description: NO_CONTENT
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - success
+                  - code
+                  - message
+                properties:
+                  success:
+                    type: boolean
+                    default: true
+                    example: true
+                  code:
+                    type: integer
+                    default: 204
+                    example: 204
+                  message:
+                    type: string
+                    default: "Logout successfully"
+                  payload:
+                    type: object
+                    default: {}
+                    example: {}
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error400"
+
+  # Search User
+  /api/v1/users/searchUser:
+    get:
+      tags:
+        - Auth Service
+      description: >-
+        Return user information list
+      parameters:
+        - name: key
+          in: path
+          required: true
+          description: Key searching for full name or email
+          schema:
+            type: string
+            example: "an"
       responses:
         "200":
           description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - success
+                  - code
+                  - message
+                properties:
+                  success:
+                    type: boolean
+                    default: true
+                    example: true
+                  code:
+                    type: integer
+                    default: 200
+                    example: 200
+                  message:
+                    type: string
+                    default: "Request successfully"
+                  payload:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/UserDTO"
 
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error400"
+
+  # User update avatar
+  /api/v1/users/updateAvatar:
+    post:
+      tags:
+        - Auth Service
+      description: >-
+        Update Avatar
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                uri:
+                  type: string
+                  example: "abc"
+                mediumUri:
+                  type: string
+                  example: "abc"
+                smallUri:
+                  type: string
+                  example: "abc"
+        description: User update avatar in the app
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - success
+                  - code
+                  - message
+                properties:
+                  success:
+                    type: boolean
+                    default: true
+                    example: true
+                  code:
+                    type: integer
+                    default: 200
+                    example: 200
+                  message:
+                    type: string
+                    default: "Update avatar successfully"
+                  payload:
+                    type: object
+                    default: {}
+                    example: {}
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error400"
+
+  # User upload image
+  /api/v1/users/uploadImage:
+    post:
+      tags:
+        - Auth Service
+      description: >-
+        Upload Image
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: object
+                  format: base64
+
+        description: User upload image in the app
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - success
+                  - code
+                  - message
+                properties:
+                  success:
+                    type: boolean
+                    default: true
+                    example: true
+                  code:
+                    type: integer
+                    default: 200
+                    example: 200
+                  message:
+                    type: string
+                    default: "Upload successfully"
+                  payload:
+                    type: object
+                    default: {}
+                    example: {}
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error400"
+
+  # System login
   /api/v1/systems/login:
     post:
       tags:
