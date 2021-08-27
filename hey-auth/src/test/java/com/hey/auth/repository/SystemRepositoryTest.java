@@ -2,11 +2,10 @@ package com.hey.auth.repository;
 
 
 import com.hey.auth.entity.System;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
 class SystemRepositoryTest {
@@ -27,7 +26,7 @@ class SystemRepositoryTest {
         System actualSystem = underTest.findBySystemName("systemmm").get();
 
         // then
-        assertThat(actualSystem).isEqualTo(actualSystem);
+        Assertions.assertThat(actualSystem).isEqualTo(actualSystem);
     }
 
     @Test
@@ -44,6 +43,6 @@ class SystemRepositoryTest {
         System actualSystem = underTest.findById("uuid").get();
 
         // then
-        assertThat(actualSystem).isEqualTo(actualSystem);
+        Assertions.assertThat(actualSystem).isEqualTo(actualSystem);
     }
 }

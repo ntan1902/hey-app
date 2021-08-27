@@ -2,7 +2,6 @@ package com.hey.auth.service;
 
 import com.hey.auth.api.ChatApi;
 import com.hey.auth.dto.user.*;
-import com.hey.auth.dto.vertx.RegisterRequestToChat;
 import com.hey.auth.entity.SoftToken;
 import com.hey.auth.entity.User;
 import com.hey.auth.exception.jwt.InvalidJwtTokenException;
@@ -10,7 +9,6 @@ import com.hey.auth.exception.user.*;
 import com.hey.auth.jwt.JwtSoftTokenUtil;
 import com.hey.auth.jwt.JwtUserUtil;
 import com.hey.auth.mapper.UserMapper;
-import com.hey.auth.properties.ServiceProperties;
 import com.hey.auth.repository.RefreshTokenRepository;
 import com.hey.auth.repository.SoftTokenRepository;
 import com.hey.auth.repository.UserRepository;
@@ -27,7 +25,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDateTime;
 import java.util.Collections;

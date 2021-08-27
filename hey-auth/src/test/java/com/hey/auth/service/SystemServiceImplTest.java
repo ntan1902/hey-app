@@ -172,33 +172,12 @@ class SystemServiceImplTest {
         String expected = "uuid";
         given(jwtUserUtil.validateToken(request.getJwtUser())).willReturn(true);
         given(jwtUserUtil.getUserIdFromJwt(request.getJwtUser())).willReturn(expected);
-        given(userRepository.existsById(expected)).willReturn(true);
 
         // when
         AuthorizeResponse actual = underTest.authorizeUser(request);
 
         // then
         assertThat(actual.getUserId()).isEqualTo(expected);
-
-    }
-
-    @Test
-    void authorizeUserWillThrowUserIdNotFound() {
-        // given
-        AuthorizeRequest request = new AuthorizeRequest(
-                "dump"
-        );
-        String expected = "uuid";
-        given(jwtUserUtil.validateToken(request.getJwtUser())).willReturn(true);
-        given(jwtUserUtil.getUserIdFromJwt(request.getJwtUser())).willReturn(expected);
-        given(userRepository.existsById(expected)).willReturn(false);
-
-        // when
-
-        // then
-        assertThatThrownBy(() -> underTest.authorizeUser(request))
-                .isInstanceOf(UserIdNotFoundException.class)
-                .hasMessageContaining("User Id " + expected + " not found");
 
     }
 
@@ -233,36 +212,12 @@ class SystemServiceImplTest {
                 .build();
         given(jwtSystemUtil.validateToken(request.getJwtSystem())).willReturn(true);
         given(jwtSystemUtil.getSystemIdFromJwt(request.getJwtSystem())).willReturn(systemId);
-        given(systemRepository.findById(systemId)).willReturn(Optional.of(expected));
-
 
         // when
         SystemAuthorizeResponse actual = underTest.authorizeSystem(request);
 
         // then
         assertThat(actual.getSystemId()).isEqualTo(expected.getId());
-
-    }
-
-    @Test
-    void authorizeSystemWillThrowSystemIdNotFound() {
-        // given
-        SystemAuthorizeRequest request = new SystemAuthorizeRequest(
-                "dump"
-        );
-        String systemId = "uuid";
-
-        given(jwtSystemUtil.validateToken(request.getJwtSystem())).willReturn(true);
-        given(jwtSystemUtil.getSystemIdFromJwt(request.getJwtSystem())).willReturn(systemId);
-        given(systemRepository.findById(systemId)).willReturn(Optional.empty());
-
-
-        // when
-
-        // then
-        assertThatThrownBy(() -> underTest.authorizeSystem(request))
-                .isInstanceOf(SystemIdNotFoundException.class)
-                .hasMessageContaining("System Id " + systemId + " not found");
 
     }
 
