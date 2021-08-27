@@ -22,10 +22,10 @@ public class UserExceptionHandler {
         return new ResponseEntity<>(apiResponse, code);
     }
 
-    @ExceptionHandler(value = {UnauthorizedException.class})
+    @ExceptionHandler(value = {InternalServerErrException.class})
     public ResponseEntity<ApiResponse<Object>> handleException(Exception exception) {
         log.error(exception.getMessage());
-        HttpStatus code = HttpStatus.UNAUTHORIZED;
+        HttpStatus code = HttpStatus.INTERNAL_SERVER_ERROR;
         return getResponse(code, "Unauthorized!");
     }
 

@@ -1,16 +1,12 @@
 package com.hey.lucky.service;
 
-import com.hey.lucky.api.AuthApi;
 import com.hey.lucky.constant.TypeLuckyMoney;
 import com.hey.lucky.dto.auth_service.UserInfo;
 import com.hey.lucky.dto.chat_service.LuckyMoneyMessageContent;
 import com.hey.lucky.dto.chat_service.ReceiveLuckyMoneyMessageContent;
 import com.hey.lucky.dto.payment_service.TransferFromUserRequest;
 import com.hey.lucky.dto.payment_service.TransferToUserRequest;
-import com.hey.lucky.dto.user.CreateLuckyMoneyRequest;
-import com.hey.lucky.dto.user.LuckyMoneyDetails;
-import com.hey.lucky.dto.user.ReceiveLuckyMoneyRequest;
-import com.hey.lucky.dto.user.UserReceiveInfo;
+import com.hey.lucky.dto.user.*;
 import com.hey.lucky.entity.LuckyMoney;
 import com.hey.lucky.entity.ReceivedLuckyMoney;
 import com.hey.lucky.entity.User;
@@ -29,7 +25,6 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.http.HttpStatus;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -70,9 +65,6 @@ class LuckyMoneyServiceImplTest {
     @Mock
     private ChatUtil chatUtil;
 
-    @Mock
-    private AuthApi authApi;
-
     @Test
     void createLuckyMoney_throw_UnauthorizeException() throws ErrCallApiException {
         // given
@@ -99,7 +91,7 @@ class LuckyMoneyServiceImplTest {
     }
 
     @Test
-    void createLuckyMoney() throws ErrCallApiException, CannotTransferMoneyException, ErrCallChatApiException, UnauthorizeException, UserNotInSessionChatException, MinAmountPerBagException {
+    void createLuckyMoney() throws ErrCallApiException, CannotTransferMoneyException, ErrCallChatApiException, InternalServerErrException, UserNotInSessionChatException, MinAmountPerBagException {
         // given
         CreateLuckyMoneyRequest request = CreateLuckyMoneyRequest.builder()
                 .sessionChatId("abc")
@@ -149,6 +141,113 @@ class LuckyMoneyServiceImplTest {
                 .usingRecursiveComparison()
                 .ignoringFields("id", "createdAt", "expiredAt")
                 .isEqualTo(actual);
+    }
+
+    @Test
+    void createLuckyMoneyWithMoneyPerBagLessThanMinAmount(){
+        // given
+        CreateLuckyMoneyRequest request = CreateLuckyMoneyRequest.builder()
+                .sessionChatId("abc")
+                .numberBag(1000)
+                .message("happy new year")
+                .softToken("abc-123")
+                .type(TypeLuckyMoney.RANDOM)
+                .amount(20000L)
+                .build();
+        User user = new User("abc");
+        long walletId = 1L;
+
+        when(walletsInfo.getCurrentWallet()).thenReturn(walletId);
+        when(userUtil.getCurrentUser()).thenReturn(user);
+
+        // when
+        // then
+        assertThrows(MinAmountPerBagException.class, ()->luckyMoneyService.createLuckyMoney(request));
+    }
+    @Test
+    void createLuckyMoneyThrowErrCallChatApiException() throws ErrCallApiException, CannotTransferMoneyException, ErrCallChatApiException, InternalServerErrException, UserNotInSessionChatException, MinAmountPerBagException {
+        // given
+        CreateLuckyMoneyRequest request = CreateLuckyMoneyRequest.builder()
+                .sessionChatId("abc")
+                .numberBag(10)
+                .message("happy new year")
+                .softToken("abc-123")
+                .type(TypeLuckyMoney.RANDOM)
+                .amount(20000L)
+                .build();
+        User user = new User("abc");
+        long walletId = 1L;
+        long amount = 20000L;
+
+        when(walletsInfo.getCurrentWallet()).thenReturn(walletId);
+        when(userUtil.getCurrentUser()).thenReturn(user);
+
+        when(userUtil.isUserInSession(anyString(), anyString())).thenReturn(true);
+
+        when(paymentUtil.transferMoneyFromUser(any(TransferFromUserRequest.class))).thenReturn(amount);
+        doThrow(new ErrCallChatApiException("Can not send message")).when(chatUtil).sendMessageLuckyMoney(any(LuckyMoneyMessageContent.class));
+        doAnswer(invocationOnMock -> {
+            LuckyMoney firstAgr = invocationOnMock.getArgument(0);
+            firstAgr.setId(1L);
+            return null;
+        }).when(luckyMoneyRepository).save(any(LuckyMoney.class));
+        // when
+        // then
+        assertThrows(ErrCallChatApiException.class, ()->luckyMoneyService.createLuckyMoney(request));
+    }
+    @Test
+    void createLuckyMoneyThrowException() throws ErrCallApiException, CannotTransferMoneyException, ErrCallChatApiException, InternalServerErrException, UserNotInSessionChatException, MinAmountPerBagException {
+        // given
+        CreateLuckyMoneyRequest request = CreateLuckyMoneyRequest.builder()
+                .sessionChatId("abc")
+                .numberBag(10)
+                .message("happy new year")
+                .softToken("abc-123")
+                .type(TypeLuckyMoney.RANDOM)
+                .amount(20000L)
+                .build();
+        User user = new User("abc");
+        long walletId = 1L;
+        long amount = 20000L;
+
+        LocalDateTime createdAt = LocalDateTime.now();
+        LuckyMoney luckyMoney = LuckyMoney.builder()
+                .userId(user.getId())
+                .systemWalletId(walletId)
+                .sessionChatId(request.getSessionChatId())
+                .amount(amount)
+                .restMoney(amount)
+                .numberBag(request.getNumberBag())
+                .restBag(request.getNumberBag())
+                .type(request.getType())
+                .wishMessage(request.getMessage())
+                .createdAt(createdAt)
+                .expiredAt(createdAt.plusDays(1))
+                .build();
+
+        when(walletsInfo.getCurrentWallet()).thenReturn(walletId);
+        when(userUtil.getCurrentUser()).thenReturn(user);
+
+        when(userUtil.isUserInSession(anyString(), anyString())).thenReturn(true);
+
+        when(paymentUtil.transferMoneyFromUser(any(TransferFromUserRequest.class))).thenReturn(amount);
+
+        doThrow(new RuntimeException()).when(luckyMoneyRepository).save(luckyMoney);
+        doNothing().when(chatUtil).sendMessageLuckyMoney(any(LuckyMoneyMessageContent.class));
+
+        TransferToUserRequest expected = TransferToUserRequest.builder()
+                .amount(amount)
+                .receiverId(user.getId())
+                .message("Refund")
+                .walletId(walletId)
+                .build();
+        // when
+        luckyMoneyService.createLuckyMoney(request);
+        // then
+        ArgumentCaptor<TransferToUserRequest> argumentCaptor = ArgumentCaptor.forClass(TransferToUserRequest.class);
+        verify(paymentUtil, times(1)).transferMoneyToUser(argumentCaptor.capture());
+        TransferToUserRequest actual = argumentCaptor.getValue();
+        assertThat(expected).isEqualTo(actual);
     }
 
     @Test
@@ -291,7 +390,7 @@ class LuckyMoneyServiceImplTest {
     }
 
     @Test
-    void receiveLuckyMoneySuccessfully() throws InvalidLuckyMoneyException, ErrCallApiException, CannotTransferMoneyException, ErrCallChatApiException, UnauthorizeException, LuckyMoneyExpiredException, OutOfBagException, HadReceivedException, UserNotInSessionChatException {
+    void receiveLuckyMoneySuccessfully() throws InvalidLuckyMoneyException, ErrCallApiException, CannotTransferMoneyException, ErrCallChatApiException, InternalServerErrException, LuckyMoneyExpiredException, OutOfBagException, HadReceivedException, UserNotInSessionChatException {
         // given
         User user = new User("abc");
         ReceiveLuckyMoneyRequest request = ReceiveLuckyMoneyRequest.builder()
@@ -338,7 +437,19 @@ class LuckyMoneyServiceImplTest {
                 .ignoringFields("id", "createdAt")
                 .isEqualTo(actual);
     }
+    @Test
+    void getAllLuckyMoneyOfSessionWithNotExistSession() throws ErrCallApiException, InternalServerErrException, UserNotInSessionChatException, CannotGetUserInfo {
+        // given
+        User user = new User("abc");
+        String sessionId = "-1";
 
+        when(userUtil.getCurrentUser()).thenReturn(user);
+        List<LuckyMoneyDTO> expected = new ArrayList<>();
+        // when
+        List<LuckyMoneyDTO> actual = luckyMoneyService.getAllLuckyMoneyOfSession(sessionId);
+        // then
+        assertThat(expected).isEqualTo(actual);
+    }
     @Test
     void getAllLuckyMoneyOfSession_throw_UnauthorizeException() throws ErrCallApiException {
         // given
@@ -354,7 +465,7 @@ class LuckyMoneyServiceImplTest {
     }
 
     @Test
-    void getAllLuckyMoneyOfSession_successfully() throws ErrCallApiException, UnauthorizeException, CannotGetUserInfo, UserNotInSessionChatException {
+    void getAllLuckyMoneyOfSession_successfully() throws ErrCallApiException, InternalServerErrException, CannotGetUserInfo, UserNotInSessionChatException {
         // given
         User user = new User("abc");
         String sessionId = "123-abc";
@@ -439,7 +550,7 @@ class LuckyMoneyServiceImplTest {
     }
 
     @Test
-    void getDetailsLuckyMoney_Successfully() throws ErrCallApiException, UnauthorizeException, CannotGetUserInfo, InvalidLuckyMoneyException, UserNotInSessionChatException {
+    void getDetailsLuckyMoney_Successfully() throws ErrCallApiException, InternalServerErrException, CannotGetUserInfo, InvalidLuckyMoneyException, UserNotInSessionChatException {
         User user = new User("abc");
         LocalDateTime now = LocalDateTime.now();
         Long luckyMoneyId = 10L;

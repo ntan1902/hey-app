@@ -1,0 +1,26 @@
+@startuml
+actor User
+
+participant ChatServer
+participant AuthServer
+
+database AuthDB
+database Redis
+
+User -> ChatServer: update profile
+ChatServer -> AuthServer: authorize user
+AuthServer --> ChatServer: isPermitted
+opt isPermitted is false
+    ChatServer --> User: unauthorize
+end
+ChatServer -> AuthServer: update user profile
+AuthServer -> AuthDB: update user profile
+AuthServer --> ChatServer: updateResult
+opt updateResult is false
+    ChatServer --> User: update error
+end 
+ChatServer -> Redis: update userfull
+ChatServer --> User: update profile successfully
+
+
+@enduml

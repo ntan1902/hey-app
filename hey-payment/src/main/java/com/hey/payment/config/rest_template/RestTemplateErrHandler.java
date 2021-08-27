@@ -1,6 +1,6 @@
 package com.hey.payment.config.rest_template;
 
-import com.hey.payment.exception_handler.exception.UnauthorizedException;
+import com.hey.payment.exception_handler.exception.InternalServerErrException;
 import lombok.SneakyThrows;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.client.ClientHttpResponse;
@@ -23,7 +23,7 @@ public class RestTemplateErrHandler implements ResponseErrorHandler {
     @Override
     public void handleError(ClientHttpResponse httpResponse) throws IOException {
         if (httpResponse.getStatusCode().value() == 400) {
-            throw new UnauthorizedException("Unauthorized!");
+            throw new InternalServerErrException("Unauthorized!");
         }
     }
 }

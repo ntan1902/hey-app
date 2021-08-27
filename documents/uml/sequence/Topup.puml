@@ -1,0 +1,21 @@
+@startuml
+' hide footbox
+
+actor User
+participant PaymentServer
+participant AuthServer
+
+database MySQL
+User -> PaymentServer: Send amount of money
+PaymentServer -> AuthServer: Authorize user with JWT
+AuthServer --> PaymentServer: isPermisson
+alt isPermisson is true
+    PaymentServer -> MySQL: create topup statement
+    PaymentServer --> User: topup successful
+else isPermisson is false
+    PaymentServer --> User: unauthorize
+end
+
+
+
+@enduml

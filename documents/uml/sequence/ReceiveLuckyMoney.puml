@@ -1,0 +1,72 @@
+@startuml
+
+actor User
+actor Group
+
+participant LuckyServer
+participant ChatServer
+participant PaymentServer
+participant AuthServer
+
+database PaymentDB
+database LuckyDB
+database Redis
+User -> LuckyServer: receive lucky money 
+LuckyServer -> AuthServer: authorize user
+AuthServer --> LuckyServer: isPermitted
+opt isPermitted is false
+    LuckyServer --> User: unauthorize
+end
+LuckyServer -> ChatServer: check user is in session
+ChatServer -> AuthServer: authorize system
+AuthServer --> ChatServer: isSystemPermitted
+opt isSystemPermitted is false
+    ChatServer --> LuckyServer: unauthorize
+    LuckyServer --> User: internall server error
+end
+ChatServer --> LuckyServer: isUserInSession
+opt isUserInSession is false
+    LuckyServer --> User: you aren't in that session chat
+end
+
+LuckyServer -> LuckyServer: check lucky money is expired
+opt isExpired is true
+    LuckyServer -> User: this lucky money is expired
+end
+LuckyServer -> LuckyServer: check user has received this lucky money
+opt hasReceived is true
+    LuckyServer -> User: you have received this lucky money
+end
+LuckyServer -> LuckyServer: check lucky money is out of bag
+opt isOutOfBag is true
+    LuckyServer -> User: this lucky money is out of bag
+end
+
+LuckyServer -> LuckyServer: calculate amount
+LuckyServer -> PaymentServer: transfer to user
+PaymentServer -> AuthServer: authorize system
+AuthServer --> PaymentServer: isSystemPermitted
+opt isSystemPermitted is false
+    PaymentServer --> LuckyServer: unauthorize
+    LuckyServer --> User: internal server error
+end
+opt balance is not enough
+    PaymentServer --> LuckyServer: balance is not enough
+    LuckyServer --> User: internal server error
+end
+PaymentServer -> PaymentDB: create transfer statement
+PaymentServer --> LuckyServer: transfer success
+LuckyServer -> ChatServer: send message receive lucky money
+ChatServer -> AuthServer: authorize system
+AuthServer --> ChatServer: isSystemPermitted
+opt isSystemPermitted is false
+    ChatServer --> LuckyServer: unauthorize
+end
+ChatServer -> Redis: create new message
+ChatServer -> Group: receive lucky money message
+ChatServer --> LuckyServer: send message successfully
+LuckyServer -> LuckyDB: upate lucky money
+LuckyServer -> LuckyDB: insert receive lucky money
+LuckyServer --> User: receive lucky money successfully
+
+@enduml

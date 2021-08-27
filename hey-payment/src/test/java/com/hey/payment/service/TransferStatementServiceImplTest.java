@@ -39,6 +39,7 @@ import java.util.Optional;
 import static com.hey.payment.constant.MoneyConstant.MIN_AMOUNT;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -123,7 +124,7 @@ class TransferStatementServiceImplTest {
         // then
         verify(walletService, times(1)).transferMoney(sourceWallet.getId(), targetWallet.getId(), softTokenEncoded.getAmount());
         verify(chatApi, times(1)).createTransferMessage(any(TransferMessageRequest.class));
-        verify(transferStatementRepository, times(2)).save(any(TransferStatement.class));
+        verify(transferStatementRepository, times(1)).save(any(TransferStatement.class));
 
     }
 
@@ -391,7 +392,6 @@ class TransferStatementServiceImplTest {
                 .hasMessageContaining("Your balance is not enough");
 
         verify(chatApi, never()).createTransferMessage(any(TransferMessageRequest.class));
-        verify(transferStatementRepository, times(2)).save(any(TransferStatement.class));
 
     }
 
@@ -442,7 +442,7 @@ class TransferStatementServiceImplTest {
                 .hasMessageContaining("Target can't receive more money!");
 
         verify(chatApi, never()).createTransferMessage(any(TransferMessageRequest.class));
-        verify(transferStatementRepository, times(2)).save(any(TransferStatement.class));
+        verify(transferStatementRepository, times(1)).save(any(TransferStatement.class));
 
     }
 
@@ -479,7 +479,7 @@ class TransferStatementServiceImplTest {
 
         // then
         verify(walletService, times(1)).transferMoney(sourceWallet.getId(), targetWallet.getId(), request.getAmount());
-        verify(transferStatementRepository, times(2)).save(any(TransferStatement.class));
+        verify(transferStatementRepository, times(1)).save(any(TransferStatement.class));
     }
 
     @Test
@@ -618,8 +618,7 @@ class TransferStatementServiceImplTest {
                 .hasMessageContaining("Your balance is not enough");
 
         verify(walletService, times(1)).transferMoney(sourceWallet.getId(), targetWallet.getId(), request.getAmount());
-        verify(transferStatementRepository, times(2)).save(any(TransferStatement.class));
-    }
+     }
 
     @Test
     void systemCreateTransferToUserWillThrowMaxBalanceException() throws BalanceNotEnoughException, MaxBalanceException, HaveNoWalletException {
@@ -657,7 +656,7 @@ class TransferStatementServiceImplTest {
                 .hasMessageContaining("Target can't receive more money!");
 
         verify(walletService, times(1)).transferMoney(sourceWallet.getId(), targetWallet.getId(), request.getAmount());
-        verify(transferStatementRepository, times(2)).save(any(TransferStatement.class));
+        verify(transferStatementRepository, times(1)).save(any(TransferStatement.class));
     }
 
     @Test
@@ -706,11 +705,37 @@ class TransferStatementServiceImplTest {
         SystemCreateTransferFromUserResponse actual = underTest.systemCreateTransferFromUser(request);
 
         // then
-        verify(transferStatementRepository, times(2)).save(any(TransferStatement.class));
+        verify(transferStatementRepository, times(1)).save(any(TransferStatement.class));
         assertThat(actual.getAmount()).isEqualTo(50000L);
 
     }
 
+    @Test
+    void systemCreateTransferFromUserThrowSoftTokenAuthorizeExceptionNotEqualsAmount() throws BalanceNotEnoughException, MaxBalanceException, HaveNoWalletException, MinAmountException, MaxAmountException, SoftTokenAuthorizeException {
+        // given
+        System system = System.builder()
+                .id("uuid2")
+                .build();
+        when(systemUtil.getCurrentSystem()).thenReturn(system);
+        SystemCreateTransferFromUserRequest request = new SystemCreateTransferFromUserRequest(
+                "uuid1",
+                2L,
+                "softToken",
+                "hello",
+                50000L
+        );
+        VerifySoftTokenResponse.SoftTokenEncoded softTokenEncoded = new VerifySoftTokenResponse.SoftTokenEncoded("uuid1", 5000L);
+        VerifySoftTokenResponse authResponse = new VerifySoftTokenResponse(true, 200, "", softTokenEncoded);
+
+        when(authApi.verifySoftToken(request.getSoftToken())).thenReturn(authResponse);
+
+
+
+        // when
+
+        // then
+        assertThrows(SoftTokenAuthorizeException.class,()->underTest.systemCreateTransferFromUser(request));
+    }
     @Test
     void systemCreateTransferFromUserThrowSoftTokenAuthorizeException() throws BalanceNotEnoughException, MaxBalanceException, HaveNoWalletException {
         // given
@@ -959,7 +984,6 @@ class TransferStatementServiceImplTest {
                 .isInstanceOf(BalanceNotEnoughException.class)
                 .hasMessageContaining("Your balance is not enough");
 
-        verify(transferStatementRepository, times(2)).save(any(TransferStatement.class));
     }
 
     @Test
@@ -1012,7 +1036,7 @@ class TransferStatementServiceImplTest {
                 .isInstanceOf(MaxBalanceException.class)
                 .hasMessageContaining("Target can't receive more money!");
 
-        verify(transferStatementRepository, times(2)).save(any(TransferStatement.class));
+        verify(transferStatementRepository, times(1)).save(any(TransferStatement.class));
     }
 
     @Test

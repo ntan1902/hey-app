@@ -1,0 +1,63 @@
+@startuml
+actor User
+actor Group
+participant LuckyServer
+participant PaymentServer
+participant ChatServer
+participant AuthServer
+
+database PaymentDB
+database LuckyDB
+database Redis
+
+User -> LuckyServer: create lucky money
+LuckyServer -> AuthServer: authorize user
+AuthServer --> LuckyServer: isPermitted
+opt isPermitted is false
+    LuckyServer --> User: unauthorize
+end
+LuckyServer -> ChatServer: check user in session group
+ChatServer -> AuthServer: authorize system
+AuthServer -> ChatServer: isSystemPermitted
+opt isSystemPermitted is false
+    ChatServer --> LuckyServer: unauthorize
+    LuckyServer --> User: internal server error
+end
+ChatServer -> LuckyServer: isUserInSessionChat
+opt isUserInSessionChat is false
+    LuckyServer --> User: You aren't in that session
+end 
+LuckyServer -> PaymentServer: transfer money from user
+PaymentServer -> AuthServer: authorize system
+AuthServer --> PaymentServer: isSystemPermitted
+opt isSystemPermitted is false
+    PaymentServer --> LuckyServer: unauthorize
+    LuckyServer --> User: internal server error
+end
+PaymentServer -> AuthServer: authorize soft token
+AuthServer --> PaymentServer: softTokenEncodedResult
+opt softTokenEncodedResult is fail
+    PaymentServer --> LuckyServer: bad request
+    LuckyServer --> User: bad request
+end
+opt balance is not enough
+    PaymentServer --> LuckyServer: balance is not enough
+    LuckyServer --> User: Your balance is not enough
+end 
+PaymentServer -> PaymentDB: create transfer
+PaymentServer --> LuckyServer: amount
+LuckyServer -> LuckyDB: create lucky money
+LuckyServer -> ChatServer: send create lucky money server
+ChatServer -> AuthServer: authorize system
+AuthServer --> ChatServer: isSystemPermitted
+opt isSystemPermitted is false
+    ChatServer --> LuckyServer: unauthorize
+end
+ChatServer -> Redis: insert new message
+ChatServer -> Group: lucky money message
+ChatServer --> LuckyServer: send message success
+LuckyServer --> User: create lucky money successfull
+
+
+
+@enduml

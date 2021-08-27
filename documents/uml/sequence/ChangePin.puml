@@ -1,0 +1,21 @@
+@startuml
+
+actor User
+
+participant AuthServer
+
+database AuthDB
+
+User -> AuthServer: change pin
+AuthServer -> AuthServer: authorize user
+opt isPermitted is false
+    AuthServer --> User: unauthorize
+end
+AuthServer -> AuthServer: is old pin correct
+opt correct is false
+    AuthServer --> User: old pin is incorrect
+end
+AuthServer -> AuthDB: update pin
+AuthServer --> User: change pin successfully
+
+@enduml

@@ -79,10 +79,10 @@ public class MyExceptionHandler {
         return getResponse(code, exception.getMessage());
     }
 
-    @ExceptionHandler(value = {UnauthorizeException.class})
+    @ExceptionHandler(value = {InternalServerErrException.class})
     public ResponseEntity<ApiResponse> handleUnauthorizeException(Exception exception) {
         log.error(exception.getMessage());
-        HttpStatus code = HttpStatus.UNAUTHORIZED;
+        HttpStatus code = HttpStatus.INTERNAL_SERVER_ERROR;
         return getResponse(code, exception.getMessage());
     }
 
