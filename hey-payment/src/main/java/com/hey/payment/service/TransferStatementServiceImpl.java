@@ -64,7 +64,7 @@ public class TransferStatementServiceImpl implements TransferStatementService {
 
     private static final String USER_HAS_NO_WALLET = "User has no wallet";
 
-    private static final String UNAUTHORIZED= "Unauthorized!";
+    private static final String UNAUTHORIZED = "Unauthorized!";
 
     public static final String AMOUNT_IN_SOFT_TOKEN_IS_NOT_EQUALS_AMOUNT_IN_REQUEST = "Amount in soft token is not equals amount in request";
 
@@ -198,7 +198,7 @@ public class TransferStatementServiceImpl implements TransferStatementService {
 
             transferStatement.setStatus(TransferStatus.SUCCESS);
             transferStatementRepository.save(transferStatement);
-        } catch ( MaxBalanceException exception) {
+        } catch (MaxBalanceException exception) {
             transferStatement.setStatus(TransferStatus.FAIL);
             transferStatementRepository.save(transferStatement);
 
@@ -208,7 +208,7 @@ public class TransferStatementServiceImpl implements TransferStatementService {
     }
 
     @Override
-    public SystemCreateTransferFromUserResponse systemCreateTransferFromUser( SystemCreateTransferFromUserRequest request) throws SoftTokenAuthorizeException, MinAmountException, MaxAmountException, BalanceNotEnoughException, MaxBalanceException, HaveNoWalletException {
+    public SystemCreateTransferFromUserResponse systemCreateTransferFromUser(SystemCreateTransferFromUserRequest request) throws SoftTokenAuthorizeException, MinAmountException, MaxAmountException, BalanceNotEnoughException, MaxBalanceException, HaveNoWalletException {
         System system = systemUtil.getCurrentSystem();
         log.info("System transfer from user {} with soft token {}", request.getUserId(), request.getSoftToken());
         // Verify soft token
@@ -289,6 +289,8 @@ public class TransferStatementServiceImpl implements TransferStatementService {
         }
 
         userWallet.setBalance(userWallet.getBalance() + amount);
+        walletRepository.save(userWallet);
+
         TransferStatement transferStatement = TransferStatement.builder()
                 .sourceId(bankWallet.getId())
                 .targetId(userWallet.getId())
