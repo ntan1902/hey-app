@@ -80,17 +80,20 @@ const updateAvatar = (fileAvatar) => async (dispatch) => {
   formdata.append("file", fileAvatar);
   try {
     let uploadImageRes = await AuthAPI.uploadImage(formdata);
+    console.log(uploadImageRes);
     let updateAvatarRes = await AuthAPI.updateAvatar(
       uploadImageRes.data.payload.uri,
-      uploadImageRes.data.payload.miniUri
+      uploadImageRes.data.payload.smallUri,
+      uploadImageRes.data.payload.mediumUri
     );
 
     dispatch({
       type: UPDATE_AVATAR,
       avatar: uploadImageRes.data.payload.uri,
-      miniAvatar: uploadImageRes.data.payload.miniUri,
+      miniAvatar: uploadImageRes.data.payload.mediumUri,
     });
   } catch (error) {
+    console.log(error.response);
     message.error(error.response.data.payload);
   }
 };

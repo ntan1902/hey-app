@@ -3,7 +3,7 @@ package com.hey.lucky.util;
 import com.hey.lucky.constant.TypeLuckyMoney;
 import com.hey.lucky.dto.auth_service.UserInfo;
 import com.hey.lucky.dto.user.LuckyMoneyDTO;
-import com.hey.lucky.dto.user.UserReceiveInfo;
+import com.hey.lucky.dto.user.UserReceivedInfo;
 import com.hey.lucky.entity.LuckyMoney;
 import com.hey.lucky.entity.ReceivedLuckyMoney;
 import com.hey.lucky.entity.User;
@@ -36,18 +36,18 @@ public class LuckyMoneyServiceUtilImpl implements LuckyMoneyServiceUtil {
 
 
     @Override
-    public List<UserReceiveInfo> getListReceivedUsers(Long luckyMoneyId) throws CannotGetUserInfo {
+    public List<UserReceivedInfo> getListReceivedUsers(Long luckyMoneyId) throws CannotGetUserInfo {
         List<ReceivedLuckyMoney> receivedLuckyMoneyList = receivedLuckyMoneyRepository.findAllByLuckyMoneyId(luckyMoneyId);
-        List<UserReceiveInfo> userReceiveInfoList = new ArrayList<>();
+        List<UserReceivedInfo> userReceivedInfoList = new ArrayList<>();
         for (ReceivedLuckyMoney receivedLuckyMoney : receivedLuckyMoneyList) {
             UserInfo userInfo = userUtil.getUserInfo(receivedLuckyMoney.getReceiverId());
-            userReceiveInfoList.add(UserReceiveInfo.builder()
+            userReceivedInfoList.add(UserReceivedInfo.builder()
                     .fullName(userInfo.getFullName())
                     .amount(receivedLuckyMoney.getAmount())
                     .receivedAt(receivedLuckyMoney.getCreatedAt().toString())
                     .build());
         }
-        return userReceiveInfoList;
+        return userReceivedInfoList;
     }
 
 

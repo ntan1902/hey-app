@@ -1,14 +1,52 @@
 import React from "react";
 import { connect } from "react-redux";
 import ChatItem from "./chat-item";
+import { Scrollbars } from "react-custom-scrollbars";
+import { Menu, Spin } from "antd";
+import { changeChatListOffset } from "../actions/chatAction";
 
 class MessagePanel extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      current: [],
+      newselect: [],
+      isAll: false,
+      offset: 20,
+      loadSize: 0,
+      data: [],
+    };
+    this.divLoadMore = React.createRef();
+  }
+
   scrollToBottom = () => {
-    this.messagesEnd.scrollIntoView({ behavior: "smooth" });
+    this.messagesEnd.scrollIntoView({ behavior: "instant" });
   };
 
   componentDidUpdate() {
     this.scrollToBottom();
+  }
+
+  componentDidMount() {
+    console.log("did mount");
+    this.observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          this.props.changeChatListOffset(
+            this.props.loadSize > this.props.messageItems.length,
+            this.props.loadSize + this.state.offset
+          );
+          // this.setState((prevState, props) => ({
+          //   loadSize: prevState.loadSize + prevState.offset,
+          // }));
+          // if (this.state.loadSize > this.props.messageItems.length)
+          //   this.setState({ isAll: true });
+        });
+      },
+      { threshold: 1 }
+    );
+
+    this.observer.observe(this.divLoadMore.current);
   }
 
   render() {
@@ -20,19 +58,31 @@ class MessagePanel extends React.Component {
             this.messagesEnd = el;
           }}
         ></div>
-        {this.props.messageItems.map((item, index) => (
-          <ChatItem
-            key={item.id && item.id != "" ? item.id : index}
-            type={item.type}
-            value={item.message}
-            showavatar={item.showavatar}
-            avatar={item.avatar}
-            date={item.createdDate}
-            userId={item.userId}
-            name={item.name}
-            id={item.id}
-          />
-        ))}
+
+        {this.props.messageItems
+          .slice(0, this.props.loadSize)
+          .map((item, index) => (
+            <ChatItem
+              key={item.id && item.id != "" ? item.id : index}
+              type={item.type}
+              value={item.message}
+              showavatar={item.showavatar}
+              avatar={item.avatar}
+              date={item.createdDate}
+              userId={item.userId}
+              name={item.name}
+              id={item.id}
+            />
+          ))}
+        {!this.props.isAll && (
+          <div
+            ref={this.divLoadMore}
+            id="load_more"
+            style={{ display: "flex", justifyContent: "center" }}
+          >
+            <Spin size="large" />
+          </div>
+        )}
       </div>
     );
   }
@@ -41,11 +91,17 @@ class MessagePanel extends React.Component {
 function mapStateToProps(state) {
   return {
     messageItems: state.chatReducer.messageItems,
+    isAll: state.chatReducer.isAll,
+    loadSize: state.chatReducer.loadSize,
   };
 }
 
 function mapDispatchToProps(dispatch) {
-  return {};
+  return {
+    changeChatListOffset(offset, isAll) {
+      dispatch(changeChatListOffset(offset, isAll));
+    },
+  };
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(MessagePanel);
