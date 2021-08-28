@@ -320,8 +320,8 @@ public class APIService extends BaseService {
 
         Future<GetSessionIdResponse> future = Future.future();
 
-        String chatListKey = "chat:list:*:" + userId + ":" + getSessionIdRequest.getUserId();
-        String chatListKeyReverse = "chat:list:*:" + getSessionIdRequest.getUserId() + ":" + userId;
+        String chatListKey = "chat:list:*" + userId + ":" + getSessionIdRequest.getUserId();
+        String chatListKeyReverse = "chat:list:*" + getSessionIdRequest.getUserId() + ":" + userId;
 
         List<Future> getKeysByPatternFutures = new ArrayList<>();
 
