@@ -19,7 +19,7 @@ paths:
   ### Authentication Service
 
   # User login to the app
-  /api/v1/users/login:
+  /auth/api/v1/users/login:
     post:
       tags:
         - Auth Service
@@ -67,7 +67,7 @@ paths:
                 $ref: "#/components/schemas/Error401"
 
   # User register to the app
-  /api/v1/users/register:
+  /auth/api/v1/users/register:
     post:
       tags:
         - Auth Service
@@ -115,7 +115,7 @@ paths:
                 $ref: "#/components/schemas/Error400"
 
   # User get info
-  /api/v1/users/getInfo:
+  /auth/api/v1/users/getInfo:
     get:
       tags:
         - Auth Service
@@ -162,7 +162,7 @@ paths:
                 $ref: "#/components/schemas/Error400"
 
   # Create Pin for User
-  /api/v1/users/createPin:
+  /auth/api/v1/users/createPin:
     post:
       tags:
         - Auth Service
@@ -224,7 +224,7 @@ paths:
                 $ref: "#/components/schemas/Error400"
 
   # Has Pin for User
-  /api/v1/users/hasPin:
+  /auth/api/v1/users/hasPin:
     post:
       tags:
         - Auth Service
@@ -288,7 +288,7 @@ paths:
                 $ref: "#/components/schemas/Error400"
 
   # Generate Soft Token
-  /api/v1/users/createSoftTokenByPin:
+  /auth/api/v1/users/createSoftTokenByPin:
     post:
       tags:
         - Auth Service
@@ -355,7 +355,7 @@ paths:
                 $ref: "#/components/schemas/Error400"
 
   # Get username
-  /api/v1/users/getUsername/{userId}:
+  /auth/api/v1/users/getUsername/{userId}:
     get:
       tags:
         - Auth Service
@@ -414,7 +414,7 @@ paths:
                 $ref: "#/components/schemas/Error400"
 
   # Change password
-  /api/v1/users/changePassword:
+  /auth/api/v1/users/changePassword:
     patch:
       tags:
         - Auth Service
@@ -483,7 +483,7 @@ paths:
                 $ref: "#/components/schemas/Error400"
 
   # Change pin
-  /api/v1/users/changePin:
+  /auth/api/v1/users/changePin:
     patch:
       tags:
         - Auth Service
@@ -552,7 +552,7 @@ paths:
                 $ref: "#/components/schemas/Error400"
 
   # Refresh token
-  /api/v1/users/refreshToken:
+  /auth/api/v1/users/refreshToken:
     post:
       tags:
         - Auth Service
@@ -615,7 +615,7 @@ paths:
                 $ref: "#/components/schemas/Error400"
 
   # User logout
-  /api/v1/users/logout:
+  /auth/api/v1/users/logout:
     post:
       tags:
         - Auth Service
@@ -675,7 +675,7 @@ paths:
                 $ref: "#/components/schemas/Error400"
 
   # Search User
-  /api/v1/users/searchUser:
+  /auth/api/v1/users/searchUser:
     get:
       tags:
         - Auth Service
@@ -732,7 +732,7 @@ paths:
                 $ref: "#/components/schemas/Error400"
 
   # User update avatar
-  /api/v1/users/updateAvatar:
+  /auth/api/v1/users/updateAvatar:
     post:
       tags:
         - Auth Service
@@ -798,7 +798,7 @@ paths:
                 $ref: "#/components/schemas/Error400"
 
   # User upload image
-  /api/v1/users/uploadImage:
+  /auth/api/v1/users/uploadImage:
     post:
       tags:
         - Auth Service
@@ -859,7 +859,7 @@ paths:
                 $ref: "#/components/schemas/Error400"
 
   # System login
-  /api/v1/systems/login:
+  /auth/api/v1/systems/login:
     post:
       tags:
         - Auth Service
@@ -912,7 +912,7 @@ paths:
                 $ref: "#/components/schemas/Error401"
 
   # System authorizes user
-  /api/v1/systems/authorizeUser:
+  /auth/api/v1/systems/authorizeUser:
     post:
       tags:
         - Auth Service
@@ -925,7 +925,7 @@ paths:
             type: string
           required: true
           example: sas8asa8s8asa0sd0as6ad5d9as6d7fs9sf6sd9ds
-          description: JWT of service
+          description: JWT of system
       requestBody:
         required: true
         content:
@@ -971,7 +971,7 @@ paths:
                 $ref: "#/components/schemas/Error401"
 
   # System authorizes system
-  /api/v1/systems/authorizeSystem:
+  /auth/api/v1/systems/authorizeSystem:
     post:
       tags:
         - Auth Service
@@ -984,7 +984,7 @@ paths:
             type: string
           required: true
           example: sas8asa8s8asa0sd0as6ad5d9as6d7fs9sf6sd9ds
-          description: JWT of service
+          description: JWT of system
       requestBody:
         required: true
         content:
@@ -1030,7 +1030,7 @@ paths:
                 $ref: "#/components/schemas/Error401"
 
   # Authenticate soft token from user
-  /api/v1/systems/authorizeSoftToken:
+  /auth/api/v1/systems/authorizeSoftToken:
     post:
       tags:
         - Auth Service
@@ -1043,7 +1043,7 @@ paths:
             type: string
           required: true
           example: sas8asa8s8asa0sd0as6ad5d9as6d7fs9sf6sd9ds
-          description: JWT of service
+          description: JWT of system
       requestBody:
         required: true
         content:
@@ -1096,7 +1096,7 @@ paths:
                 $ref: "#/components/schemas/Error400"
 
   # Get System's information
-  /api/v1/systems/getSystemInfo/{systemId}:
+  /auth/api/v1/systems/getSystemInfo/{systemId}:
     get:
       tags:
         - Auth Service
@@ -1115,7 +1115,7 @@ paths:
             type: string
           required: true
           example: sas8asa8s8asa0sd0as6ad5d9as6d7fs9sf6sd9ds
-          description: JWT of service
+          description: JWT of system
       responses:
         "200":
           description: OK
@@ -1150,7 +1150,7 @@ paths:
                 $ref: "#/components/schemas/Error400"
 
   # Get User's information
-  /api/v1/systems/getUserInfo/{userId}:
+  /auth/api/v1/systems/getUserInfo/{userId}:
     get:
       tags:
         - Auth Service
@@ -1169,7 +1169,7 @@ paths:
             type: string
           required: true
           example: sas8asa8s8asa0sd0as6ad5d9as6d7fs9sf6sd9ds
-          description: JWT of service
+          description: JWT of system
       responses:
         "200":
           description: OK
@@ -1204,7 +1204,7 @@ paths:
                 $ref: "#/components/schemas/Error400"
 
   # Get system list
-  /api/v1/systems/getSystems:
+  /auth/api/v1/systems/getSystems:
     get:
       tags:
         - Auth Service
@@ -1223,7 +1223,7 @@ paths:
             type: string
           required: true
           example: sas8asa8s8asa0sd0as6ad5d9as6d7fs9sf6sd9ds
-          description: JWT of service
+          description: JWT of system
       responses:
         "200":
           description: OK
@@ -1260,7 +1260,7 @@ paths:
                 $ref: "#/components/schemas/Error400"
 
   # Edit profile
-  /api/v1/systems/editProfile/{userId}:
+  /auth/api/v1/systems/editProfile/{userId}:
     patch:
       tags:
         - Auth Service
@@ -1279,7 +1279,7 @@ paths:
             type: string
           required: true
           example: sas8asa8s8asa0sd0as6ad5d9as6d7fs9sf6sd9ds
-          description: JWT of service
+          description: JWT of system
       requestBody:
         required: true
         content:
@@ -1492,12 +1492,115 @@ paths:
 
   ### Chat
 
-  /api/v1/systems/createTransferMessage:
+  /chat/api/public/register:
+    post:
+      tags:
+        - Chat Service
+      description: >-
+        Register to the system
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ChatRegisterForm"
+        description: User register to the chat app
+      responses:
+        "201":
+          description: CREATED
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - success
+                  - code
+                  - message
+                properties:
+                  success:
+                    type: boolean
+                    default: true
+                    example: true
+                  code:
+                    type: integer
+                    default: 201
+                    example: 201
+                  message:
+                    type: string
+                    default: "Request successfully"
+                  payload:
+                    type: object
+                    default: {}
+                    example: {}
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error400"
+
+  /chat/api/protected/chatlist:
+    post:
+      tags:
+        - Chat Service
+      description: >-
+        User Get Chat List
+      parameters:
+        - in: header
+          name: jwt
+          schema:
+            type: string
+          required: true
+          example: sas8asa8s8asa0sd0as6ad5d9as6d7fs9sf6sd9ds
+          description: JWT of user
+
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - success
+                  - code
+                  - message
+                properties:
+                  success:
+                    type: boolean
+                    default: true
+                    example: true
+                  code:
+                    type: integer
+                    default: 200
+                    example: 200
+                  message:
+                    type: string
+                    default: "Upload successfully"
+                  payload:
+                    type: object
+                    $ref: "#/components/schemas/ChatListResponse"
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error400"
+
+  /chat/api/v1/systems/createTransferMessage:
     post:
       tags:
         - Chat Service
       description: >-
         Payment sends transfer message to Chat
+      parameters:
+        - in: header
+          name: jwt
+          schema:
+            type: string
+          required: true
+          example: sas8asa8s8asa0sd0as6ad5d9as6d7fs9sf6sd9ds
+          description: JWT of system
       requestBody:
         required: true
         content:
@@ -1508,13 +1611,51 @@ paths:
       responses:
         "200":
           description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - success
+                  - code
+                  - message
+                properties:
+                  success:
+                    type: boolean
+                    default: true
+                    example: true
+                  code:
+                    type: integer
+                    default: 200
+                    example: 200
+                  message:
+                    type: string
+                    default: "Request successfully"
+                  payload:
+                    type: object
+                    default: {}
+                    example: {}
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error400"
 
-  /api/v1/systems/createLuckyMoneyMessage:
+  /chat/api/v1/systems/createLuckyMoneyMessage:
     post:
       tags:
         - Chat Service
       description: >-
         Payment sends create lucky money message to Chat
+      parameters:
+        - in: header
+          name: jwt
+          schema:
+            type: string
+          required: true
+          example: sas8asa8s8asa0sd0as6ad5d9as6d7fs9sf6sd9ds
+          description: JWT of system
       requestBody:
         required: true
         content:
@@ -1525,13 +1666,51 @@ paths:
       responses:
         "200":
           description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - success
+                  - code
+                  - message
+                properties:
+                  success:
+                    type: boolean
+                    default: true
+                    example: true
+                  code:
+                    type: integer
+                    default: 200
+                    example: 200
+                  message:
+                    type: string
+                    default: "Request successfully"
+                  payload:
+                    type: object
+                    default: {}
+                    example: {}
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error400"
 
-  /api/v1/systems/isUserExistInSession:
+  /chat/api/v1/systems/isUserExistInSession:
     post:
       tags:
         - Chat Service
       description: >-
         Lucky call api to check user is in session to Chat
+      parameters:
+        - in: header
+          name: jwt
+          schema:
+            type: string
+          required: true
+          example: sas8asa8s8asa0sd0as6ad5d9as6d7fs9sf6sd9ds
+          description: JWT of system
       requestBody:
         required: true
         content:
@@ -1542,13 +1721,51 @@ paths:
       responses:
         "200":
           description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - success
+                  - code
+                  - message
+                properties:
+                  success:
+                    type: boolean
+                    default: true
+                    example: true
+                  code:
+                    type: integer
+                    default: 200
+                    example: 200
+                  message:
+                    type: string
+                    default: "Request successfully"
+                  payload:
+                    type: object
+                    default: {}
+                    example: {}
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error400"
 
-  /api/v1/systems/receiveLuckyMoneyMessage:
+  /chat/api/v1/systems/receiveLuckyMoneyMessage:
     post:
       tags:
         - Chat Service
       description: >-
         Lucky call api to receive lucky money message Chat
+      parameters:
+        - in: header
+          name: jwt
+          schema:
+            type: string
+          required: true
+          example: sas8asa8s8asa0sd0as6ad5d9as6d7fs9sf6sd9ds
+          description: JWT of system
       requestBody:
         required: true
         content:
@@ -1559,6 +1776,36 @@ paths:
       responses:
         "200":
           description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - success
+                  - code
+                  - message
+                properties:
+                  success:
+                    type: boolean
+                    default: true
+                    example: true
+                  code:
+                    type: integer
+                    default: 200
+                    example: 200
+                  message:
+                    type: string
+                    default: "Request successfully"
+                  payload:
+                    type: object
+                    default: {}
+                    example: {}
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error400"
 
 components:
   schemas:
@@ -1649,7 +1896,6 @@ components:
         luckyMoneyId:
           type: number
           example: 7
-
     AuthorizeUserRequest:
       type: object
       required:
@@ -1764,13 +2010,29 @@ components:
         password:
           type: string
           example: anlg2@123
-        fullname:
+        fullName:
           type: string
           example: An
         email:
           type: string
           example: anlg2@vng.com.vn
-
+    ChatRegisterForm:
+      type: object
+      required:
+        - username
+        - password
+        - fullName
+        - email
+      properties:
+        userName:
+          type: string
+          example: anlg2
+        userId:
+          type: string
+          example: uuid
+        fullName:
+          type: string
+          example: An
     OwnerInfo:
       type: object
       required:
@@ -1992,6 +2254,51 @@ components:
         createdAt:
           type: string
           example: "26/7/2021"
+    ChatListResponse:
+      type: array
+      required:
+        - items
+      items:
+        $ref: "#/components/schemas/ChatListItem"
+
+    ChatListItem:
+      type: object
+      required:
+        - name
+        - sessionId
+        - lastMessage
+        - unread
+        - updatedDate
+        - groupName
+        - isGroup
+        - userIds
+      properties:
+        name:
+          type: string
+          example: an
+        sessionId:
+          type: string
+          example: abc
+        lastMessage:
+          type: string
+          example: hello
+        unread:
+          type: number
+          example: 1
+        updatedDate:
+          type: string
+          example: "19/02/2021"
+        groupName:
+          type: string
+          example: Group Test
+        isGroup:
+          type: boolean
+          example: true
+        userIds:
+          type: array
+          items:
+            type: string
+            example: uuid
 
     # =====================
     Error403:
