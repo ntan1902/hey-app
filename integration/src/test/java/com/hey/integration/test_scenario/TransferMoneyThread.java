@@ -43,6 +43,4 @@ public class TransferMoneyThread extends Thread {
         // Logout
         restTemplateUtil.logout();
     }
-
-
 }
