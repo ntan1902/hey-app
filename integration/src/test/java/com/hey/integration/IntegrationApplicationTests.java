@@ -52,7 +52,6 @@ class IntegrationApplicationTests {
     @Test
     public void manyUserTransferToOneUser() throws IOException, InterruptedException {
         Long expected = walletRepository.sumAllBalance();
-
         String[] HEADERS = {"username", "fullName", "email", "password"};
         Reader in = new FileReader(ResourceUtils.getFile("classpath:Data_100.csv"));
         Iterable<CSVRecord> records = CSVFormat.DEFAULT
@@ -60,39 +59,32 @@ class IntegrationApplicationTests {
                 .withFirstRecordAsHeader()
                 .parse(in);
         List<TransferMoneyThread> threads = new ArrayList<>();
-
         // Start threads for the transaction in the same time
         List<User> users = userRepository.findAll();
-
         Random randomUser = new Random();
         User targetUser = users.get(randomUser.nextInt(users.size()));
         String targetId = targetUser.getId();
-
         Random random = new Random();
         long amount = random.nextInt(25_123) + 10_000;
-
         records.forEach(record -> {
             String username = record.get("username");
             String password = record.get("password");
-
             if (!username.equals(targetUser.getUsername())) {
-
                 TransferMoneyThread transferMoneyThread =
                         new TransferMoneyThread(
                                 username,
                                 password,
                                 targetId,
                                 amount);
-
-                transferMoneyThread.start();
                 threads.add(transferMoneyThread);
             }
         });
-
+        for (TransferMoneyThread thread : threads) {
+            thread.start();
+        }
         for (TransferMoneyThread thread : threads) {
             thread.join();
         }
-
         long actual = walletRepository.sumAllBalance();
         assertThat(actual).isEqualTo(expected);
     }

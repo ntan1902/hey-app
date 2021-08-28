@@ -187,7 +187,7 @@ class UserControllerTest {
                 post("/payment/api/v1/me/createWallet")
         ).andReturn().getResponse();
         // then
-        assertEquals(HttpStatus.OK.value(),actual.getStatus());
+        assertEquals(HttpStatus.CREATED.value(),actual.getStatus());
         assertEquals(jsApiResponse.write(expected).getJson(),actual.getContentAsString());
     }
 
