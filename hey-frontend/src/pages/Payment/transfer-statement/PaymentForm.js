@@ -4,20 +4,14 @@ import Grid from "@material-ui/core/Grid";
 import TextField from "@material-ui/core/TextField";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Checkbox from "@material-ui/core/Checkbox";
-import Transfer from "./transfer";
+import Topup from "./topup";
 export default function PaymentForm(props) {
   return (
     <React.Fragment>
       {/* <Typography variant="h6" gutterBottom>
         Payment method
       </Typography> */}
-      <Transfer
-        cb={props.cb}
-        amount={props.amount}
-        setAmount={props.setAmount}
-        setSelectedUserId={props.setSelectedUserId}
-        setSendMessage={props.setSendMessage}
-      />
+      <Topup amount={props.amount} setAmount={props.setAmount} />
 
       {/* <Grid container spacing={3}></Grid> */}
     </React.Fragment>

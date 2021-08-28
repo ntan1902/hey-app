@@ -29,20 +29,18 @@ const useStyles = makeStyles((theme) => ({
 
 function Review(props) {
   const classes = useStyles();
-  const payments = [
-    { name: "Card type", detail: "Visa" },
-    { name: "Card holder", detail: props.profile.fullName },
-    { name: "Card number", detail: "xxxx-xxxx-xxxx-1234" },
-    { name: "Expiry date", detail: "04/2024" },
-  ];
+
   return (
     <React.Fragment>
       <Typography variant="h6" gutterBottom>
-        Topup summary
+        {`Transfer to ${props.fullName}`}
       </Typography>
       <List disablePadding>
         <ListItem className={classes.listItem} key={"1"}>
-          <ListItemText primary={"Topup"} secondary={"Topup from BIDV"} />
+          <ListItemText
+            primary={"Transfer"}
+            secondary={props.message != "" ? `Message: ${props.message}` : ""}
+          />
           <Typography variant="body2">
             {formatToCurrency(props.amount) + currency}
           </Typography>
@@ -54,25 +52,6 @@ function Review(props) {
           </Typography>
         </ListItem>
       </List>
-      <Grid container spacing={2}>
-        <Grid item container direction="column" xs={12} sm={12} lg={12} md={12}>
-          <Typography variant="h6" gutterBottom className={classes.title}>
-            Payment details
-          </Typography>
-          <Grid container>
-            {payments.map((payment) => (
-              <React.Fragment key={payment.name}>
-                <Grid item xs={6}>
-                  <Typography gutterBottom>{payment.name}</Typography>
-                </Grid>
-                <Grid item xs={6}>
-                  <Typography gutterBottom>{payment.detail}</Typography>
-                </Grid>
-              </React.Fragment>
-            ))}
-          </Grid>
-        </Grid>
-      </Grid>
     </React.Fragment>
   );
 }

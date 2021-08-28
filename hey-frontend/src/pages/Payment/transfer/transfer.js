@@ -44,15 +44,16 @@ class MessagePanel extends React.Component {
       hasError = true;
     }
     if (!hasError) {
-      this.props.paymentActions.onOpenPinPopup();
+      // this.props.paymentActions.onOpenPinPopup();
+      this.props.setAmount(this.state.amount);
+      this.props.setSelectedUserId(this.state.selectedUserId);
+      this.props.setSendMessage(this.state.message);
+
+      this.props.cb();
       return true;
     }
     return false;
   };
-
-  componentDidMount() {
-    this.props.cb(() => this.showPinModal());
-  }
 
   renderButtonMoney = (item, index) => {
     return (
@@ -205,11 +206,26 @@ class MessagePanel extends React.Component {
           }}
         >
           <div style={{ flex: 1 }}></div>
-          {/* <div onClick={this.showPinModal}>
-            <Button className="continue-btn" type="primary">
-              Continue
-            </Button>
-          </div> */}
+
+          <Button
+            // variant="contained"
+            // color="primary"
+            onClick={this.showPinModal}
+            style={{
+              width: 80,
+              height: 30,
+              backgroundColor: "#3f51b5",
+              color: "white",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              fontSize: 15,
+              fontWeight: 500,
+              marginTop: 10,
+            }}
+          >
+            Next
+          </Button>
         </div>
       </div>
     );

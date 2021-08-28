@@ -41,7 +41,6 @@ export default function reduce(state = initialState, action) {
         chatList: action.fetchedChatList,
         messageHeader: action.messageHeader,
         currentSessionId: action.currentSessionId,
-        isAll: false,
       };
     case CHATLIST_REFETCHED:
       return {
@@ -85,7 +84,7 @@ export default function reduce(state = initialState, action) {
         waitingGroupUsernames: action.waitingGroupUsernames,
         currentSessionId: action.currentSessionId,
         startChatGroupList: [],
-        isAll: false,
+        isAll: action.messageItems.length < 20,
       };
     case START_CHAT_SINGLE:
       return {
@@ -93,7 +92,7 @@ export default function reduce(state = initialState, action) {
         messageItems: action.messageItems,
         waitingGroupUsernames: action.waitingGroupUsernames,
         currentSessionId: action.currentSessionId,
-        isAll: false,
+        isAll: action.messageItems.length < 20,
       };
     case MESSAGE_PANEL_FETCHED:
       return {
@@ -103,7 +102,7 @@ export default function reduce(state = initialState, action) {
         currentSessionId: action.currentSessionId,
         chatList: action.chatList,
         userSelected: action.userSelected,
-        isAll: false,
+        isAll: action.messageItems.length < 20,
       };
     case NEW_MESSAGE_IN_PANEL_FETCHED:
       if (action.title != "" && state.messageHeader) {
@@ -142,7 +141,7 @@ export default function reduce(state = initialState, action) {
       return {
         ...state,
         isAll: action.isAll,
-        loadSize: action.offset,
+        loadSize: action.loadSize,
       };
     default:
       return state;
