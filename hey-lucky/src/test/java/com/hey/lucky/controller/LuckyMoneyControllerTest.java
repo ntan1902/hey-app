@@ -81,7 +81,7 @@ class LuckyMoneyControllerTest {
                         .content(jsCreateLuckyMoneyRequest.write(request).getJson())
         ).andReturn().getResponse();
         // then
-        assertEquals(HttpStatus.OK.value(), actual.getStatus());
+        assertEquals(HttpStatus.CREATED.value(), actual.getStatus());
         assertEquals(jsApiResponse.write(expected).getJson(), actual.getContentAsString());
     }
 
