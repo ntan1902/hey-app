@@ -41,6 +41,7 @@ class ChatList extends React.Component {
         );
       }
     }
+    this.props.scrollToBottom();
   }
 
   renderListAvatar = (item) => {
