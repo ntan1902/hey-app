@@ -1,11 +1,11 @@
 import React from "react";
-import {connect} from "react-redux";
+import { connect } from "react-redux";
 import $ from "jquery";
 
-import {channingActions} from "../utils";
-import {bindPaymentActions} from "../actions";
-import {Select} from "antd";
-import {ChatAPI} from "../api/chat";
+import { channingActions } from "../utils";
+import { bindPaymentActions } from "../actions";
+import { Select } from "antd";
+import { ChatAPI } from "../api/chat";
 
 const { Option } = Select;
 
@@ -43,6 +43,7 @@ class AddFriend extends React.Component {
 
   onChange = (value) => {
     console.log(`selected ${value}`);
+    this.props.onChange(JSON.parse(value));
   };
 
   onBlur = () => {
@@ -67,18 +68,21 @@ class AddFriend extends React.Component {
           </a>
         </div> */}
         <Select
-          showSearch
+          // showSearch
           style={{ width: 200 }}
           placeholder="Select a person"
           optionFilterProp="children"
-          onChange={this.props.onChange}
+          onChange={this.onChange}
           onFocus={this.onFocus}
           onBlur={this.onBlur}
           onSearch={this.onSearch}
         >
           {this.state.friends.map((e, index) => {
             return (
-              <Option value={e.userId} key={index}>
+              <Option
+                value={JSON.stringify({ userId: e.userId, fullName: e.name })}
+                key={index}
+              >
                 {e.name}
               </Option>
             );

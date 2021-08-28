@@ -12,8 +12,7 @@ class MessagePanel extends React.Component {
       current: [],
       newselect: [],
       isAll: false,
-      offset: 20,
-      loadSize: 0,
+      limit: 20,
       data: [],
     };
     this.divLoadMore = React.createRef();
@@ -24,23 +23,25 @@ class MessagePanel extends React.Component {
   };
 
   componentDidUpdate() {
-    this.scrollToBottom();
+    // this.scrollToBottom();
   }
 
   componentDidMount() {
     console.log("did mount");
     this.observer = new IntersectionObserver(
       (entries) => {
+        console.log("Entries");
         entries.forEach((entry) => {
+          console.log("Load More");
+          const left =
+            this.props.messageItems.length -
+            this.props.loadSize -
+            this.state.limit;
+          let isAll = left < 0;
           this.props.changeChatListOffset(
-            this.props.loadSize > this.props.messageItems.length,
-            this.props.loadSize + this.state.offset
+            this.props.loadSize + this.state.limit,
+            isAll
           );
-          // this.setState((prevState, props) => ({
-          //   loadSize: prevState.loadSize + prevState.offset,
-          // }));
-          // if (this.state.loadSize > this.props.messageItems.length)
-          //   this.setState({ isAll: true });
         });
       },
       { threshold: 1 }
@@ -74,15 +75,13 @@ class MessagePanel extends React.Component {
               id={item.id}
             />
           ))}
-        {!this.props.isAll && (
-          <div
-            ref={this.divLoadMore}
-            id="load_more"
-            style={{ display: "flex", justifyContent: "center" }}
-          >
-            <Spin size="large" />
-          </div>
-        )}
+        <div
+          ref={this.divLoadMore}
+          id="load_more"
+          style={{ display: "flex", justifyContent: "center" }}
+        >
+          {!this.props.isAll && <Spin size="large" />}
+        </div>
       </div>
     );
   }
@@ -98,8 +97,8 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
   return {
-    changeChatListOffset(offset, isAll) {
-      dispatch(changeChatListOffset(offset, isAll));
+    changeChatListOffset(loadSize, isAll) {
+      dispatch(changeChatListOffset(loadSize, isAll));
     },
   };
 }

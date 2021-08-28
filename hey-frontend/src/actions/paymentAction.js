@@ -76,6 +76,7 @@ export const changeOffset = (offset) => {
   return {
     type: actionTypes.CHANGE_OFFSET,
     offset: offset,
+    // isAll: true,
   };
 };
 

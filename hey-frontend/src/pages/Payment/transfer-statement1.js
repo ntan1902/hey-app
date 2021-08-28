@@ -1,7 +1,7 @@
 import React from "react";
 import { connect } from "react-redux";
 import { Button } from "antd";
-
+import TransferStatement from "./transfer-statement";
 import { channingActions } from "../../utils";
 import { bindPaymentActions } from "../../actions";
 
@@ -97,96 +97,7 @@ class MessagePanel extends React.Component {
           padding: 50,
         }}
       >
-        <div
-          style={{
-            width: "100%",
-            height: "100%",
-            backgroundColor: "white",
-            padding: 30,
-            display: "flex",
-            flexDirection: "column",
-          }}
-        >
-          <div>
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "row",
-                // justifyContent: "center",
-                alignItems: "center",
-              }}
-            >
-              <div
-                style={{
-                  fontSize: 20,
-                  fontWeight: 200,
-                  width: 200,
-                }}
-              >
-                Transfer To:
-              </div>
-              <div
-                style={{
-                  fontSize: 20,
-                  marginRight: 100,
-                  fontWeight: 200,
-                }}
-              >
-                {data.target.fullName}
-              </div>
-              {/* <AddFriendTransfer></AddFriendTransfer> */}
-            </div>
-            <div
-              style={{ display: "flex", flexDirection: "row", marginTop: 50 }}
-            >
-              <div
-                style={{
-                  fontSize: 20,
-                  // marginRight: 100,
-                  fontWeight: "bold",
-                  fontWeight: 200,
-                  width: 200,
-                }}
-              >
-                Amount
-              </div>
-              <div
-                style={{
-                  fontSize: 20,
-                  // marginRight: 100,
-                  fontWeight: "bold",
-                  fontWeight: 200,
-                }}
-              >
-                {data.amount}vnđ
-              </div>
-            </div>
-            <div
-              style={{ display: "flex", flexDirection: "row", marginTop: 50 }}
-            >
-              <div
-                style={{
-                  fontSize: 20,
-                  // marginRight: 100,
-                  fontWeight: "bold",
-                  fontWeight: 200,
-                  width: 200,
-                }}
-              >
-                Message
-              </div>
-              <div
-                style={{
-                  fontSize: 20,
-                  // marginRight: 100,
-                  fontWeight: 200,
-                }}
-              >
-                {data.description}
-              </div>
-            </div>
-          </div>
-        </div>
+        <TransferStatement></TransferStatement>
       </div>
     );
   }

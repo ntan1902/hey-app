@@ -5,7 +5,6 @@ import com.hey.integration.endpoint.MyEndpoint;
 import com.hey.integration.entity.User;
 import com.hey.integration.repository.TransferStatementRepository;
 import com.hey.integration.repository.UserRepository;
-import com.hey.integration.repository.WalletRepository;
 import com.hey.integration.test_scenario.AcceptFriendThread;
 import com.hey.integration.test_scenario.AddFriendThread;
 import com.hey.integration.utils.RestTemplateUtil;

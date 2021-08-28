@@ -364,6 +364,8 @@ export function changeMessageItems(chatItems, sessionId) {
     }
     store.dispatch(userSelected(sessionId));
   }
+  store.dispatch(changeChatListOffset(20, messageItems.length < 20));
+
   return {
     type: MESSAGE_PANEL_FETCHED,
     messageItems: messageItems,
@@ -382,8 +384,8 @@ export function changeMessageHeader(title, avatar, group, userIds = []) {
   return { type: MESSAGE_HEADER_FETCHED, messageHeader: header };
 }
 
-export function changeChatListOffset(isAll, offset) {
-  return { type: MESSAGE_OFFSET_FETCHED, isAll: isAll, offset: offset };
+export function changeChatListOffset(loadSize, isAll) {
+  return { type: MESSAGE_OFFSET_FETCHED, isAll: isAll, loadSize: loadSize };
 }
 
 export function addNewUserChatGroup(userId) {

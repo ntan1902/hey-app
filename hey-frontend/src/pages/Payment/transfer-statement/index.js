@@ -13,28 +13,26 @@ import Typography from "@material-ui/core/Typography";
 import AddressForm from "./AddressForm";
 import PaymentForm from "./PaymentForm";
 import Review from "./Review";
-import Transfer from "../../../components/transfer";
-
-import {
-  channingActions,
-  currencyToString,
-  formatToCurrency,
-} from "../../../utils";
+import { channingActions, currencyToString } from "../../../utils";
 import { bindPaymentActions } from "../../../actions";
 import { connect } from "react-redux";
 import { message } from "antd";
 import SuccessTopup from "../success";
-
+import { getProfileURL, formatToCurrency, currency } from "../../../utils";
+import { getUserIdFromStorage } from "../../../utils/utils";
 const useStyles = makeStyles((theme) => ({
   appBar: {
     position: "relative",
   },
   layout: {
     width: "auto",
+    borderRadius: "10%",
     marginLeft: theme.spacing(2),
     marginRight: theme.spacing(2),
     [theme.breakpoints.up(600 + theme.spacing(2) * 2)]: {
       width: 600,
+      borderRadius: "10%",
+
       marginLeft: "auto",
       marginRight: "auto",
     },
@@ -62,46 +60,22 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const steps = ["Transfer details", "Review your order"];
+const steps = ["Topup details", "Review your order"];
 
 function Checkout(props) {
   const classes = useStyles();
   const [activeStep, setActiveStep] = React.useState(0);
 
-  const [amount, setAmount] = React.useState("0");
-  const [selectedUserId, setSelectedUserId] = React.useState("");
-  const [sendMessage, setSendMessage] = React.useState("");
-
   const handleNext = () => {
     if (activeStep == 1) {
-      console.log("Amount", amount);
-      props.paymentActions.onOpenPinPopup();
-      return;
     }
-
     setActiveStep(activeStep + 1);
   };
 
   const getStepContent = (step) => {
     switch (step) {
       case 0:
-        return (
-          <PaymentForm
-            cb={handleNext}
-            amount={amount}
-            setAmount={setAmount}
-            setSendMessage={setSendMessage}
-            setSelectedUserId={setSelectedUserId}
-          />
-        );
-      case 1:
-        return (
-          <Review
-            amount={amount}
-            fullName={selectedUserId.fullName}
-            message={sendMessage}
-          />
-        );
+        return <Review />;
       default:
         throw new Error("Unknown step");
     }
@@ -111,53 +85,21 @@ function Checkout(props) {
     setActiveStep(activeStep - 1);
   };
 
+  if (props.mainScreenData === null) return;
+
   return (
     <React.Fragment>
       <CssBaseline />
       <main className={classes.layout}>
         <Paper className={classes.paper}>
           <Typography component="h1" variant="h4" align="center">
-            Transfer
+            Transaction detail
           </Typography>
-          <Stepper activeStep={activeStep} className={classes.stepper}>
-            {steps.map((label) => (
-              <Step key={label}>
-                <StepLabel>{label}</StepLabel>
-              </Step>
-            ))}
-          </Stepper>
+
           <React.Fragment>
-            {activeStep === steps.length ? (
-              <React.Fragment>
-                <SuccessTopup></SuccessTopup>
-              </React.Fragment>
-            ) : (
-              <React.Fragment>
-                {getStepContent(activeStep)}
-                {activeStep !== 0 && (
-                  <div className={classes.buttons}>
-                    <Button onClick={handleBack} className={classes.button}>
-                      Back
-                    </Button>
-                    <Button
-                      variant="contained"
-                      color="primary"
-                      onClick={handleNext}
-                      className={classes.button}
-                    >
-                      {activeStep === steps.length - 1 ? "Place order" : "Next"}
-                    </Button>
-                  </div>
-                )}
-              </React.Fragment>
-            )}
+            <Review data={props.mainScreenData} />
           </React.Fragment>
         </Paper>
-        <Transfer
-          amount={amount}
-          targetId={selectedUserId.userId}
-          message={sendMessage}
-        ></Transfer>
       </main>
     </React.Fragment>
   );
@@ -167,6 +109,7 @@ export default connect(
   (state) => ({
     messageItems: state.chatReducer.messageItems,
     offset: state.paymentReducer.offset,
+    mainScreenData: state.paymentReducer.mainScreenData,
   }),
   (dispatch) => channingActions({}, dispatch, bindPaymentActions)
 )(Checkout);
