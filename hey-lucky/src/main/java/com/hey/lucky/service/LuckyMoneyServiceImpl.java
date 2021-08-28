@@ -252,7 +252,7 @@ public class LuckyMoneyServiceImpl implements LuckyMoneyService {
     public void refundLuckyMoney() {
         log.info("refund");
         LocalDateTime now = LocalDateTime.now();
-        List<LuckyMoney> luckyMoneyList = luckyMoneyRepository.getAllByRestMoneyGreaterThanZeroAndExpiredAtBetween(now, now.plusMinutes(6));
+        List<LuckyMoney> luckyMoneyList = luckyMoneyRepository.getAllByRestMoneyGreaterThanZeroAndExpiredAtBetween(now);
         luckyMoneyList.forEach(luckyMoney -> {
             log.info("Return lucky money {} with rest {} for user {}", luckyMoney.getId(), luckyMoney.getRestMoney(), luckyMoney.getUserId());
             long restMoney = luckyMoney.getRestMoney();

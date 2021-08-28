@@ -645,7 +645,7 @@ class LuckyMoneyServiceImplTest {
                 .createdAt(now.minusDays(1))
                 .expiredAt(expired)
                 .build());
-        when(luckyMoneyRepository.getAllByRestMoneyGreaterThanZeroAndExpiredAtBetween(any(LocalDateTime.class),any(LocalDateTime.class))).thenReturn(luckyMoneyList);
+        when(luckyMoneyRepository.getAllByRestMoneyGreaterThanZeroAndExpiredAtBetween(any(LocalDateTime.class))).thenReturn(luckyMoneyList);
         doThrow(new CannotTransferMoneyException("Error from payment service")).when(paymentUtil).transferMoneyToUser(any(TransferToUserRequest.class));
         // when
         luckyMoneyService.refundLuckyMoney();
@@ -690,7 +690,7 @@ class LuckyMoneyServiceImplTest {
                 .createdAt(now.minusDays(1))
                 .expiredAt(expired)
                 .build());
-        when(luckyMoneyRepository.getAllByRestMoneyGreaterThanZeroAndExpiredAtBetween(any(LocalDateTime.class),any(LocalDateTime.class))).thenReturn(luckyMoneyList);
+        when(luckyMoneyRepository.getAllByRestMoneyGreaterThanZeroAndExpiredAtBetween(any(LocalDateTime.class))).thenReturn(luckyMoneyList);
         doNothing().when(paymentUtil).transferMoneyToUser(any(TransferToUserRequest.class));
         // when
         luckyMoneyService.refundLuckyMoney();
