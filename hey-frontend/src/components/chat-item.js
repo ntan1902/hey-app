@@ -5,6 +5,8 @@ import { SlideDown } from "react-slidedown";
 import { Avatar, Card } from "antd";
 import { currency, formatToCurrency } from "../utils";
 import { getProfileURL } from "../utils/";
+import LazyLoad from "react-lazy-load";
+
 const { Meta } = Card;
 
 class ChatItem extends React.Component {

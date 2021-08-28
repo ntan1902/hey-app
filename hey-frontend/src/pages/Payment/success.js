@@ -1,9 +1,9 @@
 import React from "react";
-import {connect} from "react-redux";
-import {Button, Result} from "antd";
+import { connect } from "react-redux";
+import { Button, Result } from "antd";
 
-import {channingActions} from "../../utils";
-import {bindPaymentActions} from "../../actions";
+import { channingActions } from "../../utils";
+import { bindPaymentActions } from "../../actions";
 
 class MessagePanel extends React.Component {
   constructor(props) {
@@ -112,9 +112,9 @@ class MessagePanel extends React.Component {
             >
               Close
             </Button>,
-            <Button key="buy" onClick={() => this.showModal("topup")}>
-              Topup Again
-            </Button>,
+            // <Button key="buy" onClick={() => this.showModal("topup")}>
+            //   Topup Again
+            // </Button>,
           ]}
         />
       </div>

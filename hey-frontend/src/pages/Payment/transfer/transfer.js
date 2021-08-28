@@ -2,7 +2,6 @@ import React from "react";
 import { connect } from "react-redux";
 import { Button, Input } from "antd";
 import NumericInput from "../../../components/numberic-input";
-import Transfer from "../../../components/transfer";
 import AddFriendTransfer from "../../../components/add-friend-transfer";
 import {
   channingActions,
@@ -46,8 +45,14 @@ class MessagePanel extends React.Component {
     }
     if (!hasError) {
       this.props.paymentActions.onOpenPinPopup();
+      return true;
     }
+    return false;
   };
+
+  componentDidMount() {
+    this.props.cb(() => this.showPinModal());
+  }
 
   renderButtonMoney = (item, index) => {
     return (
@@ -58,6 +63,7 @@ class MessagePanel extends React.Component {
           this.errorAmount.current.innerText = "";
           this.setState({ amount: item.value });
         }}
+        style={{ borderRadius: 300, height: 40 }}
         type="primary"
       >
         {item.title}
@@ -79,12 +85,29 @@ class MessagePanel extends React.Component {
 
     return (
       <div className="wrapper-money-btns">
-        <div className="row-money-btns">
+        <div
+          style={{
+            height: 50,
+            width: "100%",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
           {data1.map((e, index) => {
             return this.renderButtonMoney(e, index);
           })}
         </div>
-        <div className="row-money-btns">
+        <div
+          style={{
+            height: 50,
+            width: "100%",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            marginTop: 10,
+          }}
+        >
           {data2.map((e, index) => {
             return this.renderButtonMoney(e, index);
           })}
@@ -98,7 +121,14 @@ class MessagePanel extends React.Component {
       <div className="wrapper-transfer-form">
         <div>
           <div className="form-group">
-            <div style={{ fontSize: 20, width: 150, fontWeight: 200 }}>
+            <div
+              style={{
+                fontSize: 20,
+                fontWeight: 200,
+                marginLeft: 20,
+                width: 120,
+              }}
+            >
               Transfer To
             </div>
             <AddFriendTransfer
@@ -117,7 +147,8 @@ class MessagePanel extends React.Component {
               style={{
                 fontSize: 20,
                 fontWeight: 200,
-                width: 150,
+                marginLeft: 20,
+                width: 120,
               }}
             >
               Amount
@@ -145,7 +176,8 @@ class MessagePanel extends React.Component {
               style={{
                 fontSize: 20,
                 fontWeight: 200,
-                width: 150,
+                marginLeft: 20,
+                width: 120,
               }}
             >
               Message
@@ -162,7 +194,7 @@ class MessagePanel extends React.Component {
             </div>
           </div>
         </div>
-        <div style={{ flex: 1, padding: 30 }}>
+        <div style={{ flex: 1, marginTop: 20 }}>
           {this.renderListOfDefaultMoney()}
         </div>
         <div
@@ -173,16 +205,11 @@ class MessagePanel extends React.Component {
           }}
         >
           <div style={{ flex: 1 }}></div>
-          <div onClick={this.showPinModal}>
+          {/* <div onClick={this.showPinModal}>
             <Button className="continue-btn" type="primary">
               Continue
             </Button>
-          </div>
-          <Transfer
-            amount={this.state.amount}
-            targetId={this.state.selectedUserId}
-            message={this.state.message}
-          ></Transfer>
+          </div> */}
         </div>
       </div>
     );
