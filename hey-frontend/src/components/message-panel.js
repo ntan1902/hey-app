@@ -19,7 +19,7 @@ class MessagePanel extends React.Component {
   }
 
   scrollToBottom = () => {
-    this.messagesEnd.scrollIntoView({ behavior: "instant" });
+    this.messagesEnd.scrollIntoView({ behavior: "smooth" });
   };
 
   componentDidUpdate() {
