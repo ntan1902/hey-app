@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class UserReceiveInfo {
+public class UserReceivedInfo {
     private String fullName;
     private long amount;
     private String receivedAt;

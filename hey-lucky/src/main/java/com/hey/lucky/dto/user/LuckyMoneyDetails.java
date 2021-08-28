@@ -15,7 +15,7 @@ import java.util.List;
 public class LuckyMoneyDetails {
     private String wishMessage; //
     private UserInfo userCreated;
-    private List<UserReceiveInfo> usersReceived;
+    private List<UserReceivedInfo> usersReceived;
     private int totalBag; //
     private int restBag; //
     private String type; //

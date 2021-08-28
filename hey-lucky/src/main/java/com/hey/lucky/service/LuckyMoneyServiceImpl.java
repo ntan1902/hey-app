@@ -238,7 +238,7 @@ public class LuckyMoneyServiceImpl implements LuckyMoneyService {
 
         UserInfo senderLuckyMoney = userUtil.getUserInfo(luckyMoney.getUserId());
 
-        List<UserReceiveInfo> listReceivedUsers = luckyMoneyServiceUtil.getListReceivedUsers(luckyMoney.getId());
+        List<UserReceivedInfo> listReceivedUsers = luckyMoneyServiceUtil.getListReceivedUsers(luckyMoney.getId());
 
         luckyMoneyDetails.setUserCreated(senderLuckyMoney);
         luckyMoneyDetails.setUsersReceived(listReceivedUsers);

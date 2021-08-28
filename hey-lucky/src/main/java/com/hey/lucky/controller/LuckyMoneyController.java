@@ -28,7 +28,7 @@ public class LuckyMoneyController {
     @PostMapping("/createLuckyMoney")
     public ResponseEntity<ApiResponse<Object>> createLuckyMoney(@RequestBody CreateLuckyMoneyRequest createLuckyMoneyRequest) throws InternalServerErrException, ErrCallApiException, CannotTransferMoneyException, ErrCallChatApiException, UserNotInSessionChatException, MinAmountPerBagException {
         luckyMoneyService.createLuckyMoney(createLuckyMoneyRequest);
-        return ResponseEntity.ok(ApiResponse.builder()
+        return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.builder()
                 .success(true)
                 .code(HttpStatus.OK.value())
                 .message(SENT_LUCKY_MONEY)
