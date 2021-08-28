@@ -2352,9 +2352,1230 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error400"
+  /chat/api/protected/addressbook:
+    post:
+      tags:
+        - Chat Service
+      description: >-
+        Lucky call api to receive lucky money message Chat
+      parameters:
+        - in: header
+          name: jwt
+          schema:
+            type: string
+          required: true
+          example: sas8asa8s8asa0sd0as6ad5d9as6d7fs9sf6sd9ds
+          description: JWT of system
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - success
+                  - code
+                  - message
+                properties:
+                  success:
+                    type: boolean
+                    default: true
+                    example: true
+                  code:
+                    type: integer
+                    default: 200
+                    example: 200
+                  message:
+                    type: string
+                    default: "Request successfully"
+                  payload:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/AddressBookItem"
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error400"
+  /chat/api/protected/waittingfriend:
+    post:
+      tags:
+        - Chat Service
+      description: >-
+        Get list add friend request
+      parameters:
+        - in: header
+          name: jwt
+          schema:
+            type: string
+          required: true
+          example: sas8asa8s8asa0sd0as6ad5d9as6d7fs9sf6sd9ds
+          description: JWT of system
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - success
+                  - code
+                  - message
+                properties:
+                  success:
+                    type: boolean
+                    default: true
+                    example: true
+                  code:
+                    type: integer
+                    default: 200
+                    example: 200
+                  message:
+                    type: string
+                    default: "Request successfully"
+                  payload:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/AddressBookItem"
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error400"
+  /chat/api/protected/closewaittingfriend:
+    post:
+      tags:
+        - Chat Service
+      description: >-
+        Delete add friend request
+      parameters:
+        - in: header
+          name: jwt
+          schema:
+            type: string
+          required: true
+          example: sas8asa8s8asa0sd0as6ad5d9as6d7fs9sf6sd9ds
+          description: JWT of system
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/GetSessionIdRequest"
+        description: Request close add friend request
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - success
+                  - code
+                  - message
+                properties:
+                  success:
+                    type: boolean
+                    default: true
+                    example: true
+                  code:
+                    type: integer
+                    default: 200
+                    example: 200
+                  message:
+                    type: string
+                    default: "Request successfully"
+                  payload:
+                    type: object
+                    example: {}
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error400"
 
+  /chat/api/protected/usernameexisted:
+    post:
+      tags:
+        - Chat Service
+      description: >-
+        Check username is existed
+      parameters:
+        - in: header
+          name: jwt
+          schema:
+            type: string
+          required: true
+          example: sas8asa8s8asa0sd0as6ad5d9as6d7fs9sf6sd9ds
+          description: JWT of system
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UsernameExistedRequest"
+        description: Username is existed request
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - success
+                  - code
+                  - message
+                properties:
+                  success:
+                    type: boolean
+                    default: true
+                    example: true
+                  code:
+                    type: integer
+                    default: 200
+                    example: 200
+                  message:
+                    type: string
+                    default: "Request successfully"
+                  payload:
+                    $ref: "#/components/schemas/UsernameExistedResponse"
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error400"
+  /chat/api/protected/sessionbyuserid:
+    post:
+      tags:
+        - Chat Service
+      description: >-
+        Get session id by user id
+      parameters:
+        - in: header
+          name: jwt
+          schema:
+            type: string
+          required: true
+          example: sas8asa8s8asa0sd0as6ad5d9as6d7fs9sf6sd9ds
+          description: JWT of system
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/GetSessionIdRequest"
+        description: Get session id by user id request
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - success
+                  - code
+                  - message
+                properties:
+                  success:
+                    type: boolean
+                    default: true
+                    example: true
+                  code:
+                    type: integer
+                    default: 200
+                    example: 200
+                  message:
+                    type: string
+                    default: "Request successfully"
+                  payload:
+                    $ref: "#/components/schemas/GetSessionIdResponse"
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error400"
+  /chat/api/protected/waittingchatheader:
+    post:
+      tags:
+        - Chat Service
+      description: >-
+        Get waitting chat header
+      parameters:
+        - in: header
+          name: jwt
+          schema:
+            type: string
+          required: true
+          example: sas8asa8s8asa0sd0as6ad5d9as6d7fs9sf6sd9ds
+          description: JWT of system
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/WaittingChatHeaderRequest"
+        description: Get session id by user id request
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - success
+                  - code
+                  - message
+                properties:
+                  success:
+                    type: boolean
+                    default: true
+                    example: true
+                  code:
+                    type: integer
+                    default: 200
+                    example: 200
+                  message:
+                    type: string
+                    default: "Request successfully"
+                  payload:
+                    $ref: "#/components/schemas/WaittingChatHeaderResponse"
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error400"
+  /chat/api/protected/addfriend:
+    post:
+      tags:
+        - Chat Service
+      description: >-
+        Accept add friend request
+      parameters:
+        - in: header
+          name: jwt
+          schema:
+            type: string
+          required: true
+          example: sas8asa8s8asa0sd0as6ad5d9as6d7fs9sf6sd9ds
+          description: JWT of system
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AddFriendRequest"
+        description: Accept add friend request
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - success
+                  - code
+                  - message
+                properties:
+                  success:
+                    type: boolean
+                    default: true
+                    example: true
+                  code:
+                    type: integer
+                    default: 200
+                    example: 200
+                  message:
+                    type: string
+                    default: "Request successfully"
+                  payload:
+                    $ref: "#/components/schemas/AddFriendResponse"
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error400"
+  /chat/api/protected/status:
+    post:
+      tags:
+        - Chat Service
+      description: >-
+        Change status
+      parameters:
+        - in: header
+          name: jwt
+          schema:
+            type: string
+          required: true
+          example: sas8asa8s8asa0sd0as6ad5d9as6d7fs9sf6sd9ds
+          description: JWT of system
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ChangeStatusRequest"
+        description: Change status
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - success
+                  - code
+                  - message
+                properties:
+                  success:
+                    type: boolean
+                    default: true
+                    example: true
+                  code:
+                    type: integer
+                    default: 200
+                    example: 200
+                  message:
+                    type: string
+                    default: "Request successfully"
+                  payload:
+                    type: object
+                    properties:
+                      message: 
+                        type: string
+                        example: success
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error400"
+  /chat/api/protected/user:
+    post:
+      tags:
+        - Chat Service
+      description: >-
+        Get profile
+      parameters:
+        - in: header
+          name: jwt
+          schema:
+            type: string
+          required: true
+          example: sas8asa8s8asa0sd0as6ad5d9as6d7fs9sf6sd9ds
+          description: JWT of system
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - success
+                  - code
+                  - message
+                properties:
+                  success:
+                    type: boolean
+                    default: true
+                    example: true
+                  code:
+                    type: integer
+                    default: 200
+                    example: 200
+                  message:
+                    type: string
+                    default: "Request successfully"
+                  payload:
+                    $ref: "#/components/schemas/UserProfileResponse"
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error400"
+  /chat/api/protected/edit:
+    post:
+      tags:
+        - Chat Service
+      description: >-
+        Get profile
+      parameters:
+        - in: header
+          name: jwt
+          schema:
+            type: string
+          required: true
+          example: sas8asa8s8asa0sd0as6ad5d9as6d7fs9sf6sd9ds
+          description: JWT of system
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/EditProfileRequest"
+        description: Get profile request
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - success
+                  - code
+                  - message
+                properties:
+                  success:
+                    type: boolean
+                    default: true
+                    example: true
+                  code:
+                    type: integer
+                    default: 200
+                    example: 200
+                  message:
+                    type: string
+                    default: "Edit profile successfully"
+                  payload:
+                    type: object
+                    example: {}
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error400"
+  /chat/api/protected/editgroupname:
+    post:
+      tags:
+        - Chat Service
+      description: >-
+        Edit group name
+      parameters:
+        - in: header
+          name: jwt
+          schema:
+            type: string
+          required: true
+          example: sas8asa8s8asa0sd0as6ad5d9as6d7fs9sf6sd9ds
+          description: JWT of system
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/EditGroupNameRequest"
+        description: Edit group name request
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - success
+                  - code
+                  - message
+                properties:
+                  success:
+                    type: boolean
+                    default: true
+                    example: true
+                  code:
+                    type: integer
+                    default: 200
+                    example: 200
+                  message:
+                    type: string
+                    default: "Edit group name successfully"
+                  payload:
+                    type: object
+                    example: {}
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error400"
+  /chat/api/protected/kickmember:
+    post:
+      tags:
+        - Chat Service
+      description: >-
+        Remove member from group chat
+      parameters:
+        - in: header
+          name: jwt
+          schema:
+            type: string
+          required: true
+          example: sas8asa8s8asa0sd0as6ad5d9as6d7fs9sf6sd9ds
+          description: JWT of system
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/KickMemberRequest"
+        description: kick member request
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - success
+                  - code
+                  - message
+                properties:
+                  success:
+                    type: boolean
+                    default: true
+                    example: true
+                  code:
+                    type: integer
+                    default: 200
+                    example: 200
+                  message:
+                    type: string
+                    default: "Kick member successfully"
+                  payload:
+                    type: object
+                    example: {}
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error400"
+  /chat/api/protected/outgroup:
+    post:
+      tags:
+        - Chat Service
+      description: >-
+        Leavegroup chat
+      parameters:
+        - in: header
+          name: jwt
+          schema:
+            type: string
+          required: true
+          example: sas8asa8s8asa0sd0as6ad5d9as6d7fs9sf6sd9ds
+          description: JWT of system
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/OutGroupRequest"
+        description: Leave group request
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - success
+                  - code
+                  - message
+                properties:
+                  success:
+                    type: boolean
+                    default: true
+                    example: true
+                  code:
+                    type: integer
+                    default: 200
+                    example: 200
+                  message:
+                    type: string
+                    default: "Out group successfully"
+                  payload:
+                    type: object
+                    example: {}
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error400"
+  /chat/api/protected/getUserOfSessionChat:
+    post:
+      tags:
+        - Chat Service
+      description: >-
+        Get member of session chat
+      parameters:
+        - in: header
+          name: jwt
+          schema:
+            type: string
+          required: true
+          example: sas8asa8s8asa0sd0as6ad5d9as6d7fs9sf6sd9ds
+          description: JWT of system
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/GetMemberOfSessionRequest"
+        description: Get member of session chat request
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - success
+                  - code
+                  - message
+                properties:
+                  success:
+                    type: boolean
+                    default: true
+                    example: true
+                  code:
+                    type: integer
+                    default: 200
+                    example: 200
+                  message:
+                    type: string
+                    default: ""
+                  payload:
+                    $ref: "#/components/schemas/GetMemerOfSessionResponse"
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error400"
+  /chat/api/protected/addfriendrequest:
+    post:
+      tags:
+        - Chat Service
+      description: >-
+        Add friend reuqest
+      parameters:
+        - in: header
+          name: jwt
+          schema:
+            type: string
+          required: true
+          example: sas8asa8s8asa0sd0as6ad5d9as6d7fs9sf6sd9ds
+          description: JWT of system
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AddFriendRequest"
+        description: Add friend reuqest
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - success
+                  - code
+                  - message
+                properties:
+                  success:
+                    type: boolean
+                    default: true
+                    example: true
+                  code:
+                    type: integer
+                    default: 200
+                    example: 200
+                  message:
+                    type: string
+                    default: ""
+                  payload:
+                    $ref: "#/components/schemas/AddressBookItem"
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error400"
+  /chat/api/protected/addfriendtosession:
+    post:
+      tags:
+        - Chat Service
+      description: >-
+        Add friend to session
+      parameters:
+        - in: header
+          name: jwt
+          schema:
+            type: string
+          required: true
+          example: sas8asa8s8asa0sd0as6ad5d9as6d7fs9sf6sd9ds
+          description: JWT of system
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AddFriendToSessionRequest"
+        description: Add friend to session reuqest
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - success
+                  - code
+                  - message
+                properties:
+                  success:
+                    type: boolean
+                    default: true
+                    example: true
+                  code:
+                    type: integer
+                    default: 200
+                    example: 200
+                  message:
+                    type: string
+                    default: "true"
+                  payload:
+                    type: object
+                    example: {}
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error400"
+  /chat/api/protected/makeCall:
+    post:
+      tags:
+        - Chat Service
+      description: >-
+        Make a call
+      parameters:
+        - in: header
+          name: jwt
+          schema:
+            type: string
+          required: true
+          example: sas8asa8s8asa0sd0as6ad5d9as6d7fs9sf6sd9ds
+          description: JWT of system
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MakeCallRequest"
+        description: Make a call reuqest
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - success
+                  - code
+                  - message
+                properties:
+                  success:
+                    type: boolean
+                    default: true
+                    example: true
+                  code:
+                    type: integer
+                    default: 200
+                    example: 200
+                  message:
+                    type: string
+                    default: "Make call successfully"
+                  payload:
+                    type: object
+                    example: {}
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error400"
+  /chat/api/protected/joinCall:
+    post:
+      tags:
+        - Chat Service
+      description: >-
+        Join a call
+      parameters:
+        - in: header
+          name: jwt
+          schema:
+            type: string
+          required: true
+          example: sas8asa8s8asa0sd0as6ad5d9as6d7fs9sf6sd9ds
+          description: JWT of system
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/JoinCallRequest"
+        description: Join a call reuqest
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - success
+                  - code
+                  - message
+                properties:
+                  success:
+                    type: boolean
+                    default: true
+                    example: true
+                  code:
+                    type: integer
+                    default: 200
+                    example: 200
+                  message:
+                    type: string
+                    default: "Join call successfully"
+                  payload:
+                    type: object
+                    example: {}
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error400"
+  /chat/api/protected/getICEServer:
+    post:
+      tags:
+        - Chat Service
+      description: >-
+        Join a call
+      parameters:
+        - in: header
+          name: jwt
+          schema:
+            type: string
+          required: true
+          example: sas8asa8s8asa0sd0as6ad5d9as6d7fs9sf6sd9ds
+          description: JWT of system
+     
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - success
+                  - code
+                  - message
+                properties:
+                  success:
+                    type: boolean
+                    default: true
+                    example: true
+                  code:
+                    type: integer
+                    default: 200
+                    example: 200
+                  message:
+                    type: string
+                    default: "Join call successfully"
+                  payload:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/ICEServerInfo"
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error400"
+  /chat/api/protected/rejectCall:
+    post:
+      tags:
+        - Chat Service
+      description: >-
+        Reject a call
+      parameters:
+        - in: header
+          name: jwt
+          schema:
+            type: string
+          required: true
+          example: sas8asa8s8asa0sd0as6ad5d9as6d7fs9sf6sd9ds
+          description: JWT of system
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RejectCallRequest"
+        description: Reject a call reuqest
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - success
+                  - code
+                  - message
+                properties:
+                  success:
+                    type: boolean
+                    default: true
+                    example: true
+                  code:
+                    type: integer
+                    default: 200
+                    example: 200
+                  message:
+                    type: string
+                    default: "Reject call successfully"
+                  payload:
+                    type: object
+                    example: {}
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error400"
 components:
   schemas:
+    RejectCallRequest:
+      type: object
+      properties:
+        sessionId:
+          type: string
+          example: uuid
+    ICEServerInfo:
+      type: object
+      properties:
+        username:
+          type: string
+          example: ngoctrong
+        url:
+          type: string
+          example: stun:stun.heypay.top
+        credential:
+          type: string
+          example: passwordiceserver
+    JoinCallRequest:
+      type: object
+      properties:
+        sessionId:
+          type: string
+          example: uuid-session-id
+        peerId:
+          type: string
+          example: uuid-peer-id
+    MakeCallRequest:
+      type: object
+      properties:
+        isVideoCall:
+          type: boolean
+          example: true
+        sessionId:
+          type: string
+          example: uuid
+    AddFriendToSessionRequest:
+      type: object
+      properties:
+        sessionId:
+          type: string
+          example: uuid
+        userId:
+          type: string
+          example: userid
+
+    GetMemerOfSessionResponse:
+      type: object
+      properties:
+        isOwner:
+          type: boolean
+          example: true
+        members:
+          type: array
+          items:
+            $ref: "#/components/schemas/UserHash"
+        
+    UserHash:
+      type: object
+      properties:
+        userId:
+          type: string
+          example: uuid
+        fullName:
+          type: string
+          example: Vo Ngoc Trong
+    GetMemberOfSessionRequest:
+      type: object
+      properties:
+        sessionId:
+          type: string
+          example: uuid
+    OutGroupRequest:
+      type: object
+      properties:
+        sessionId:
+          type: string
+          example: uuid-session-id
+    KickMemberRequest:
+      type: object
+      properties:
+        sessionId:
+          type: string
+          example: uuid-session-id
+        memberId:
+          type: string
+          example: uuid-member-id
+    EditGroupNameRequest:
+      type: object
+      properties:
+        sessionId:
+          type: string
+          example: uuid
+        groupName:
+          type: string
+          example: Group name
+    UserProfileResponse:
+      type: object
+      properties:
+        userFullName:
+          type: string
+          example: Vo Ngoc Trong
+        userName:
+          type: string
+          example: ngoctrong102
+        status:
+          type: string
+          example: happy
+    
+    EditProfileRequest:
+      type: object
+      properties:
+        email:
+          type: string
+          example: trong@gmail.com
+        fullName:
+          type: string
+          example: Vo Ngoc Trong
+        dob:
+          type: string
+          example: "2000-10-04T20:20:20"
+        phoneNumber:
+          type: string
+          example: 0123473909
+    ChangeStatusRequest:
+      type: object
+      properties:
+        status:
+          type: string
+          example: I'm hungry
+    AddFriendResponse:
+      type: object
+      properties:
+        item:
+          $ref: "#/components/schemas/AddressBookItem"
+    AddFriendRequest:
+      type: object
+      properties:
+        username:
+          type: string
+          example: trong102
+    WaittingChatHeaderResponse:
+      type: object
+      properties:
+        title:
+          type: string
+          example: Group header
+    WaittingChatHeaderRequest:
+      type: object
+      properties:
+        usernames:
+          type: array
+          items:
+            type: string
+            example: an
+        groupName:
+          type: string
+          example: Group chat
+    
+    GetSessionIdResponse:
+      type: object
+      properties:
+        sessionId:
+          type: string
+          example: uuid
+          
+    UsernameExistedResponse:
+      type: object
+      properties:
+        existed:
+          type: boolean
+          example: false
+        username:
+          type: string
+          example: trong
+    UsernameExistedRequest:
+      type: object
+      properties:
+        username:
+          type: string
+          example: trong
+        
+    GetSessionIdRequest:
+      type: object
+      properties:
+        userId:
+          type: string
+          example: uuid
+        
     UserDTO:
       type: object
       properties:
@@ -2717,14 +3938,6 @@ components:
         fullName:
           type: string
           example: An
-    OwnerInfo:
-      type: object
-      required:
-        - balance
-      properties:
-        success:
-          type: boolean
-          example: 200000
 
     WalletResponse:
       type: object
@@ -2913,6 +4126,23 @@ components:
         sessionId:
           type: string
           example: "ab43242f78fb"
+    AddressBookItem:
+      type: object
+      properties:
+        name:
+          type: string
+          example: "trong"
+        userId: 
+          type: string
+          example: uuid
+        status:
+          type: string
+          example: you are online
+        online:
+          type: boolean
+          example: true
+        
+
 
     ReceiveLuckyMoneyMessageRequest:
       type: object
