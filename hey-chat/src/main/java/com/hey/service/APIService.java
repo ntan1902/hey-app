@@ -1125,6 +1125,7 @@ public class APIService extends BaseService {
                     response.setChangeGroupName(false);
 
                     for (UserHash userhash : chatList.getUserHashes()) {
+                        response.setTransferStatement(userhash.getUserId().equals(luckyMoneyMessageRequest.getUserId()));
                         userWsChannelManager.sendMessage(response, userhash.getUserId());
                     }
 
@@ -1417,6 +1418,7 @@ public class APIService extends BaseService {
                     response.setChangeGroupName(false);
 
                     for (UserHash userhash : chatList.getUserHashes()) {
+                        response.setTransferStatement(userhash.getUserId().equals(request.getReceiverId()));
                         userWsChannelManager.sendMessage(response, userhash.getUserId());
                     }
 
