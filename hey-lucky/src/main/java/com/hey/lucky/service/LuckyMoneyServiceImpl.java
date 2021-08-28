@@ -259,7 +259,6 @@ public class LuckyMoneyServiceImpl implements LuckyMoneyService {
             log.info("Return lucky money {} with rest {} for user {}", luckyMoney.getId(), luckyMoney.getRestMoney(), luckyMoney.getUserId());
             long restMoney = luckyMoney.getRestMoney();
             try {
-
                 luckyMoney.setRestMoney(0L);
                 luckyMoneyRepository.save(luckyMoney);
 
@@ -268,7 +267,7 @@ public class LuckyMoneyServiceImpl implements LuckyMoneyService {
                         TransferToUserRequest.builder()
                                 .walletId(luckyMoney.getSystemWalletId())
                                 .receiverId(luckyMoney.getUserId())
-                                .amount(luckyMoney.getRestMoney())
+                                .amount(restMoney)
                                 .message(String.format("Refund %d from lucky money %d for user %s", luckyMoney.getRestMoney(), luckyMoney.getId(), luckyMoney.getUserId()))
                                 .build()
                 );
