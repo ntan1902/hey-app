@@ -31,7 +31,7 @@ To achieve these functionalities, we will use following technology stack:
 
 ## Brief UIs of Hey Pay
 
-![Hey Pay](https://github.com/zalopay-oss/hey-app/blob/master/presentation/image001.gif)
+![Hey Pay](./presentation/screen.gif)
 
 ## Getting Started
 
