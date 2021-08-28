@@ -84,7 +84,7 @@ public class UserController {
     @PostMapping("/createWallet")
     public ResponseEntity<ApiResponse<Object>> createWallet() throws HadWalletException {
         WalletDTO walletDTO = walletService.createWallet();
-        return ResponseEntity.ok(
+        return ResponseEntity.status(HttpStatus.CREATED).body(
                 ApiResponse.builder()
                         .success(true)
                         .code(HttpStatus.OK.value())
