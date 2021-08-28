@@ -41,8 +41,7 @@ public class CreateAndReceiveLucyMoneyTests {
     WalletRepository walletRepository;
 
     @Test
-    public void createLuckyMoney() throws IOException, InterruptedException {
-        long expected = walletRepository.sumAllBalance();
+    public void createLuckyMoneyAndReceive() throws IOException, InterruptedException {
 
         RestTemplate restTemplate = new RestTemplate();
         restTemplate.setUriTemplateHandler(new DefaultUriBuilderFactory(BASE_URL));
@@ -61,6 +60,9 @@ public class CreateAndReceiveLucyMoneyTests {
         List<Object> items = (List<Object>) payload.get("items");
         Map<String, Object> item0 = (Map<String, Object>)items.get(0);
         String sessionId = (String)item0.get("sessionId");
+
+
+        long expected = walletRepository.sumAllBalance();
 
         List<CreateLuckyMoneyThread> createLuckyMoneyThreads = new ArrayList<>();
 
@@ -87,7 +89,10 @@ public class CreateAndReceiveLucyMoneyTests {
             t.join();
         }
         long actual = walletRepository.sumAllBalance();
-        assertThat(expected).isEqualTo(actual);
+        int numberWalletNeg = walletRepository.countAllByBalanceLessThan(0L);
+
+        assertThat(actual).isEqualTo(expected);
+        assertThat(numberWalletNeg).isEqualTo(0);
     }
 
 }

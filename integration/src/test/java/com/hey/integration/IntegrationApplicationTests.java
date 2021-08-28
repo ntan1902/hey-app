@@ -51,7 +51,6 @@ class IntegrationApplicationTests {
 
     @Test
     public void manyUserTransferToOneUser() throws IOException, InterruptedException {
-        Long expected = walletRepository.sumAllBalance();
         String[] HEADERS = {"username", "fullName", "email", "password"};
         Reader in = new FileReader(ResourceUtils.getFile("classpath:Data_100.csv"));
         Iterable<CSVRecord> records = CSVFormat.DEFAULT
@@ -64,8 +63,12 @@ class IntegrationApplicationTests {
         Random randomUser = new Random();
         User targetUser = users.get(randomUser.nextInt(users.size()));
         String targetId = targetUser.getId();
+
+        Long expected = walletRepository.sumAllBalance();
+
         Random random = new Random();
-        long amount = random.nextInt(25_123) + 10_000;
+        long amount = random.nextInt(450_123) + 10_000;
+
         records.forEach(record -> {
             String username = record.get("username");
             String password = record.get("password");
@@ -79,19 +82,17 @@ class IntegrationApplicationTests {
                 threads.add(transferMoneyThread);
             }
         });
-        for (TransferMoneyThread thread : threads) {
-            thread.start();
-        }
-        for (TransferMoneyThread thread : threads) {
-            thread.join();
-        }
+        for (TransferMoneyThread thread : threads) { thread.start();}
+        for (TransferMoneyThread thread : threads) { thread.join();}
         long actual = walletRepository.sumAllBalance();
+        int numberWalletNeg = walletRepository.countAllByBalanceLessThan(0L);
+
         assertThat(actual).isEqualTo(expected);
+        assertThat(numberWalletNeg).isEqualTo(0);
     }
 
     @Test
     public void oneUserTransferToManyUsers() throws IOException, InterruptedException {
-        Long expected = walletRepository.sumAllBalance();
 
         String[] HEADERS = {"username", "fullName", "email", "password"};
         Reader in = new FileReader(ResourceUtils.getFile("classpath:Data_100.csv"));
@@ -102,6 +103,8 @@ class IntegrationApplicationTests {
                 .getRecords();
         List<TransferMoneyThread> threads = new ArrayList<>();
 
+
+        Long expected = walletRepository.sumAllBalance();
         // Start threads for the transaction in the same time
         List<User> users = userRepository.findAll();
 
@@ -120,24 +123,21 @@ class IntegrationApplicationTests {
                                 username,
                                 password,
                                 user.getId(), amount);
-
                 threads.add(transferMoneyThread);
             }
         });
-        for (TransferMoneyThread thread : threads) {
-            thread.start();
-        }
-        for (TransferMoneyThread thread : threads) {
-            thread.join();
-        }
+        for (TransferMoneyThread thread : threads) { thread.start();}
+        for (TransferMoneyThread thread : threads) { thread.join();}
 
         long actual = walletRepository.sumAllBalance();
+        int numberWalletNeg = walletRepository.countAllByBalanceLessThan(0L);
+
         assertThat(actual).isEqualTo(expected);
+        assertThat(numberWalletNeg).isEqualTo(0);
     }
 
     @Test
     public void manyUsersTransferToManyUsers() throws IOException, InterruptedException {
-        Long expected = walletRepository.sumAllBalance();
 
         String[] HEADERS = {"username", "fullName", "email", "password"};
         Reader in = new FileReader(ResourceUtils.getFile("classpath:Data_100.csv"));
@@ -148,13 +148,15 @@ class IntegrationApplicationTests {
                 .getRecords();
         List<TransferMoneyThread> threads = new ArrayList<>();
 
+
+        Long expected = walletRepository.sumAllBalance();
         // Start threads for the transaction in the same time
         List<User> users = userRepository.findAll();
 
         Random randomUser = new Random();
 
         Random random = new Random();
-        long amount = random.nextInt(25_123) + 10_000;
+        long amount = random.nextInt(450_123) + 10_000;
 
         users.forEach(user -> {
             String username = "";
@@ -164,24 +166,21 @@ class IntegrationApplicationTests {
                 username = sourceUser.get("username");
                 password = sourceUser.get("password");
             } while (username.equals(user.getUsername()));
-
             TransferMoneyThread transferMoneyThread =
                     new TransferMoneyThread(
                             username,
                             password,
                             user.getId(),
                             amount);
-
             threads.add(transferMoneyThread);
         });
-        for (TransferMoneyThread thread : threads) {
-            thread.start();
-        }
-        for (TransferMoneyThread thread : threads) {
-            thread.join();
-        }
+        for (TransferMoneyThread thread : threads) { thread.start();}
+        for (TransferMoneyThread thread : threads) { thread.join();}
         long actual = walletRepository.sumAllBalance();
+        int numberWalletNeg = walletRepository.countAllByBalanceLessThan(0L);
+
         assertThat(actual).isEqualTo(expected);
+        assertThat(numberWalletNeg).isEqualTo(0);
     }
 
     @Test
@@ -287,7 +286,6 @@ class IntegrationApplicationTests {
 
     @Test
     public void oneUserTransferToManyUsersOverMoney() throws IOException, InterruptedException {
-        Long expected = walletRepository.sumAllBalance();
 
         String[] HEADERS = {"username", "fullName", "email", "password"};
         Reader in = new FileReader(ResourceUtils.getFile("classpath:Data_100.csv"));
@@ -298,6 +296,8 @@ class IntegrationApplicationTests {
                 .getRecords();
         List<TransferMoneyThread> threads = new ArrayList<>();
 
+
+        Long expected = walletRepository.sumAllBalance();
         // Start threads for the transaction in the same time
         List<User> users = userRepository.findAll();
 
@@ -308,7 +308,7 @@ class IntegrationApplicationTests {
         String password = sourceUser.get("password");
 
         Random random = new Random();
-        long amount = random.nextInt(350_123) + 200_000;
+        long amount = random.nextInt(1050_123) + 200_000;
         users.forEach(user -> {
             if (!username.equals(user.getUsername())) {
                 TransferMoneyThread transferMoneyThread =
@@ -320,16 +320,12 @@ class IntegrationApplicationTests {
                 threads.add(transferMoneyThread);
             }
         });
-
-
         for (TransferMoneyThread thread : threads) {
             thread.start();
         }
-
         for (TransferMoneyThread thread : threads) {
             thread.join();
         }
-
         long actual = walletRepository.sumAllBalance();
         int numberWalletNeg = walletRepository.countAllByBalanceLessThan(0L);
 
@@ -339,7 +335,6 @@ class IntegrationApplicationTests {
 
     @Test
     public void oneUserTransferAndCreateLuckyMoney() throws IOException, InterruptedException {
-        Long expected = walletRepository.sumAllBalance();
 
         String[] HEADERS = {"username", "fullName", "email", "password"};
         Reader in = new FileReader(ResourceUtils.getFile("classpath:Data_100.csv"));
@@ -368,6 +363,8 @@ class IntegrationApplicationTests {
         List<Object> items = (List<Object>) payload.get("items");
         Map<String, Object> item0 = (Map<String, Object>) items.get(0);
         String sessionId = (String) item0.get("sessionId");
+
+        Long expected = walletRepository.sumAllBalance();
 
         Random random = new Random();
         long amount = random.nextInt(3_123) + 1000;
@@ -384,16 +381,12 @@ class IntegrationApplicationTests {
 
             }
         });
-
-
         for (Thread thread : threads) {
             thread.start();
         }
-
         for (Thread thread : threads) {
             thread.join();
         }
-
         long actual = walletRepository.sumAllBalance();
         int numberWalletNeg = walletRepository.countAllByBalanceLessThan(0L);
 
@@ -403,7 +396,6 @@ class IntegrationApplicationTests {
 
     @Test
     public void oneUserTransferAndCreateLuckyMoneyAndReceiveLuckyMoney() throws IOException, InterruptedException {
-        Long expected = walletRepository.sumAllBalance();
 
         String[] HEADERS = {"username", "fullName", "email", "password"};
         Reader in = new FileReader(ResourceUtils.getFile("classpath:Data_100.csv"));
@@ -412,7 +404,6 @@ class IntegrationApplicationTests {
                 .withFirstRecordAsHeader()
                 .parse(in)
                 .getRecords();
-        List<Thread> threads = new ArrayList<>();
 
         // Start threads for the transaction in the same time
         List<User> users = userRepository.findAll();
@@ -433,6 +424,10 @@ class IntegrationApplicationTests {
         Map<String, Object> item0 = (Map<String, Object>) items.get(0);
         String sessionId = (String) item0.get("sessionId");
 
+        Long expected = walletRepository.sumAllBalance();
+
+        List<Thread> threads = new ArrayList<>();
+
         Random random = new Random();
         long amount = random.nextInt(3_123) + 1000;
         users.forEach(user -> {
@@ -442,25 +437,18 @@ class IntegrationApplicationTests {
 
             }
         });
-
         records.forEach(record -> {
-
             CreateLuckyMoneyThread createLuckyMoneyThread = new CreateLuckyMoneyThread(record.get("username"), record.get("password"), sessionId);
-            ReceiveLuckyMoneyThread receiveLuckyMoneyThread = new ReceiveLuckyMoneyThread(record.get("username"),record.get("password"),sessionId);
-
+            ReceiveLuckyMoneyThread receiveLuckyMoneyThread = new ReceiveLuckyMoneyThread(record.get("username"), record.get("password"), sessionId);
             threads.add(createLuckyMoneyThread);
             threads.add(receiveLuckyMoneyThread);
         });
-
-
         for (Thread thread : threads) {
             thread.start();
         }
-
         for (Thread thread : threads) {
             thread.join();
         }
-
         long actual = walletRepository.sumAllBalance();
         int numberWalletNeg = walletRepository.countAllByBalanceLessThan(0L);
 
