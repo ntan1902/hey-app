@@ -72,11 +72,9 @@ public class AddFriendTests {
                 threads.add(addFriendThread);
             }
         });
-
         for (AddFriendThread thread : threads) {
             thread.join();
         }
-
         List<AcceptFriendThread> acceptFriendThreads = new ArrayList<>();
         users.forEach(user -> {
             String username = user.getUsername();
