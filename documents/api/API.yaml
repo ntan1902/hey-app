@@ -332,27 +332,80 @@ paths:
   ### Payment
 
   # User Wallet Information
-  /api/v1/me/wallet:
+  /payment/api/v1/me/wallet:
     get:
       tags:
         - Payment Service
       description: >-
-        Login to the system
+        User get his/her wallet
+      parameters:
+        - in: header
+          name: Authorization
+          description: Bearer token
+          schema:
+            type: string
+          required: true
+          example: Bearer kasfdkjajfjaf.kjadsfkjakjfdhjagae.rkjsdkjakjdsf
       responses:
         "200":
           description: OK
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/WalletResponse"
+                properties:
+                  success: 
+                    type: boolean
+                    example: true
+                  code:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                    example: "success"
+                  payload:
+                    type: object
+                    $ref: "#/components/schemas/WalletResponse"
+        "404":
+          description: User have no wallet
+          content:
+            application/json:
+              schema:
+                properties:
+                  success: 
+                    type: boolean
+                    default: false
+                  code:
+                    type: integer
+                    example: 404
+                  message:
+                    type: string
+                    example: "You have no wallet"
+                  payload:
+                    type: object
+                    default: {}
+        "401":
+          description: Unauthorize
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error401"
+          
 
   # Make transfer from me to other
-  /api/v1/me/createTransfer:
+  /payment/api/v1/me/createTransfer:
     post:
       tags:
         - Payment Service
       description: >-
-        Login to the system
+        User transfer money to another.
+      parameters:
+        - in: header
+          name: Authorization
+          description: Bearer token
+          schema:
+            type: string
+          required: true
+          example: Bearer kasfdkjajfjaf.kjadsfkjakjfdhjagae.rkjsdkjakjdsf
       requestBody:
         required: true
         content:
@@ -362,24 +415,51 @@ paths:
         description: User login to the app
       responses:
         "200":
-          description: OK
+          description: Transfer successfully
+          content:
+            application/json:
+              schema:
+                properties:
+                  success: 
+                    type: boolean
+                    example: true
+                  code:
+                    type: number
+                    example: 200
+                  message:
+                    type: string
+                    example: "Transfer successfully"
+                  payload:
+                    type: object
+                    example: {}
+        "401":
+          description: Unauthorize
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error401"
+        "400":
+          description: "Error when: soft token cannot decode, "
+          content: 
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error400"
 
-  /api/v1/me/getTransferStatement:
-    get:
-      tags:
-        - Payment Service
-      description: >-
-        Login to the system
-      responses:
-        "200":
-          description: OK
 
-  /api/v1/me/topup:
+  /payment/api/v1/me/topup:
     post:
       tags:
         - Payment Service
       description: >-
         Login to the system
+      parameters:
+        - in: header
+          name: Authorization
+          description: Bearer token
+          schema:
+            type: string
+          required: true
+          example: Bearer kasfdkjajfjaf.kjadsfkjakjfdhjagae.rkjsdkjakjdsf
       requestBody:
         required: true
         content:
@@ -394,14 +474,175 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/TopupResponse"
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error400"
+        "401":
+          description: Unauthorize
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error401"
+        "404":
+          description: "Not Found"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error404"
 
-  # Service Wallet Information
-  /api/v1/systems/getAllWallets:
+
+  /payment/api/v1/me/getTransferStatement:
     get:
       tags:
         - Payment Service
       description: >-
+        Login to the system
+      parameters:
+        - in: header
+          name: Authorization
+          description: Bearer token
+          schema:
+            type: string
+          required: true
+          example: Bearer kasfdkjajfjaf.kjadsfkjakjfdhjagae.rkjsdkjakjdsf
+        - in: query
+          name: offset
+          description: offset for pagination
+          schema:
+            type: number
+          required: false
+          example: 1
+        - in: query
+          name: limit
+          description: size of page
+          schema:
+            type: number
+          required: false
+          example: 10
+      responses:
+        "200":
+          description: Get transfer successfully
+          content:
+            application/json:
+              schema:
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  code:
+                    type: number
+                    example: 200
+                  message:
+                    type: string
+                    example: "Get transfer successfully"
+                  payload:
+                    type: array
+                    items: 
+                      $ref: "#/components/schemas/TransferStatementDTO"
+        "401":
+          description: Unauthorize
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error401"
+  
+  /payment/api/v1/me/createWallet:
+    post:
+      tags:
+        - Payment Service
+      description: Create wallet
+      responses:
+        "200":
+          description: Create wallet successfully
+          content:
+            application/json:
+              schema:
+                properties:
+                  success: 
+                    type: boolean
+                    example: true
+                  code:
+                    type: number
+                    example: 200
+                  message:
+                    type: string
+                    example: "Create wallet successfully"
+                  payload:
+                    $ref: "#/components/schemas/WalletDTO"
+        "400":
+          description: Error if user had wallet
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error400"
+        "401":
+          description: Unauthorize
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error401"
 
+  /payment/api/v1/me/hasWallet:
+    get:
+      tags:
+        - Payment Service
+      description:
+        Check whether user had wallet
+      parameters:
+        - in: header
+          name: Authorization
+          description: Bearer token
+          schema:
+            type: string
+          required: true
+          example: Bearer kasfdkjajfjaf.kjadsfkjakjfdhjagae.rkjsdkjakjdsf
+      responses:
+        "200":
+          description: No error
+          content:
+            application/json:
+              schema:
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  code:
+                    type: number
+                    example: 200
+                  message:
+                    type: string
+                    example: "Message"
+                  payload:
+                    type: object
+                    properties:
+                      hasWallet:
+                        type: boolean
+                        example: true
+        "401":
+          description: Unauthorize
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error401"
+
+  # Service Wallet Information
+  /payment/api/v1/systems/getAllWallets:
+    get:
+      tags:
+        - Payment Service
+      description: >-
+        System get all wallet
+      parameters:
+        - in: header
+          name: Authorization
+          description: Bearer system token
+          schema:
+            type: string
+          required: true
+          example: Bearer kasfdkjajfjaf.kjadsfkjakjfdhjagae.rkjsdkjakjdsf
       responses:
         "200":
           description: OK
@@ -409,46 +650,194 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/WalletSystemResponse"
+        "401":
+          description: Unauthorize
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error401"
 
-  # Make transfer from One service to the other
-  /api/v1/systems/createTransfer:
+
+  /payment/api/v1/systems/createTransferFromUser:
     post:
       tags:
         - Payment Service
       description: >-
-        Login to the system
+        Create transfer from user
+      parameters:
+        - in: header
+          name: Authorization
+          description: Bearer system token
+          schema:
+            type: string
+          required: true
+          example: Bearer kasfdkjajfjaf.kjadsfkjakjfdhjagae.rkjsdkjakjdsf
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/SystemTransferForm"
+              $ref: "#/components/schemas/SystemCreateTransferFromUserRequest"
         description: User login to the app
       responses:
         "200":
           description: OK
+          content:
+            application/json:
+              schema:
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  code:
+                    type: number
+                    example: 200
+                  message:
+                    type: string
+                    example: "Message"
+                  payload:
+                    type: object
+                    properties:
+                      amount:
+                        type: number
+                        example: 30000
+        "400":
+          description: "Bad Request"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error400"
+        "401":
+          description: Unauthorize
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error401"
+        "404":
+          description: "Not found"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error400"
+        
+                      
+
+  /payment/api/v1/systems/createTransferToUser:
+    post:
+      tags:
+        - Payment Service
+      description: >-
+        Create transfer to user
+      parameters:
+        - in: header
+          name: Authorization
+          description: Bearer system token
+          schema:
+            type: string
+          required: true
+          example: Bearer kasfdkjajfjaf.kjadsfkjakjfdhjagae.rkjsdkjakjdsf
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SystemCreateTransferToUserRequest"
+        description: Create transfer to user
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  code:
+                    type: number
+                    example: 200
+                  message:
+                    type: string
+                    example: "Transfer to user successfully"
+                  payload:
+                    type: string
+                    example: "nothing"
+        "400":
+          description: "Bad Request"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error400"
+        "401":
+          description: Unauthorize
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error401"
 
   ### Lucky Money
 
   # Create Lucky Money from user to a group chat
-  /api/v1/createLuckyMoney:
+  /lucky/api/v1/createLuckyMoney:
     post:
       tags:
         - LuckyMoney Service
       description: >-
-        Login to the system
+        Create lucky money
+      parameters:
+        - in: header
+          name: Authorization
+          description: Bearer token
+          schema:
+            type: string
+          required: true
+          example: Bearer kasfdkjajfjaf.kjadsfkjakjfdhjagae.rkjsdkjakjdsf
       requestBody:
         required: true
         content:
           application/json:
             schema:
               $ref: "#/components/schemas/CreateLuckyMoneyForm"
-        description: User login to the app
+        description: Create lucky money request
       responses:
-        "200":
+        "201":
           description: OK
+          content:
+            application/json:
+              schema:
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  code:
+                    type: number
+                    example: 201
+                  message:
+                    type: string
+                    example: "Create lucky money successfully"
+                  payload:
+                    type: string
+                    example: "nothing"
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error400"
+        "401":
+          description: Unauthorize
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error401"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error500"
   #
-  /api/v1/getLuckyMoney:
+  /lucky/api/v1/getAllLuckyMoney:
     get:
       tags:
         - LuckyMoney Service
@@ -456,6 +845,13 @@ paths:
         Login to the system
 
       parameters:
+        - in: header
+          name: Authorization
+          description: Bearer token
+          schema:
+            type: string
+          required: true
+          example: Bearer kasfdkjajfjaf.kjadsfkjakjfdhjagae.rkjsdkjakjdsf
         - in: query
           name: sessionId
           description: session ID
@@ -463,29 +859,179 @@ paths:
           schema:
             type: string
             example: dc190303aea87bdf6e4faa3d59de
-
       responses:
         "200":
           description: OK
+          content:
+            application/json:
+              schema:
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  code:
+                    type: number
+                    example: 200
+                  message:
+                    type: string
+                    example: "Create lucky money successfully"
+                  payload:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/LuckyMoneyDTO"
+        "400":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error400"
+        "401":
+          description: Unauthorize
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error401"
+        "406":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error406"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error500"
 
-  /api/v1/receiveLuckyMoney:
+  /lucky/api/v1/receiveLuckyMoney:
     post:
       tags:
         - LuckyMoney Service
       description: >-
-        Login to the system
-
+        Receive lucky money
+      parameters:
+        - in: header
+          name: Authorization
+          description: Bearer token
+          schema:
+            type: string
+          required: true
+          example: Bearer kasfdkjajfjaf.kjadsfkjakjfdhjagae.rkjsdkjakjdsf
       requestBody:
         required: true
         content:
           application/json:
             schema:
               $ref: "#/components/schemas/RecieveLuckyMoneyForm"
-        description: User login to the app
+        description: Receive lucky money request
       responses:
         "200":
           description: OK
-
+          content:
+            application/json:
+              schema:
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  code:
+                    type: number
+                    example: 200
+                  message:
+                    type: string
+                    example: "Receive lucky money successfully"
+                  payload:
+                    type: string
+                    example: "nothing"
+        "400":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error400"
+        "401":
+          description: Unauthorize
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error401"
+        "406":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error406"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error500"
+        
+  /lucky/api/v1/getDetailsLuckyMoney:
+    get:
+      tags:
+        - LuckyMoney Service
+      description: >-
+        Get details lucky money
+      parameters:
+        - in: header
+          name: Authorization
+          description: Bearer token
+          schema:
+            type: string
+          required: true
+          example: Bearer kasfdkjajfjaf.kjadsfkjakjfdhjagae.rkjsdkjakjdsf
+        - in: query
+          name: luckyMoneyId
+          schema:
+            type: number
+          required: true
+          example: 123
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  code:
+                    type: number
+                    example: 200
+                  message:
+                    type: string
+                    example: "Receive lucky money successfully"
+                  payload:
+                    $ref: "#/components/schemas/LuckyMoneyDetails"
+        "400":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error400"
+        "401":
+          description: Unauthorize
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error401"
+        "406":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error406"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error500"
+        
   ### Chat
 
   /api/v1/systems/createTransferMessage:
@@ -539,6 +1085,7 @@ paths:
         "200":
           description: OK
 
+
   /api/v1/systems/receiveLuckyMoneyMessage:
     post:
       tags:
@@ -585,6 +1132,144 @@ components:
         smallAvatar:
           type: string
           example: file_50.png
+    WalletDTO:
+      type: object
+      properties:
+        balance:
+          type: number
+          example: 0
+    LuckyMoneyDetails:
+      type: object
+      properties:
+        wishMessage:
+          type: string
+          example: Happy new year
+        userCreated:
+          $ref: "#/components/schemas/UserInfo"
+        usersReceived:
+          type: array
+          items:
+            $ref: "#/components/schemas/UserReceiveInfo"
+        totalBag:
+          type: number
+          example: 20
+        restBag:
+          type: number
+          example: 12
+        type:
+          type: string
+          example: random
+        restMoney:
+          type: number
+          example: 10000
+        totalMoney:
+          type: number
+          example: 200000
+
+    UserReceiveInfo:
+      type: object
+      properties:
+        fullName: 
+          type: string
+          example: "Vo Ngoc Trong"
+        amount:
+          type: number
+          example: 20000
+        receivedAt:
+          type: string
+          example: "2000-10-04T20:23:45"
+    TransferStatementDTO:
+      type: object
+      required:
+        - source
+        - target
+        - amount
+        - status
+        - transferType
+      properties:
+        source:
+          $ref: "#/components/schemas/OwnerInfo"
+        target:
+          $ref: "#/components/schemas/OwnerInfo"
+        transferCode:
+          type: string
+          example: Code transfer
+        amount:
+          type: number
+          example: 20000
+        status:
+          type: number
+          example: 2
+        description:
+          type: string 
+          example: This is description
+        transferFee:
+          type: number
+          example: 200
+        transferType:
+          type: string
+          example: Topup
+    LuckyMoneyDTO:
+      type: object
+      properties:
+        senderName:
+          type: string
+          example: Ngoc Trong
+        luckyMoneyId:
+          type: number
+          example: 123
+        isReceived:
+          type: boolean
+          example: true
+        receivedMoney:
+          type: number
+          example: 20000
+        receivedAt: 
+          type: string
+          example: "2000-10-04T20:20:20"
+        wishMessage:
+          type: string
+          example: Happy new year
+        restBag:
+          type: number
+          example: 10
+        totalBag: 
+          type: number
+          example: 15
+        totalMoney:
+          type: number
+          example: 100000
+        isExpired:
+          type: boolean
+          example: false        
+    SystemCreateTransferFromUserRequest:
+      type: object
+      properties:
+        userId:
+          type: string
+          example: uuid-123
+        walletId:
+          type: number
+          example: 1234
+        softToken:
+          type: string
+          example: adsfadsfafd.fafafafafsfdadsf.dfasdfafdasf
+        message:
+          type: string
+          example: Happy new year
+        amount: 
+          type: number
+          example: 30000
+        
+    OwnerInfo:
+      type: object
+      properties:
+        id:
+          type: string
+          example: uuid
+        name:
+          type: string
+          example: User full name or system name
     LoginForm:
       type: object
       required:
@@ -755,15 +1440,6 @@ components:
           type: string
           example: anlg2@vng.com.vn
 
-    OwnerInfo:
-      type: object
-      required:
-        - balance
-      properties:
-        success:
-          type: boolean
-          example: 200000
-
     WalletResponse:
       type: object
       required:
@@ -784,7 +1460,7 @@ components:
           example: 200000
         walletId:
           type: number
-          example: 200000
+          example: 123
 
     WalletSystemResponse:
       type: object
@@ -804,7 +1480,7 @@ components:
           example: 200
         message:
           type: string
-          default: ""
+          default: "Message"
         payload:
           type: array
           items:
@@ -820,19 +1496,23 @@ components:
           type: number
           example: 200000
         bank_id:
-          type: number
-          example: 200000
+          type: string
+          example: 123-abc-456
 
     TransferForm:
       type: object
       required:
-        - receiverId
+        - targetId
+        - softToken
         - amount
         - message
       properties:
-        receiverId:
+        targetId:
           type: number
           example: 1
+        softToken:
+          type: string
+          example: kadsfjasdkjf.yuakjefcsiukjewf.audsifkjanmewfcskj
         amount:
           type: number
           example: 100000
@@ -840,7 +1520,7 @@ components:
           type: string
           example: Goodbye!
 
-    SystemTransferForm:
+    SystemCreateTransferToUserRequest:
       type: object
       required:
         - walletId
@@ -874,12 +1554,12 @@ components:
           default: true
           example: true
         code:
-          type: integer
+          type: number
           default: 200
           example: 200
         message:
           type: string
-          default: "Processing Transfer"
+          default: "Topup successfully"
         payload:
           type: object
           default: {}
@@ -1002,6 +1682,30 @@ components:
           default: {}
           example: {}
     # =====================
+    Error406:
+      type: object
+      required:
+        - success
+        - code
+        - message
+        - payload
+      properties:
+        success:
+          type: boolean
+          default: false
+          example: false
+        code:
+          type: integer
+          default: 406
+          example: 406
+        message:
+          type: string
+          default: "Not acceptable"
+        payload:
+          type: object
+          default: {}
+          example: {}
+    # =====================
     Error400:
       type: object
       required:
@@ -1021,6 +1725,30 @@ components:
         message:
           type: string
           default: "Bad Request"
+        payload:
+          type: object
+          default: {}
+          example: {}
+    # =====================
+    Error500:
+      type: object
+      required:
+        - success
+        - code
+        - message
+        - payload
+      properties:
+        success:
+          type: boolean
+          default: false
+          example: false
+        code:
+          type: integer
+          default: 500
+          example: 500
+        message:
+          type: string
+          default: "Internal server error"
         payload:
           type: object
           default: {}

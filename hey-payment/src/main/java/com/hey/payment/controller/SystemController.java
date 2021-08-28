@@ -42,21 +42,6 @@ public class SystemController {
         );
     }
 
-    @PostMapping("/createTransferToUser")
-    public ResponseEntity<ApiResponse<Object>> createTransferToUser(@RequestBody SystemCreateTransferToUserRequest request) throws MinAmountException, MaxAmountException, HaveNoWalletException, BalanceNotEnoughException, MaxBalanceException {
-
-        log.info("System createTransferToUser");
-        transferStatementService.systemCreateTransferToUser(request);
-        return ResponseEntity.ok(
-                ApiResponse.builder()
-                        .success(true)
-                        .code(HttpStatus.OK.value())
-                        .message(SYSTEM_TRANSFER_TO_USER_SUCCESSFULLY)
-                        .payload("")
-                        .build()
-        );
-    }
-
     @PostMapping("/createTransferFromUser")
     public ResponseEntity<ApiResponse<Object>> createTransferFromUser(@RequestBody SystemCreateTransferFromUserRequest request) throws MinAmountException, MaxAmountException, SoftTokenAuthorizeException, BalanceNotEnoughException, MaxBalanceException, HaveNoWalletException {
         log.info("System createTransferFromUser");
@@ -71,4 +56,18 @@ public class SystemController {
         );
     }
 
+    @PostMapping("/createTransferToUser")
+    public ResponseEntity<ApiResponse<Object>> createTransferToUser(@RequestBody SystemCreateTransferToUserRequest request) throws MinAmountException, MaxAmountException, HaveNoWalletException, BalanceNotEnoughException, MaxBalanceException {
+
+        log.info("System createTransferToUser");
+        transferStatementService.systemCreateTransferToUser(request);
+        return ResponseEntity.ok(
+                ApiResponse.builder()
+                        .success(true)
+                        .code(HttpStatus.OK.value())
+                        .message(SYSTEM_TRANSFER_TO_USER_SUCCESSFULLY)
+                        .payload("")
+                        .build()
+        );
+    }
 }

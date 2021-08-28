@@ -579,7 +579,7 @@ class LuckyMoneyServiceImplTest {
         senderLuckyMoney.setFullName("Vo Ngoc Trong");
         senderLuckyMoney.setUsername("ngoctrong102");
 
-        List<UserReceiveInfo> receivedUsers = new ArrayList<>();
+        List<UserReceivedInfo> receivedUsers = new ArrayList<>();
 
         when(userUtil.getUserInfo(luckyMoney.getUserId())).thenReturn(senderLuckyMoney);
 
