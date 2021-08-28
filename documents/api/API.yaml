@@ -18,6 +18,7 @@ tags:
 paths:
   ### Authentication Service
 
+  # User login to the app
   /api/v1/users/login:
     post:
       tags:
@@ -58,7 +59,14 @@ paths:
                     type: object
                     default: {}
                     example: {}
+        "401":
+          description: UNAUTHORIZED
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error401"
 
+  # User register to the app
   /api/v1/users/register:
     post:
       tags:
@@ -75,6 +83,30 @@ paths:
       responses:
         "201":
           description: CREATED
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - success
+                  - code
+                  - message
+                properties:
+                  success:
+                    type: boolean
+                    default: true
+                    example: true
+                  code:
+                    type: integer
+                    default: 201
+                    example: 201
+                  message:
+                    type: string
+                    default: "Request successfully"
+                  payload:
+                    type: object
+                    default: {}
+                    example: {}
         "400":
           description: Bad Request
           content:
@@ -82,15 +114,24 @@ paths:
               schema:
                 $ref: "#/components/schemas/Error400"
 
+  # User get info
   /api/v1/users/getInfo:
     get:
       tags:
         - Auth Service
+      parameters:
+        - in: header
+          name: jwt
+          schema:
+            type: string
+          required: true
+          example: sas8asa8s8asa0sd0as6ad5d9as6d7fs9sf6sd9ds
+          description: JWT of user
       description: >-
         Return user info mation
       responses:
         "200":
-          description: CREATED
+          description: OK
           content:
             application/json:
               schema:
@@ -127,6 +168,14 @@ paths:
         - Auth Service
       description: >-
         User Create Pin
+      parameters:
+        - in: header
+          name: jwt
+          schema:
+            type: string
+          required: true
+          example: sas8asa8s8asa0sd0as6ad5d9as6d7fs9sf6sd9ds
+          description: JWT of user
       requestBody:
         required: true
         content:
@@ -143,6 +192,36 @@ paths:
       responses:
         "201":
           description: CREATED
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - success
+                  - code
+                  - message
+                properties:
+                  success:
+                    type: boolean
+                    default: true
+                    example: true
+                  code:
+                    type: integer
+                    default: 201
+                    example: 201
+                  message:
+                    type: string
+                    default: "Request successfully"
+                  payload:
+                    type: object
+                    default: {}
+                    example: {}
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error400"
 
   # Has Pin for User
   /api/v1/users/hasPin:
@@ -150,7 +229,15 @@ paths:
       tags:
         - Auth Service
       description: >-
-        User Create Pin
+        User Has Pin
+      parameters:
+        - in: header
+          name: jwt
+          schema:
+            type: string
+          required: true
+          example: sas8asa8s8asa0sd0as6ad5d9as6d7fs9sf6sd9ds
+          description: JWT of user
       requestBody:
         required: true
         content:
@@ -163,10 +250,42 @@ paths:
                 pin:
                   type: string
                   example: "iqewbfj9395fbs932004f5bhjkfbvew894bt75btc5nt79 9c8nmtvn5m9oc5gl983hcrf57890o32d5900a422750fe0ab1"
-        description: Create User Pin
+        description: User Has Pin
       responses:
-        "201":
-          description: CREATED
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - success
+                  - code
+                  - message
+                properties:
+                  success:
+                    type: boolean
+                    default: true
+                    example: true
+                  code:
+                    type: integer
+                    default: 200
+                    example: 200
+                  message:
+                    type: string
+                    default: "Request successfully"
+                  payload:
+                    type: object
+                    properties:
+                      hasPin:
+                        type: boolean
+                        example: true
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error400"
 
   # Generate Soft Token
   /api/v1/users/createSoftTokenByPin:
@@ -175,6 +294,14 @@ paths:
         - Auth Service
       description: >-
         User Create Pin
+      parameters:
+        - in: header
+          name: jwt
+          schema:
+            type: string
+          required: true
+          example: sas8asa8s8asa0sd0as6ad5d9as6d7fs9sf6sd9ds
+          description: JWT of user
       requestBody:
         required: true
         content:
@@ -187,28 +314,551 @@ paths:
                 pin:
                   type: string
                   example: "iqewbfj9395fbs932004f5bhjkfbvew894bt75btc5nt79 9c8nmtvn5m9oc5gl983hcrf57890o32d5900a422750fe0ab1"
-        description: Create User Pin
+                amount:
+                  type: number
+                  example: 1000
+        description: Create Soft Token Pin
       responses:
         "201":
           description: CREATED
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - success
+                  - code
+                  - message
+                properties:
+                  success:
+                    type: boolean
+                    default: true
+                    example: true
+                  code:
+                    type: integer
+                    default: 201
+                    example: 201
+                  message:
+                    type: string
+                    default: "Request successfully"
+                  payload:
+                    type: object
+                    properties:
+                      softToken:
+                        type: string
+                        example: "abdbfdbfdgret4543543treg"
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error400"
 
-  /api/v1/users/signout:
-    post:
+  # Get username
+  /api/v1/users/getUsername/{userId}:
+    get:
       tags:
         - Auth Service
       description: >-
-        Login to the system
+        Get Username
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          description: User Id
+          schema:
+            type: string
+            example: "uuid"
+        - in: header
+          name: jwt
+          schema:
+            type: string
+          required: true
+          example: sas8asa8s8asa0sd0as6ad5d9as6d7fs9sf6sd9ds
+          description: JWT of user
+
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - success
+                  - code
+                  - message
+                properties:
+                  success:
+                    type: boolean
+                    default: true
+                    example: true
+                  code:
+                    type: integer
+                    default: 200
+                    example: 200
+                  message:
+                    type: string
+                    default: "Request successfully"
+                  payload:
+                    type: object
+                    properties:
+                      username:
+                        type: string
+                        example: "ntan"
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error400"
+
+  # Change password
+  /api/v1/users/changePassword:
+    patch:
+      tags:
+        - Auth Service
+      description: >-
+        User Change Password
+      parameters:
+        - in: header
+          name: jwt
+          schema:
+            type: string
+          required: true
+          example: sas8asa8s8asa0sd0as6ad5d9as6d7fs9sf6sd9ds
+          description: JWT of user
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/LoginForm"
-        description: User login to the app
+              type: object
+              required:
+                - password
+                - oldPassword
+                - confirmPassword
+              properties:
+                password:
+                  type: string
+                  example: "123456"
+                oldPassword:
+                  type: string
+                  example: "1234"
+                confirmPassword:
+                  type: string
+                  example: "123456"
+        description: Change Password
+      responses:
+        "204":
+          description: NO_CONTENT
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - success
+                  - code
+                  - message
+                properties:
+                  success:
+                    type: boolean
+                    default: true
+                    example: true
+                  code:
+                    type: integer
+                    default: 204
+                    example: 204
+                  message:
+                    type: string
+                    default: "Change password successfully"
+                  payload:
+                    type: object
+                    default: {}
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error400"
+
+  # Change pin
+  /api/v1/users/changePin:
+    patch:
+      tags:
+        - Auth Service
+      description: >-
+        User Change Pin
+      parameters:
+        - in: header
+          name: jwt
+          schema:
+            type: string
+          required: true
+          example: sas8asa8s8asa0sd0as6ad5d9as6d7fs9sf6sd9ds
+          description: JWT of user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - pin
+                - oldPin
+                - confirmPin
+              properties:
+                pin:
+                  type: string
+                  example: "123456"
+                oldPin:
+                  type: string
+                  example: "1234"
+                confirmPin:
+                  type: string
+                  example: "123456"
+        description: Change Pin
+      responses:
+        "204":
+          description: NO_CONTENT
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - success
+                  - code
+                  - message
+                properties:
+                  success:
+                    type: boolean
+                    default: true
+                    example: true
+                  code:
+                    type: integer
+                    default: 204
+                    example: 204
+                  message:
+                    type: string
+                    default: "Change pin successfully"
+                  payload:
+                    type: object
+                    default: {}
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error400"
+
+  # Refresh token
+  /api/v1/users/refreshToken:
+    post:
+      tags:
+        - Auth Service
+      description: >-
+        User Refresh Token
+
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - pin
+                - oldPin
+                - confirmPin
+              properties:
+                refreshToken:
+                  type: string
+                  example: "abc"
+
+        description: Refresh token
+      responses:
+        "201":
+          description: CREATED
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - success
+                  - code
+                  - message
+                properties:
+                  success:
+                    type: boolean
+                    default: true
+                    example: true
+                  code:
+                    type: integer
+                    default: 201
+                    example: 201
+                  message:
+                    type: string
+                    default: "Change pin successfully"
+                  payload:
+                    type: object
+                    properties:
+                      accessToken:
+                        type: string
+                        example: "abcbb"
+                      tokenType:
+                        type: string
+                        example: "Bearer"
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error400"
+
+  # User logout
+  /api/v1/users/logout:
+    post:
+      tags:
+        - Auth Service
+      description: >-
+        Logout the system
+      parameters:
+        - in: header
+          name: jwt
+          schema:
+            type: string
+          required: true
+          example: sas8asa8s8asa0sd0as6ad5d9as6d7fs9sf6sd9ds
+          description: JWT of user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                refreshToken:
+                  type: string
+                  example: "abc"
+        description: User logout the app
+      responses:
+        "204":
+          description: NO_CONTENT
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - success
+                  - code
+                  - message
+                properties:
+                  success:
+                    type: boolean
+                    default: true
+                    example: true
+                  code:
+                    type: integer
+                    default: 204
+                    example: 204
+                  message:
+                    type: string
+                    default: "Logout successfully"
+                  payload:
+                    type: object
+                    default: {}
+                    example: {}
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error400"
+
+  # Search User
+  /api/v1/users/searchUser:
+    get:
+      tags:
+        - Auth Service
+      description: >-
+        Return user information list
+      parameters:
+        - name: key
+          in: path
+          required: true
+          description: Key searching for full name or email
+          schema:
+            type: string
+            example: "an"
+        - in: header
+          name: jwt
+          schema:
+            type: string
+          required: true
+          example: sas8asa8s8asa0sd0as6ad5d9as6d7fs9sf6sd9ds
+          description: JWT of user
       responses:
         "200":
           description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - success
+                  - code
+                  - message
+                properties:
+                  success:
+                    type: boolean
+                    default: true
+                    example: true
+                  code:
+                    type: integer
+                    default: 200
+                    example: 200
+                  message:
+                    type: string
+                    default: "Request successfully"
+                  payload:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/UserDTO"
 
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error400"
+
+  # User update avatar
+  /api/v1/users/updateAvatar:
+    post:
+      tags:
+        - Auth Service
+      description: >-
+        Update Avatar
+      parameters:
+        - in: header
+          name: jwt
+          schema:
+            type: string
+          required: true
+          example: sas8asa8s8asa0sd0as6ad5d9as6d7fs9sf6sd9ds
+          description: JWT of user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                uri:
+                  type: string
+                  example: "abc"
+                mediumUri:
+                  type: string
+                  example: "abc"
+                smallUri:
+                  type: string
+                  example: "abc"
+        description: User update avatar in the app
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - success
+                  - code
+                  - message
+                properties:
+                  success:
+                    type: boolean
+                    default: true
+                    example: true
+                  code:
+                    type: integer
+                    default: 200
+                    example: 200
+                  message:
+                    type: string
+                    default: "Update avatar successfully"
+                  payload:
+                    type: object
+                    default: {}
+                    example: {}
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error400"
+
+  # User upload image
+  /api/v1/users/uploadImage:
+    post:
+      tags:
+        - Auth Service
+      description: >-
+        Upload Image
+      parameters:
+        - in: header
+          name: jwt
+          schema:
+            type: string
+          required: true
+          example: sas8asa8s8asa0sd0as6ad5d9as6d7fs9sf6sd9ds
+          description: JWT of user
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: object
+                  format: base64
+
+        description: User upload image in the app
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - success
+                  - code
+                  - message
+                properties:
+                  success:
+                    type: boolean
+                    default: true
+                    example: true
+                  code:
+                    type: integer
+                    default: 200
+                    example: 200
+                  message:
+                    type: string
+                    default: "Upload successfully"
+                  payload:
+                    type: object
+                    default: {}
+                    example: {}
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error400"
+
+  # System login
   /api/v1/systems/login:
     post:
       tags:
@@ -221,15 +871,47 @@ paths:
           application/json:
             schema:
               $ref: "#/components/schemas/ServiceLoginForm"
-        description: User login to the app
+        description: System login to the app
       responses:
         "200":
           description: OK
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ServiceLoginResponse"
+                type: object
+                required:
+                  - success
+                  - code
+                  - message
+                properties:
+                  success:
+                    type: boolean
+                    default: true
+                    example: true
+                  code:
+                    type: integer
+                    default: 200
+                    example: 200
+                  message:
+                    type: string
+                    default: "Upload successfully"
+                  payload:
+                    type: object
+                    properties:
+                      accessToken:
+                        type: string
+                        example: "ada7da8sd8as8d7asd88as8d8asd8asd6"
+                      tokenType:
+                        type: string
+                        example: "Bearer"
+        "401":
+          description: UNAUTHORIZED
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error401"
 
+  # System authorizes user
   /api/v1/systems/authorizeUser:
     post:
       tags:
@@ -238,7 +920,7 @@ paths:
         Request Auth Service to Authorize User Token
       parameters:
         - in: header
-          name: jwtService
+          name: jwt
           schema:
             type: string
           required: true
@@ -250,27 +932,102 @@ paths:
           application/json:
             schema:
               $ref: "#/components/schemas/AuthorizeUserRequest"
-        description: User login to the app
+        description: Authorize user
       responses:
         "200":
           description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - success
+                  - code
+                  - message
+                properties:
+                  success:
+                    type: boolean
+                    default: true
+                    example: true
+                  code:
+                    type: integer
+                    default: 200
+                    example: 200
+                  message:
+                    type: string
+                    default: ""
+                  payload:
+                    type: object
+                    properties:
+                      userId:
+                        type: string
+                        example: "uuid"
 
-  /api/v1/systems/authorizeService:
+        "401":
+          description: UNAUTHORIZED
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error401"
+
+  # System authorizes system
+  /api/v1/systems/authorizeSystem:
     post:
       tags:
         - Auth Service
       description: >-
-        Request Auth Service to Authorize Service Token
+        Request Auth Service to Authorize System Token
+      parameters:
+        - in: header
+          name: jwt
+          schema:
+            type: string
+          required: true
+          example: sas8asa8s8asa0sd0as6ad5d9as6d7fs9sf6sd9ds
+          description: JWT of service
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/ServiceLoginForm"
-        description: User login to the app
+              $ref: "#/components/schemas/AuthorizeSystemRequest"
+        description: Authorize system
       responses:
         "200":
           description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - success
+                  - code
+                  - message
+                properties:
+                  success:
+                    type: boolean
+                    default: true
+                    example: true
+                  code:
+                    type: integer
+                    default: 200
+                    example: 200
+                  message:
+                    type: string
+                    default: ""
+                  payload:
+                    type: object
+                    properties:
+                      systemId:
+                        type: string
+                        example: "uuid"
+
+        "401":
+          description: UNAUTHORIZED
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error401"
 
   # Authenticate soft token from user
   /api/v1/systems/authorizeSoftToken:
@@ -278,23 +1035,127 @@ paths:
       tags:
         - Auth Service
       description: >-
-        Request Auth Service to Authorize Service Token
+        Request Auth Service to Authorize System Token
+      parameters:
+        - in: header
+          name: jwt
+          schema:
+            type: string
+          required: true
+          example: sas8asa8s8asa0sd0as6ad5d9as6d7fs9sf6sd9ds
+          description: JWT of service
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/ServiceLoginForm"
-        description: User login to the app
+              type: object
+              properties:
+                softToken:
+                  type: string
+                  example: "abc"
+        description: Authorize system
       responses:
         "200":
           description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - success
+                  - code
+                  - message
+                properties:
+                  success:
+                    type: boolean
+                    default: true
+                    example: true
+                  code:
+                    type: integer
+                    default: 200
+                    example: 200
+                  message:
+                    type: string
+                    default: ""
+                  payload:
+                    type: object
+                    properties:
+                      userId:
+                        type: string
+                        example: "uuid"
+                      amount:
+                        type: number
+                        example: 1000
+
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error400"
+
+  # Get System's information
+  /api/v1/systems/getSystemInfo/{systemId}:
+    get:
+      tags:
+        - Auth Service
+      description: >-
+        Request Auth Service to Get System Info
+      parameters:
+        - in: path
+          name: systemId
+          schema:
+            type: string
+          required: true
+          description: Id of system
+        - in: header
+          name: jwt
+          schema:
+            type: string
+          required: true
+          example: sas8asa8s8asa0sd0as6ad5d9as6d7fs9sf6sd9ds
+          description: JWT of service
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - success
+                  - code
+                  - message
+                properties:
+                  success:
+                    type: boolean
+                    default: true
+                    example: true
+                  code:
+                    type: integer
+                    default: 200
+                    example: 200
+                  message:
+                    type: string
+                    default: ""
+                  payload:
+                    $ref: "#/components/schemas/SystemDTO"
+
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error400"
+
+  # Get User's information
   /api/v1/systems/getUserInfo/{userId}:
     get:
       tags:
         - Auth Service
       description: >-
-        Request Auth Service to Authorize Service Token
+        Request Auth Service to Get User Info
       parameters:
         - in: path
           name: userId
@@ -302,35 +1163,178 @@ paths:
             type: number
           required: true
           description: Id of owner
+        - in: header
+          name: jwt
+          schema:
+            type: string
+          required: true
+          example: sas8asa8s8asa0sd0as6ad5d9as6d7fs9sf6sd9ds
+          description: JWT of service
       responses:
         "200":
           description: OK
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/UserInfo"
-  /api/v1/systems/getSystemInfo/{systemId}:
+                type: object
+                required:
+                  - success
+                  - code
+                  - message
+                properties:
+                  success:
+                    type: boolean
+                    default: true
+                    example: true
+                  code:
+                    type: integer
+                    default: 200
+                    example: 200
+                  message:
+                    type: string
+                    default: ""
+                  payload:
+                    $ref: "#/components/schemas/UserDTO"
+
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error400"
+
+  # Get system list
+  /api/v1/systems/getSystems:
     get:
       tags:
         - Auth Service
       description: >-
-        Request Auth Service to Authorize Service Token
+        Request Auth Service to Get System Info
       parameters:
         - in: path
           name: systemId
           schema:
             type: number
           required: true
-          description: Id of owner
+          description: Id of system
+        - in: header
+          name: jwt
+          schema:
+            type: string
+          required: true
+          example: sas8asa8s8asa0sd0as6ad5d9as6d7fs9sf6sd9ds
+          description: JWT of service
       responses:
         "200":
           description: OK
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/SystemInfo"
-  ### Payment
+                type: object
+                required:
+                  - success
+                  - code
+                  - message
+                properties:
+                  success:
+                    type: boolean
+                    default: true
+                    example: true
+                  code:
+                    type: integer
+                    default: 200
+                    example: 200
+                  message:
+                    type: string
+                    default: ""
+                  payload:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/SystemDTO"
 
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error400"
+
+  # Edit profile
+  /api/v1/systems/editProfile/{userId}:
+    patch:
+      tags:
+        - Auth Service
+      description: >-
+        Request Auth Service to Edit User Profile
+      parameters:
+        - in: path
+          name: userId
+          schema:
+            type: string
+          required: true
+          description: Id of user
+        - in: header
+          name: jwt
+          schema:
+            type: string
+          required: true
+          example: sas8asa8s8asa0sd0as6ad5d9as6d7fs9sf6sd9ds
+          description: JWT of service
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  example: "ntan@gmail.com"
+                fullName:
+                  type: string
+                  example: "Trinh An"
+                dob:
+                  type: string
+                  example: "2000:02:02T19:02"
+                phoneNumber:
+                  type: string
+                  example: "09340329408"
+        description: Authorize system
+      responses:
+        "204":
+          description: NO_CONTENT
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - success
+                  - code
+                  - message
+                properties:
+                  success:
+                    type: boolean
+                    default: true
+                    example: true
+                  code:
+                    type: integer
+                    default: 204
+                    example: 204
+                  message:
+                    type: string
+                    default: "Edit profile successfully"
+                  payload:
+                    type: object
+                    example: {}
+
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error400"
+
+  ### Payment
   # User Wallet Information
   /api/v1/me/wallet:
     get:
@@ -585,6 +1589,18 @@ components:
         smallAvatar:
           type: string
           example: file_50.png
+    SystemDTO:
+      type: object
+      properties:
+        id:
+          type: string
+          example: uuid
+        systemName:
+          type: string
+          example: lucky
+        numberOfWallet:
+          type: integer
+          example: 10
     LoginForm:
       type: object
       required:
@@ -640,6 +1656,14 @@ components:
         - jwtUser
       properties:
         jwtUser:
+          type: string
+          example: ad8afsd7f8sdf8ad79af7af8adf9ad7
+    AuthorizeSystemRequest:
+      type: object
+      required:
+        - jwtUser
+      properties:
+        jwtSystem:
           type: string
           example: ad8afsd7f8sdf8ad79af7af8adf9ad7
     ServiceLoginForm:
@@ -726,14 +1750,6 @@ components:
         systemName:
           type: string
           example: "chat"
-    ServiceLoginResponse:
-      type: object
-      required:
-        - jwtService
-      properties:
-        jwtService:
-          type: string
-          example: ada7da8sd8as8d7asd88as8d8asd8asd6
     RegisterForm:
       type: object
       required:
