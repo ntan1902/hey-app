@@ -1,14 +1,19 @@
 import React from "react";
-import {Avatar, Button, Card, Col, Icon, Input, Modal, Row} from "antd";
-import {connect} from "react-redux";
+import { Avatar, Button, Card, Col, Icon, Input, Modal, Row } from "antd";
+import { connect } from "react-redux";
 import $ from "jquery";
-import {Scrollbars} from "react-custom-scrollbars";
+import { Scrollbars } from "react-custom-scrollbars";
 
 import NumericInput from "./numberic-input";
 import Transfer from "./transfer";
 
-import {channingActions, currency, currencyToString, formatToCurrency,} from "../utils";
-import {bindPaymentActions} from "../actions";
+import {
+  channingActions,
+  currency,
+  currencyToString,
+  formatToCurrency,
+} from "../utils";
+import { bindPaymentActions } from "../actions";
 import LuckyAnimation from "./LuckyAnimation/LuckyAnimation";
 
 const { Meta } = Card;
@@ -21,7 +26,7 @@ class LuckyMoney extends React.Component {
       confirmLoading: false,
       ModalText: "Content of the modal",
       isCreate: false,
-      data: [],
+      data: null,
       topupType: 1,
       moneyEachBag: "",
       numberOfBag: "",
@@ -86,12 +91,18 @@ class LuckyMoney extends React.Component {
         visible: false,
         confirmLoading: false,
       });
-      this.props.paymentActions.changeStateLuckyMoneyPopup(false);
+      this.props.paymentActions.changeStateLuckyMoneyPopup(
+        false,
+        this.props.isCreate
+      );
     }, 2000);
   };
 
   handleCancel = (e) => {
-    this.props.paymentActions.changeStateLuckyMoneyPopup(false);
+    this.props.paymentActions.changeStateLuckyMoneyPopup(
+      false,
+      this.props.isCreate || this.state.isCreate
+    );
     this.setState({ isCreate: false });
   };
 
@@ -591,11 +602,15 @@ class LuckyMoney extends React.Component {
           // cancelText="Cancel"
           footer={null}
         >
-          {this.state.isCreate || this.props.isCreate
-            ? this.renderCreateLuckyMoney()
-            : this.state.data.length === 0
-            ? this.renderEmptyLuckyMoney()
-            : this.renderLuckyMoney()}
+          {this.state.isCreate || this.props.isCreate ? (
+            this.renderCreateLuckyMoney()
+          ) : this.state.data == null ? (
+            <div></div>
+          ) : this.state.data.length === 0 ? (
+            this.renderEmptyLuckyMoney()
+          ) : (
+            this.renderLuckyMoney()
+          )}
         </Modal>
       </div>
     );
