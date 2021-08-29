@@ -442,7 +442,7 @@ class LuckyMoney extends React.Component {
         style={{
           display: "flex",
           width: 300,
-          height: 352,
+          height: 300,
           padding: 20,
         }}
         span={4}
@@ -482,30 +482,30 @@ class LuckyMoney extends React.Component {
                 src="https://png.pngtree.com/thumb_back/fh260/background/20201230/pngtree-fan-shaped-new-year-red-envelopes-for-2021-image_517238.jpg"
               />
             }
-            actions={[
-              <div
-                style={{
-                  display: "flex",
-                  paddingBottom: 20,
-                  height: 20,
-                  justifyContent: "center",
-                  alignContent: "center",
-                }}
-              >
-                <a
-                  style={{
-                    margin: 0,
-                    padding: 0,
-                    fontSize: 12,
-                    fontWeight: "lighter",
-                    color: "black",
-                  }}
-                >
-                  Detail
-                  <Icon type="edit" key="edit" />
-                </a>
-              </div>,
-            ]}
+            // actions={[
+            //   <div
+            //     style={{
+            //       display: "flex",
+            //       paddingBottom: 20,
+            //       height: 20,
+            //       justifyContent: "center",
+            //       alignContent: "center",
+            //     }}
+            //   >
+            //     <a
+            //       style={{
+            //         margin: 0,
+            //         padding: 0,
+            //         fontSize: 12,
+            //         fontWeight: "lighter",
+            //         color: "black",
+            //       }}
+            //     >
+            //       Detail
+            //       <Icon type="edit" key="edit" />
+            //     </a>
+            //   </div>,
+            // ]}
           >
             <Meta
               avatar={
@@ -525,7 +525,9 @@ class LuckyMoney extends React.Component {
 
   renderLuckyMoneyItems = () => {
     return this.state.data.map((e, index) => {
-      if (e.received === true) return this.luckyMoneyReceivedItem(e);
+      console.log(e);
+      if (e.received === true || e.expired)
+        return this.luckyMoneyReceivedItem(e);
       return this.luckyMoneyItem(e);
     });
   };

@@ -114,7 +114,7 @@ class Payment extends React.Component {
                 description = item.createdAt;
                 amount = "+" + formatToCurrency(item.amount) + currency;
                 imgUrl =
-                  "https://banner2.cleanpng.com/20210109/kbt/transparent-payment-icon-top-up-icon-more-icon-5ffa2fb9c84f26.4451108616102317378205.jpg";
+                  "https://image.flaticon.com/icons/png/512/1652/1652000.png";
               } else if (item.transferType == "transfer") {
                 if (item.source.systemName) {
                   title = "Receive lucky money";
@@ -170,6 +170,7 @@ class Payment extends React.Component {
                     style={{
                       height: 55,
                       width: 55,
+                      borderRadius: 18,
                     }}
                   />
 
