@@ -14,7 +14,8 @@ import org.springframework.scheduling.annotation.Scheduled;
 public class ScheduledConfig {
     private final LuckyMoneyService luckyMoneyService;
 
-    @Scheduled(fixedRate = 300_000)
+//    @Scheduled(fixedRate = 300_000)
+    @Scheduled(fixedRate = 60_000)
     public void refundLuckyMoney(){
         log.info("Refund money");
         luckyMoneyService.refundLuckyMoney();
