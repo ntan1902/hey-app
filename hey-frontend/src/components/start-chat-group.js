@@ -18,6 +18,7 @@ class StartChatGroup extends React.Component {
       visible: false,
       selectedUserId: null,
       groupName: "",
+      selectedFullName: "",
     };
     this.addMoreUsername = this.addMoreUsername.bind(this);
     this.handleRemoveUsername = this.handleRemoveUsername.bind(this);
@@ -108,7 +109,6 @@ class StartChatGroup extends React.Component {
             <AddFriend
               onChange={(value) => {
                 console.log(`selected ${value}`);
-
                 this.setState({ selectedUserId: value.userId });
               }}
             />{" "}

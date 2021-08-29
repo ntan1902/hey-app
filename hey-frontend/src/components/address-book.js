@@ -106,7 +106,7 @@ class AddressBook extends React.Component {
       this.props.newAddressBookList[event.key].name,
       this.props.newAddressBookList[event.key].avatar,
       false,
-      [this.props.addressBookList[event.key].userId]
+      [this.props.newAddressBookList[event.key].userId]
     );
   }
 
@@ -423,6 +423,7 @@ class AddressBook extends React.Component {
                       variant="dot"
                     >
                       <Avatar
+                        sizes="100"
                         alt="Remy Sharp"
                         src={getProfileURL(item.userId)}
                       />
@@ -495,11 +496,38 @@ class AddressBook extends React.Component {
               >
                 {this.props.newAddressBookList.map((item, index) => (
                   <Menu.Item key={index}>
-                    {this.renderListAvatar({ userIds: [item.userId] })}
                     {item.isOnline ? (
-                      <div className="status-point online" />
+                      <StyledBadge
+                        overlap="circular"
+                        anchorOrigin={{
+                          vertical: "bottom",
+                          horizontal: "right",
+                        }}
+                        variant="dot"
+                      >
+                        <Avatar
+                          sizes="100"
+                          alt=""
+                          src={getProfileURL(item.userId)}
+                          style={{ width: 60, height: 60 }}
+                        />
+                      </StyledBadge>
                     ) : (
-                      <div className="status-point offline" />
+                      <StyledBadge
+                        overlap="circular"
+                        anchorOrigin={{
+                          vertical: "bottom",
+                          horizontal: "right",
+                        }}
+                        // variant="dot"
+                        showZero={true}
+                      >
+                        <Avatar
+                          alt="Remy Sharp"
+                          src={getProfileURL(item.userId)}
+                          style={{ width: 60, height: 60 }}
+                        />
+                      </StyledBadge>
                     )}
                     <div style={{ overflow: "hidden", paddingTop: 5 }}>
                       <div className="user-name">{item.name}</div>
