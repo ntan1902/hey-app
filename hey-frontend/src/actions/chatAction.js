@@ -22,6 +22,7 @@ import { ChatAPI } from "../api/chat";
 import { bindActionCreators } from "redux";
 import * as actionTypes from "./actionTypes";
 import videoCallUtils from "../utils/videoCallUtils";
+import { WEB_URL } from "../config/setting";
 
 export const EMPTY = "chatList.EMPTY";
 export const CHATLIST_FETCHED = "chatList.CHATLIST_FETCHED";
@@ -131,8 +132,22 @@ function createLoadNewAddFriendRequest(sessionId) {
 }
 
 export function loadChatList() {
-  return function (dispatch) {
+  return async function (dispatch) {
+    const cacheStorage = await caches.open("chatList");
+    const cachedResponse = await cacheStorage.match(WEB_URL);
+    let data = [];
+    if (cachedResponse) {
+      data = await cachedResponse.json();
+      dispatch(receivedChatList(data));
+    }
     return getChatList().then((result) => {
+      const data = new Response(JSON.stringify(result));
+      if ("caches" in window) {
+        // Opening given cache and putting our data into it
+        caches.open("chatList").then((cache) => {
+          cache.put(WEB_URL, data);
+        });
+      }
       dispatch(receivedChatList(result));
     });
   };
@@ -155,10 +170,23 @@ export function reloadChatList() {
 }
 
 export function loadChatContainer(sessionId) {
-  store
-    .getState()
-    .chatReducer.webSocket.json(createLoadChatContainerRequest(sessionId));
-  return { type: EMPTY };
+  return async function (dispatch) {
+    const cacheStorage = await caches.open(`chatList:${sessionId}`);
+    const cachedResponse = await cacheStorage.match(WEB_URL);
+    let data = [];
+    console.log("Cacheddddddddd", cachedResponse);
+    if (cachedResponse) {
+      data = await cachedResponse.json();
+      // dispatch(receivedChatList(data));
+      console.log("Found cache", data);
+      dispatch(changeMessageItems(data, sessionId));
+    }
+
+    await store
+      .getState()
+      .chatReducer.webSocket.json(createLoadChatContainerRequest(sessionId));
+    return { type: EMPTY };
+  };
 }
 
 export function addFriendToSession(sessionId, userId) {
@@ -175,9 +203,19 @@ export function addFriendToSession(sessionId, userId) {
 
 export function specialLoadChatContainer(sessionId) {
   let chatList = [];
-  let timeout = function () {
+  let timeout = async function () {
     try {
-      store
+      const cacheStorage = await caches.open(`chatList:${sessionId}`);
+      const cachedResponse = await cacheStorage.match(WEB_URL);
+      let data = [];
+      console.log("Cacheddddddddd", cachedResponse);
+      if (cachedResponse) {
+        data = await cachedResponse.json();
+        // dispatch(receivedChatList(data));
+        console.log("Found cache", data);
+        changeMessageItems(data, sessionId);
+      }
+      await store
         .getState()
         .chatReducer.webSocket.json(createLoadChatContainerRequest(sessionId));
       if (store.getState().chatReducer.chatList.length > 0) {
@@ -227,6 +265,7 @@ export function receivedChatList(chatList) {
     //       : fetchedChatList[0].groupName,
     //   avatar: fetchedChatList[0].avatar,
     //   group: fetchedChatList[0].group,
+    //   userIds: fetchedChatList[0].userIds,
     // };
     // store.dispatch(specialLoadChatContainer(fetchedChatList[0].sessionId));
   }
@@ -318,6 +357,14 @@ export function receivedNewMessage(message) {
     }
   }
 
+  const data = new Response(JSON.stringify(messageItems));
+  if ("caches" in window) {
+    // Opening given cache and putting our data into it
+    caches.open(`chatList:${currentSessionId}`).then((cache) => {
+      cache.put(WEB_URL, data);
+    });
+  }
+
   // Realtime get transfer statement
   if (message.transferStatement) {
     PaymentAPI.getTransferStatements(0, 1).then((res) => {
@@ -353,6 +400,14 @@ export function receivedNewChatSession(message) {
 }
 
 export function changeMessageItems(chatItems, sessionId) {
+  const data = new Response(JSON.stringify(chatItems));
+  if ("caches" in window) {
+    // Opening given cache and putting our data into it
+    caches.open(`chatList:${sessionId}`).then((cache) => {
+      cache.put(WEB_URL, data);
+    });
+  }
+
   const messageItems = getMessageItems(chatItems);
   let chatList = [];
   if (store.getState().chatReducer.chatList.length > 0) {
