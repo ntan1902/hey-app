@@ -454,7 +454,7 @@ class TransferStatementServiceImplTest {
                 .build();
         when(systemUtil.getCurrentSystem()).thenReturn(system);
         SystemCreateTransferToUserRequest request =
-                new SystemCreateTransferToUserRequest(1L, "uuid1", 50000L, "Hello");
+                new SystemCreateTransferToUserRequest(1L, "uuid1", 50000L, "Hello", "receiveLuckyMoney");
 
         Wallet sourceWallet = Wallet.builder()
                 .id(1L)
@@ -490,7 +490,7 @@ class TransferStatementServiceImplTest {
                 .build();
         when(systemUtil.getCurrentSystem()).thenReturn(system);
         SystemCreateTransferToUserRequest request =
-                new SystemCreateTransferToUserRequest(1L, "uuid1", -50000L, "Hello");
+                new SystemCreateTransferToUserRequest(1L, "uuid1", -50000L, "Hello", "receiveLuckyMoney");
 
         // when
 
@@ -512,7 +512,7 @@ class TransferStatementServiceImplTest {
                 .build();
         when(systemUtil.getCurrentSystem()).thenReturn(system);
         SystemCreateTransferToUserRequest request =
-                new SystemCreateTransferToUserRequest(1L, "uuid1", 51_000_000L, "Hello");
+                new SystemCreateTransferToUserRequest(1L, "uuid1", 51_000_000L, "Hello", "receiveLuckyMoney");
 
         // when
 
@@ -534,7 +534,7 @@ class TransferStatementServiceImplTest {
                 .build();
         when(systemUtil.getCurrentSystem()).thenReturn(system);
         SystemCreateTransferToUserRequest request =
-                new SystemCreateTransferToUserRequest(1L, "uuid1", 50000L, "Hello");
+                new SystemCreateTransferToUserRequest(1L, "uuid1", 50000L, "Hello", "receiveLuckyMoney");
 
         when(walletRepository.findWalletByIdAndOwnerId(request.getWalletId(), system.getId()))
                 .thenReturn(Optional.empty());
@@ -557,7 +557,7 @@ class TransferStatementServiceImplTest {
                 .build();
         when(systemUtil.getCurrentSystem()).thenReturn(system);
         SystemCreateTransferToUserRequest request =
-                new SystemCreateTransferToUserRequest(1L, "uuid1", 50000L, "Hello");
+                new SystemCreateTransferToUserRequest(1L, "uuid1", 50000L, "Hello", "receiveLuckyMoney");
 
         Wallet sourceWallet = Wallet.builder()
                 .id(1L)
@@ -590,7 +590,7 @@ class TransferStatementServiceImplTest {
                 .build();
         when(systemUtil.getCurrentSystem()).thenReturn(system);
         SystemCreateTransferToUserRequest request =
-                new SystemCreateTransferToUserRequest(1L, "uuid1", 50000L, "Hello");
+                new SystemCreateTransferToUserRequest(1L, "uuid1", 50000L, "Hello", "receiveLuckyMoney");
 
         Wallet sourceWallet = Wallet.builder()
                 .id(1L)
@@ -628,7 +628,7 @@ class TransferStatementServiceImplTest {
                 .build();
         when(systemUtil.getCurrentSystem()).thenReturn(system);
         SystemCreateTransferToUserRequest request =
-                new SystemCreateTransferToUserRequest(1L, "uuid1", 50000L, "Hello");
+                new SystemCreateTransferToUserRequest(1L, "uuid1", 50000L, "Hello", "receiveLuckyMoney");
 
         Wallet sourceWallet = Wallet.builder()
                 .id(1L)
@@ -671,7 +671,8 @@ class TransferStatementServiceImplTest {
                 2L,
                 "softToken",
                 "hello",
-                50000L
+                50000L,
+                "refundLuckyMoney"
         );
         VerifySoftTokenResponse.SoftTokenEncoded softTokenEncoded = new VerifySoftTokenResponse.SoftTokenEncoded("uuid1", 50000L);
         VerifySoftTokenResponse authResponse = new VerifySoftTokenResponse(true, 200, "", softTokenEncoded);
@@ -722,7 +723,8 @@ class TransferStatementServiceImplTest {
                 2L,
                 "softToken",
                 "hello",
-                50000L
+                50000L,
+                "refundLuckyMoney"
         );
         VerifySoftTokenResponse.SoftTokenEncoded softTokenEncoded = new VerifySoftTokenResponse.SoftTokenEncoded("uuid1", 5000L);
         VerifySoftTokenResponse authResponse = new VerifySoftTokenResponse(true, 200, "", softTokenEncoded);
@@ -748,7 +750,8 @@ class TransferStatementServiceImplTest {
                 2L,
                 "softToken",
                 "hello",
-                50000L
+                50000L,
+                "refundLuckyMoney"
         );
         VerifySoftTokenResponse.SoftTokenEncoded softTokenEncoded = new VerifySoftTokenResponse.SoftTokenEncoded("uuid1", 50000L);
         VerifySoftTokenResponse authResponse = new VerifySoftTokenResponse(false, 200, "", softTokenEncoded);
@@ -775,7 +778,8 @@ class TransferStatementServiceImplTest {
                 2L,
                 "softToken",
                 "hello",
-                50000L
+                50000L,
+                "refundLuckyMoney"
         );
         VerifySoftTokenResponse.SoftTokenEncoded softTokenEncoded = new VerifySoftTokenResponse.SoftTokenEncoded("uuid", 50000L);
         VerifySoftTokenResponse authResponse = new VerifySoftTokenResponse(true, 200, "", softTokenEncoded);
@@ -803,7 +807,8 @@ class TransferStatementServiceImplTest {
                 2L,
                 "softToken",
                 "hello",
-                50000L
+                50000L,
+                "refundLuckyMoney"
         );
         VerifySoftTokenResponse.SoftTokenEncoded softTokenEncoded = new VerifySoftTokenResponse.SoftTokenEncoded("uuid1", 50000L);
         VerifySoftTokenResponse authResponse = new VerifySoftTokenResponse(true, 200, "", softTokenEncoded);
@@ -837,7 +842,9 @@ class TransferStatementServiceImplTest {
                 2L,
                 "softToken",
                 "hello",
-                50000L
+                50000L,
+                "refundLuckyMoney"
+
         );
         VerifySoftTokenResponse.SoftTokenEncoded softTokenEncoded = new VerifySoftTokenResponse.SoftTokenEncoded("uuid1", 50000L);
         VerifySoftTokenResponse authResponse = new VerifySoftTokenResponse(true, 200, "", softTokenEncoded);
@@ -881,7 +888,8 @@ class TransferStatementServiceImplTest {
                 2L,
                 "softToken",
                 "hello",
-                amount
+                amount,
+                "refundLuckyMoney"
         );
         VerifySoftTokenResponse.SoftTokenEncoded softTokenEncoded = new VerifySoftTokenResponse.SoftTokenEncoded("uuid1", amount);
         VerifySoftTokenResponse authResponse = new VerifySoftTokenResponse(true, 200, "", softTokenEncoded);
@@ -914,7 +922,8 @@ class TransferStatementServiceImplTest {
                 2L,
                 "softToken",
                 "hello",
-                amount
+                amount,
+                "refundLuckyMoney"
         );
 
         VerifySoftTokenResponse.SoftTokenEncoded softTokenEncoded = new VerifySoftTokenResponse.SoftTokenEncoded("uuid1", amount);
@@ -947,7 +956,9 @@ class TransferStatementServiceImplTest {
                 2L,
                 "softToken",
                 "hello",
-                50000L
+                50000L,
+                "refundLuckyMoney"
+
         );
         VerifySoftTokenResponse.SoftTokenEncoded softTokenEncoded = new VerifySoftTokenResponse.SoftTokenEncoded("uuid1", 50000L);
         VerifySoftTokenResponse authResponse = new VerifySoftTokenResponse(true, 200, "", softTokenEncoded);
@@ -999,7 +1010,9 @@ class TransferStatementServiceImplTest {
                 2L,
                 "softToken",
                 "hello",
-                50000L
+                50000L,
+                "refundLuckyMoney"
+
         );
         VerifySoftTokenResponse.SoftTokenEncoded softTokenEncoded = new VerifySoftTokenResponse.SoftTokenEncoded("uuid1", 50000L);
         VerifySoftTokenResponse authResponse = new VerifySoftTokenResponse(true, 200, "", softTokenEncoded);
