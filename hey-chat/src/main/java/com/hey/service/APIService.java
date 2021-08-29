@@ -1481,21 +1481,30 @@ public class APIService extends BaseService {
 
 
                 // FriendList
+
                 Future<List<FriendList>> getFriendListsFuture = getFriendLists(userId);
                 getFriendListsFuture.compose(friendLists -> {
+
                     friendLists.forEach(friendList -> {
                         UserHash friendUserHashes = friendList.getFriendUserHashes();
                         UserHash currentUserHashes = friendList.getCurrentUserHashes();
-                        if (friendUserHashes.getUserId().equals(userId)) {
-                            friendUserHashes.setFullName(editProfileRequest.getFullName());
-                        }
-                        if (currentUserHashes.getUserId().equals(userId)) {
-                            currentUserHashes.setFullName(editProfileRequest.getFullName());
-                        }
 
-                        friendList.setFriendUserHashes(friendUserHashes);
-                        friendList.setCurrentUserHashes(currentUserHashes);
-                        futures.add(dataRepository.insertFriendList(friendList));
+                        Future<Long> deleteFriendFuture = dataRepository.deleteFriend(friendUserHashes.getUserId(), currentUserHashes.getUserId());
+
+                        deleteFriendFuture.compose(deleteRes -> {
+                            if (friendUserHashes.getUserId().equals(userId)) {
+                                friendUserHashes.setFullName(editProfileRequest.getFullName());
+                            }
+                            if (currentUserHashes.getUserId().equals(userId)) {
+                                currentUserHashes.setFullName(editProfileRequest.getFullName());
+                            }
+
+                            friendList.setFriendUserHashes(friendUserHashes);
+                            friendList.setCurrentUserHashes(currentUserHashes);
+                            futures.add(dataRepository.insertFriendList(friendList));
+                        }, Future.future().setHandler(handler -> future.fail(handler.cause())));
+
+
                     });
                 }, Future.future().setHandler(handler -> future.fail(handler.cause())));
 
