@@ -15,4 +15,5 @@ public class TransferFromUserRequest {
     private String softToken;
     private String message;
     private long amount;
+    private String transferType;
 }
