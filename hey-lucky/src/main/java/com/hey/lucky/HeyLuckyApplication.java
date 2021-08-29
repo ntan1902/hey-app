@@ -12,4 +12,5 @@ public class HeyLuckyApplication {
     public static void main(String[] args) {
         SpringApplication.run(HeyLuckyApplication.class, args);
     }
+
 }
