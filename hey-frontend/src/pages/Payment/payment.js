@@ -140,9 +140,10 @@ class Payment extends React.Component {
                 description = item.createdAt;
               } else {
                 if (item.source.id != getUserIdFromStorage()) {
-                  title = "Receive lucky money";
+                  title = "Refund lucky money";
                   amount = "+" + formatToCurrency(item.amount) + currency;
-                  imgUrl = getProfileURL(item.source.id);
+                  imgUrl =
+                    "https://image.winudf.com/v2/image/Y29tLmVhcm4ubHVja3ltb25leV9pY29uX3RtNTRjbTls/icon.png?w=&fakeurl=1";
                 } else {
                   title = "Create lucky money";
                   amount = "-" + formatToCurrency(item.amount) + currency;
