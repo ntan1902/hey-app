@@ -105,7 +105,7 @@ public class LuckyMoneyServiceImpl implements LuckyMoneyService {
                     .wishMessage(request.getMessage())
                     .createdAt(createdAt)
                     // time expired
-                    .expiredAt(createdAt.plusMinutes(7))
+                    .expiredAt(createdAt.plusMinutes(10))
                     .build();
             luckyMoneyRepository.save(luckyMoney);
 
