@@ -333,17 +333,21 @@ public class APIService extends BaseService {
             if (ar.succeeded()) {
 
                 GetSessionIdResponse getSessionIdResponse = new GetSessionIdResponse();
+                getSessionIdResponse.setSessionId("-1");
 
                 List<String> keys = new ArrayList<>();
                 for (int index = 0; index < getKeysByPatternFutures.size(); ++index) {
                     keys.addAll(cp.resultAt(index));
                 }
 
-                if (keys.size() > 0) {
-                    getSessionIdResponse.setSessionId(keys.get(0).split(":")[2]);
-                } else {
-                    getSessionIdResponse.setSessionId("-1");
-                }
+                keys.forEach(key -> {
+                    dataRepository.getChatList(key).compose(chatList -> {
+                        if(!chatList.isGroup()) {
+                            getSessionIdResponse.setSessionId(key.split(":")[2]);
+                        }
+                    }, Future.future().setHandler(handler -> future.fail(handler.cause())));
+                });
+
 
                 future.complete(getSessionIdResponse);
 
