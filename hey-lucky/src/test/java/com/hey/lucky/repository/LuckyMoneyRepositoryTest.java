@@ -203,12 +203,9 @@ class LuckyMoneyRepositoryTest {
         expectList.add(lm);
         expectList.add(lm2);
 
-
-
         // when
-        LocalDateTime start = LocalDateTime.of(2021,8,2,10,19,10);
-        LocalDateTime end = LocalDateTime.of(2021,8,2,10,19,20);
-        List<LuckyMoney> actualList = luckyMoneyRepository.getAllByRestMoneyGreaterThanZeroAndExpiredAtBetween(start,end);
+        LocalDateTime start = LocalDateTime.of(2021,8,2,10,25,10);
+        List<LuckyMoney> actualList = luckyMoneyRepository.getAllByRestMoneyGreaterThanZeroAndExpiredAtBetween(start);
 
         // then
         assertThat(actualList).isEqualTo(expectList);

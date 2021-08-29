@@ -14,4 +14,5 @@ public class SystemCreateTransferToUserRequest {
     private String receiverId;
     private long amount;
     private String message;
+    private String transferType;
 }

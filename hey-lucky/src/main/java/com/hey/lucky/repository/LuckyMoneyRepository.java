@@ -21,6 +21,6 @@ public interface LuckyMoneyRepository extends JpaRepository<LuckyMoney, Long> {
     List<LuckyMoney> findAllBySessionChatId(String sessionChatId);
 
     @Lock(value = LockModeType.PESSIMISTIC_WRITE)
-    @Query("select lm from LuckyMoney lm where lm.restMoney > 0 and lm.expiredAt >= :start and lm.expiredAt <= :end ")
-    List<LuckyMoney> getAllByRestMoneyGreaterThanZeroAndExpiredAtBetween(LocalDateTime start, LocalDateTime end);
+    @Query("select lm from LuckyMoney lm where lm.restMoney > 0 and :start >= lm.expiredAt")
+    List<LuckyMoney> getAllByRestMoneyGreaterThanZeroAndExpiredAtBetween(LocalDateTime start);
 }

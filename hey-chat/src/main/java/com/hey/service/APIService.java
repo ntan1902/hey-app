@@ -333,20 +333,31 @@ public class APIService extends BaseService {
             if (ar.succeeded()) {
 
                 GetSessionIdResponse getSessionIdResponse = new GetSessionIdResponse();
+                getSessionIdResponse.setSessionId("-1");
 
                 List<String> keys = new ArrayList<>();
                 for (int index = 0; index < getKeysByPatternFutures.size(); ++index) {
                     keys.addAll(cp.resultAt(index));
                 }
 
-                if (keys.size() > 0) {
-                    getSessionIdResponse.setSessionId(keys.get(0).split(":")[2]);
+                int size = keys.size();
+                if (size == 0) {
+                    future.complete(getSessionIdResponse);
                 } else {
-                    getSessionIdResponse.setSessionId("-1");
+                    for (int i = 0; i < size; i++) {
+                        String key = keys.get(i);
+
+                        int finalI = i;
+                        dataRepository.getChatList(key).compose(chatList -> {
+                            if (!chatList.isGroup()) {
+                                getSessionIdResponse.setSessionId(key.split(":")[2]);
+                                future.complete(getSessionIdResponse);
+                            } else if (finalI == size - 1) {
+                                future.complete(getSessionIdResponse);
+                            }
+                        }, Future.future().setHandler(handler -> future.fail(handler.cause())));
+                    }
                 }
-
-                future.complete(getSessionIdResponse);
-
             } else {
                 future.fail(ar.cause());
             }
@@ -1125,6 +1136,7 @@ public class APIService extends BaseService {
                     response.setChangeGroupName(false);
 
                     for (UserHash userhash : chatList.getUserHashes()) {
+                        response.setTransferStatement(userhash.getUserId().equals(luckyMoneyMessageRequest.getUserId()));
                         userWsChannelManager.sendMessage(response, userhash.getUserId());
                     }
 
@@ -1308,20 +1320,28 @@ public class APIService extends BaseService {
         cp.setHandler(ar -> {
             if (ar.succeeded()) {
 
-                String sessionId = "";
-
                 List<String> keys = new ArrayList<>();
                 for (int index = 0; index < getKeysByPatternFutures.size(); ++index) {
                     keys.addAll(cp.resultAt(index));
                 }
 
-                if (keys.size() > 0) {
-                    sessionId = keys.get(0).split(":")[2];
+                int size = keys.size();
+                if (size == 0) {
+                    future.complete("-1");
                 } else {
-                    sessionId = "-1";
-                }
+                    for (int i = 0; i < size; i++) {
+                        String key = keys.get(i);
 
-                future.complete(sessionId);
+                        int finalI = i;
+                        dataRepository.getChatList(key).compose(chatList -> {
+                            if (!chatList.isGroup()) {
+                                future.complete(key.split(":")[2]);
+                            } else if (finalI == size - 1) {
+                                future.complete("-1");
+                            }
+                        }, Future.future().setHandler(handler -> future.fail(handler.cause())));
+                    }
+                }
             } else {
                 future.fail(ar.cause());
             }
@@ -1417,6 +1437,7 @@ public class APIService extends BaseService {
                     response.setChangeGroupName(false);
 
                     for (UserHash userhash : chatList.getUserHashes()) {
+                        response.setTransferStatement(userhash.getUserId().equals(request.getReceiverId()));
                         userWsChannelManager.sendMessage(response, userhash.getUserId());
                     }
 
@@ -1479,21 +1500,30 @@ public class APIService extends BaseService {
 
 
                 // FriendList
+
                 Future<List<FriendList>> getFriendListsFuture = getFriendLists(userId);
                 getFriendListsFuture.compose(friendLists -> {
+
                     friendLists.forEach(friendList -> {
                         UserHash friendUserHashes = friendList.getFriendUserHashes();
                         UserHash currentUserHashes = friendList.getCurrentUserHashes();
-                        if (friendUserHashes.getUserId().equals(userId)) {
-                            friendUserHashes.setFullName(editProfileRequest.getFullName());
-                        }
-                        if (currentUserHashes.getUserId().equals(userId)) {
-                            currentUserHashes.setFullName(editProfileRequest.getFullName());
-                        }
 
-                        friendList.setFriendUserHashes(friendUserHashes);
-                        friendList.setCurrentUserHashes(currentUserHashes);
-                        futures.add(dataRepository.insertFriendList(friendList));
+                        Future<Long> deleteFriendFuture = dataRepository.deleteFriend(friendUserHashes.getUserId(), currentUserHashes.getUserId());
+
+                        deleteFriendFuture.compose(deleteRes -> {
+                            if (friendUserHashes.getUserId().equals(userId)) {
+                                friendUserHashes.setFullName(editProfileRequest.getFullName());
+                            }
+                            if (currentUserHashes.getUserId().equals(userId)) {
+                                currentUserHashes.setFullName(editProfileRequest.getFullName());
+                            }
+
+                            friendList.setFriendUserHashes(friendUserHashes);
+                            friendList.setCurrentUserHashes(currentUserHashes);
+                            futures.add(dataRepository.insertFriendList(friendList));
+                        }, Future.future().setHandler(handler -> future.fail(handler.cause())));
+
+
                     });
                 }, Future.future().setHandler(handler -> future.fail(handler.cause())));
 

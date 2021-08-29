@@ -85,6 +85,7 @@ public class LuckyMoneyServiceImpl implements LuckyMoneyService {
                         .message(request.getMessage())
                         .softToken(request.getSoftToken())
                         .walletId(walletId)
+                        .transferType("createLuckyMoney")
                         .amount(request.getAmount())
                         .build()
         );
@@ -104,6 +105,7 @@ public class LuckyMoneyServiceImpl implements LuckyMoneyService {
                     .type(request.getType())
                     .wishMessage(request.getMessage())
                     .createdAt(createdAt)
+                    //.expiredAt(createdAt.plusDays(1))
                     // time expired
                     .expiredAt(createdAt.plusMinutes(10))
                     .build();
@@ -127,6 +129,7 @@ public class LuckyMoneyServiceImpl implements LuckyMoneyService {
                     .amount(amount)
                     .receiverId(user.getId())
                     .message("Refund")
+                    .transferType("refundLuckyMoney")
                     .walletId(walletId)
                     .build());
         }
@@ -186,6 +189,7 @@ public class LuckyMoneyServiceImpl implements LuckyMoneyService {
                         .walletId(luckyMoney.getSystemWalletId())
                         .receiverId(user.getId())
                         .amount(amount)
+                        .transferType("receiveLuckyMoney")
                         .message(message)
                         .build()
         );
@@ -253,12 +257,11 @@ public class LuckyMoneyServiceImpl implements LuckyMoneyService {
     public void refundLuckyMoney() {
         log.info("refund");
         LocalDateTime now = LocalDateTime.now();
-        List<LuckyMoney> luckyMoneyList = luckyMoneyRepository.getAllByRestMoneyGreaterThanZeroAndExpiredAtBetween(now, now.plusMinutes(6));
+        List<LuckyMoney> luckyMoneyList = luckyMoneyRepository.getAllByRestMoneyGreaterThanZeroAndExpiredAtBetween(now);
         luckyMoneyList.forEach(luckyMoney -> {
             log.info("Return lucky money {} with rest {} for user {}", luckyMoney.getId(), luckyMoney.getRestMoney(), luckyMoney.getUserId());
             long restMoney = luckyMoney.getRestMoney();
             try {
-
                 luckyMoney.setRestMoney(0L);
                 luckyMoneyRepository.save(luckyMoney);
 
@@ -267,8 +270,9 @@ public class LuckyMoneyServiceImpl implements LuckyMoneyService {
                         TransferToUserRequest.builder()
                                 .walletId(luckyMoney.getSystemWalletId())
                                 .receiverId(luckyMoney.getUserId())
-                                .amount(luckyMoney.getRestMoney())
-                                .message(String.format("Refund %d from lucky money %d for user %s", luckyMoney.getRestMoney(), luckyMoney.getId(), luckyMoney.getUserId()))
+                                .amount(restMoney)
+                                .transferType("refundLuckyMoney")
+                                .message("Refund from lucky money")
                                 .build()
                 );
 
