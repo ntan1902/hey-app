@@ -340,17 +340,24 @@ public class APIService extends BaseService {
                     keys.addAll(cp.resultAt(index));
                 }
 
-                keys.forEach(key -> {
-                    dataRepository.getChatList(key).compose(chatList -> {
-                        if(!chatList.isGroup()) {
-                            getSessionIdResponse.setSessionId(key.split(":")[2]);
-                        }
-                    }, Future.future().setHandler(handler -> future.fail(handler.cause())));
-                });
+                int size = keys.size();
+                if (size == 0) {
+                    future.complete(getSessionIdResponse);
+                } else {
+                    for (int i = 0; i < size; i++) {
+                        String key = keys.get(i);
 
-
-                future.complete(getSessionIdResponse);
-
+                        int finalI = i;
+                        dataRepository.getChatList(key).compose(chatList -> {
+                            if (!chatList.isGroup()) {
+                                getSessionIdResponse.setSessionId(key.split(":")[2]);
+                                future.complete(getSessionIdResponse);
+                            } else if (finalI == size - 1) {
+                                future.complete(getSessionIdResponse);
+                            }
+                        }, Future.future().setHandler(handler -> future.fail(handler.cause())));
+                    }
+                }
             } else {
                 future.fail(ar.cause());
             }
@@ -1313,20 +1320,28 @@ public class APIService extends BaseService {
         cp.setHandler(ar -> {
             if (ar.succeeded()) {
 
-                String sessionId = "";
-
                 List<String> keys = new ArrayList<>();
                 for (int index = 0; index < getKeysByPatternFutures.size(); ++index) {
                     keys.addAll(cp.resultAt(index));
                 }
 
-                if (keys.size() > 0) {
-                    sessionId = keys.get(0).split(":")[2];
+                int size = keys.size();
+                if (size == 0) {
+                    future.complete("-1");
                 } else {
-                    sessionId = "-1";
-                }
+                    for (int i = 0; i < size; i++) {
+                        String key = keys.get(i);
 
-                future.complete(sessionId);
+                        int finalI = i;
+                        dataRepository.getChatList(key).compose(chatList -> {
+                            if (!chatList.isGroup()) {
+                                future.complete(key.split(":")[2]);
+                            } else if (finalI == size - 1) {
+                                future.complete("-1");
+                            }
+                        }, Future.future().setHandler(handler -> future.fail(handler.cause())));
+                    }
+                }
             } else {
                 future.fail(ar.cause());
             }
