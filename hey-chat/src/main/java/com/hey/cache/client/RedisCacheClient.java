@@ -535,7 +535,15 @@ public class RedisCacheClient implements DataRepository {
         Future<Long> future = Future.future();
         client.del(generateFriendListKey(userId, friendId), deleteFriendRes -> {
             if (deleteFriendRes.succeeded()) {
-                future.complete(deleteFriendRes.result());
+
+                client.del(generateFriendListKey(friendId, userId), deleteFriendRes2 -> {
+                    if (deleteFriendRes2.succeeded()) {
+                        future.complete(deleteFriendRes2.result());
+
+                    } else {
+                        future.fail(deleteFriendRes.cause());
+                    }
+                });
 
             } else {
                 future.fail(deleteFriendRes.cause());
