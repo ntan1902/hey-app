@@ -85,6 +85,7 @@ public class LuckyMoneyServiceImpl implements LuckyMoneyService {
                         .message(request.getMessage())
                         .softToken(request.getSoftToken())
                         .walletId(walletId)
+                        .transferType("createLuckyMoney")
                         .amount(request.getAmount())
                         .build()
         );
@@ -106,7 +107,7 @@ public class LuckyMoneyServiceImpl implements LuckyMoneyService {
                     .createdAt(createdAt)
                     //.expiredAt(createdAt.plusDays(1))
                     // time expired
-                    .expiredAt(createdAt.plusMinutes(1))
+                    .expiredAt(createdAt.plusSeconds(15))
                     .build();
             luckyMoneyRepository.save(luckyMoney);
 
@@ -128,6 +129,7 @@ public class LuckyMoneyServiceImpl implements LuckyMoneyService {
                     .amount(amount)
                     .receiverId(user.getId())
                     .message("Refund")
+                    .transferType("refundLuckyMoney")
                     .walletId(walletId)
                     .build());
         }
@@ -187,6 +189,7 @@ public class LuckyMoneyServiceImpl implements LuckyMoneyService {
                         .walletId(luckyMoney.getSystemWalletId())
                         .receiverId(user.getId())
                         .amount(amount)
+                        .transferType("receiveLuckyMoney")
                         .message(message)
                         .build()
         );
@@ -268,7 +271,8 @@ public class LuckyMoneyServiceImpl implements LuckyMoneyService {
                                 .walletId(luckyMoney.getSystemWalletId())
                                 .receiverId(luckyMoney.getUserId())
                                 .amount(restMoney)
-                                .message(String.format("Refund %d from lucky money %d for user %s", luckyMoney.getRestMoney(), luckyMoney.getId(), luckyMoney.getUserId()))
+                                .transferType("refundLuckyMoney")
+                                .message("Refund from lucky money")
                                 .build()
                 );
 

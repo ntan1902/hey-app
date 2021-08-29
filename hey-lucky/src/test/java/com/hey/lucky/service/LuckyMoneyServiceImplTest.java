@@ -240,6 +240,7 @@ class LuckyMoneyServiceImplTest {
                 .receiverId(user.getId())
                 .message("Refund")
                 .walletId(walletId)
+                .transferType("refundLuckyMoney")
                 .build();
         // when
         luckyMoneyService.createLuckyMoney(request);

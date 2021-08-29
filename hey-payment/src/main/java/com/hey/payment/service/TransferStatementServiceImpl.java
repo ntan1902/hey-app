@@ -168,6 +168,7 @@ public class TransferStatementServiceImpl implements TransferStatementService {
             throw new MinAmountException();
         }
 
+        // Check amount is maximum
         if (isMaxAmount(amount)) {
             throw new MaxAmountException(MoneyConstant.MAX_AMOUNT);
         }
@@ -184,14 +185,11 @@ public class TransferStatementServiceImpl implements TransferStatementService {
                 .sourceId(s.getId())
                 .targetId(t.getId())
                 .amount(request.getAmount())
-//                .status(TransferStatus.PROCESSING)
                 .transferFee(calculateTransferFee())
                 .message(request.getMessage())
-                .transferType(TransferType.TRANSFER)
+                .transferType(request.getTransferType())
                 .createdAt(LocalDateTime.now())
                 .build();
-
-//        transferStatementRepository.save(transferStatement);
 
         try {
             walletService.transferMoney(s.getId(), t.getId(), request.getAmount());
@@ -246,14 +244,11 @@ public class TransferStatementServiceImpl implements TransferStatementService {
                 .sourceId(source.getId())
                 .targetId(target.getId())
                 .amount(softTokenEncoded.getAmount())
-//                .status(TransferStatus.PROCESSING)
                 .transferFee(calculateTransferFee())
                 .message(request.getMessage())
-                .transferType(TransferType.TRANSFER)
+                .transferType(request.getTransferType())
                 .createdAt(LocalDateTime.now())
                 .build();
-
-//        transferStatementRepository.save(transferStatement);
 
         try {
             walletService.transferMoney(source.getId(), target.getId(), softTokenEncoded.getAmount());
