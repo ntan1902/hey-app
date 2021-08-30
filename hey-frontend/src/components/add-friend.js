@@ -94,6 +94,7 @@ class AddFriend extends React.Component {
           onCancel={this.handleCancel}
           okText="Add"
           cancelText="Cancel"
+          footer={null}
         >
           {this.props.addFriendError ? (
             <Alert message={this.props.addFriendErrorMessage} type="error" />
