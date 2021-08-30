@@ -76,13 +76,13 @@ entity "received_lucky_moneys" as received_luckey_moneys #Yellow{
     created_at: timestamp
 }
 
-wallets ||.up.o{ transfer_statements
-wallets ||.up.o{ transfer_statements
+wallets ||.left.o{ transfer_statements
+wallets ||.left.o{ transfer_statements
 
 wallets ||.up.o{ lucky_moneys
-wallets ||.up.o{ lucky_moneys
+users ||.down.o{ lucky_moneys
 
-wallets ||.up.o{ received_luckey_moneys
+users ||.down.o{ received_luckey_moneys
 
 users ||.left.|| wallets
 
