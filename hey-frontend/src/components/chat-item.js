@@ -1,12 +1,14 @@
 import React from "react";
 import CustomAvatar from "./custom-avatar";
 import { SlideDown } from "react-slidedown";
+import { connect } from "react-redux";
 
-import { Avatar, Card } from "antd";
+import { Avatar, Card, Icon } from "antd";
 import { currency, formatToCurrency } from "../utils";
 import { getProfileURL } from "../utils/";
 import LazyLoad from "react-lazy-load";
-
+import { bindPaymentActions } from "../actions";
+import { channingActions } from "../utils";
 const { Meta } = Card;
 
 class ChatItem extends React.Component {
@@ -36,10 +38,13 @@ class ChatItem extends React.Component {
         ? "chat-item-content-owner"
         : "chat-item-content-other";
     const data = JSON.parse(this.props.value);
-
+    console.log(data);
     if (data.content.luckyMoneyId) {
       return (
         <Card
+          onClick={() => {
+            this.props.paymentActions.changeStateLuckyMoneyPopup(true);
+          }}
           style={{ width: 300, borderRadius: 10 }}
           cover={
             <img
@@ -49,7 +54,6 @@ class ChatItem extends React.Component {
           }
           actions={
             [
-              // <Icon type="setting" key="setting" />,
               // <Icon type="edit" key="edit" />,
               // <Icon type="ellipsis" key="ellipsis" />,
             ]
@@ -181,4 +185,11 @@ class ChatItem extends React.Component {
   }
 }
 
-export default ChatItem;
+export default connect(
+  (state) => ({
+    luckyMoneyPopup: state.paymentReducer.luckyMoneyPopup,
+    isCreate: state.paymentReducer.isCreate,
+    currentSessionId: state.chatReducer.currentSessionId,
+  }),
+  (dispatch) => channingActions({}, dispatch, bindPaymentActions)
+)(ChatItem);

@@ -26,6 +26,7 @@ class Chat extends React.Component {
       menuaction: 1,
     };
     this.handleMainMenuChange = this.handleMainMenuChange.bind(this);
+    this.messagesEnd = React.createRef();
   }
 
   componentDidMount() {
@@ -39,6 +40,10 @@ class Chat extends React.Component {
   handleMainMenuChange(e) {
     this.setState({ menuaction: e.key });
   }
+
+  scrollToBottom = () => {
+    this.messagesEnd.current.scrollIntoView({ behavior: "instant" });
+  };
 
   render() {
     return (
@@ -55,19 +60,15 @@ class Chat extends React.Component {
           >
             <Profile />
             <div className="menu-separation" />
-            <ChatList />
+            <ChatList scrollToBottom={this.scrollToBottom} />
           </Sider>
           <div className="chat-container" style={{ padding: 0 }}>
             <LuckyMoney />
             <AddFriendSession />
             <MembersModal />
             <ChatHeader />
-            {this.props.currentSessionId != null &&
-            this.props.userSelectedKeys != [] ? (
-              <MessagePanel />
-            ) : (
-              <div></div>
-            )}
+            <MessagePanel refProp={this.messagesEnd}></MessagePanel>
+
             {this.props.currentSessionId != null &&
             this.props.userSelectedKeys != [] ? (
               <FormConversation />

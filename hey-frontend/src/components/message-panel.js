@@ -19,7 +19,7 @@ class MessagePanel extends React.Component {
   }
 
   scrollToBottom = () => {
-    this.messagesEnd.scrollIntoView({ behavior: "instant" });
+    this.messagesEnd.scrollIntoView({ behavior: "smooth" });
   };
 
   componentDidUpdate() {
@@ -54,27 +54,25 @@ class MessagePanel extends React.Component {
     console.log("MEssage Item", this.props.messageItems);
     return (
       <div className="chat-content">
-        <div
-          ref={(el) => {
-            this.messagesEnd = el;
-          }}
-        ></div>
+        <div ref={this.props.refProp}></div>
 
-        {this.props.messageItems
-          .slice(0, this.props.loadSize)
-          .map((item, index) => (
-            <ChatItem
-              key={item.id && item.id != "" ? item.id : index}
-              type={item.type}
-              value={item.message}
-              showavatar={item.showavatar}
-              avatar={item.avatar}
-              date={item.createdDate}
-              userId={item.userId}
-              name={item.name}
-              id={item.id}
-            />
-          ))}
+        {this.props.currentSessionId != null &&
+          this.props.userSelectedKeys != [] &&
+          this.props.messageItems
+            .slice(0, this.props.loadSize)
+            .map((item, index) => (
+              <ChatItem
+                key={item.id && item.id != "" ? item.id : index}
+                type={item.type}
+                value={item.message}
+                showavatar={item.showavatar}
+                avatar={item.avatar}
+                date={item.createdDate}
+                userId={item.userId}
+                name={item.name}
+                id={item.id}
+              />
+            ))}
         <div
           ref={this.divLoadMore}
           id="load_more"
@@ -92,6 +90,8 @@ function mapStateToProps(state) {
     messageItems: state.chatReducer.messageItems,
     isAll: state.chatReducer.isAll,
     loadSize: state.chatReducer.loadSize,
+    currentSessionId: state.chatReducer.currentSessionId,
+    userSelectedKeys: state.chatReducer.userSelectedKeys,
   };
 }
 

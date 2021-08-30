@@ -1,14 +1,19 @@
 import React from "react";
-import {Avatar, Button, Card, Col, Icon, Input, Modal, Row} from "antd";
-import {connect} from "react-redux";
+import { Avatar, Button, Card, Col, Icon, Input, Modal, Row } from "antd";
+import { connect } from "react-redux";
 import $ from "jquery";
-import {Scrollbars} from "react-custom-scrollbars";
+import { Scrollbars } from "react-custom-scrollbars";
 
 import NumericInput from "./numberic-input";
 import Transfer from "./transfer";
 
-import {channingActions, currency, currencyToString, formatToCurrency,} from "../utils";
-import {bindPaymentActions} from "../actions";
+import {
+  channingActions,
+  currency,
+  currencyToString,
+  formatToCurrency,
+} from "../utils";
+import { bindPaymentActions } from "../actions";
 import LuckyAnimation from "./LuckyAnimation/LuckyAnimation";
 
 const { Meta } = Card;
@@ -21,7 +26,7 @@ class LuckyMoney extends React.Component {
       confirmLoading: false,
       ModalText: "Content of the modal",
       isCreate: false,
-      data: [],
+      data: null,
       topupType: 1,
       moneyEachBag: "",
       numberOfBag: "",
@@ -86,12 +91,18 @@ class LuckyMoney extends React.Component {
         visible: false,
         confirmLoading: false,
       });
-      this.props.paymentActions.changeStateLuckyMoneyPopup(false);
+      this.props.paymentActions.changeStateLuckyMoneyPopup(
+        false,
+        this.props.isCreate
+      );
     }, 2000);
   };
 
   handleCancel = (e) => {
-    this.props.paymentActions.changeStateLuckyMoneyPopup(false);
+    this.props.paymentActions.changeStateLuckyMoneyPopup(
+      false,
+      this.props.isCreate || this.state.isCreate
+    );
     this.setState({ isCreate: false });
   };
 
@@ -431,7 +442,7 @@ class LuckyMoney extends React.Component {
         style={{
           display: "flex",
           width: 300,
-          height: 352,
+          height: 300,
           padding: 20,
         }}
         span={4}
@@ -471,30 +482,30 @@ class LuckyMoney extends React.Component {
                 src="https://png.pngtree.com/thumb_back/fh260/background/20201230/pngtree-fan-shaped-new-year-red-envelopes-for-2021-image_517238.jpg"
               />
             }
-            actions={[
-              <div
-                style={{
-                  display: "flex",
-                  paddingBottom: 20,
-                  height: 20,
-                  justifyContent: "center",
-                  alignContent: "center",
-                }}
-              >
-                <a
-                  style={{
-                    margin: 0,
-                    padding: 0,
-                    fontSize: 12,
-                    fontWeight: "lighter",
-                    color: "black",
-                  }}
-                >
-                  Detail
-                  <Icon type="edit" key="edit" />
-                </a>
-              </div>,
-            ]}
+            // actions={[
+            //   <div
+            //     style={{
+            //       display: "flex",
+            //       paddingBottom: 20,
+            //       height: 20,
+            //       justifyContent: "center",
+            //       alignContent: "center",
+            //     }}
+            //   >
+            //     <a
+            //       style={{
+            //         margin: 0,
+            //         padding: 0,
+            //         fontSize: 12,
+            //         fontWeight: "lighter",
+            //         color: "black",
+            //       }}
+            //     >
+            //       Detail
+            //       <Icon type="edit" key="edit" />
+            //     </a>
+            //   </div>,
+            // ]}
           >
             <Meta
               avatar={
@@ -514,7 +525,9 @@ class LuckyMoney extends React.Component {
 
   renderLuckyMoneyItems = () => {
     return this.state.data.map((e, index) => {
-      if (e.received === true) return this.luckyMoneyReceivedItem(e);
+      console.log(e);
+      if (e.received === true || e.expired)
+        return this.luckyMoneyReceivedItem(e);
       return this.luckyMoneyItem(e);
     });
   };
@@ -591,11 +604,15 @@ class LuckyMoney extends React.Component {
           // cancelText="Cancel"
           footer={null}
         >
-          {this.state.isCreate || this.props.isCreate
-            ? this.renderCreateLuckyMoney()
-            : this.state.data.length === 0
-            ? this.renderEmptyLuckyMoney()
-            : this.renderLuckyMoney()}
+          {this.state.isCreate || this.props.isCreate ? (
+            this.renderCreateLuckyMoney()
+          ) : this.state.data == null ? (
+            <div></div>
+          ) : this.state.data.length === 0 ? (
+            this.renderEmptyLuckyMoney()
+          ) : (
+            this.renderLuckyMoney()
+          )}
         </Modal>
       </div>
     );

@@ -33,6 +33,7 @@ class Payment extends React.Component {
     this.observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
+          console.log("Hi Entry");
           this.props.paymentActions
             .getTransferStatements(this.props.offset, this.props.limit)
             .then((res) => {
@@ -113,7 +114,7 @@ class Payment extends React.Component {
                 description = item.createdAt;
                 amount = "+" + formatToCurrency(item.amount) + currency;
                 imgUrl =
-                  "https://banner2.cleanpng.com/20210109/kbt/transparent-payment-icon-top-up-icon-more-icon-5ffa2fb9c84f26.4451108616102317378205.jpg";
+                  "https://f34-zpg.zdn.vn/7081290592671205102/f98ab4287f498917d058.jpg";
               } else if (item.transferType == "transfer") {
                 if (item.source.systemName) {
                   title = "Receive lucky money";
@@ -139,9 +140,10 @@ class Payment extends React.Component {
                 description = item.createdAt;
               } else {
                 if (item.source.id != getUserIdFromStorage()) {
-                  title = "Receive lucky money";
+                  title = "Refund lucky money";
                   amount = "+" + formatToCurrency(item.amount) + currency;
-                  imgUrl = getProfileURL(item.source.id);
+                  imgUrl =
+                    "https://image.winudf.com/v2/image/Y29tLmVhcm4ubHVja3ltb25leV9pY29uX3RtNTRjbTls/icon.png?w=&fakeurl=1";
                 } else {
                   title = "Create lucky money";
                   amount = "-" + formatToCurrency(item.amount) + currency;
