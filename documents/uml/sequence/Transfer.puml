@@ -20,8 +20,8 @@ opt isExist is false
     AuthServer --> PaymentServer: Expired soft token
     PaymentServer --> User: Bad request
 end
-PaymentServer <-- AuthServer: softTokenDecodeResult
-opt balance is not enough
+PaymentServer <-- AuthServer: amount + userId
+opt balance < amount
     PaymentServer --> User: Your balance is not enough
 end
 PaymentServer -> PaymentDB: create transfer
