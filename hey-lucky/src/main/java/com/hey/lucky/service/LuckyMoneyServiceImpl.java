@@ -33,7 +33,7 @@ import static com.hey.lucky.util.LuckyMoneyServiceUtilImpl.MIN_AMOUNT;
 @NoArgsConstructor
 public class LuckyMoneyServiceImpl implements LuckyMoneyService {
 
-    private static final String UNAUTHORIZED= "Unauthorized!";
+    private static final String UNAUTHORIZED = "Unauthorized!";
 
     private LuckyMoneyRepository luckyMoneyRepository;
     private ReceivedLuckyMoneyRepository receivedLuckyMoneyRepository;
@@ -67,7 +67,7 @@ public class LuckyMoneyServiceImpl implements LuckyMoneyService {
         User user = userUtil.getCurrentUser();
 
         // Check amount is negative
-        if (request.getAmount()/request.getNumberBag() < MIN_AMOUNT) {
+        if (request.getAmount() / request.getNumberBag() < MIN_AMOUNT) {
             throw new MinAmountPerBagException("Min amount per bag is " + MIN_AMOUNT);
         }
 
