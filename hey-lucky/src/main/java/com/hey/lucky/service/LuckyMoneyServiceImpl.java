@@ -278,7 +278,6 @@ public class LuckyMoneyServiceImpl implements LuckyMoneyService {
 
             } catch (CannotTransferMoneyException exception) {
                 log.error("Can't transfer money");
-                luckyMoney.setExpiredAt(now.plusMinutes(10));
                 luckyMoney.setRestMoney(restMoney);
                 luckyMoneyRepository.save(luckyMoney);
             }
