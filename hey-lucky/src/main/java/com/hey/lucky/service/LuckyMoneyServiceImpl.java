@@ -107,7 +107,7 @@ public class LuckyMoneyServiceImpl implements LuckyMoneyService {
                     .createdAt(createdAt)
                     //.expiredAt(createdAt.plusDays(1))
                     // time expired
-                    .expiredAt(createdAt.plusSeconds(15))
+                    .expiredAt(createdAt.plusMinutes(10))
                     .build();
             luckyMoneyRepository.save(luckyMoney);
 
