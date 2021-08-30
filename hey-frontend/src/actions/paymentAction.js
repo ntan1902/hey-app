@@ -120,7 +120,7 @@ const verifyPin = (pin, amount) => async (dispatch) => {
   });
 };
 
-const getBalance = () => async (dispatch) => {
+export const getBalance = () => async (dispatch) => {
   return new Promise(async (resolve, reject) => {
     try {
       const res = await PaymentAPI.getBalance();

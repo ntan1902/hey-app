@@ -14,7 +14,11 @@ import {
   loadAddressBookList,
   loadWaitingFriendList,
 } from "./addressBookAction";
-import { changeOffset, newTransferStatement } from "./paymentAction";
+import {
+  changeOffset,
+  newTransferStatement,
+  getBalance,
+} from "./paymentAction";
 
 import { statusNotification } from "../components/status-notification";
 import { AuthAPI, PaymentAPI } from "../api";
@@ -258,16 +262,16 @@ export function receivedChatList(chatList) {
   const fetchedChatList = chatList;
   let header = null;
   if (fetchedChatList.length > 0) {
-    // header = {
-    //   title:
-    //     fetchedChatList[0].groupName === ""
-    //       ? fetchedChatList[0].name
-    //       : fetchedChatList[0].groupName,
-    //   avatar: fetchedChatList[0].avatar,
-    //   group: fetchedChatList[0].group,
-    //   userIds: fetchedChatList[0].userIds,
-    // };
-    // store.dispatch(specialLoadChatContainer(fetchedChatList[0].sessionId));
+    header = {
+      title:
+        fetchedChatList[0].groupName === ""
+          ? fetchedChatList[0].name
+          : fetchedChatList[0].groupName,
+      avatar: fetchedChatList[0].avatar,
+      group: fetchedChatList[0].group,
+      userIds: fetchedChatList[0].userIds,
+    };
+    store.dispatch(specialLoadChatContainer(fetchedChatList[0].sessionId));
   }
 
   return {
@@ -370,6 +374,7 @@ export function receivedNewMessage(message) {
     PaymentAPI.getTransferStatements(0, 1).then((res) => {
       store.dispatch(newTransferStatement(res.data.payload[0]));
       store.dispatch(changeOffset(store.getState().paymentReducer.offset + 1));
+      store.dispatch(getBalance());
     });
   }
 
