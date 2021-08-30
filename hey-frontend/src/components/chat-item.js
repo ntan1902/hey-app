@@ -38,7 +38,7 @@ class ChatItem extends React.Component {
         ? "chat-item-content-owner"
         : "chat-item-content-other";
     const data = JSON.parse(this.props.value);
-    console.log(data);
+    // console.log(data);
     if (data.content.luckyMoneyId) {
       return (
         <Card

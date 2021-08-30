@@ -7,7 +7,7 @@ import { Button, message, notification } from "antd/lib/index";
 /* Get */
 
 const onShow = (screenName, data) => {
-  console.log("ON show", screenName);
+  // console.log("ON show", screenName);
   return {
     type: actionTypes.ON_SHOW,
     layoutType: screenName,

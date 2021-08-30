@@ -525,7 +525,7 @@ class LuckyMoney extends React.Component {
 
   renderLuckyMoneyItems = () => {
     return this.state.data.map((e, index) => {
-      console.log(e);
+      // console.log(e);
       if (e.received === true || e.expired)
         return this.luckyMoneyReceivedItem(e);
       return this.luckyMoneyItem(e);

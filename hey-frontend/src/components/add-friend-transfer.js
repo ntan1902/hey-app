@@ -32,7 +32,7 @@ class AddFriend extends React.Component {
 
   componentDidMount() {
     ChatAPI.getAddressBook().then((e) => {
-      console.log(e);
+      // console.log(e);
       this.setState({ friends: e.data.payload.items });
     });
   }
@@ -42,7 +42,7 @@ class AddFriend extends React.Component {
   };
 
   onChange = (value) => {
-    console.log(`selected ${value}`);
+    // console.log(`selected ${value}`);
     this.props.onChange(JSON.parse(value));
   };
 
@@ -55,7 +55,7 @@ class AddFriend extends React.Component {
   };
 
   onSearch = (val) => {
-    console.log("search:", val);
+    // console.log("search:", val);
   };
 
   render() {

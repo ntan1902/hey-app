@@ -390,7 +390,7 @@ class AddressBook extends React.Component {
   };
 
   render() {
-    console.log("BÔK", this.props);
+    // console.log("BÔK", this.props);
 
     return (
       <div className="d-flex flex-column full-height address-book-menu">

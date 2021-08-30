@@ -178,11 +178,11 @@ export function loadChatContainer(sessionId) {
     const cacheStorage = await caches.open(`chatList:${sessionId}`);
     const cachedResponse = await cacheStorage.match(WEB_URL);
     let data = [];
-    console.log("Cacheddddddddd", cachedResponse);
+    // console.log("Cacheddddddddd", cachedResponse);
     if (cachedResponse) {
       data = await cachedResponse.json();
       // dispatch(receivedChatList(data));
-      console.log("Found cache", data);
+      console.log("Found cache");
       dispatch(changeMessageItems(data, sessionId));
     }
 
@@ -196,7 +196,7 @@ export function loadChatContainer(sessionId) {
 export function addFriendToSession(sessionId, userId) {
   ChatAPI.addFriendToSession(sessionId, userId)
     .then((res) => {
-      console.log(res);
+      // console.log(res);
       message.success("Add friend to session id");
     })
     .catch((err) => {
@@ -212,11 +212,11 @@ export function specialLoadChatContainer(sessionId) {
       const cacheStorage = await caches.open(`chatList:${sessionId}`);
       const cachedResponse = await cacheStorage.match(WEB_URL);
       let data = [];
-      console.log("Cacheddddddddd", cachedResponse);
+      // console.log("Cacheddddddddd", cachedResponse);
       if (cachedResponse) {
         data = await cachedResponse.json();
         // dispatch(receivedChatList(data));
-        console.log("Found cache", data);
+        console.log("Found cache");
         changeMessageItems(data, sessionId);
       }
       await store
@@ -288,7 +288,7 @@ export function receivedReloadChatList(chatList) {
 }
 
 export function receivedNewMessage(message) {
-  console.log("New message Item", message);
+  // console.log("New message Item", message);
   let currentSessionId = store.getState().chatReducer.currentSessionId;
   let userId = getUserIdFromStorage();
   let userSelected = store.getState().chatReducer.userSelected;
@@ -581,7 +581,7 @@ export function userUnSelected() {
 function getMessageItems(chatItems) {
   var userId = getUserIdFromStorage();
   var results = [];
-  console.log(chatItems);
+  // console.log(chatItems);
   for (var i = 0; i < chatItems.length; i++) {
     var type = 1;
     if (chatItems[i].userId != userId) {

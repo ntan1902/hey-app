@@ -1,10 +1,10 @@
-import {store} from "../store";
-import {loadChatContainer, startNewChatSingle} from "./chatAction";
-import {isEmptyString} from "../utils/utils";
+import { store } from "../store";
+import { loadChatContainer, startNewChatSingle } from "./chatAction";
+import { isEmptyString } from "../utils/utils";
 import deepcopy from "deepcopy";
-import {AuthAPI} from "../api";
-import {message} from "antd";
-import {ChatAPI} from "../api/chat";
+import { AuthAPI } from "../api";
+import { message } from "antd";
+import { ChatAPI } from "../api/chat";
 
 export const ADDRESSBOOK_FETCHED = "addressBook.ADDRESSBOOK_FETCHED";
 export const WAITINGFRIEND_FETCHED = "addressBook.WAITINGFRIEND_FETCHED";
@@ -51,10 +51,11 @@ export function receivedWaitingFriend(addressbook) {
 
 export function handleChangeAddressBook(userId) {
   return function (dispatch) {
-    ChatAPI.getSessionIdByUserId(createGetSessionIdRequest(userId))
-      .then((result) => {
+    ChatAPI.getSessionIdByUserId(createGetSessionIdRequest(userId)).then(
+      (result) => {
         dispatch(receivedSessionId(result, userId));
-      });
+      }
+    );
   };
 }
 
@@ -74,13 +75,14 @@ export function addNewFriend(userId) {
   } else {
     return async function (dispatch) {
       const res = await AuthAPI.getUsername(userId);
-      return ChatAPI.addFriend(createAddFriendRequest(res.data.payload.username))
-        .then((result) => {
-          console.log(result);
-          dispatch(rejectWaitingFriend(userId));
-          dispatch(receiveAddFriendResult(result));
-          dispatch(loadWaitingFriendList());
-        });
+      return ChatAPI.addFriend(
+        createAddFriendRequest(res.data.payload.username)
+      ).then((result) => {
+        // console.log(result);
+        dispatch(rejectWaitingFriend(userId));
+        dispatch(receiveAddFriendResult(result));
+        dispatch(loadWaitingFriendList());
+      });
     };
   }
 }
@@ -88,12 +90,12 @@ export function addNewFriend(userId) {
 export function addNewFriendRequest(username) {
   ChatAPI.addFriendRequest(username)
     .then((res) => {
-      console.log(res);
+      // console.log(res);
       message.success("Sending friend request to " + username);
     })
-    .catch(err => {
-      message.error(err.message)
-    })
+    .catch((err) => {
+      message.error(err.message);
+    });
   return { type: EMPTY };
 }
 
@@ -103,11 +105,12 @@ export function rejectWaitingFriend(userName) {
     return { type: ADD_FRIEND_FAIL, error: error };
   } else {
     return function (dispatch) {
-      return ChatAPI.closeWaitingFriend(createGetSessionIdRequest(userName))
-        .then((result) => {
-          console.log(result);
-          dispatch(loadWaitingFriendList());
-        });
+      return ChatAPI.closeWaitingFriend(
+        createGetSessionIdRequest(userName)
+      ).then((result) => {
+        // console.log(result);
+        dispatch(loadWaitingFriendList());
+      });
     };
   }
 }
@@ -198,7 +201,7 @@ function getAddressBookList() {
   return new Promise(function (resolve, reject) {
     ChatAPI.getAddressBook().then((res) => {
       let items = res.data.payload.items;
-      console.log("Friend Result", items);
+      // console.log("Friend Result", items);
 
       let results = [];
       let onlineResults = [];
@@ -229,7 +232,7 @@ function getAddressBookList() {
 
         results = onlineResults.concat(offlineResults);
       }
-      console.log("Friend Result", results);
+      // console.log("Friend Result", results);
       resolve(results);
     });
   });
@@ -239,7 +242,7 @@ function getWaitingFriendList() {
   return new Promise(function (resolve, reject) {
     ChatAPI.waittingFriend().then((res) => {
       let items = res.data.payload.items;
-      console.log("Friend Result", items);
+      // console.log("Friend Result", items);
 
       let results = [];
       let onlineResults = [];
@@ -270,7 +273,7 @@ function getWaitingFriendList() {
 
         results = onlineResults.concat(offlineResults);
       }
-      console.log("Friend Result", results);
+      // console.log("Friend Result", results);
       resolve(results);
     });
   });

@@ -49,7 +49,7 @@ class ChatHeader extends React.Component {
   };
   leaveGroup = () => {
     ChatAPI.leaveGroup(this.props.currentSessionId).then((res) =>
-      console.log(res)
+      console.log("")
     );
   };
   makeCall = async (isVideoCall) => {
@@ -60,14 +60,14 @@ class ChatHeader extends React.Component {
       newWindow.addEventListener("load", async () => {
         var ICEServer = await ChatAPI.getICEServer()
           .then((res) => {
-            console.log("data nef" + res.data);
+            // console.log("data nef" + res.data);
             return res.data.payload;
           })
           .catch((err) => {
             console.error("loi iceServer" + err.response);
           });
         // var ICEServer = "key iceServer";
-        console.log(ICEServer);
+        // console.log(ICEServer);
         newWindow.init(ICEServer);
         newWindow.makeCall(this.props.currentSessionId, isVideoCall);
       });
@@ -373,7 +373,7 @@ class ChatHeader extends React.Component {
   };
 
   render() {
-    console.log("Header", this.props);
+    // console.log("Header", this.props);
     const IconFont = Icon.createFromIconfontCN({
       scriptUrl: "//at.alicdn.com/t/font_8d5l8fzk5b87iudi.js",
     });

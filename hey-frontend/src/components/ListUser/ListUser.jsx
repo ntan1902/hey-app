@@ -17,7 +17,7 @@ class ListUser extends React.Component {
   };
 
   render() {
-    console.log("Hii gi", this.props.users);
+    // console.log("Hii gi", this.props.users);
     return (
       <div>
         <Menu

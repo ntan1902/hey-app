@@ -33,7 +33,7 @@ class Payment extends React.Component {
     this.observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
-          console.log("Hi Entry");
+          // console.log("Hi Entry");
           this.props.paymentActions
             .getTransferStatements(this.props.offset, this.props.limit)
             .then((res) => {

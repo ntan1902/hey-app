@@ -92,7 +92,7 @@ class MessagePanel extends React.Component {
     this.props.paymentActions
       .topup(this.state.amount)
       .then((res) => {
-        console.log("Topup Success");
+        // console.log("Topup Success");
         this.props.paymentActions.getNewTransferStatement(this.props.offset);
       })
       .catch((err) => {

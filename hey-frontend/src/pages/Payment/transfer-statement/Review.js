@@ -92,8 +92,8 @@ function Review(props) {
     { name: "Transfer fee", detail: "Free" },
   ];
 
-  console.log("Hiii", title, description, amount, isMinus, imgUrl);
-  console.log("Data", props.data);
+  // console.log("Hiii", title, description, amount, isMinus, imgUrl);
+  // console.log("Data", props.data);
   return (
     <React.Fragment>
       {/* <Typography variant="h6" gutterBottom>

@@ -13,7 +13,7 @@ const FormConversation = ({ submitChatMessage }) => {
   var [showPicker, setShowPicker] = useState(false);
 
   const selectEmoji = (emoji) => {
-    console.log(emoji);
+    // console.log(emoji);
     setMessage(message + emoji.native);
   };
 

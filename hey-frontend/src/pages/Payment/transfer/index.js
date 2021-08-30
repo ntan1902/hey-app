@@ -74,7 +74,7 @@ function Checkout(props) {
 
   const handleNext = () => {
     if (activeStep == 1) {
-      console.log("Amount", amount);
+      // console.log("Amount", amount);
       props.paymentActions.onOpenPinPopup();
       return;
     }

@@ -41,7 +41,7 @@ class ChangeProfileModal extends React.Component {
         message.success("Change profile success !!!");
       })
       .catch((err) => {
-        console.log(err.response);
+        // console.log(err.response);
         message.error(err.response.data.message);
       });
   };

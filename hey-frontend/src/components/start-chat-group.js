@@ -108,7 +108,7 @@ class StartChatGroup extends React.Component {
           <div className="first-line">
             <AddFriend
               onChange={(value) => {
-                console.log(`selected ${value}`);
+                // console.log(`selected ${value}`);
                 this.setState({ selectedUserId: value.userId });
               }}
             />{" "}

@@ -1,6 +1,6 @@
 import * as actionTypes from "./actionTypes";
-import {bindActionCreators} from "redux";
-import {AuthAPI} from "../api";
+import { bindActionCreators } from "redux";
+import { AuthAPI } from "../api";
 
 const onLogin = (data) => {
   return {
@@ -11,7 +11,7 @@ const onLogin = (data) => {
 
 export const resetToken = async (token) => {
   try {
-    console.log(token);
+    // console.log(token);
   } catch (error) {
     // Error saving data
   }
@@ -81,18 +81,19 @@ const updateProfile = (form) => async (dispatch) => {
   });
 };
 
-export const changePassword =
-  (currentPassword, newPassword) => async (dispatch) => {
-    return new Promise(async (resolve, reject) => {
-      try {
-        await AuthAPI.changePassword(currentPassword, newPassword);
-        resolve({ success: true });
-      } catch (err) {
-        console.log(err.response);
-        reject({ data: err.response.data.message, success: false });
-      }
-    });
-  };
+export const changePassword = (currentPassword, newPassword) => async (
+  dispatch
+) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      await AuthAPI.changePassword(currentPassword, newPassword);
+      resolve({ success: true });
+    } catch (err) {
+      console.log(err.response);
+      reject({ data: err.response.data.message, success: false });
+    }
+  });
+};
 
 export const searchUser = (keyword) => async (dispatch) => {
   return new Promise(async (resolve, reject) => {

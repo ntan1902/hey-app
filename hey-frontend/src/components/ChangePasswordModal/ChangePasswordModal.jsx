@@ -1,9 +1,9 @@
-import React from 'react';
-import {Form, Input, message, Modal} from 'antd';
-import {connect} from 'react-redux';
-import $ from 'jquery';
-import {AuthAPI} from '../../api';
-import {changeVisibleChangePassword} from '../../actions/modalAction';
+import React from "react";
+import { Form, Input, message, Modal } from "antd";
+import { connect } from "react-redux";
+import $ from "jquery";
+import { AuthAPI } from "../../api";
+import { changeVisibleChangePassword } from "../../actions/modalAction";
 
 const HIDE_CHANGE_PASSWORD_MODAL = false;
 class ChangePasswordModal extends React.Component {
@@ -25,7 +25,7 @@ class ChangePasswordModal extends React.Component {
       this.props.changeVisibleChangePassword(HIDE_CHANGE_PASSWORD_MODAL);
       message.success("Change password success !!!");
     } catch (err) {
-      console.log(err.response);
+      // console.log(err.response);
       message.error("Invalid current password !!!");
     }
   };
@@ -38,7 +38,9 @@ class ChangePasswordModal extends React.Component {
         visible={this.props.visibleChangePassword}
         title="Change Password"
         okText="Ok"
-        onCancel={() => this.props.changeVisibleChangePassword(HIDE_CHANGE_PASSWORD_MODAL)}
+        onCancel={() =>
+          this.props.changeVisibleChangePassword(HIDE_CHANGE_PASSWORD_MODAL)
+        }
         onOk={this.onChangePassword}
       >
         <Form layout="vertical">
@@ -64,9 +66,7 @@ class ChangePasswordModal extends React.Component {
               ],
             })(<Input.Password allowClear placeholder="new password" />)}
           </Form.Item>
-          <Form.Item
-            label="Confirm Password"
-          >
+          <Form.Item label="Confirm Password">
             {getFieldDecorator("confirm-password", {
               rules: [
                 {
@@ -89,19 +89,23 @@ class ChangePasswordModal extends React.Component {
         </Form>
       </Modal>
     );
-  };
+  }
 }
 
 function mapStateToProps(state) {
   return {
     visibleChangePassword: state.modalReducer.visibleChangePassword,
-  }
+  };
 }
 
 function mapDispatchToProps(dispatch) {
   return {
-    changeVisibleChangePassword: (isVisible) => dispatch(changeVisibleChangePassword(isVisible))
-  }
+    changeVisibleChangePassword: (isVisible) =>
+      dispatch(changeVisibleChangePassword(isVisible)),
+  };
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(Form.create()(ChangePasswordModal));
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(Form.create()(ChangePasswordModal));

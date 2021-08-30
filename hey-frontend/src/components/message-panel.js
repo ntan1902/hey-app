@@ -27,12 +27,12 @@ class MessagePanel extends React.Component {
   }
 
   componentDidMount() {
-    console.log("did mount");
+    // console.log("did mount");
     this.observer = new IntersectionObserver(
       (entries) => {
-        console.log("Entries");
+        // console.log("Entries");
         entries.forEach((entry) => {
-          console.log("Load More");
+          // console.log("Load More");
           const left =
             this.props.messageItems.length -
             this.props.loadSize -
@@ -51,7 +51,7 @@ class MessagePanel extends React.Component {
   }
 
   render() {
-    console.log("MEssage Item", this.props.messageItems);
+    // console.log("MEssage Item", this.props.messageItems);
     return (
       <div className="chat-content">
         <div ref={this.props.refProp}></div>

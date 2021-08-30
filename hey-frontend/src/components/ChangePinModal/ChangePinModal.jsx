@@ -1,10 +1,10 @@
 import React from "react";
-import {Form, Input, message, Modal} from "antd";
-import {connect} from "react-redux";
+import { Form, Input, message, Modal } from "antd";
+import { connect } from "react-redux";
 import $ from "jquery";
-import {changeVisibleChangePin} from "../../actions/modalAction";
-import {getHasPin} from "../../actions/userAction";
-import {AuthAPI} from "../../api";
+import { changeVisibleChangePin } from "../../actions/modalAction";
+import { getHasPin } from "../../actions/userAction";
+import { AuthAPI } from "../../api";
 
 const HIDE_CHANGE_PIN_MODAL = false;
 class ChangePinModal extends React.Component {
@@ -19,7 +19,7 @@ class ChangePinModal extends React.Component {
           message.success("Change pin success !!!");
         })
         .catch((err) => {
-          console.log(err.response);
+          // console.log(err.response);
           message.error(err.response.data.message);
         });
       return;

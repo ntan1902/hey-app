@@ -32,7 +32,7 @@ class Chat extends React.Component {
   componentDidMount() {
     // this.props.initialWebSocket();
     this.props.userUnSelected();
-    console.log("Hello Chat");
+    // console.log("Hello Chat");
   }
 
   componentWillUnmount() {}
