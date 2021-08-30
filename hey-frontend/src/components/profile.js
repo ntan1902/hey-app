@@ -1,12 +1,16 @@
 import React from "react";
-import {Icon, Input} from "antd";
-import {clearStorage, getRefreshTokenFromStorage, isEmptyString,} from "../utils/utils";
-import {withRouter} from "react-router-dom";
-import {closeWebSocket} from "../actions/chatAction";
-import {currency, formatToCurrency} from "../utils/index";
-import {connect} from "react-redux";
-import {changeUserStatus, getProfile, logout} from "../actions/userAction";
-import {AuthAPI} from "../api";
+import { Icon, Input } from "antd";
+import {
+  clearStorage,
+  getRefreshTokenFromStorage,
+  isEmptyString,
+} from "../utils/utils";
+import { withRouter } from "react-router-dom";
+import { closeWebSocket } from "../actions/chatAction";
+import { currency, formatToCurrency } from "../utils/index";
+import { connect } from "react-redux";
+import { changeUserStatus, getProfile, logout } from "../actions/userAction";
+import { AuthAPI } from "../api";
 
 class Profile extends React.Component {
   constructor(props) {
@@ -47,6 +51,17 @@ class Profile extends React.Component {
         clearStorage();
         this.props.closeWebSocket();
         this.props.logout();
+        if ("caches" in window) {
+          caches.keys().then((names) => {
+            // Delete all the cache files
+            names.forEach((name) => {
+              caches.delete(name);
+            });
+          });
+
+          // Makes sure the page reloads. Changes are only visible after you refresh.
+          window.location.reload(true);
+        }
         this.props.history.push("/login");
       })
       .catch((err) => {
