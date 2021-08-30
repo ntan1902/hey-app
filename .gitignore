@@ -24,3 +24,4 @@ log/
 target/
 
 # hey-frontend/package-lock\.json
+dump.rdb
