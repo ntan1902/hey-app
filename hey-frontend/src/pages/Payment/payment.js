@@ -138,6 +138,20 @@ class Payment extends React.Component {
                   imgUrl = getProfileURL(item.target.id);
                 }
                 description = item.createdAt;
+              } else if (item.transferType == "receiveLuckyMoney") {
+                if (item.source.id != getUserIdFromStorage()) {
+                  title = "Receive lucky money";
+                  amount = "+" + formatToCurrency(item.amount) + currency;
+                  imgUrl =
+                    "https://image.winudf.com/v2/image/Y29tLmVhcm4ubHVja3ltb25leV9pY29uX3RtNTRjbTls/icon.png?w=&fakeurl=1";
+                } else {
+                  title = "Create lucky money";
+                  amount = "-" + formatToCurrency(item.amount) + currency;
+                  isMinus = true;
+                  imgUrl =
+                    "https://image.winudf.com/v2/image/Y29tLmVhcm4ubHVja3ltb25leV9pY29uX3RtNTRjbTls/icon.png?w=&fakeurl=1";
+                }
+                description = item.createdAt;
               } else {
                 if (item.source.id != getUserIdFromStorage()) {
                   title = "Refund lucky money";

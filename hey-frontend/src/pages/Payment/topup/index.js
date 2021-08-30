@@ -78,11 +78,14 @@ function Checkout(props) {
           console.log("Topup Success");
           setAmount("0");
           props.paymentActions.getNewTransferStatement(props.offset);
+          setActiveStep(activeStep + 1);
         })
         .catch((err) => {
           message.error(err.error.response.data.message);
+          setActiveStep(activeStep - 1);
           console.log(err);
         });
+      return;
     }
     setActiveStep(activeStep + 1);
   };
