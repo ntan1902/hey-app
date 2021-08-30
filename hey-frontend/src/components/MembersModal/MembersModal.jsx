@@ -1,9 +1,10 @@
 import React from "react";
-import {Icon, Menu, Modal} from "antd";
-import {connect} from "react-redux";
+import { Icon, Menu, Modal } from "antd";
+import { connect } from "react-redux";
 import CustomAvatar from "../../components/custom-avatar";
-import {bindChatActions, bindPaymentActions} from "../../actions";
-import {channingActions} from "../../utils";
+import { bindChatActions, bindPaymentActions } from "../../actions";
+import { channingActions } from "../../utils";
+import { getProfileURL } from "../../utils";
 
 class MembersModal extends React.Component {
   constructor(props) {
@@ -47,7 +48,18 @@ class MembersModal extends React.Component {
               style={{ display: "flex", alignItems: "center", height: 90 }}
             >
               <div>
-                <CustomAvatar type="user-avatar" />
+                <CustomAvatar
+                  type="avatar"
+                  src={getProfileURL(item.userId)}
+                  size={60}
+                  style={{
+                    // position: "absolute",
+                    // left: 10,
+                    // top: 10,
+                    border: "0.5px solid white",
+                    cursor: "pointer",
+                  }}
+                />
               </div>
               <div style={{ overflow: "hidden", paddingTop: 5 }}>
                 <div className="user-name">{item.fullName}</div>
